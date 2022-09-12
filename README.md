@@ -4,7 +4,7 @@
 
 <img height="120" alt="SEC" width="100%" src="README/marquee.svg" />
 
-<a href="https://www.python.org/" target="_blank" title="Python"><img align="left" src="README/icon/python.png" /></a>
+<a href="https://www.python.org/" title="Python"><img align="left" src="README/icon/python.png" /></a>
 <a href="https://www.djangoproject.com/" target="_blank" title="Django"><img align="left" src="README/icon/django.png" width="32" height="32"/></a>
 <a href="https://www.sqlite.org/index.html" target="_blank" title="SQLite"><img align="left" src="README/icon/SQLite.png" width="32" height="32"/></a>
 <a href="https://es.wikipedia.org/wiki/PostgreSQL" target="_blank" title="PostgreSQL"><img align="left" src="README/icon/postgreSQL.png" width="32" height="32"/></a>
