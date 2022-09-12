@@ -14,6 +14,7 @@
 - Fabro Diego Ezequiel
 - Gómez Facundo
 - Murillo Alexis
+- Lucero Carlos
 
 ## Proyecto
 - [Tablero](https://github.com/orgs/UNPSJB/projects/9)
