@@ -1,6 +1,6 @@
 # Desarrollo de Software 2022
 
-#  Sindicato Empleados de Comercio (SEC) <img align="left" style ="text-align: left- margin-right= 10px;" alt="GIF" src="README/icon/SEC.jpg"  width="40" height="40"/>
+#  Sindicato Empleados de Comercio (SEC) <img align="left" style ="text-align: left- margin-right= 10px;" alt="GIF" src="README/icon/SEC.jpg"  width="40" height="40"/><img style ="text-align: left- margin-right= 10px;" alt="GIF" src="README/icon/SEC.jpg"  width="40" height="40"/>
 
 <img height="120" alt="SEC" width="100%" src="README/marquee.svg" />
 
