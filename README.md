@@ -21,6 +21,7 @@
 
 ## Elementos
 python 3.10.6
+
 Django versión 4.1.1
 
 ##### Páginas de ayuda:
