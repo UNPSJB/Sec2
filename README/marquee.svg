@@ -6,7 +6,6 @@
           height: 50px;	
           overflow: hidden;
           position: relative;
-<!--           font-size: 29px; -->
         }
         .marquee strong {
           font-family: "Comic Sans", "Comic Sans MS", Chalkboard, ChalkboardSE-Regular, "Marker Felt", Purisa, "URW Chancery L", cursive, sans-serif !important;
@@ -21,7 +20,7 @@
 
           transform:translateX(100%);
 
-          animation: marquee 10s linear infinite;
+          animation: marquee 7s linear infinite;
         }
 
         @keyframes marquee {
