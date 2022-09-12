@@ -6,7 +6,7 @@
           height: 50px;	
           overflow: hidden;
           position: relative;
-          font-size: 29px;
+<!--           font-size: 29px; -->
         }
         .marquee strong {
           font-family: "Comic Sans", "Comic Sans MS", Chalkboard, ChalkboardSE-Regular, "Marker Felt", Purisa, "URW Chancery L", cursive, sans-serif !important;
