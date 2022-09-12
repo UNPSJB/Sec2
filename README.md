@@ -4,9 +4,9 @@
 
 <img height="120" alt="SEC" width="100%" src="README/marquee.svg" />
 
-<a href="https://www.python.org/" title="Python"><img src="README/icon/python.png" /></a>
+<a href="https://www.python.org/" target="_blank" title="Python"><img align="left" src="README/icon/python.png" /></a>
 
-<a href="https://www.djangoproject.com/" title="Python"><img src="README/icon/django.png" width="32" height="32"/></a>
+<a href="https://www.djangoproject.com/" target="_blank" title="Python"><img align="left"src="README/icon/django.png" width="32" height="32"/></a>
 
 
 ## Autores
