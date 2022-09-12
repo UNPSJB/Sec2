@@ -6,7 +6,7 @@
           height: 50px;	
           overflow: hidden;
           position: relative;
-	          font-size: 20px;
+	          font-size: 30px;
 
         }
         .marquee strong {
