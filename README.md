@@ -6,8 +6,7 @@
 
 <a href="https://www.python.org/" target="_blank" title="Python"><img align="left" src="README/icon/python.png" /></a>
 
-<a href="https://www.djangoproject.com/" target="_blank" title="Python"><img align="left"src="README/icon/django.png" width="32" height="32"/></a>
-
+<a href="https://www.djangoproject.com/" target="_blank" title="Django"><img align="left" src="README/icon/django.png" width="32" height="32"/></a>
 
 ## Autores
 - Arcos Vargas Martín
