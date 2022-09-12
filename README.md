@@ -13,8 +13,8 @@
 - Arcos Vargas Martín
 - Fabro Diego Ezequiel
 - Gómez Facundo
-- Murillo Alexis
 - Lucero Carlos
+- Murillo Alexis
 
 ## Proyecto
 - [Tablero](https://github.com/orgs/UNPSJB/projects/9)
