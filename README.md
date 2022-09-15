@@ -29,7 +29,7 @@
 
 ## Elementos
 
-python 3.10.6
+python 3.10.7
 
 Django versión 4.1.1
 
