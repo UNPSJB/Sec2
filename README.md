@@ -39,6 +39,21 @@ Django versión 4.1.1
 
 ## Instalar
 
+git clone --branch develop https://github.com/UNPSJB/Sec2.git
+python3 -m venv <venv>
+source ./<venv>/Scripts/activate
+cd ./sec2/source
+pip install -r requirements.txt
+
 ### Activar venv
+  
+| Platform | Shell           | Command to activate virtual environment |
+| -------- | --------------- | --------------------------------------- |
+| POSIX    | bash/zsh        | $ source <venv>/bin/activate            |
+|          | fish            | $ source <venv>/bin/activate.fish       |
+|          | csh/tcsh        | $ source <venv>/bin/activate.csh        |
+|          | PowerShell Core | $ <venv>/bin/Activate.ps1               |
+| Windows  | cmd.exe         | C:\> <venv>\Scripts\activate.bat        |
+|          | PowerShell      | PS C:\> <venv>\Scripts\Activate.ps1     |
 
 ### Configurar variables de entorno
