@@ -40,9 +40,13 @@ Django versión 4.1.1
 ## Instalar
 
 git clone --branch develop https://github.com/UNPSJB/Sec2.git
+
 python3 -m venv <venv>
+  
 source ./<venv>/Scripts/activate
+  
 cd ./sec2/source
+  
 pip install -r requirements.txt
 
 ### Activar venv
