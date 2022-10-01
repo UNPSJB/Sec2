@@ -19,7 +19,6 @@
 
 - Arcos Vargas Martín
 - Fabro Diego Ezequiel
-- Gómez Facundo
 - Lucero Carlos
 - Murillo Alexis
 
