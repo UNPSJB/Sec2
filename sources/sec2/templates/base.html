@@ -4,19 +4,26 @@
 <html lang="es">
   <head>
     <link href="{% static 'Libs/bootstrap/css/bootstrap.css' %}" rel="stylesheet">
-
-
+    <link href="{% static 'Libs/bootstrap/css/style.css' %}" rel="stylesheet">
+    <link rel="icon" type="image/x-icon"  href="{% static 'images/logo.png' %}">
+    <title>SEC 2</title>
   </head>
 
   <body>
+    <!--
+      ========================================================
+      							MENU 
+      ========================================================
+      -->
+<div class="menu-presentation">
+  <img id="logo" src="{% static 'images/SEC.jpg'%}" alt="My image"/>
+  <img id= "telephone" src="{% static 'images/telephone.png'%}" alt="My image"/>
+  <span>+54 9 XXX XXX XXXX </span>
+</div>
 
-  <nav class="navbar navbar-expand-lg fixed-top navbar-dark bg-dark" aria-label="Main navigation">
+<nav class="barraMenu navbar navbar-expand-lg" aria-label="Main navigation">
     <div class="container-fluid">
-      <a class="navbar-brand" href="#">SEC</a>
-      <button class="navbar-toggler p-0 border-0" type="button" id="navbarSideCollapse" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-      </button>
-  
+      
       <div class="navbar-collapse offcanvas-collapse" id="navbarsExampleDefault">
         <ul class="navbar-nav me-auto mb-2 mb-lg-0">
           <li class="nav-item">
@@ -30,20 +37,51 @@
           </li>
           
         </ul>
-        <div class="dropdown">
-          <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-            Usuario
+
+        <div class="loggin dropdown-center">
+          <button class="loggin btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+            Loggin in
           </button>
-          <ul class="dropdown-menu">
-            <li><a class="dropdown-item" href="#">Perfil</a></li>
-            <li><a class="dropdown-item" href="#">Cerrar Sesion</a></li>
+          <ul class="prueba dropdown-menu">
+            <li><a class="dropdown-item" href="#">Ingresar</a></li>
+            {% comment %} <li><a class="dropdown-item" href="#">Action two</a></li> {% endcomment %}
+            {% comment %} <li><a class="dropdown-item" href="#">Action three</a></li> {% endcomment %}
           </ul>
         </div>
-      </div>
     </div>
-  </nav>  
+  </nav>
+
+      <!--
+      ========================================================
+      							CARRUSEL 
+      ========================================================
+      -->
+
+      <div id="carouselExampleInterval" class="miCarrusel carousel slide" data-bs-ride="carousel">
+        <div class="carousel-inner">
+          <div class="carousel-item active" data-bs-interval="2000">
+            <img src="{% static 'images/carrusel/1.jpg'%}" class="d-block w-100" alt="...">
+          </div>
+          <div class="carousel-item" data-bs-interval="2000">
+            <img src="{% static 'images/carrusel/2.jpg'%}" class="d-block w-100" alt="...">
+          </div>
+          <div class="carousel-item"data-bs-interval="2000">
+            <img src="{% static 'images/carrusel/3.jpg'%}" class="d-block w-100" alt="...">
+          </div>
+        </div>
+        <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleInterval" data-bs-slide="prev">
+          <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+          <span class="visually-hidden">Previous</span>
+        </button>
+        <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleInterval" data-bs-slide="next">
+          <span class="carousel-control-next-icon" aria-hidden="true"></span>
+          <span class="visually-hidden">Next</span>
+        </button>
+      </div>
 
 
+
+      
   <script src="{% static 'Libs/bootstrap/js/bootstrap.bundle.js' %}"></script>
   <script src="{% static 'Libs/bootstrap/js/offcanvas.js' %}"></script>
 
