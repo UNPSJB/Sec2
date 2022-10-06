@@ -38,15 +38,52 @@
           
         </ul>
 
-        <div class="loggin dropdown-center">
+        {% comment %} <div class="loggin dropdown-center">
           <button class="loggin btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
             Loggin in
           </button>
           <ul class="prueba dropdown-menu">
-            <li><a class="dropdown-item" href="#">Ingresar</a></li>
+            <li><a class="dropdown-item" href="#">Ingresar</a></li> {% endcomment %}
+            <!-- Button trigger modal -->
+
+            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal1">
+              Loggin in
+            </button>
+            <!-- Modal -->
+            <div class="modal fade" id="exampleModal1" tabindex="-1" aria-labelledby="exampleModalLabel"
+              aria-hidden="true">
+              <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">
+                      Loggin in
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                  </div>
+                  <div class="modal-body">
+                    <section class="form-login">
+                      <h5>Formulario Login</h5>
+                      <input class="controls" type="text" name="usuario" value="" placeholder="Usuario">
+                      <p></p>
+                      <input class="controls" type="password" name="contrasena" value="" placeholder="Contraseña">
+                      <input class="buttons" type="submit" name="" value="Ingresar">
+                      <p><a href="#">¿Olvidastes tu Contraseña?</a></p>
+                    </section>
+                  </div>
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                      Close
+                    </button>
+                  </div>
+                </div>
+              </div>
+    </div>
+  </div>
+</div>
+</div>
             {% comment %} <li><a class="dropdown-item" href="#">Action two</a></li> {% endcomment %}
             {% comment %} <li><a class="dropdown-item" href="#">Action three</a></li> {% endcomment %}
-          </ul>
+          {% comment %} </ul> {% endcomment %}
         </div>
     </div>
   </nav>
@@ -66,7 +103,7 @@
             <img src="{% static 'images/carrusel/2.jpg'%}" class="d-block w-100" alt="...">
           </div>
           <div class="carousel-item"data-bs-interval="2000">
-            <img src="{% static 'images/carrusel/3.jpg'%}" class="d-block w-100" alt="...">
+            <img src="{% static 'images/carrusel/4.jpg'%}" class="d-block w-100" alt="...">
           </div>
         </div>
         <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleInterval" data-bs-slide="prev">
