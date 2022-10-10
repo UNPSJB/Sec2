@@ -1,4 +1,6 @@
+
 from django.db import models
+from apps import afiliados
 
 class Persona(models.Model):
     ESTADO_CIVIL=(
@@ -8,18 +10,29 @@ class Persona(models.Model):
     )
     nombre=models.CharField(max_length=30)
     apellido=models.CharField(max_length=30)
-    dni=models.BigIntegerField(unique=True)
+    dni=models.CharField(max_length=8)
     direccion=models.CharField(max_length=50)
     mail=models.CharField(max_length=50)
     nacionalidad=models.CharField(max_length=50)
     estado_civil=models.PositiveSmallIntegerField(choices=ESTADO_CIVIL)
-    cuil=models.BigIntegerField()
-    celular=models.BigIntegerField(unique=True)
+    cuil=models.CharField(max_length=8)
+    celular=models.CharField(max_length=30)
     encargado=models.BooleanField(default=False)
+
     
     def __str__(self):
         return f"{self.nombre} {self.apellido} DNI:{self.dni}"
 
+    def Afiliar(self):
+        a = afiliados.objects.create(persona=self)
+        a.razon_social = ""
+        a.cuit_empleador = ""
+        a.categoria_laboral = ""
+        a.domicilio_empresa = ""
+        a.localidad_empresa = ""
+        a.rama = ""
+        
+        
 class Rol(models.Model):
     TIPO = 0
     TIPOS = [
