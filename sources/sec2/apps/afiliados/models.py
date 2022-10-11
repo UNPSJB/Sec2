@@ -12,6 +12,13 @@ class Afiliado(Rol):
     domicilio_empresa = models.CharField(max_length=50)
     localidad_empresa = models.CharField(max_length=50)
     rama = models.CharField(max_length=50)
+    fechaNacimiento = models.DateField()
+    fechaIngresoTrabajo = models.DateField()
+    sueldo= models.DecimalField(max_digits=9, decimal_places=2)
+    horaJornada = models.PositiveIntegerField()
+    fechaAfiliacion= models.DateField(auto_now = TRUE)
+    estado = models.BooleanField(default=False)
+
 
     def __str__(self):
         return f"Tipo: {self.TIPO} Razon social: {self.razon_social} CUIT:{self.cuit_empleador}"
