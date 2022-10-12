@@ -23,4 +23,4 @@ class Afiliado(Rol):
     def __str__(self):
         return f"Tipo: {self.TIPO} Razon social: {self.razon_social} CUIT:{self.cuit_empleador}"
     
-
+Rol.register(Afiliado)
