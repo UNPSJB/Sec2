@@ -3,13 +3,19 @@
 
 {% block extracss %}
     <link href="{% static 'Libs/css/index.css' %}" rel="stylesheet"/>
-{% endblock%}
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@700&display=swap" rel="stylesheet">
+
+{% endblock %}
 
 {% block container %}
 
 {% block nav %}
 {% include 'nav_index.html' %}
 {% endblock %}
+
+
 
 {% comment %}
 ========================================================
@@ -58,6 +64,55 @@
       <span class="carousel-control-next-icon" aria-hidden="true"></span>
       <span class="visually-hidden">Next</span>
     </button>
+  </div>
+
+  <div class="container text-center boxBotones">
+    <div class="row align-items-center">
+      <div class="col">
+        <button typ e="button" class="btn btn-primary">Afiliados</button>
+      </div>
+      <div class="col">
+        <button type="button" class="btn btn-primary">Cursos</button>
+      </div>
+      <div class="col">
+        <button type="button" class="btn btn-warning">Ingresar</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="container boxAfiliado">
+    <h5> AFILIADOS</h5>
+    <p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy 
+      text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has 
+      survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was 
+      popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop 
+      publishing software like Aldus PageMaker including versions of Lorem Ipsum.</p>
+      <div class="d-grid gap-2 col-1 mx-auto">
+        <button type="button" class="btn btn-secondary">Ingresar</button>
+      </div>
+  </div>
+  <div class="container boxSalones">
+    <h5>ALQUILER DE SALONES</h5>
+    <p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy 
+      text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has 
+      survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was 
+      popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop 
+      publishing software like Aldus PageMaker including versions of Lorem Ipsum.</p>
+      <div class="d-grid gap-2 col-1 mx-auto">
+        <button type="button" class="btn btn-warning">Ingresar</button>
+      </div>
+  </div>
+
+  <div class="container boxCursos">
+    <h5>INSCRIBETE A NUESTROS CURSOS</h5>
+    <p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy 
+      text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has 
+      survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was 
+      popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop 
+      publishing software like Aldus PageMaker including versions of Lorem Ipsum.</p>
+      <div class="d-grid gap-2 col-1 mx-auto">
+        <button type="button" class="btn btn-secondary">Inscribirse</button>
+      </div>
   </div>
 
  {% endblock %}
