@@ -19,6 +19,7 @@ from sec2.views import *
 
 urlpatterns = [
     path('', index, name="index"),
+    path('login/', login, name="login"),
     path('admin/', admin.site.urls),
     path('',include('apps.afiliados.urls')),
 ]
