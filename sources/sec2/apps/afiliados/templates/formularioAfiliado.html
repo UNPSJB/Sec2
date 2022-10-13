@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+{% load static %}
+
+{% block tittle %} Afiliados {% endblock %}
+
+{% block content %}
+   {%if form.errors%}
+   <div class="alert alert-danger" role="alert">
+    No se pudo cargar el formulario comunicarse con soporte
+  </div>
+   {% endif %}
+    
+    <form action= "{% url 'guardarAfiliado' %}" method="POST">
+        {% csrf_token %}
+        <div class="container-sm">
+        <h1> REGISTRO DE AFILIADO </h1>
+        {{form|crispy}}
+        <button type="submit" class="btn btn-success">Guardar</button>
+      </div> 
+    {% if mensaje %}
+    <div class="alert alert-info" role="alert">
+       registro finalizado exitosamente
+      </div>
+    {%endif%}
+   
+   
+</form>
+
+</div>
+{% endblock %}

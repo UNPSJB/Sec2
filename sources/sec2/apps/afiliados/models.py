@@ -24,3 +24,5 @@ class Afiliado(Rol):
         return f"Tipo: {self.TIPO} Razon social: {self.razon_social} CUIT:{self.cuit_empleador}"
     
 
+
+Rol.register(Afiliado)
