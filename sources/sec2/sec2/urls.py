@@ -18,7 +18,7 @@ from django.urls import path, include
 from sec2.views import *
 
 urlpatterns = [
-    path('', base),     
+    path('', index, name="index"),
     path('admin/', admin.site.urls),
     path('',include('apps.afiliados.urls')),
 ]
