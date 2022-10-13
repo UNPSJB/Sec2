@@ -14,9 +14,9 @@
 {% include 'nav_index.html' %}
 {% endblock %}
 
-  <main class="form-signin efecto animate__animated animate__zoomIn">
-    <!-- <h1 class="login-title">Taller ChaPin</h1> -->
-    <img src="{% static 'images/logo.png'%}" alt="Sindicato Empleado de Comercio" class="logo">
+<br><br><br>
+  <main class="form-signin animate__animated animate__zoomIn">
+    <img src="{% static 'images/login.png'%}" alt="Sindicato Empleado de Comercio" class="logo">
     <hr class="divider">
 
     {% if form.errors or no_user %}
@@ -32,4 +32,11 @@
 
     {% crispy form form.helper %}
   </main>
+
+  <br><br><br>
+  
+{% block piePagina %}
+  {% include 'piepagina.html' %}
+{% endblock %}
+
 {% endblock %}
