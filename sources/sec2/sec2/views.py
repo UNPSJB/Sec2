@@ -29,3 +29,8 @@ def login(request):
         "form": SecAuthenticationForm(), 
         "no_user": no_user
     })
+    
+    
+# GESTION DE AFILIADOS
+def template_afiliado(request):
+    return render(request, 'template_afiliado_home.html', {"title": "Gestion de Afiliados"})

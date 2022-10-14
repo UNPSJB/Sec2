@@ -11,10 +11,6 @@
 
 {% block container %}
 
-{% block nav %}
-{% include 'nav_index.html' %}
-{% endblock %}
-
 
 
 {% comment %}
@@ -70,6 +66,9 @@
     <div class="row align-items-center">
       <div class="col">
         <a class="btn btn-primary" href="{% url 'login' %}" role="button">Afiliados</a>
+        {% comment %} <a href="{% url '' %}" class="link-dark rounded"
+        >Registrar una marca</a
+      > {% endcomment %}
       </div>
       <div class="col">
         <button type="button" class="btn btn-primary">Cursos</button>
@@ -88,7 +87,8 @@
       popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop 
       publishing software like Aldus PageMaker including versions of Lorem Ipsum.</p>
       <div class="d-grid gap-2 col-1 mx-auto">
-        <button type="button" class="btn btn-secondary">Ingresar</button>
+        {% comment %} PLANTILLA {% endcomment %}
+        <a class="btn btn-primary" href="{% url 'afiliados:index' %}" role="button">VER PAGINA</a>
       </div>
   </div>
   <div class="container boxSalones">

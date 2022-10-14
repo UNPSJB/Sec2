@@ -18,8 +18,23 @@ from django.urls import path, include
 from sec2.views import *
 
 urlpatterns = [
+    
+    # ----------------- PRINCIPALES -----------------
     path('', index, name="index"),
     path('login/', login, name="login"),
+    
+    # -----------------     ADMIN   -----------------
     path('admin/', admin.site.urls),
-    path('',include('apps.afiliados.urls')),
+    
+    # ----------------- AFILIADOS   -----------------
+    path('', template_afiliado, name="afiliado_home"),
+    path('afiliados/',include('apps.afiliados.urls')),
+    
+    
+    # path('marcas/listar', MarcaListView.as_view(), name="listarMarcas"),
+    # path('marca/modificar/<int:pk>', MarcaUpdateView.as_view(), name="modificarMarca"),
+    # path('marca/eliminar/<int:pk>', MarcaDeleteView.as_view(), name="eliminarMarca"),
+    
 ]
+
+

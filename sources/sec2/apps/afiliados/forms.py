@@ -5,10 +5,7 @@ from django import forms
 from .models import Afiliado
 
 class FormularioAfiliado(forms.ModelForm):
-    
-    
-    
-    
+
     class Meta:
         model = Afiliado
         fields = '__all__'
@@ -17,4 +14,3 @@ class FormularioAfiliado(forms.ModelForm):
             'fechaIngresoTrabajo': forms.DateInput(attrs={'type':'date'}),
             'fechaAfiliacion': forms.DateInput(attrs={'type':'date'})
             }
-
