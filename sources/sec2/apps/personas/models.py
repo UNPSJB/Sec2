@@ -1,4 +1,5 @@
 from django.db import models
+from apps import afiliados
 
 class Persona(models.Model):
     ESTADO_CIVIL=(
@@ -8,25 +9,31 @@ class Persona(models.Model):
     )
     nombre=models.CharField(max_length=30)
     apellido=models.CharField(max_length=30)
-    dni=models.BigIntegerField(unique=True)
+    dni=models.CharField(max_length=8)
     direccion=models.CharField(max_length=50)
     mail=models.CharField(max_length=50)
     nacionalidad=models.CharField(max_length=50)
     estado_civil=models.PositiveSmallIntegerField(choices=ESTADO_CIVIL)
-    cuil=models.BigIntegerField()
-    celular=models.BigIntegerField(unique=True)
+    cuil=models.CharField(max_length=8)
+    celular=models.CharField(max_length=30)
     encargado=models.BooleanField(default=False)
+
     
     def __str__(self):
         return f"{self.nombre} {self.apellido} DNI:{self.dni}"
 
+    def afiliar(self, afiliado):
+        afiliado.persona = self
+        afiliado.save()
+
+    def registrar_en_curso(self, alumno, curso):
+        alumno.persona = self
+        alumno.save()
+        curso.alumnos.add(alumno)
+
 class Rol(models.Model):
     TIPO = 0
-    TIPOS = [
-        (1, "afiliado"),
-        (2, "profesor"),
-        (3, "alumno")
-    ]
+    TIPOS = []
     persona = models.ForeignKey(Persona, related_name="roles", on_delete=models.CASCADE)
     tipo = models.PositiveSmallIntegerField(choices=TIPOS)
     desde = models.DateTimeField(auto_now_add=True)
@@ -35,16 +42,17 @@ class Rol(models.Model):
     def str(self):
         return f"{self.persona} es {self.get_tipo_display()}"
 
-    def save(self, args, kwargs):
+    def save(self, *args, **kwargs):
         if self.pk is None:
             self.tipo = Rol.TIPO
-        super(Rol, self).save(args, kwargs)
+        super(Rol, self).save(*args, **kwargs)
 
     def related(self):
         return self.Rol != Rol and self or getattr(self, self.get_tipo_display())
 
-    def register(cls, klass):
-        cls.TIPOS.append((klass.TIPO, klass.name.lower()))
+    @classmethod
+    def register(cls, Klass):
+        cls.TIPOS.append((Klass.TIPO, Klass.__name__.lower()))
     
     def como(self, Klass):
         return self.roles.get(tipo=Klass.TIPO).related()
