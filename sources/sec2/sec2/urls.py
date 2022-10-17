@@ -15,12 +15,27 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path
+from django.urls import path, include
 from sec2.views import *
 
 urlpatterns = [
     
-    path('', base),
+    # ----------------- PRINCIPALES -----------------
+    path('', index, name="index"),
+    path('login/', login, name="login"),
+    
+    # -----------------     ADMIN   -----------------
     path('admin/', admin.site.urls),
     
+    # ----------------- AFILIADOS   -----------------
+    path('', template_afiliado, name="afiliado_home"),
+    path('afiliados/',include('apps.afiliados.urls')),
+    
+    
+    # path('marcas/listar', MarcaListView.as_view(), name="listarMarcas"),
+    # path('marca/modificar/<int:pk>', MarcaUpdateView.as_view(), name="modificarMarca"),
+    # path('marca/eliminar/<int:pk>', MarcaDeleteView.as_view(), name="eliminarMarca"),
+    
 ]
+
+

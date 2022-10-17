@@ -1,7 +1,8 @@
-
 from django.db import models
 #from apps import personas
 from apps.personas.models import Rol
+from datetime import date
+
 
 # Create your models here.
 class Afiliado(Rol):
@@ -24,3 +25,5 @@ class Afiliado(Rol):
         return f"Tipo: {self.TIPO} Razon social: {self.razon_social} CUIT:{self.cuit_empleador}"
     
 
+
+Rol.register(Afiliado)

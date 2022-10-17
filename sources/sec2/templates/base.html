@@ -1,53 +1,176 @@
 {% load static %}
 
-<!doctype html>
+<!DOCTYPE html>
 <html lang="es">
   <head>
-    <link href="{% static 'Libs/bootstrap/css/bootstrap.css' %}" rel="stylesheet">
-
-
+    <link
+      href="{% static 'Libs/bootstrap/css/bootstrap.css' %}"
+      rel="stylesheet"
+    />
+    <link href="{% static 'Libs/bootstrap/css/style.css' %}" rel="stylesheet" />
+    <link
+      rel="icon"
+      type="image/x-icon"
+      href="{% static 'images/logo.png' %}"
+    />
+    <title>SEC 2</title>
   </head>
 
   <body>
+    <!--
+      ========================================================
+      							MENU 
+      ========================================================
+      -->
+    <div class="menu-presentation">
+      <img id="logo" src="{% static 'images/SEC.jpg'%}" alt="My image" />
+      <img
+        id="telephone"
+        src="{% static 'images/telephone.png'%}"
+        alt="My image"
+      />
+      <span>+54 9 XXX XXX XXXX </span>
+    </div>
 
-  <nav class="navbar navbar-expand-lg fixed-top navbar-dark bg-dark" aria-label="Main navigation">
-    <div class="container-fluid">
-      <a class="navbar-brand" href="#">SEC</a>
-      <button class="navbar-toggler p-0 border-0" type="button" id="navbarSideCollapse" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-      </button>
-  
-      <div class="navbar-collapse offcanvas-collapse" id="navbarsExampleDefault">
-        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-          <li class="nav-item">
-            <a class="nav-link" href="#">Afiliados</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="#">Cursos</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="#">Alquileres</a>
-          </li>
-          
-        </ul>
-        <div class="dropdown">
-          <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-            Usuario
-          </button>
-          <ul class="dropdown-menu">
-            <li><a class="dropdown-item" href="#">Perfil</a></li>
-            <li><a class="dropdown-item" href="#">Cerrar Sesion</a></li>
+    <nav class="barraMenu navbar navbar-expand-lg" aria-label="Main navigation">
+      <div class="container-fluid">
+        <div
+          class="navbar-collapse offcanvas-collapse"
+          id="navbarsExampleDefault"
+        >
+          <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+            <li class="nav-item"><a class="nav-link" href="#">Afiliados</a></li>
+            <li class="nav-item"><a class="nav-link" href="#">Cursos</a></li>
+            <li class="nav-item">
+              <a class="nav-link" href="#">Alquileres</a>
+            </li>
           </ul>
+          <button
+            type="button"
+            class="btn btn-primary"
+            data-bs-toggle="modal"
+            data-bs-target="#exampleModal1"
+          >
+            Loggin in
+          </button>
+
+          <!-- Modal -->
+          <div
+            class="modal fade"
+            id="exampleModal1"
+            tabindex="-1"
+            aria-labelledby="exampleModalLabel"
+            aria-hidden="true"
+          >
+            <div class="modal-dialog modal-dialog-centered">
+              <div class="modal-content">
+                <div class="loginHead modal-header">
+                  <h5 class="modal-title" id="exampleModalLabel">Register</h5>
+                  <button
+                    type="button"
+                    class="btn-close"
+                    data-bs-dismiss="modal"
+                    aria-label="Close"
+                  ></button>
+                </div>
+                
+                <div class="loginBody modal-body">
+                  <section>
+                    <input
+                      class="controls"
+                      type="text"
+                      name="usuario"
+                      value=""
+                      placeholder="Usuario"
+                    />
+                    <input
+                      class="controls"
+                      type="password"
+                      name="contrasena"
+                      value=""
+                      placeholder="Contraseña"
+                    />
+                    <input
+                      class="buttons"
+                      type="submit"
+                      name=""
+                      value="Ingresar"
+                    />
+                    <p><a href="#">¿Olvidastes tu Contraseña?</a></p>
+                    <p><a href="#">No tengo cuenta, soy nuevo</a></p>
+                  </section>
+                </div>
+                <div class="modal-footer">
+                  <button
+                    type="button"
+                    class="btn btn-secondary"
+                    data-bs-dismiss="modal"
+                  >
+                    Close
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
+    </nav>
+
+    <!--
+      ========================================================
+      							CARRUSEL 
+      ========================================================
+-->
+
+    <div
+      id="carouselExampleInterval"
+      class="miCarrusel carousel slide"
+      data-bs-ride="carousel"
+    >
+      <div class="carousel-inner">
+        <div class="carousel-item active" data-bs-interval="2000">
+          <img
+            src="{% static 'images/carrusel/1.jpg'%}"
+            class="d-block w-100"
+            alt="..."
+          />
+        </div>
+        <div class="carousel-item" data-bs-interval="2000">
+          <img
+            src="{% static 'images/carrusel/2.jpg'%}"
+            class="d-block w-100"
+            alt="..."
+          />
+        </div>
+        <div class="carousel-item" data-bs-interval="2000">
+          <img
+            src="{% static 'images/carrusel/4.jpg'%}"
+            class="d-block w-100"
+            alt="..."
+          />
+        </div>
+      </div>
+      <button
+        class="carousel-control-prev"
+        type="button"
+        data-bs-target="#carouselExampleInterval"
+        data-bs-slide="prev"
+      >
+        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+        <span class="visually-hidden">Previous</span>
+      </button>
+      <button
+        class="carousel-control-next"
+        type="button"
+        data-bs-target="#carouselExampleInterval"
+        data-bs-slide="next"
+      >
+        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+        <span class="visually-hidden">Next</span>
+      </button>
     </div>
-  </nav>  
 
-
-  <script src="{% static 'Libs/bootstrap/js/bootstrap.bundle.js' %}"></script>
-  <script src="{% static 'Libs/bootstrap/js/offcanvas.js' %}"></script>
-
-</body>
-
+    <script src="{% static 'Libs/bootstrap/js/bootstrap.bundle.js' %}"></script>
+    <script src="{% static 'Libs/bootstrap/js/offcanvas.js' %}"></script>
+  </body>
 </html>
-
