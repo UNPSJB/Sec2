@@ -1,3 +1,4 @@
+from random import choices
 from django.db import models
 from apps import afiliados
 
@@ -67,3 +68,15 @@ class Rol(models.Model):
 
     def sos(self, Klass):
         return any([isinstance(rol, Klass) for rol in self.roles_related()])
+
+class Familiar(models.Model):
+    #se limita a familiares a los familiares hasta segunda linia 
+    TIPOS=(
+        (0,"hijo"),
+        (1,"conyuge"),
+        (2,"padre"),
+        (3,"madre"),
+        (4,"hermano"),
+    )
+    persona=models.ForeignKey(Persona, relate_name="familiar",on_delete=models.CASCADE)
+    tipo=models.PositiveSmallIntegerField(choices=TIPOS)
