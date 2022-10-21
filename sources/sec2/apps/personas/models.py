@@ -18,6 +18,7 @@ class Persona(models.Model):
     cuil=models.CharField(max_length=8)
     celular=models.CharField(max_length=30)
     encargado=models.BooleanField(default=False)
+    fecha_nacimiento = models.DateField()
 
     
     def __str__(self):
@@ -72,11 +73,17 @@ class Rol(models.Model):
 class Familiar(models.Model):
     #se limita a familiares a los familiares hasta segunda linia 
     TIPOS=(
-        (0,"hijo"),
-        (1,"conyuge"),
-        (2,"padre"),
-        (3,"madre"),
-        (4,"hermano"),
+        (1,"hijo"),
+        (2,"conyuge"),
+        (3,"padre"),
+        (4,"madre"),
+        (5,"hermano"),
+        (6,"tutor"),
     )
-    persona=models.ForeignKey(Persona, relate_name="familiar",on_delete=models.CASCADE)
+    AFILIADO = [1, 2, 3, 4, 5]
+    ALUMNO = [3, 4, 6]
+    persona=models.ForeignKey(Persona, related_name="familiar",on_delete=models.CASCADE)
     tipo=models.PositiveSmallIntegerField(choices=TIPOS)
+    
+
+    
