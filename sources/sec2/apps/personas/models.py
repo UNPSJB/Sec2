@@ -1,4 +1,5 @@
 from random import choices
+from tokenize import blank_re
 from django.db import models
 from apps import afiliados
 
@@ -18,7 +19,7 @@ class Persona(models.Model):
     cuil=models.CharField(max_length=8)
     celular=models.CharField(max_length=30)
     encargado=models.BooleanField(default=False)
-    fecha_nacimiento = models.DateField()
+    fecha_nacimiento = models.DateField(null=False ,blank=False)
 
     
     def __str__(self):
@@ -84,6 +85,6 @@ class Familiar(models.Model):
     ALUMNO = [3, 4, 6]
     persona=models.ForeignKey(Persona, related_name="familiar",on_delete=models.CASCADE)
     tipo=models.PositiveSmallIntegerField(choices=TIPOS)
-    
+
 
     
