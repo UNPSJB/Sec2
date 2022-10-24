@@ -1,3 +1,5 @@
+from random import choices
+from tokenize import blank_re
 from django.db import models
 from apps import afiliados
 
@@ -17,6 +19,7 @@ class Persona(models.Model):
     cuil=models.CharField(max_length=8)
     celular=models.CharField(max_length=30)
     encargado=models.BooleanField(default=False)
+    fecha_nacimiento = models.DateField(null=False ,blank=False)
 
     
     def __str__(self):
@@ -67,3 +70,21 @@ class Rol(models.Model):
 
     def sos(self, Klass):
         return any([isinstance(rol, Klass) for rol in self.roles_related()])
+
+class Familiar(models.Model):
+    #se limita a familiares a los familiares hasta segunda linia 
+    TIPOS=(
+        (1,"hijo"),
+        (2,"conyuge"),
+        (3,"padre"),
+        (4,"madre"),
+        (5,"hermano"),
+        (6,"tutor"),
+    )
+    AFILIADO = [1, 2, 3, 4, 5]
+    ALUMNO = [3, 4, 6]
+    persona=models.ForeignKey(Persona, related_name="familiar",on_delete=models.CASCADE)
+    tipo=models.PositiveSmallIntegerField(choices=TIPOS)
+
+
+    

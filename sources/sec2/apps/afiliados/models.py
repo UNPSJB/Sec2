@@ -1,4 +1,3 @@
-
 from django.db import models
 #from apps import personas
 from apps.personas.models import Rol
@@ -14,7 +13,6 @@ class Afiliado(Rol):
     domicilio_empresa = models.CharField(max_length=50)
     localidad_empresa = models.CharField(max_length=50)
     rama = models.CharField(max_length=50)
-    fechaNacimiento = models.DateField()
     fechaIngresoTrabajo = models.DateField()
     sueldo= models.DecimalField(max_digits=9, decimal_places=2)
     horaJornada = models.PositiveIntegerField()
