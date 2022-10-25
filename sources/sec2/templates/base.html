@@ -18,6 +18,9 @@
 <body>
   {% block container %}
   {% endblock %}
+  {% block piePagina %}
+  {% include 'piepagina.html' %}
+  {% endblock %}
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/js/bootstrap.bundle.min.js"></script>
   <script src="{% static 'js/tablas.js' %}"></script>
   <script type="text/javascript" src="{% static '/libs/jquery/jquery-3.1.1.min.js' %}"></script>
