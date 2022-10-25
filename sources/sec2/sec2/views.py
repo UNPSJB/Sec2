@@ -31,6 +31,9 @@ def login(request):
     })
     
     
-# GESTION DE AFILIADOS
+# GESTION DE AFILIADOS lo quite de urls
 def template_afiliado(request):
     return render(request, 'template_afiliado_home.html', {"title": "Gestion de Afiliados"})
+
+def SGBD(request):
+    return render(request, 'sistema.html', {"title": "WELCOME"})

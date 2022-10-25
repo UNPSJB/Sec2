@@ -3,3 +3,9 @@
       /* Arriba | Derecha | Abajo | Izquierda */
       margin: 0px 0px 20px 0px;
   }
+  
+  img {
+    width: 20px;
+    height: 7px;
+    position: relative
+}
