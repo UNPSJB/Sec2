@@ -18,22 +18,47 @@ class Persona(models.Model):
     estado_civil=models.PositiveSmallIntegerField(choices=ESTADO_CIVIL)
     cuil=models.CharField(max_length=8)
     celular=models.CharField(max_length=30)
-    encargado=models.BooleanField(default=False)
+    es_afiliado=models.BooleanField(default=False)
+    es_alumno=models.BooleanField(default=False)
+    es_profesor=models.BooleanField(default=False)
+    es_encargado=models.BooleanField(default=False)
     fecha_nacimiento = models.DateField(null=False ,blank=False)
-
+    
     
     def __str__(self):
         return f"{self.nombre} {self.apellido} DNI:{self.dni}"
 
     def afiliar(self, afiliado):
+        assert not self.es_afiliado, "ya soy afiliado" 
         afiliado.persona = self
         afiliado.save()
-
-    def registrar_en_curso(self, alumno, curso):
+        self.es_afiliado=True
+        self.save()
+        
+    def desafiliar(self, afiliado, fecha):
+        assert afiliado.persona == self, "Afiliado incorrecto"
+        afiliado.hasta = fecha
+        afiliado.save()
+        self.es_afiliado = False
+        self.save()
+        
+    def inscribir(self, alumno, curso):
+        assert alumno.curso == curso, "Alumno ya inscripto"
         alumno.persona = self
         alumno.save()
         curso.alumnos.add(alumno)
+        self.es_alumno=True
+        self.save()
 
+    def desinscribir(self, alumno, fecha):
+        assert alumno.persona == self, "alumno equivocado"
+        alumno.hasta = fecha
+        alumno.save()
+        
+        self.es_alumno = False
+        self.save()
+        
+    
 class Rol(models.Model):
     TIPO = 0
     TIPOS = []

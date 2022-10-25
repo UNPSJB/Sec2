@@ -1,4 +1,3 @@
-from msvcrt import open_osfhandle
 from random import choices
 #from socket import TIPC_CONN_TIMEOUT
 from django.db import models
@@ -31,7 +30,7 @@ class Clase(models.Model):
         (6, "Sabado"),
         (7, "Domingo"),
     )
-    dictado = models.ForeignKey(Dictado, related_name="clase", on_delete=models.CASCADE)
+    dictado = models.ForeignKey(Dictado, related_name="clase", null=False, on_delete=models.CASCADE)
     dia=models.PositiveSmallIntegerField(choices=DIA)
     hora_inicio=models.TimeField(auto_now_add=True)
     hora_fin=models.TimeField(auto_now_add=True)
