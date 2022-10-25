@@ -1,7 +1,6 @@
 # from django.shortcuts import render
 # from django.http import HttpRequest
-from apps.afiliados.forms import FormularioAfiliado
-
+from apps.afiliados.forms import AfiliadoForms, Afiliado
 
 from django.urls import reverse_lazy
 from django.http import JsonResponse
@@ -38,7 +37,19 @@ from django.contrib import messages
 class AfiliadoCreateView(CreateView):
     
     model = Afiliado
-    form_class = FormularioAfiliado
+    form_class = AfiliadoForms
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['titulo'] = "Alta de afiliados"
+        return context
     
     
+class AfliadosListView(ListView):
+    model = Afiliado
     
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['titulo'] = "Listado de afiliados"
+        return context

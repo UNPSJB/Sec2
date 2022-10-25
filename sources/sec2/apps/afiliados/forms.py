@@ -7,19 +7,16 @@ from apps.personas.forms import PersonaForm
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Fieldset, Submit, Div, HTML
 
-class FormularioAfiliado(forms.ModelForm):
-    
-    
-    
+class AfiliadoForms(forms.ModelForm):
     
     class Meta:
         model = Afiliado
         fields = '__all__'
         exclude=['persona', 'tipo']
         Widgets ={
-            'fechaNacimiento': forms.DateInput(attrs={'type':'datetime-local'}),
+            
             'fechaIngresoTrabajo': forms.DateInput(attrs={'type':'date'}),
-            'fechaAfiliacion': forms.DateInput(attrs={'type':'date'})
+            #'fechaAfiliacion': forms.DateInput(attrs={'type':'date'})
             }
 
     def __init__(self, *args, **kwargs):
@@ -31,23 +28,20 @@ class FormularioAfiliado(forms.ModelForm):
                    "",
                 HTML(
                     '<hr/>'),
-                    'dni', 
-                    'nombre',
-                    'apellido',
-                    'direccion',
-                    'mail',
-                    'nacionalidad',
-                    'estado_civil',
-                    'cuil',
-                    'cuil',
-                    'celular',
                     'razon_social',
-                    'cuit',
-                    'categoria_laboral',        
-            
+                    'cuit_empleador',
+                    'categoria_laboral',
+                    'domicilio_empresa',
+                    'localidad_empresa',
+                    'rama',
+                    'fechaIngresoTrabajo',
+                    'sueldo',
+                    'horaJornada',
+                    'fechaAfiliacion',
+           
             ),
-            Submit('submit', 'Submit', css_class='button white'),)
+            Submit('submit', 'Guardar', css_class='button white'),)
 
 
-FormularioAfiliado.base_fields.update(PersonaForm.base_fields)
+AfiliadoForms.base_fields.update(AfiliadoForms.base_fields)
 
