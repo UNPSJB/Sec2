@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 {% load static %}
-
+{% load crispy_forms_tags %}
 {% block extracss %}
     <link href="{% static 'Libs/css/index.css' %}" rel="stylesheet"/>
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -12,7 +12,7 @@
 {% block container %}
 
 {% block nav %}
-{% include 'nav_index.html' %}
+{% include 'nav_sistema.html' %}
 {% endblock %}
 
 {% comment %}
@@ -20,6 +20,7 @@
                             CARRUSEL 
 ========================================================
 {% endcomment %}
+
 <div id="carouselExampleCaptions" class="carousel slide" data-bs-ride="false">
     <div class="carousel-indicators">
       <button type="button" data-bs-target="#carouselExampleCaptions" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
@@ -28,7 +29,7 @@
     </div>
     <div class="carousel-inner">
       <div class="carousel-item active">
-        <img src="{% static 'images/carrusel/1.jpg'%}" class="d-block w-100" alt="..." />
+        <img src="{% static 'images/carrusel/1.jpg'%}" class="d-block w-100" alt="1000" />
 
         <div class="carousel-caption d-none d-md-block">
           <h5>AFILIACIONES</h5>
@@ -86,5 +87,5 @@
       popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop 
       publishing software like Aldus PageMaker including versions of Lorem Ipsum.</p>
   </div>
-  
+</div>
  {% endblock %}

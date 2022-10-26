@@ -2,23 +2,25 @@
 {% load static %}
 
 {% block extracss %}
+    <link href="{% static 'Libs/css/sistema.css' %}" rel="stylesheet"/>
+{% endblock%}
 
-{% endblock %}
 
 {% block container %}
+{% include 'nav_sistema.html' %}
 
 
 
-<div class="container">
+<div class="container-fluid contenedor_principal">
     <div class="row">
-        <div class="col">
+        <div class="col-lg-3 menu">
             
             {% block nav %}
             {% include 'menu.html' %}
             {% endblock %}
 
         </div>
-        <div class="col">
+        <div class="col area_dinamica">
             <h1>Welcome</h1>
             <h2>Welcome</h2>
         </div>

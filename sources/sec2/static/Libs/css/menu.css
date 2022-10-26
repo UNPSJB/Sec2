@@ -4,6 +4,12 @@
 
 .dropdown-toggle { outline: 0; }
 
+.menu-izquierda{
+  background-color: rgb(255, 240, 240);
+  margin: 10px;
+  padding-left: 0;
+}
+
 .btn-toggle {
   padding: .25rem .5rem;
   font-weight: 600;

@@ -1,0 +1,9 @@
+.cabecera{
+    background-color: #074081;
+    color: blanchedalmond;
+    /* Arriba | Derecha | Abajo | Izquierda */
+}
+
+.buscador{
+    margin-left: 100px;
+}
