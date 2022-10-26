@@ -35,7 +35,6 @@ from django.contrib import messages
 
 
 class AfiliadoCreateView(CreateView):
-    
     model = Afiliado
     form_class = AfiliadoForms
 

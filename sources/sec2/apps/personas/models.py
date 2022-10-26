@@ -28,8 +28,9 @@ class Persona(models.Model):
     def __str__(self):
         return f"{self.nombre} {self.apellido} DNI:{self.dni}"
 
-    def afiliar(self, afiliado):
+    def afiliar(self, afiliado, fecha):
         assert not self.es_afiliado, "ya soy afiliado" 
+        afiliado.desde = fecha
         afiliado.persona = self
         afiliado.save()
         self.es_afiliado=True
