@@ -1,3 +1,4 @@
+from cProfile import label
 from dataclasses import fields
 from pyexpat import model
 from tkinter.ttk import Widget
@@ -15,6 +16,17 @@ class AfiliadoForm(forms.ModelForm):
         model = Afiliado
         fields = '__all__'
         exclude=['persona', 'tipo']
+
+        widgets ={
+            
+            'fechaIngresoTrabajo': forms.DateInput(attrs={'type':'datetime-local'}),
+            #'fechaAfiliacion': forms.DateInput(attrs={'type':'datetime-local'})
+            }
+        
+        labels = {
+            'fechaIngresoTrabajo': "fecha de ingreso al trabajo",
+           # 'fechaAfiliacion': "Fecha de afiliacion"
+        }
         
 class FormularioAfiliado(forms.ModelForm):
     fecha_afiliacion = forms.DateField()
@@ -25,14 +37,19 @@ class FormularioAfiliado(forms.ModelForm):
         help_texts = {
             'dni': 'Tu numero de documento!',
         }
-        Widgets ={
+        
+        widgets ={
             
-            'fechaIngresoTrabajo': forms.DateInput(attrs={'type':'date'}),
-            #'fechaAfiliacion': forms.DateInput(attrs={'type':'date'})
-            'fecha_nacimiento': forms.DateInput(attrs={'type':'datetime-local'}),
-            'fechaIngresoTrabajo': forms.DateInput(attrs={'type':'date'}),
-            'fecha_afiliacion': forms.DateInput(attrs={'type':'date'})
+           'fecha_nacimiento': forms.DateInput(attrs={'type':'datetime-local'}),
+            #'fechaIngresoTrabajo': forms.DateInput(attrs={'type':'datetime-local'}),
+           # 'fecha_afiliacion': forms.DateInput(attrs={'type':'datetime-local'})
             }
+        
+        labels = {
+           'fecha_nacimiento': "Fecha de nacimiento",
+          # 'fecha_afiliacion': "Fecha de afiliacion"
+           
+        }
 
     def clean_dni(self):
         self.persona = Persona.objects.filter(dni=self.cleaned_data['dni']).first()
@@ -66,20 +83,11 @@ class FormularioAfiliado(forms.ModelForm):
                    "Datos Personales",
                 HTML(
                     '<hr/>'),
-                    'razon_social',
-                    'cuit_empleador',
-                    'categoria_laboral',
-                    'domicilio_empresa',
-                    'localidad_empresa',
-                    'rama',
-                    'fechaIngresoTrabajo',
-                    'sueldo',
-                    'horaJornada',
-                    'fechaAfiliacion',
-           
+                               
                     'dni', 
                     'nombre',
                     'apellido',
+                    'fecha_nacimiento',
                     'direccion',
                     'mail',
                     'nacionalidad',
@@ -100,16 +108,15 @@ class FormularioAfiliado(forms.ModelForm):
                     'domicilio_empresa',
                     'localidad_empresa',
                     'fechaIngresoTrabajo',
-                    'fecha_nacimiento',
                     'rama',
                     'sueldo',
                     'horaJornada',
-                    'fecha_afiliacion',
+                   # 'fecha_afiliacion',
                     'categoria_laboral',        
             
             ),
             Submit('submit', 'Guardar', css_class='button white'),)
 
 
-AfiliadoForms.base_fields.update(AfiliadoForms.base_fields)
+FormularioAfiliado.base_fields.update(AfiliadoForm.base_fields)
 

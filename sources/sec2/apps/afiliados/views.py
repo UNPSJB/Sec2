@@ -1,6 +1,6 @@
 # from django.shortcuts import render
 # from django.http import HttpRequest
-from apps.afiliados.forms import AfiliadoForms, Afiliado
+from apps.afiliados.forms import AfiliadoForm, Afiliado
 
 from django.urls import reverse_lazy
 from django.http import JsonResponse
@@ -36,7 +36,7 @@ from django.contrib import messages
 
 class AfiliadoCreateView(CreateView):
     model = Afiliado
-    form_class = AfiliadoForms
+    form_class = FormularioAfiliado
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
