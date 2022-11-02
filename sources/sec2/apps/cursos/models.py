@@ -5,10 +5,14 @@ from django.db import models
 # Create your models here.
 from apps.personas.models import Rol
 
-class Actividades(models.Model):
-    nombre=models.CharField(max_length=50)
-    area=models.CharField(max_length=50)
-
+class Actividad(models.Model):
+    AREAS = [
+        (0, "Capacitación"),
+        (1, "Cultura"),
+        (2, "Gimnasio"),
+    ]
+    nombre = models.CharField(max_length=100)
+    area = models.PositiveSmallIntegerField(choices=AREAS)
 
 class Aula(models.Model):
     denominacion=models.CharField(max_length=50)
@@ -25,7 +29,7 @@ class Clase(models.Model):
         (1, "Lunes"),
         (2, "Martes"),
         (3, "Miercoles"),
-        (4,"Jueves"),
+        (4, "Jueves"),
         (5, "Viernes"),
         (6, "Sabado"),
         (7, "Domingo"),
@@ -40,7 +44,7 @@ class Curso(models.Model):
         (1, 'mes'),
         (2, 'clase'),
     )
-    actividad= models.ForeignKey(Actividades,related_name="cursos", on_delete=models.CASCADE)
+    actividad = models.ForeignKey(Actividad,related_name="cursos", on_delete=models.CASCADE)
     Costo=  models.DecimalField(help_text="costo total del curso", max_digits=10, decimal_places=2)
     Nombre=models.CharField(max_length=50)
     modulos= models.PositiveIntegerField(help_text="cantidad de horas del curso")
@@ -61,7 +65,7 @@ class Profesor(Rol):
     TIPO = 2
     capacitaciones = models.CharField(max_length=50)
     ejerce_desde = models.DateField()
-    actividades = models.ManyToManyField(Actividades)
+    actividades = models.ManyToManyField(Actividad)
     dictados = models.ManyToManyField(Dictado, through = "Titular", related_name="profesores")
 
 Rol.register(Profesor)
