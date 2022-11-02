@@ -31,6 +31,7 @@ urlpatterns = [
     # ----------------- AFILIADOS   -----------------
     # path('', template_afiliado, name="afiliado_home"),
     path('afiliados/',include('apps.afiliados.urls')),
+    path('cursos/',include('apps.cursos.urls')),
     
     
     # path('marcas/listar', MarcaListView.as_view(), name="listarMarcas"),
