@@ -23,21 +23,14 @@ urlpatterns = [
     # ----------------- PRINCIPALES -----------------
     path('', index, name="index"),
     path('login/', login, name="login"),
-    path('system/', SGBD, name="sgbd"),
-    
-    # -----------------     ADMIN   -----------------
     path('admin/', admin.site.urls),
-    
-    # ----------------- AFILIADOS ------------------
+    # path('system/', SGBD, name="sgbd"),
+
+    # * APLICACIONES ----------------------------
     path('afiliados/',include('apps.afiliados.urls')),
-    # ----------------- CURSOS -----------------
+    # path('alquileres/',include('apps.alquileres.urls')),
     path('cursos/',include('apps.cursos.urls')),
-    
-    
-    # path('marcas/listar', MarcaListView.as_view(), name="listarMarcas"),
-    # path('marca/modificar/<int:pk>', MarcaUpdateView.as_view(), name="modificarMarca"),
-    # path('marca/eliminar/<int:pk>', MarcaDeleteView.as_view(), name="eliminarMarca"),
-    
+    # path('pagos/',include('apps.cursos.urls')),
 ]
 
 
