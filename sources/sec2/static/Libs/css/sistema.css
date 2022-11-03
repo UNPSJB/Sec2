@@ -4,9 +4,11 @@
 }
 
 .area_dinamica{
-   margin: 20px;
+   margin: 0px;
+   padding: 0px;
 }
 
 .menu{
     height: 80vh;
+    padding: 0px;
 }

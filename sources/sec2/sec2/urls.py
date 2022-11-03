@@ -28,9 +28,9 @@ urlpatterns = [
     # -----------------     ADMIN   -----------------
     path('admin/', admin.site.urls),
     
-    # ----------------- AFILIADOS   -----------------
-    # path('', template_afiliado, name="afiliado_home"),
+    # ----------------- AFILIADOS ------------------
     path('afiliados/',include('apps.afiliados.urls')),
+    # ----------------- CURSOS -----------------
     path('cursos/',include('apps.cursos.urls')),
     
     

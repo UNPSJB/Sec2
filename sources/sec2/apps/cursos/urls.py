@@ -5,7 +5,8 @@ from .views import ActividadCreateView, ActividadDetailView, ActividadListView, 
 app_name="cursos"
 
 urlpatterns = [
-    path('actividades', ActividadListView.as_view(), name="actividades"),
+    ## * ------------------------  ACTIVIDADES  ----------------------------
+    path('actividades', ActividadListView.as_view(), name="actividades"), ## ! no anda 
     path('actividades/crear', ActividadCreateView.as_view(), name="actividad_crear"),
     path('actividades/<int:pk>', ActividadDetailView.as_view(), name="actividad_detalles"),
     path('actividades/<int:pk>/editar', ActividadUpdateView.as_view(), name="actividad_editar"),
