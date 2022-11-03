@@ -1,8 +1,8 @@
 from django.shortcuts import render, redirect
 from django.views.generic import DetailView, ListView
 from django.views.generic.edit import CreateView, DeleteView, UpdateView
-from .models import Actividad
-from .forms import ActividadForm
+from .models import Actividad, Curso
+from .forms import ActividadForm, CursoForm
 from django.urls import reverse_lazy
 
 # Create your views here.
@@ -30,3 +30,9 @@ class ActividadDetailView(DetailView):
 class ActividadListView(ListView):
     model = Actividad
     paginate_by = 100  
+
+
+class CursoCreateView(CreateView):
+    model = Curso
+    form_class = CursoForm
+    # success_url = reverse_lazy('cursos:cursos')

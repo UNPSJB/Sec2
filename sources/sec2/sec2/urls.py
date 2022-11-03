@@ -26,7 +26,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     # path('system/', SGBD, name="sgbd"),
 
-    # ? APLICACIONES ----------------------------
+    # * APLICACIONES ----------------------------
     path('afiliados/',include('apps.afiliados.urls')),
     # path('alquileres/',include('apps.alquileres.urls')),
     path('cursos/',include('apps.cursos.urls')),
