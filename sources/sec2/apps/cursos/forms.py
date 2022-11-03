@@ -45,5 +45,10 @@ class ActividadForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
         self.helper = FormHelper()
         self.helper.layout = Layout(
-            'nombre', 'area',
+            HTML(
+                    '<h2><center>Formulario de Actividades</center></h2>'),
+            Fieldset(
+                "Datos",
+                'nombre', 'area',
+            ),
             Submit('submit', 'Guardar', css_class='button white'),)

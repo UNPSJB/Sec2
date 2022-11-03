@@ -35,7 +35,7 @@ class FormularioAfiliado(forms.ModelForm):
         fields = '__all__'
         exclude=['persona', 'tipo']
         help_texts = {
-            'dni': 'Tu numero de documento!',
+            'dni': 'Tu numero de documento sin puntos!',
         }
         
         widgets ={
@@ -79,11 +79,13 @@ class FormularioAfiliado(forms.ModelForm):
         self.helper = FormHelper()
         self.helper.form_action = 'afiliados:index'
         self.helper.layout = Layout(
+            HTML(
+                    '<h2><center>Formulario de Afiliación</center></h2>'),
             Fieldset(
                    "Datos Personales",
                 HTML(
                     '<hr/>'),
-                               
+                                             
                     'dni', 
                     'nombre',
                     'apellido',
