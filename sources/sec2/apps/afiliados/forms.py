@@ -19,7 +19,7 @@ class AfiliadoForm(forms.ModelForm):
 
         widgets ={
             
-            'fechaIngresoTrabajo': forms.DateInput(attrs={'type':'datetime-local'}),
+            'fechaIngresoTrabajo': forms.DateInput(attrs={'type':'date'}),
             #'fechaAfiliacion': forms.DateInput(attrs={'type':'datetime-local'})
             }
         
@@ -35,12 +35,12 @@ class FormularioAfiliado(forms.ModelForm):
         fields = '__all__'
         exclude=['persona', 'tipo']
         help_texts = {
-            'dni': 'Tu numero de documento sin puntos!',
+            'dni': 'Tu numero de documento sin puntos',
         }
         
         widgets ={
             
-           'fecha_nacimiento': forms.DateInput(attrs={'type':'datetime-local'}),
+           'fecha_nacimiento': forms.DateInput(attrs={'type':'date'}),
             #'fechaIngresoTrabajo': forms.DateInput(attrs={'type':'datetime-local'}),
            # 'fecha_afiliacion': forms.DateInput(attrs={'type':'datetime-local'})
             }
@@ -50,6 +50,7 @@ class FormularioAfiliado(forms.ModelForm):
           # 'fecha_afiliacion': "Fecha de afiliacion"
            
         }
+        
 
     def clean_dni(self):
         self.persona = Persona.objects.filter(dni=self.cleaned_data['dni']).first()
@@ -83,6 +84,7 @@ class FormularioAfiliado(forms.ModelForm):
                     '<h2><center>Formulario de Afiliación</center></h2>'),
             Fieldset(
                    "Datos Personales",
+                   
                 HTML(
                     '<hr/>'),
                                              
@@ -98,13 +100,12 @@ class FormularioAfiliado(forms.ModelForm):
                     'celular',
                     
             ),
-            Fieldset(
+            
+            Fieldset(    
                    "Datos Laborales",
                 HTML(
                     '<hr/>'),
-                 HTML("""
-            <p>Datos del empleador que te va a dar latigo</p>
-        """),
+             
                     'razon_social',
                     'cuit_empleador',
                     'domicilio_empresa',
@@ -115,8 +116,8 @@ class FormularioAfiliado(forms.ModelForm):
                     'horaJornada',
                    # 'fecha_afiliacion',
                     'categoria_laboral',        
-            
             ),
+            
             Submit('submit', 'Guardar', css_class='button white'),)
 
 
