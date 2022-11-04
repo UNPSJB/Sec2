@@ -24,7 +24,7 @@ urlpatterns = [
     path('', index, name="index"),
     path('login/', login, name="login"),
     path('admin/', admin.site.urls),
-    # path('system/', SGBD, name="sgbd"),
+    path('system/', SGBD, name="sgbd"),
 
     # * APLICACIONES ----------------------------
     path('afiliados/',include('apps.afiliados.urls')),

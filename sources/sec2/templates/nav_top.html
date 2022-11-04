@@ -1,0 +1,25 @@
+{% load static %}
+
+{% block extracss %}
+    <link href="{% static 'Libs/css/nav_sistema.css' %}" rel="stylesheet"/>
+{% endblock%}
+
+<nav class="navbar bg-light">
+  <div class="container-fluid cabecera">
+    <a class="navbar-brand" href="#">
+      <img id="logo" src="{% static 'images/logo.png'%}" alt="My image"/>
+    </a>
+    <form class="d-flex" role="search">
+      <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
+    </form>
+    <div class="nav-item dropdown">
+      <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+        user_name
+      </a>
+      <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+        <li><a class="dropdown-item" href="#">Perfil</a></li>
+        <li><a class="dropdown-item" href="#">Salir</a></li>
+      </ul>
+    </div>  
+  </div>
+</nav>
