@@ -1,0 +1,25 @@
+{%extends "sistema.html" %}
+{% load crispy_forms_tags %}
+{% load static %}
+
+{% block area_dinamica %}
+    <table>
+    {% for obj in object_list %}
+        <tr>
+            <td>
+{{obj.nombre}}
+            </td>
+            <td>
+{{obj.area}}
+            </td>
+            <td>
+<a href="{% url 'cursos:actividad_editar' obj.pk %}">Editar</a>
+            </td>
+            <td>
+<a href="{% url 'cursos:actividad_eliminar' obj.pk %}">Eliminar</a>
+            </td>
+        </tr>
+    {% endfor %}
+    </table>
+    <a href="{% url 'cursos:actividad_crear' %}">Nueva</a>
+{% endblock %}

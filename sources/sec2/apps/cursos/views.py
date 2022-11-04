@@ -36,3 +36,7 @@ class CursoCreateView(CreateView):
     model = Curso
     form_class = CursoForm
     # success_url = reverse_lazy('cursos:cursos')
+    
+class CursoListView(ListView):
+    model = Curso
+    paginate_by = 100  

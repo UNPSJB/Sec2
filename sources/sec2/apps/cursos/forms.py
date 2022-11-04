@@ -91,7 +91,7 @@ class CursoForm(forms.ModelForm):
                 '<h2><center>Formulario de Cursos</center></h2>'),
             Fieldset(
                 "Datos",
-                # 'actividad',
+                'actividad',
                   'Costo',
                   'Nombre',
                   'modulos',
