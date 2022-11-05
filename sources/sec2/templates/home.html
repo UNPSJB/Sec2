@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block extracss %}
+  <link href="{% static 'Libs/css/nav_lateral.css' %}" rel="stylesheet"/>
+{% endblock %}
+
+{% block container %}
+
+  {% include 'nav_top.html' %}
+
+  <div class="wrapper d-flex align-items-stretch">
+    {% include 'nav_lateral.html' %}
+  
+    <div id="content" class="p-4 p-md-5 pt-5">
+      {% block dinamica %} {% endblock %}
+    </div>
+  </div>
+{% endblock %}

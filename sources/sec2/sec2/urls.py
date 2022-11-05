@@ -21,15 +21,15 @@ from sec2.views import *
 urlpatterns = [
     
     # ----------------- PRINCIPALES -----------------
-    path('', index, name="index"),
-    path('login/', login, name="login"),
+    path('', login, name="login"),
+    # path('login/', login, name="login"),
     path('admin/', admin.site.urls),
-    path('system/', SGBD, name="sgbd"),
+    path('home/', home, name="home"),
 
     # * APLICACIONES ----------------------------
-    path('afiliados/',include('apps.afiliados.urls')),
+    path('home/afiliados/',include('apps.afiliados.urls')),
     # path('alquileres/',include('apps.alquileres.urls')),
-    path('cursos/',include('apps.cursos.urls')),
+    path('home/cursos/',include('apps.cursos.urls')),
     # path('pagos/',include('apps.cursos.urls')),
 ]
 

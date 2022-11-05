@@ -5,9 +5,6 @@ from django.urls import reverse_lazy
 from .forms import SecAuthenticationForm
 
 
-def index(request):
-    return render(request, 'index.html', {"title": "Hola Mundo"})
-
 # @login_required(login_url='/login')
 def login(request):
     no_user = False
@@ -35,5 +32,5 @@ def login(request):
 def template_afiliado(request):
     return render(request, 'template_afiliado_home.html', {"title": "Gestion de Afiliados"})
 
-def SGBD(request):
-    return render(request, 'sistema.html', {"title": "WELCOME"})
+def home(request):
+    return render(request, 'home.html')
