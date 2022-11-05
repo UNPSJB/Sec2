@@ -13,7 +13,9 @@
     {% include 'nav_lateral.html' %}
   
     <div id="content" class="p-4 p-md-5 pt-5">
-      {% block dinamica %} {% endblock %}
+      {% block dinamica %}
+        {% include 'index.html' %}
+      {% endblock %}
     </div>
   </div>
 {% endblock %}

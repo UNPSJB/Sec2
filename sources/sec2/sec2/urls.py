@@ -29,7 +29,7 @@ urlpatterns = [
     # * APLICACIONES ----------------------------
     path('home/afiliados/',include('apps.afiliados.urls')),
     # path('alquileres/',include('apps.alquileres.urls')),
-    path('home/cursos/',include('apps.cursos.urls')),
+    path('cursos/',include('apps.cursos.urls')),
     # path('pagos/',include('apps.cursos.urls')),
 ]
 
