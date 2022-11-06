@@ -1,11 +1,17 @@
 from django.shortcuts import render, redirect
+from django.template import loader
+from django.http import HttpResponse
 from django.views.generic import DetailView, ListView
 from django.views.generic.edit import CreateView, DeleteView, UpdateView
 from .models import Actividad, Curso
 from .forms import ActividadForm, CursoForm
 from django.urls import reverse_lazy
 
-# Create your views here.
+
+def index(request):
+  template = loader.get_template('home_curso.html')
+  return HttpResponse(template.render())
+
 class ActividadCreateView(CreateView):
     model = Actividad
     form_class = ActividadForm

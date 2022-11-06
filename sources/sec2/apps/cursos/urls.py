@@ -1,12 +1,12 @@
 from django.contrib import admin
 from django.urls import path
 from .views import ActividadCreateView, ActividadDetailView, ActividadListView, ActividadUpdateView, actividad_eliminar
-from .views import CursoCreateView, CursoListView
+from .views import CursoCreateView, CursoListView, index
 
 app_name="cursos"
 
 urlpatterns = [
-    
+    path('',index, name="index"),
     # * ------------------------  CURSOS ----------------------------------
     path('cursos', CursoListView.as_view(), name="cursos"),
     path('crear/', CursoCreateView.as_view(), name="curso_crear"),

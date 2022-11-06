@@ -1,6 +1,7 @@
 # from django.shortcuts import render
-# from django.http import HttpRequest
 from apps.afiliados.forms import AfiliadoForm, Afiliado
+from django.template import loader
+from django.http import HttpResponse
 
 from django.urls import reverse_lazy
 from django.http import JsonResponse
@@ -13,6 +14,12 @@ from django.contrib import messages
 
 
 # ----------------------------- AFILIADO VIEW ----------------------------------- #
+
+def index(request):
+  template = loader.get_template('home_afiliado.html')
+  return HttpResponse(template.render())
+    
+
 
 # class AfiliadoCreateView(CreateView):
 
@@ -46,7 +53,6 @@ class AfiliadoCreateView(CreateView):
     
 class AfliadosListView(ListView):
     model = Afiliado
-    
     
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)

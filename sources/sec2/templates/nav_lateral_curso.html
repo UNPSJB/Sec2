@@ -13,17 +13,29 @@
       </button>
     </div>
     <div class="p-4">
-      <h1><a href="{% url 'home' %}" class="logo">WELCOME</a></h1>
-      <h1><a href="{% url 'home' %}" class="logo"><span>Elija su gestión</span></a></h1>
+      <h1><a href="{% url 'cursos:index' %}" class="logo">CURSOS</a></h1>
+      <h1><a href="{% url 'home' %}" class="logo"><span>Volver al menu principal</span></a></h1>
       <ul class="list-unstyled components mb-5">
         <li class="active">
-          <a href="{% url 'afiliados:index' %}"><span class="fa fa-user mr-3"></span>  Gestión de afiliados</a>
+          <a href="{% url 'cursos:actividad_crear' %}"><span class="fa fa-id-badge mr-3"></span>Alta de actividades</a>
         </li>
         <li class="active">
-            <a href="{% url 'cursos:index' %}"><span class="fa fa-graduation-cap mr-3"></span>Gestión de Cursos</a>
+          <a href="#"><span class="fa fa-id-badge mr-3"></span>Detalle de actividades</a>
         </li>
         <li class="active">
-          <a href="#"><span class="fa fa-calendar-check-o mr-3"></span> Gestión de Alquileres</a>
+          <a href="#"><span class="fa fa-id-badge mr-3"></span>Editar actividad</a>
+        </li>
+        <li class="active">
+          <a href="#"><span class="fa fa-id-badge mr-3"></span>Dar de baja actividad</a>
+        </li>
+        <li class="active">
+          <a href="{% url 'cursos:actividades' %}"><span class="fa fa-id-badge mr-3"></span>Lista de actividades</a>
+        </li>
+        <li class="active">
+          <a href="{% url 'cursos:curso_crear' %}"><span class="fa fa-id-badge mr-3"></span>Crear curso</a>
+        </li>
+        <li class="active">
+          <a href="{% url 'cursos:cursos' %}"><span class="fa fa-id-badge mr-3"></span>Lista de cursos</a>
         </li>
       </ul>
 

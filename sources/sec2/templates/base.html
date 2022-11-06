@@ -15,11 +15,13 @@
 </head>
 
 <body>
+
+  {% block container %}
   
-  {% block container %} {% endblock %}
+  {% endblock %}
   <script src="{% static 'Libs/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
   <script src="{% static 'Libs/bootstrap/js/bootstrap.min.js' %}"></script>
-  <script type="text/javascript" src="{% static '/libs/jquery/jquery-3.1.1.min.js' %}"></script>
+  {% comment %} <script type="text/javascript" src="{% static '/libs/jquery/jquery-3.1.1.min.js' %}"></script> {% endcomment %}
   {% block extrajs %}{% endblock %}
 
 </body>
