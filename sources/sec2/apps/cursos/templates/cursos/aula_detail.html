@@ -1,0 +1,15 @@
+{% extends "home_curso.html" %}
+{% load crispy_forms_tags %}
+{% load static %}
+
+{% block dinamica %}
+    {{object.denominacion}}
+    {{object.tipo}}
+    {{object.cupo}}
+    {% if mensaje %}
+    <div class="alert alert-info" role="alert">
+       registro finalizado exitosamente
+    </div>
+    {%endif%}
+
+{% endblock %}
