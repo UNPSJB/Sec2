@@ -33,7 +33,7 @@ class FormularioAfiliado(forms.ModelForm):
     class Meta:
         model = Persona
         fields = '__all__'
-        exclude=['persona', 'tipo']
+        #exclude=['persona', 'tipo']
         help_texts = {
             'dni': 'Tu numero de documento sin puntos',
         }
@@ -62,6 +62,9 @@ class FormularioAfiliado(forms.ModelForm):
         valid = super().is_valid()
         personaForm = PersonaForm(data=self.cleaned_data)
         afiliadoForm = AfiliadoForm(data=self.cleaned_data)
+        print(valid)
+        print(personaForm.is_valid())
+        print(afiliadoForm.is_valid())
         return valid and personaForm.is_valid() and afiliadoForm.is_valid()
     
     def save(self, commit=False):
@@ -78,7 +81,7 @@ class FormularioAfiliado(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.helper = FormHelper()
-        self.helper.form_action = 'afiliados:index'
+        #self.helper.form_action = 'afiliados:index'
         self.helper.layout = Layout(
             HTML(
                     '<h2><center>Formulario de Afiliación</center></h2>'),
