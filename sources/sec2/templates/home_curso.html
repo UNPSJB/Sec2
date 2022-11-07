@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block extracss %}
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+<link href="{% static 'Libs/css/home.css' %}" rel="stylesheet"/>
+{% endblock %}
+
+{% block container %}
+
+  {% block nav_top %}
+  {% include 'nav_top.html' %}
+  {% endblock %}
+  
+	<div class="wrapper d-flex align-items-stretch">
+    {% block nav_lateral %}
+      {% include 'nav_lateral_curso.html' %}
+    {% endblock %}
+    
+    <div id="content" class="p-4 p-md-5 pt-5">
+      {% block dinamica %}
+      {% include 'index_curso.html' %}
+      {% endblock %}
+    </div>
+  </div>
+{% endblock %}

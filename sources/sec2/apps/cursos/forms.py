@@ -6,6 +6,7 @@ from apps.personas.forms import PersonaForm
 from apps.personas.models import Persona
 from .models import Actividad
 from .models import Curso
+from .models import Aula
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Fieldset, Submit, HTML
 
@@ -26,6 +27,40 @@ class AlumnoForm(ModelForm):
 
 
 AlumnoForm.base_fields.update(PersonaForm.base_fields)
+
+class AulaForm(forms.ModelForm):
+    class Meta:
+        model = Aula
+        fields = ['denominacion', 'tipo', 'cupo']
+
+    def clean_denominacion(self):
+        denominacion = self.cleaned_data['denominacion']
+        denominacion = denominacion.lower()
+        return denominacion
+
+    def clean_tipo(self):
+        tipo = self.cleaned_data['tipo']
+        tipo = tipo.lower()
+        return tipo
+    
+    def clean(self):
+        pass
+
+    def is_valid(self) -> bool:
+        valid = super().is_valid()
+        return valid
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.layout = Layout(
+            HTML(
+                '<h2><center>Formulario de Aulas</center></h2>'),
+            Fieldset(
+                "Datos",
+                'denominacion', 'tipo', 'cupo'
+            ),
+            Submit('submit', 'Guardar', css_class='button white'),)
 
 
 class ActividadForm(forms.ModelForm):
@@ -92,7 +127,7 @@ class CursoForm(forms.ModelForm):
                 '<h2><center>Formulario de Cursos</center></h2>'),
             Fieldset(
                 "Datos",
-                # 'actividad',
+                'actividad',
                   'Costo',
                   'Nombre',
                   'modulos',
