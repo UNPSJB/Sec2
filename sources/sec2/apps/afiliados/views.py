@@ -13,6 +13,7 @@ from .forms import *
 from django.contrib import messages
 
 
+
 # ----------------------------- AFILIADO VIEW ----------------------------------- #
 
 def index(request):
