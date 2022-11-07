@@ -3,23 +3,31 @@
 {% load static %}
 
 {% block dinamica %}
-    <table>
-    {% for obj in object_list %}
-        <tr>
-            <td>
-{{obj.nombre}}
-            </td>
-            <td>
-{{obj.area}}
-            </td>
-            <td>
-<a href="{% url 'cursos:actividad_editar' obj.pk %}">Editar</a>
-            </td>
-            <td>
-<a href="{% url 'cursos:actividad_eliminar' obj.pk %}">Eliminar</a>
-            </td>
-        </tr>
-    {% endfor %}
-    </table>
+    <table  class="table table-dark table-striped">
+        <thead>
+            <tr>
+              <th scope="col">nombre</th>
+              <th scope="col">area</th>
+              <th scope="col">opcion1</th>
+              <th scope="col">opcion2</th>                 
+              
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              {% for actividad in object_list %}
+              <tr class="bg-transition">
+                <td>{{ actividad.nombre }}</td>
+                <td>{{ actividad.area }}</td>
+                <td><a href="{% url 'cursos:actividad_editar' actividad.pk %}"class="btn btn-primary">Editar</a></td>
+                <td><a href="{% url 'cursos:actividad_eliminar' actividad.pk %}"class="btn btn-primary">Eliminar</a></td>             
+                                                           
+              </tr>
+              {% endfor %}  
+          </tbody>
+          
+      </table>
+    
+    
     <a href="{% url 'cursos:actividad_crear' %}">Nueva</a>
 {% endblock %}
