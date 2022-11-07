@@ -20,16 +20,16 @@ class AfiliadoForm(forms.ModelForm):
         widgets ={
             
             'fechaIngresoTrabajo': forms.DateInput(attrs={'type':'date'}),
-            #'fechaAfiliacion': forms.DateInput(attrs={'type':'datetime-local'})
+            'fechaAfiliacion': forms.DateInput(attrs={'type':'date'})
             }
         
         labels = {
             'fechaIngresoTrabajo': "fecha de ingreso al trabajo",
-           # 'fechaAfiliacion': "Fecha de afiliacion"
+            'fechaAfiliacion': "Fecha de afiliacion"
         }
         
 class FormularioAfiliado(forms.ModelForm):
-    fecha_afiliacion = forms.DateField()
+    fechaAfiliacion = forms.DateField()
     class Meta:
         model = Persona
         fields = '__all__'
@@ -41,13 +41,13 @@ class FormularioAfiliado(forms.ModelForm):
         widgets ={
             
            'fecha_nacimiento': forms.DateInput(attrs={'type':'date'}),
-            #'fechaIngresoTrabajo': forms.DateInput(attrs={'type':'datetime-local'}),
-           # 'fecha_afiliacion': forms.DateInput(attrs={'type':'datetime-local'})
+            
+           
             }
         
         labels = {
            'fecha_nacimiento': "Fecha de nacimiento",
-          # 'fecha_afiliacion': "Fecha de afiliacion"
+          
            
         }
         
@@ -71,7 +71,7 @@ class FormularioAfiliado(forms.ModelForm):
             self.persona = personaForm.save()
         afiliadoForm = AfiliadoForm(data=self.cleaned_data)
         afiliado = afiliadoForm.save(commit=False)
-        self.persona.afiliar(afiliado, self.cleaned_data['fecha_afiliacion'])
+        self.persona.afiliar(afiliado, self.cleaned_data['fechaAfiliacion'])
         return afiliado
         #super().save(commit=commit)
         
@@ -114,7 +114,7 @@ class FormularioAfiliado(forms.ModelForm):
                     'rama',
                     'sueldo',
                     'horaJornada',
-                   # 'fecha_afiliacion',
+                    'fechaAfiliacion',
                     'categoria_laboral',        
             ),
             

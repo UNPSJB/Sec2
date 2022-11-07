@@ -1,10 +1,10 @@
-{%extends "sistema.html" %}
+{% extends 'sistema.html' %}
 {% load crispy_forms_tags %}
 {% load static %}
 
-{% block container %}
+{% block area_dinamica %}
 
-<div class="table-responsive">
+  <div class="table-responsive">
   <table class="table table-dark table-striped">
     <thead>
       <tr>
@@ -15,6 +15,8 @@
         <th scope="col">cuit_empleador</th>
         <th scope="col">categoria_laboral</th>
         <th scope="col">domicilio_empresa</th>
+        <th scope="col">opciones</th>
+       
         
       </tr>
     </thead>
@@ -29,10 +31,13 @@
           <td>{{ afiliado.cuit_empleador }}</td>
           <td>{{ afiliado.categoria_laboral }}</td>
           <td>{{ afiliado.domicilio_empresa }}</td>
+         
+          <td><a href= "{% url 'afiliados:modificarAfiliado' afiliado.pk %}" class="btn btn-primary">Modificar</a></td>
         </tr>
         {% endfor %}  
     </tbody>
   </table>
-</div>
+  
+  </div>
 
 {% endblock %}

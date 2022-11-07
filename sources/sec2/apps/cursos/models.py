@@ -49,7 +49,7 @@ class Curso(models.Model):
     Nombre=models.CharField(max_length=50)
     modulos= models.PositiveIntegerField(help_text="cantidad de horas del curso")
     requiere_certificado = models.BooleanField()
-    dictado = models.ForeignKey(Dictado, related_name="cursos",on_delete=models.CASCADE)
+    dictado = models.ForeignKey(Dictado, related_name="cursos",on_delete=models.CASCADE, blank = True)
     periodo_pago=models.PositiveSmallIntegerField(choices=PERIODO_PAGO)
     descuento=models.PositiveIntegerField(help_text="porcentaje de descuento")
 

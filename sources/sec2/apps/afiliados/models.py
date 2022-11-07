@@ -16,7 +16,7 @@ class Afiliado(Rol):
     fechaIngresoTrabajo = models.DateField()
     sueldo= models.DecimalField(max_digits=9, decimal_places=2)
     horaJornada = models.PositiveIntegerField()
-    fechaAfiliacion= models.DateField(auto_now = True)
+    fechaAfiliacion= models.DateField()
     estado = models.BooleanField(default=False)
 
 

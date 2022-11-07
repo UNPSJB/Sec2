@@ -61,7 +61,8 @@ class ActividadForm(forms.ModelForm):
 class CursoForm(forms.ModelForm):
     class Meta:
         model = Curso
-        fields = ['actividad',
+        fields = [
+                  'actividad',
                   'Costo',
                   'Nombre',
                   'modulos',

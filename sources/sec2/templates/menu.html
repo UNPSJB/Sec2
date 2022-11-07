@@ -14,6 +14,7 @@
           <div class="collapse show" id="home-collapse">
             <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
               <li><a href="{% url 'afiliados:crearAfiliado' %}" class="link-dark d-inline-flex text-decoration-none rounded">Alta de afiliado</a></li>
+              <li><a href="{% url 'afiliados:mostrarAfiliados' %}" class="link-dark d-inline-flex text-decoration-none rounded">listar afiliados</a></li>
             </ul>
           </div>
         </li>
@@ -44,5 +45,5 @@
 </div>
 
 {% block extrajs %}
-<script src="{% static 'Libs/js/menu.js'}"></script>
+<script src="{% static 'Libs/js/menu.js' %}"></script>
 {% endblock %}
