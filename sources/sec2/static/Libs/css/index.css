@@ -1,0 +1,76 @@
+.boxBotones {
+    margin-top: 4%;
+}
+
+.boxAfiliado {
+    padding: 15px;
+    background-color: #337ab7;
+    margin-top: 3%;
+    border-radius: 35px;
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+}
+
+.boxAfiliado h5 {
+    margin-left: 10px;
+    font-family: 'Nunito', sans-serif;
+    font-weight: 700;
+    size: 34px;
+    color: white;
+}
+
+.boxAfiliado p {
+    color: white;
+}
+
+.boxAfiliado button {
+    text-align: center;
+}
+
+.boxSalones {
+    padding: 15px;
+    background-color: #153d5f;
+    /* margin-top: 5%; */
+    border-radius: 35px;
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+}
+
+.boxSalones h5 {
+    margin-left: 10px;
+    font-family: 'Nunito', sans-serif;
+    font-weight: 700;
+    size: 34px;
+    color: white;
+}
+
+.boxSalones p {
+    color: white;
+}
+
+.boxSalones button {
+    text-align: center;
+}
+
+
+.boxCursos {
+    padding: 15px;
+    background-color: #d9e021;
+    /* margin-top: 5%; */
+    border-radius: 35px;
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+}
+
+.boxCursos h5 {
+    margin-left: 10px;
+    font-family: 'Nunito', sans-serif;
+    font-weight: 700;
+    size: 34px;
+    color: #153d5f;
+}
+
+.boxCursos p {
+    color: #485668;
+}
+
+.boxCursos button {
+    text-align: center;
+}

@@ -1,8 +1,8 @@
-{%extends "home_curso.html" %}
+{%extends "sistema.html" %}
 {% load crispy_forms_tags %}
 {% load static %}
 
-{% block dinamica %}
+{% block area_dinamica %}
     {{object.nombre}}
     {{object.get_area_display}}
     {% if mensaje %}

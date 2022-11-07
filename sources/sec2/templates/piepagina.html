@@ -1,0 +1,26 @@
+{% load static %}
+
+{% block extracss %}
+    <link href="{% static 'Libs/css/piepagina.css' %}" rel="stylesheet"/>
+{% endblock%}
+
+<footer class="pie">
+  <div class="container-fluid">
+  <div class="row">
+    <div class="col-lg-4">
+      <img id="logo" src="{% static 'images/logo.png'%}" alt="My image"/>
+    </div>
+    <div class="col-lg-4">
+      <span>Gaiman-Trelew, Chubut Argentina</span>
+    </div>
+    <div class="col-lg-4">
+      <span><b>Datos contacto</b></span>
+      <p>(0280) XXX-XXXX</p>
+      <p>atencioncliente@sec2.com</p>
+    </div>
+  </div>
+</div>
+</footer>
+<div class="row text-center copyright">
+  <p id="copyright">© 2022 Sindicato Empleados de Comercio | SEC2. Todos los derechos reservados</p>
+</div>

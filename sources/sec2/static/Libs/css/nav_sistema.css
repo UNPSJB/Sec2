@@ -1,12 +1,9 @@
 .cabecera{
     background-color: #074081;
-    color:  #000000;
+    color: blanchedalmond;
     /* Arriba | Derecha | Abajo | Izquierda */
 }
-nav{
-    padding: 0px;
-}
 
-img{
-    width: 100px;
+.buscador{
+    margin-left: 100px;
 }
