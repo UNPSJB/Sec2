@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.urls import path
 from .views import *
-from apps.afiliados.views import AfliadosListView
+from apps.afiliados.views import AfliadosListView, index
 
 app_name="afiliados"
 
