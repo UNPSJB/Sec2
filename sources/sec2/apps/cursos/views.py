@@ -3,8 +3,8 @@ from django.template import loader
 from django.http import HttpResponse
 from django.views.generic import DetailView, ListView
 from django.views.generic.edit import CreateView, DeleteView, UpdateView
-from .models import Actividad, Curso, Aula
-from .forms import ActividadForm, CursoForm, AulaForm
+from .models import Actividad, Curso, Aula, Profesor,Dictado
+from .forms import ActividadForm, CursoForm, AulaForm , FormularioProfesor,DictadoForm
 from django.urls import reverse_lazy
 from django import forms
 from django.db.models import Q, Model
@@ -143,4 +143,14 @@ class CursoCreateView(CreateView):
     
 class CursoListView(ListView):
     model = Curso
-    paginate_by = 100  
+    paginate_by = 100
+
+
+class ProfesorCreateView(CreateView):
+    model = Profesor
+    form_class = FormularioProfesor
+
+
+class DictadoCreateView(CreateView):
+    model = Dictado
+    form_class = DictadoForm

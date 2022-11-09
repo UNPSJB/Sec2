@@ -1,7 +1,7 @@
 from random import choices
 from tokenize import blank_re
 from django.db import models
-from apps import afiliados
+from apps import afiliados, cursos
 
 class Persona(models.Model):
     ESTADO_CIVIL=(
@@ -16,7 +16,7 @@ class Persona(models.Model):
     mail=models.CharField(max_length=50)
     nacionalidad=models.CharField(max_length=50)
     estado_civil=models.PositiveSmallIntegerField(choices=ESTADO_CIVIL)
-    cuil=models.CharField(max_length=8)
+    cuil=models.CharField(max_length=12)
     celular=models.CharField(max_length=30)
     es_afiliado=models.BooleanField(default=False)
     es_alumno=models.BooleanField(default=False)
@@ -27,6 +27,22 @@ class Persona(models.Model):
     
     def __str__(self):
         return f"{self.nombre} {self.apellido} DNI:{self.dni}"
+
+    
+    #convierte una persona en profesor
+    def convertir_en_profesor(self,profesor):
+        assert not self.es_profesor, "ya soy Profesor" 
+        profesor.persona = self
+        profesor.save()
+        self.es_profesor=True
+        self.save()
+
+    def convertir_en_alumno(self,alumno):
+        assert not self.es_profesor, "ya soy Profesor" 
+        alumno.persona = self
+        alumno.save()
+        self.es_alumno=True
+        self.save()
 
     def afiliar(self, afiliado, fecha):
         assert not self.es_afiliado, "ya soy afiliado" 
@@ -58,7 +74,7 @@ class Persona(models.Model):
         
         self.es_alumno = False
         self.save()
-        
+    
     
 class Rol(models.Model):
     TIPO = 0
