@@ -65,8 +65,8 @@ class Profesor(Rol):
     TIPO = 2
     capacitaciones = models.CharField(max_length=50)
     ejerce_desde = models.DateField()
-    actividades = models.ManyToManyField(Actividad)
-    dictados = models.ManyToManyField(Dictado, through = "Titular", related_name="profesores")
+    actividades = models.ManyToManyField(Actividad, blank=True)
+    dictados = models.ManyToManyField(Dictado, through = "Titular", related_name="profesores", blank=True)
 
 Rol.register(Profesor)
 

@@ -76,7 +76,6 @@ class FormularioAfiliado(forms.ModelForm):
         afiliado = afiliadoForm.save(commit=False)
         self.persona.afiliar(afiliado, self.cleaned_data['fechaAfiliacion'])
         return afiliado
-        #super().save(commit=commit)
         
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

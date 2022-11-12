@@ -12,7 +12,7 @@ class PersonaForm(ModelForm):
     class Meta:
         model = Persona
         fields = '__all__'
-        exclude=['persona', 'tipo']
+        #exclude=['persona', 'tipo']
         Widgets ={
             'fechaNacimiento': forms.DateInput(attrs={'type':'datetime-local'}),
             }

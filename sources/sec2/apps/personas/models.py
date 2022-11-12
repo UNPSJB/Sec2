@@ -23,14 +23,15 @@ class Persona(models.Model):
     es_profesor=models.BooleanField(default=False)
     es_encargado=models.BooleanField(default=False)
     fecha_nacimiento = models.DateField(null=False ,blank=False)
-    
+    #familia = models.ManyToManyField('self', through='Familiar')
+
     
     def __str__(self):
         return f"{self.nombre} {self.apellido} DNI:{self.dni}"
 
     
     #convierte una persona en profesor
-    def convertir_en_profesor(self,profesor):
+    def convertir_en_profesor(self, profesor):
         assert not self.es_profesor, "ya soy Profesor" 
         profesor.persona = self
         profesor.save()
@@ -125,7 +126,8 @@ class Familiar(models.Model):
     )
     AFILIADO = [1, 2, 3, 4, 5]
     ALUMNO = [3, 4, 6]
-    persona=models.ForeignKey(Persona, related_name="familiar",on_delete=models.CASCADE)
+    persona=models.ForeignKey(Persona, related_name = "familiares", on_delete = models.CASCADE) 
+    #familiar_de=models.ForeignKey(Persona, related_name = "personas", on_delete = models.CASCADE) 
     tipo=models.PositiveSmallIntegerField(choices=TIPOS)
 
 

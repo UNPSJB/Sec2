@@ -5,7 +5,7 @@
 {% block dinamica %}
     {%if form.errors%}
     <div class="alert alert-danger" role="alert">
-      No se pudo cargar el formulario comunicarse con soporte
+      {{form.errors}}
     </div>
     {% endif %}
     

@@ -149,7 +149,7 @@ class CursoListView(ListView):
 class ProfesorCreateView(CreateView):
     model = Profesor
     form_class = FormularioProfesor
-
+    success_url = reverse_lazy('cursos:Profesor_crear')
 
 class DictadoCreateView(CreateView):
     model = Dictado

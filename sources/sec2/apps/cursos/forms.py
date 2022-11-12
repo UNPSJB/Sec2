@@ -150,7 +150,7 @@ class ProfesorForm(forms.ModelForm):
     class Meta:
         model = Profesor
         fields = '__all__'
-        #exclude=['persona', 'tipo']
+        exclude=['persona', 'tipo']
 
         widgets ={
             
@@ -162,11 +162,10 @@ class ProfesorForm(forms.ModelForm):
         }
 
 class FormularioProfesor(forms.ModelForm):
-    fechaAfiliacion = forms.DateField()
     class Meta:
         model = Persona
         fields = '__all__'
-        #exclude=['persona', 'tipo']
+        exclude=['persona', 'tipo']
         help_texts = {
             'dni': 'Tu numero de documento sin puntos',
         }
@@ -213,7 +212,7 @@ class FormularioProfesor(forms.ModelForm):
             self.persona = personaForm.save()
         profesorForm = ProfesorForm(data=self.cleaned_data)
         profesor = profesorForm.save(commit=False)
-        self.persona.convertir_en_profesor(Profesor)
+        self.persona.convertir_en_profesor(profesor)
         return profesor
         
     def __init__(self, *args, **kwargs):
