@@ -23,6 +23,7 @@ class Persona(models.Model):
     es_profesor=models.BooleanField(default=False)
     es_encargado=models.BooleanField(default=False)
     fecha_nacimiento = models.DateField(null=False ,blank=False)
+    familia = models.ManyToManyField('self', through='Vinculo')
     #familia = models.ManyToManyField('self', through='Familiar')
 
     
@@ -75,7 +76,22 @@ class Persona(models.Model):
         
         self.es_alumno = False
         self.save()
-    
+
+
+
+class Vinculo (models.Model): 
+    CONYUGE=0
+    HIJO=1
+    TUTOR=2
+    TIPO = [(0, "Conyuge"), (1,"Hijo"), (2,"Tutor")] 
+    tipoVinculo = models.PositiveSmallIntegerField(choices = TIPO)
+    vinculante = models.ForeignKey(Persona, related_name = "vinculados", on_delete = models.CASCADE) 
+    vinculado = models.ForeignKey(Persona, related_name = "vinculantes",  on_delete = models.CASCADE) 
+
+    def __str__(self):
+        return f"{self.vinculado} es {self.get_tipoVinculo_display()}"
+
+
     
 class Rol(models.Model):
     TIPO = 0
@@ -114,21 +130,22 @@ class Rol(models.Model):
     def sos(self, Klass):
         return any([isinstance(rol, Klass) for rol in self.roles_related()])
 
-class Familiar(models.Model):
+#class Familiar(models.Model):
     #se limita a familiares a los familiares hasta segunda linia 
-    TIPOS=(
-        (1,"hijo"),
-        (2,"conyuge"),
-        (3,"padre"),
-        (4,"madre"),
-        (5,"hermano"),
-        (6,"tutor"),
-    )
-    AFILIADO = [1, 2, 3, 4, 5]
-    ALUMNO = [3, 4, 6]
-    persona=models.ForeignKey(Persona, related_name = "familiares", on_delete = models.CASCADE) 
-    #familiar_de=models.ForeignKey(Persona, related_name = "personas", on_delete = models.CASCADE) 
-    tipo=models.PositiveSmallIntegerField(choices=TIPOS)
+#    TIPOS=(
+#        (1,"hijo"),
+#        (2,"conyuge"),
+#        (3,"padre"),
+#        (4,"madre"),
+#        (5,"hermano"),
+#        (6,"tutor"),
+#    )
+#    AFILIADO = [1, 2, 3, 4, 5]
+#    ALUMNO = [3, 4, 6]
+#    persona=models.ForeignKey(Persona, related_name = "familiares", on_delete = models.CASCADE) 
+#    familiar_de=models.ForeignKey(Persona, related_name = "personas", on_delete = models.CASCADE) 
+#    tipo=models.PositiveSmallIntegerField(choices=TIPOS)
+
 
 
     
