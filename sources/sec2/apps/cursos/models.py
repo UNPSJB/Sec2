@@ -13,7 +13,7 @@ class Actividad(models.Model):
     ]
     nombre = models.CharField(max_length=100)
     area = models.PositiveSmallIntegerField(choices=AREAS)
-
+    
     def __str__(self):
         return self.nombre
     
