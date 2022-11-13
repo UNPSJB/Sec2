@@ -14,6 +14,10 @@ class Actividad(models.Model):
     nombre = models.CharField(max_length=100)
     area = models.PositiveSmallIntegerField(choices=AREAS)
 
+    def __str__(self):
+        return self.nombre
+    
+
 class Aula(models.Model):
     denominacion=models.CharField(max_length=50)
     tipo=models.CharField(max_length=50)
@@ -45,13 +49,18 @@ class Curso(models.Model):
         (2, 'clase'),
     )
     actividad = models.ForeignKey(Actividad,related_name="cursos", on_delete=models.CASCADE)
-    Costo=  models.DecimalField(help_text="costo total del curso", max_digits=10, decimal_places=2)
-    Nombre=models.CharField(max_length=50)
+    costo=  models.DecimalField(help_text="costo total del curso", max_digits=10, decimal_places=2)
+    nombre=models.CharField(max_length=50)
     modulos= models.PositiveIntegerField(help_text="cantidad de horas del curso")
     requiere_certificado = models.BooleanField()
-    dictado = models.ForeignKey(Dictado, related_name="cursos",on_delete=models.CASCADE, blank = True)
+    dictado = models.ForeignKey(Dictado, related_name="cursos",on_delete=models.CASCADE, null=True, blank = True)
     periodo_pago=models.PositiveSmallIntegerField(choices=PERIODO_PAGO)
     descuento=models.PositiveIntegerField(help_text="porcentaje de descuento")
+
+    def __str__(self):
+        return f"{self.nombre} {self.actividad} Precio:{self.costo}"
+    
+
 
 class Alumno(Rol):
     legajo = models.CharField(max_length=10)

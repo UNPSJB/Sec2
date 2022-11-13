@@ -13,10 +13,10 @@
 {{obj.area}}
             </td>
             <td>
-<a href="{% url 'cursos:actividad_editar' obj.pk %}">Editar</a>
+<a href="{% url 'cursos:curso_editar' obj.pk %}">Editar</a>
             </td>
             <td>
-<a href="{% url 'cursos:actividad_eliminar' obj.pk %}">Eliminar</a>
+<a href="{% url 'cursos:curso_eliminar' obj.pk %}">Eliminar</a>
             </td>
         </tr>
     {% endfor %}

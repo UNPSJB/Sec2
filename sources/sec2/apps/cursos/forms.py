@@ -104,15 +104,17 @@ class CursoForm(forms.ModelForm):
         model = Curso
         fields = [
                   'actividad',
-                  'Costo',
-                  'Nombre',
+                  'costo',
+                  'nombre',
                   'modulos',
                   'requiere_certificado',
                   'dictado',
                   'periodo_pago',
                   'descuento'
                   ]
-
+        exclude=['dictado']
+    
+    
     def clean_nombre(self):
         nombre = self.cleaned_data['nombre']
         nombre = nombre.lower()
@@ -134,13 +136,12 @@ class CursoForm(forms.ModelForm):
             Fieldset(
                 "Datos",
                 'actividad',
-                  'Costo',
-                  'Nombre',
-                  'modulos',
-                  'requiere_certificado',
-                #   'dictado',
-                  'periodo_pago',
-                  'descuento',            ),
+                'costo',
+                'nombre',
+                'modulos',
+                'requiere_certificado',
+                'periodo_pago',
+                'descuento',            ),
             Submit('submit', 'Guardar', css_class='button white'),)
 
 

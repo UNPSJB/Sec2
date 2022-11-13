@@ -139,12 +139,21 @@ class ActividadListView(ListFilterView):
 class CursoCreateView(CreateView):
     model = Curso
     form_class = CursoForm
-    # success_url = reverse_lazy('cursos:cursos')
+    success_url = reverse_lazy('cursos:cursos')
     
 class CursoListView(ListView):
     model = Curso
     paginate_by = 100
 
+class CursoUpdateView(UpdateView):
+    model = Curso
+    form_class = CursoForm
+    success_url = reverse_lazy('cursos:cursos')
+
+def curso_eliminar(request, pk):
+    a = Curso.objects.get(pk=pk)
+    a.delete()
+    return redirect('cursos:cursos')
 
 class ProfesorCreateView(CreateView):
     model = Profesor
