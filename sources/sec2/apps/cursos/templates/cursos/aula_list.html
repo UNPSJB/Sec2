@@ -3,25 +3,28 @@
 {% load static %}
 
 {% block dinamica %}
-    <table>
-    {% for obj in object_list %}
-        <tr>
-            <td>
-                {{obj.denominacion}}
-            </td>
-            <td>
-                {{obj.tipo}}
-            </td>
-            <td>
-                {{obj.cupo}}
-            </td>
-            <td>
-            <a href="{% url 'cursos:aula_editar' obj.pk %}">Editar</a>
-            </td>
-            <td>
-                <a href="{% url 'cursos:aula_eliminar' obj.pk %}">Eliminar</a>
-            </td>
-        </tr>
-    {% endfor %}
+    <table class="table table-dark table-striped">
+        <thead>
+            <tr>
+              <th scope="col">Denominación</th>
+              <th scope="col">Tipo</th>
+              <th scope="col">Cupo Máximo</th>
+              <th scope="col">Editar</th>
+              <th scope="col">Eliminar</th>                 
+            </tr>
+        </thead>
+        <tbody>
+                {% for obj in object_list %}
+                    <tr class="bg-transition">
+                        <td>{{ obj.denominacion }}</td>
+                        <td>{{ obj.tipo }}</td>
+                        <td>{{ obj.cupo }}</td>
+                        <td><a href="{% url 'cursos:aula_editar' obj.pk %}"class="btn btn-primary">Editar</a></td>
+                        <td><a href="{% url 'cursos:aula_eliminar' obj.pk %}"class="btn btn-primary">Eliminar</a></td>                                                    
+                    </tr>
+                {% endfor %}  
+        </tbody>
+          
     </table>
+    <a href="{% url 'cursos:aula_crear' %}"class="btn btn-primary">Nueva Aula</a>
 {% endblock %}

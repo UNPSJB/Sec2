@@ -18,8 +18,8 @@
               <tr class="bg-transition">
                 <td>{{ actividad.nombre }}</td>
                 <td>{{ actividad.get_area_display }}</td>
-                <td><a href="{% url 'cursos:actividad_editar' actividad.pk %}"class="btn btn-primary">Editar</a></td>
-                <td><a href="{% url 'cursos:actividad_eliminar' actividad.pk %}"class="btn btn-primary">Eliminar</a></td>             
+                <td><a href="{% url 'cursos:actividad_editar' actividad.pk %}" class="btn btn-primary">Editar</a></td>
+                <td><a href="{% url 'cursos:actividad_eliminar' actividad.pk %}" class="btn btn-primary">Eliminar</a></td>             
                                                            
               </tr>
               {% endfor %}  
@@ -29,5 +29,5 @@
       {% crispy filtros %}
     
     
-    <a href="{% url 'cursos:actividad_crear' %}">Nueva</a>
+    <a href="{% url 'cursos:actividad_crear' %}"class="btn btn-primary">Nueva Actividad</a>
 {% endblock %}
