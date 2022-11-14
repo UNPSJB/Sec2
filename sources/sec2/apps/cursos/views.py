@@ -12,6 +12,7 @@ from decimal import Decimal
 from datetime import date
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Fieldset, Submit, HTML
+from sec2.utils import ListFilterView, FiltrosForm
 
 
 def index(request):
@@ -126,7 +127,7 @@ class ListFilterView(ListView):
             filtros = self.filter_class(self.request.GET)
             return filtros.apply(qs)
         return qs
-    
+     
 class ActividadFilterForm(FiltrosForm):
     nombre = forms.CharField(required=False)
     area = forms.ChoiceField(required=False, choices=Actividad.AREAS)
