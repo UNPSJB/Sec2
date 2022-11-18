@@ -8,6 +8,25 @@ import csv
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Fieldset, Submit, HTML
 
+def dict_to_query(filtros_dict):
+    filtro = Q()
+    for attr, value in filtros_dict.items():
+        if not value:
+            continue
+        if type(value) == str:
+            if value.isdigit():
+                prev_value = value
+                value = int(value)
+                filtro &= Q(**{attr: value}) | Q(**
+                                                 {f'{attr}__icontains': prev_value})
+            else:
+                attr = f'{attr}__icontains'
+                filtro &= Q(**{attr: value})
+        # elif isinstance(value, Model) or isinstance(value, int) or isinstance(value, Decimal):
+        elif isinstance(value, (Model, int, Decimal, date)):
+            filtro &= Q(**{attr: value})
+    return filtro
+
 
 class FiltrosForm(forms.Form):
     orden = forms.CharField(required=False)
@@ -54,4 +73,6 @@ class ListFilterView(ListView):
             filtros = self.filter_class(self.request.GET)
             return filtros.apply(qs)
         return qs
+   
+
    

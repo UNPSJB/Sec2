@@ -2,7 +2,7 @@ from django.contrib import admin
 from django.urls import path
 from .views import ActividadCreateView, ActividadDetailView, ActividadListView, ActividadUpdateView, actividad_eliminar
 from .views import CursoCreateView, CursoListView, index, CursoUpdateView, curso_eliminar
-from .views import AulaListView, AulaCreateView, AulaDetailView, AulaUpdateView, aula_eliminar, ProfesorCreateView, DictadoCreateView
+from .views import AulaListView, AulaCreateView, AulaDetailView, AulaUpdateView, aula_eliminar, ProfesorCreateView, DictadoCreateView, DictadoListView
 
 app_name="cursos"
 
@@ -34,5 +34,6 @@ urlpatterns = [
     
     # * ------------------------  Dictado  ----------------------------------
     path('dictado/crear', DictadoCreateView.as_view(), name="dictado_crear"),
+    path('dictado/<int:pk>', DictadoListView.as_view(), name="ver_dictados"),
 
 ]

@@ -10,6 +10,7 @@ from apps.personas.models import Persona
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Fieldset, Submit, Div, HTML
 from django.forms.models import model_to_dict
+from sec2.utils import FiltrosForm
 
 
 class AfiliadoForm(forms.ModelForm):
@@ -279,3 +280,7 @@ class FormularioAfiliadoUpdate(forms.ModelForm):
 
 
 FormularioAfiliadoUpdate.base_fields.update(AfiliadoUpdateForm.base_fields)
+
+class AfiliadoFilterForm(FiltrosForm):
+    Nombre = forms.CharField(required=False)
+    DNI = forms.ChoiceField(required=False)

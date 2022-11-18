@@ -9,6 +9,7 @@ from .models import Curso
 from .models import Aula , Profesor , Dictado
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Fieldset, Submit, HTML
+from sec2.utils import FiltrosForm
 
 
 class DictadoForm(ModelForm):
@@ -281,3 +282,14 @@ class DictadoForm(ModelForm):
                     'fecha_fin','aula',
                 ),
                 Submit('submit', 'Guardar', css_class='button white'),)
+
+
+class CursoFilterForm(FiltrosForm):
+    nombre = forms.CharField(required=False)
+    actividad = forms.ChoiceField(required=False)
+
+class ActividadFilterForm(FiltrosForm):
+    nombre  = forms.CharField(required=False)
+
+class DictadoFilterForm(FiltrosForm):
+    fecha_inicio  = forms.CharField(required=False)

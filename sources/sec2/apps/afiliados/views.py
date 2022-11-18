@@ -11,7 +11,7 @@ from django.views.generic.list import ListView
 from .models import *
 from .forms import *
 from django.contrib import messages
-
+from sec2.utils import ListFilterView 
 
 
 # ----------------------------- AFILIADO VIEW ----------------------------------- #
@@ -32,13 +32,20 @@ class AfiliadoCreateView(CreateView):
         return context
     
     
-class AfliadosListView(ListView):
+
+
+class AfliadosListView(ListFilterView):
     model = Afiliado
     
+    filter_class = AfiliadoFilterForm
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['titulo'] = "Listado de afiliados"
         return context
+
+
+
 
 
 class AfiliadoUpdateView(UpdateView):

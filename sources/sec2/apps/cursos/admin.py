@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Actividad
+from .models import Actividad, Curso, Dictado, Aula
 
 # Register your models here.
 class ActividadAdmin(admin.ModelAdmin):
@@ -8,3 +8,20 @@ class ActividadAdmin(admin.ModelAdmin):
     ordering = ('nombre', 'area')
 
 admin.site.register(Actividad, ActividadAdmin)
+
+class CursoAdmin(admin.ModelAdmin):
+    list_display = ('actividad', 'costo','nombre','modulos','requiere_certificado','dictado','periodo_pago','descuento')
+    #list_filter = ('actividad')
+    #ordering = ('actividad')
+
+admin.site.register(Curso, CursoAdmin)
+
+class DictadoAdmin (admin.ModelAdmin):
+    list_display= ('fecha_inicio','fecha_fin','aula')
+
+admin.site.register(Dictado, DictadoAdmin)
+
+class AulaAdmin (admin.ModelAdmin):
+    list_display= ('denominacion','tipo','cupo')
+
+admin.site.register(Aula, AulaAdmin)
