@@ -108,12 +108,8 @@ class ProfesorCreateView(CreateView):
 class DictadoCreateView(CreateView):
     model = Dictado
     form_class = DictadoForm
-
-class DictadoListView(ListFilterView):
-    model = Dictado
-    paginate_by = 100
-    filter_class = DictadoFilterForm
-    pk_url_kwarg: 'pk'
+    pk_url_kwarg= 'pk'
+    success_url = reverse_lazy('cursos:cursos')
 
     def get_initial(self,*args, **kwargs):
         curso= Curso.objects.get(pk=self.kwargs.get("pk"))
@@ -125,7 +121,17 @@ class DictadoListView(ListFilterView):
         print(curso)
         context['curso_id'] = curso.id
         return context
-
+    
+    def post(self, *args, **kwargs):
+        form = DictadoForm(self.request.POST)
+        curso = Curso.objects.get(pk=self.kwargs.get("pk"))
+        if form.is_valid():
+            form.save(curso)
+        return redirect(self.success_url)
     
 
-
+class DictadoListView(ListFilterView):
+    model = Dictado
+    paginate_by = 100
+    filter_class = DictadoFilterForm
+    pk_url_kwarg= 'pk'

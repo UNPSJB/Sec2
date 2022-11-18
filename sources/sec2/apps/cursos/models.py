@@ -22,11 +22,46 @@ class Aula(models.Model):
     denominacion=models.CharField(max_length=50)
     tipo=models.CharField(max_length=50)
     cupo=models.PositiveIntegerField(help_text="capacidad maxima del aula")
+    
+    def __str__(self):
+        return self.denominacion
+    
+
+    
+    
+
+class Curso(models.Model):
+    PERIODO_PAGO=(
+        (1, 'mes'),
+        (2, 'clase'),
+    )
+    actividad = models.ForeignKey(Actividad,related_name="cursos", on_delete=models.CASCADE)
+    costo=  models.DecimalField(help_text="costo total del curso", max_digits=10, decimal_places=2)
+    nombre=models.CharField(max_length=50)
+    modulos= models.PositiveIntegerField(help_text="cantidad de horas del curso")
+    requiere_certificado = models.BooleanField()
+    periodo_pago=models.PositiveSmallIntegerField(choices=PERIODO_PAGO)
+    descuento=models.PositiveIntegerField(help_text="porcentaje de descuento")
+
+    def __str__(self):
+        return f"{self.nombre} {self.actividad} Precio:{self.costo}"
+    
+    def asignar_dictado(self, fecha_inicio, fecha_fin, aula):
+        dictado = Dictado()
+        dictado.fecha_inicio = fecha_inicio
+        dictado.fecha_fin = fecha_fin
+        dictado.aula = aula
+        dictado.curso = self
+        dictado.save()
 
 class Dictado(models.Model):
     fecha_inicio = models.DateField()
     fecha_fin = models.DateField()
     aula=models.ForeignKey(Aula, related_name="dictado", on_delete=models.CASCADE)
+    curso=models.ForeignKey(Curso, related_name="curso", on_delete=models.CASCADE)
+    
+    def __str__(self):
+        return f"Fecha inicio: {self.fecha_inicio}, Fecha fin: {self.fecha_fin} Aula:{self.aula}"
 
 class Clase(models.Model):
     DIA=(
@@ -42,23 +77,6 @@ class Clase(models.Model):
     dia=models.PositiveSmallIntegerField(choices=DIA)
     hora_inicio=models.TimeField(auto_now_add=True)
     hora_fin=models.TimeField(auto_now_add=True)
-
-class Curso(models.Model):
-    PERIODO_PAGO=(
-        (1, 'mes'),
-        (2, 'clase'),
-    )
-    actividad = models.ForeignKey(Actividad,related_name="cursos", on_delete=models.CASCADE)
-    costo=  models.DecimalField(help_text="costo total del curso", max_digits=10, decimal_places=2)
-    nombre=models.CharField(max_length=50)
-    modulos= models.PositiveIntegerField(help_text="cantidad de horas del curso")
-    requiere_certificado = models.BooleanField()
-    dictado = models.ForeignKey(Dictado, related_name="cursos",on_delete=models.CASCADE, null=True, blank = True)
-    periodo_pago=models.PositiveSmallIntegerField(choices=PERIODO_PAGO)
-    descuento=models.PositiveIntegerField(help_text="porcentaje de descuento")
-
-    def __str__(self):
-        return f"{self.nombre} {self.actividad} Precio:{self.costo}"
     
 
 

@@ -120,6 +120,7 @@ class FormularioAfiliado(forms.ModelForm):
                     'cuil',
                     'celular',
                     'familia',
+                    'estado'
                     
             ),
             

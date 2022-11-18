@@ -261,7 +261,26 @@ class FormularioProfesor(forms.ModelForm):
 
 FormularioProfesor.base_fields.update(ProfesorForm.base_fields)
 
-class DictadoForm(ModelForm):
+
+
+class FormDictado(forms.ModelForm):
+    class Meta:
+        model = Dictado
+        fields = '__all__'
+
+        widgets ={   
+            'fecha_inicio': forms.DateInput(attrs={'type':'date'}),
+            'fecha_fin': forms.DateInput(attrs={'type':'date'}),
+                }
+        
+        # labels = {
+        #     'fechaIngresoTrabajo': "fecha de ingreso al trabajo",
+        #     'fechaAfiliacion': "Fecha de afiliacion"
+        # }
+
+
+
+class DictadoForm(forms.ModelForm):
     class Meta:
         model = Dictado
         fields = ['fecha_inicio','fecha_fin','aula']
@@ -271,11 +290,15 @@ class DictadoForm(ModelForm):
             'fecha_fin': forms.DateInput(attrs={'type':'date'}),
                 }
 
-    def save(self, commit=False):
+    def save(self, curso, commit=False):
         print('aca estoy')
-        formDictado = CursoForm(data=self.cleaned_data)
-        dictado = formDictado.save(commit=False)
-        return dictado
+        print(self.cleaned_data)
+        # formDictado = FormDictado(data=self.cleaned_data)
+        fecha_inicio= self.cleaned_data["fecha_inicio"]
+        fecha_fin= self.cleaned_data["fecha_fin"]
+        aula = self.cleaned_data["aula"]
+        curso.asignar_dictado(fecha_inicio, fecha_fin, aula)
+        
         
        
 
@@ -303,5 +326,5 @@ class ActividadFilterForm(FiltrosForm):
 
 class DictadoFilterForm(FiltrosForm):
     fecha_inicio  = forms.CharField(required=False)
-    Submit('submit', 'Guardar', css_class='button white'))
+    Submit('submit', 'Guardar', css_class='button white')
                 

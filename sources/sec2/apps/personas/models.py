@@ -16,14 +16,14 @@ class Persona(models.Model):
     mail=models.CharField(max_length=50)
     nacionalidad=models.CharField(max_length=50)
     estado_civil=models.PositiveSmallIntegerField(choices=ESTADO_CIVIL)
-    cuil=models.CharField(max_length=12)
+    cuil=models.CharField(max_length=11)
     celular=models.CharField(max_length=30)
     es_afiliado=models.BooleanField(default=False)
     es_alumno=models.BooleanField(default=False)
     es_profesor=models.BooleanField(default=False)
     es_encargado=models.BooleanField(default=False)
     fecha_nacimiento = models.DateField(null=False ,blank=False)
-    familia = models.ManyToManyField('self', through='Vinculo')
+    familia = models.ManyToManyField('self', through='Vinculo', null=True, blank=True)
     #familia = models.ManyToManyField('self', through='Familiar')
 
     
@@ -50,6 +50,7 @@ class Persona(models.Model):
         assert not self.es_afiliado, "ya soy afiliado" 
         afiliado.desde = fecha
         afiliado.persona = self
+        afiliado.es
         afiliado.save()
         self.es_afiliado=True
         self.save()

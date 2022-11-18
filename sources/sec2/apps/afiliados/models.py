@@ -8,7 +8,7 @@ from datetime import date
 class Afiliado(Rol):
     TIPO = 1
     razon_social = models.CharField(max_length=50)
-    cuit_empleador = models.CharField(max_length=8)
+    cuit_empleador = models.CharField(max_length=10)
     categoria_laboral = models.CharField(max_length=20)
     domicilio_empresa = models.CharField(max_length=50)
     localidad_empresa = models.CharField(max_length=50)
@@ -17,7 +17,12 @@ class Afiliado(Rol):
     sueldo= models.DecimalField(max_digits=9, decimal_places=2)
     horaJornada = models.PositiveIntegerField()
     fechaAfiliacion= models.DateField()
-    estado = models.BooleanField(default=False)
+    ESTADO = (
+            (1, "pendiente de aceptación"), 
+            (2, "activo"),
+            (3, "inactivo"),
+    )
+    estado = models.PositiveSmallIntegerField(choices=ESTADO)
 
 
     def __str__(self):
