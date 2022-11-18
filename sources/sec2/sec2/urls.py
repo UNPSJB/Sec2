@@ -31,6 +31,7 @@ urlpatterns = [
     # path('alquileres/',include('apps.alquileres.urls')),
     path('cursos/',include('apps.cursos.urls')),
     # path('pagos/',include('apps.cursos.urls')),
+    path("select2/", include("django_select2.urls")),
 ]
 
 

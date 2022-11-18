@@ -1,16 +1,27 @@
 {% load static %}
-
-{% block extracss %}
-    <link href="{% static 'Libs/css/nav_top.css' %}" rel="stylesheet"/>
-{% endblock%}
+<style>
+  form.search
+ {
+    width: 500px
+  }
+  form.search > span > span.selection > span
+ {
+    width: 400px
+  }
+    span.select2-dropdown {
+      width: 400px !important;
+    }
+</style>
 
 <nav class="navbar navbarPersonalizado" style="padding:0px">
   <div class="container-fluid cabecera">
     <a class="navbar-brand" href="{% url 'home' %}">
       <img id="logo" src="{% static 'images/logo.png'%}" alt="My image"/>
     </a>
-    <form class="d-flex" role="search">
-      <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
+    <form class="search" role="search">
+      {% for field in buscador.visible_fields %}
+       {{field}}
+       {% endfor %}
     </form>
     <div class="btn-group">
       <button type="button" class="btn btn-secondary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
@@ -23,4 +34,3 @@
     </div>
   </div>
 </nav>
-

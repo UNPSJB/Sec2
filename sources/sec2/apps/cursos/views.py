@@ -142,6 +142,13 @@ class CursoCreateView(CreateView):
     form_class = CursoForm
     success_url = reverse_lazy('cursos:cursos')
     
+    def get_success_url(self):
+        print(self.object)
+        print(self.request.POST)
+        if self.request.POST['submit'] == "Guardar y Crear Dictado":
+            return reverse_lazy('cursos:dictado_crear', args=[self.object.pk])
+        return super().get_success_url()
+    
 class CursoListView(ListView):
     model = Curso
     paginate_by = 100
@@ -150,6 +157,7 @@ class CursoUpdateView(UpdateView):
     model = Curso
     form_class = CursoForm
     success_url = reverse_lazy('cursos:cursos')
+
 
 def curso_eliminar(request, pk):
     a = Curso.objects.get(pk=pk)
@@ -164,3 +172,19 @@ class ProfesorCreateView(CreateView):
 class DictadoCreateView(CreateView):
     model = Dictado
     form_class = DictadoForm
+    pk_url_kwarg: 'pk'
+
+    def get_initial(self,*args, **kwargs):
+        curso= Curso.objects.get(pk=self.kwargs.get("pk"))
+        return {'curso':curso}
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        curso = Curso.objects.get(id = self.kwargs.get('pk'))
+        print(curso)
+        context['curso_id'] = curso.id
+        return context
+
+    
+
+

@@ -6,6 +6,8 @@ from dataclasses import fields
 from pyexpat import model
 from tkinter.ttk import Widget
 from django import forms
+from django_select2 import forms as s2forms
+
 
 class PersonaForm(ModelForm):
    
@@ -41,6 +43,17 @@ class PersonaForm(ModelForm):
             Submit('submit', 'Guardar', css_class='button white'),)
 
 PersonaForm.base_fields.update(PersonaForm.base_fields)
+
+class PersonaWidget(s2forms.ModelSelect2Widget):
+    search_fields = [
+        "dni__icontains",
+        "nombre__icontains",
+        "apellido__icontains",
+    ]
+
+class BuscadorPersonasForm(forms.Form):
+   buscar = forms.ModelChoiceField(queryset=Persona.objects.all(), widget=PersonaWidget)
+
 
 
 class VinculoForm(forms.ModelForm):

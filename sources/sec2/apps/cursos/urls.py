@@ -33,6 +33,6 @@ urlpatterns = [
     path('aulas/<int:pk>/eliminar', aula_eliminar, name="aula_eliminar"),
     
     # * ------------------------  Dictado  ----------------------------------
-    path('dictado/crear', DictadoCreateView.as_view(), name="dictado_crear"),
+    path('<int:pk>/dictado/crear', DictadoCreateView.as_view(), name="dictado_crear"),
 
 ]

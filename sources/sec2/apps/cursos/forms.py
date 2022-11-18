@@ -123,6 +123,7 @@ class CursoForm(forms.ModelForm):
     def clean(self):
         pass
 
+
     def is_valid(self) -> bool:
         valid = super().is_valid()
         return valid
@@ -142,7 +143,7 @@ class CursoForm(forms.ModelForm):
                 'requiere_certificado',
                 'periodo_pago',
                 'descuento',            ),
-            Submit('submit', 'Guardar', css_class='button white'),)
+            Submit('submit', 'Guardar', css_class='button white'),Submit('submit', 'Guardar y Crear Dictado', css_class='button white'))
 
 
 
@@ -269,7 +270,16 @@ class DictadoForm(ModelForm):
             'fecha_fin': forms.DateInput(attrs={'type':'date'}),
                 }
 
+    def save(self, commit=False):
+        print('aca estoy')
+        formDictado = CursoForm(data=self.cleaned_data)
+        dictado = formDictado.save(commit=False)
+        return dictado
+        
+       
+
     def __init__(self, *args, **kwargs):
+            #curso = kwargs.pop('curso')
             super().__init__(*args, **kwargs)
             self.helper = FormHelper()
             self.helper.layout = Layout(
@@ -280,4 +290,5 @@ class DictadoForm(ModelForm):
                     'fecha_inicio',
                     'fecha_fin','aula',
                 ),
-                Submit('submit', 'Guardar', css_class='button white'),)
+                Submit('submit', 'Guardar', css_class='button white'))
+                
