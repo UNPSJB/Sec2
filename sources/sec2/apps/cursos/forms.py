@@ -303,5 +303,5 @@ class ActividadFilterForm(FiltrosForm):
 
 class DictadoFilterForm(FiltrosForm):
     fecha_inicio  = forms.CharField(required=False)
-    Submit('submit', 'Guardar', css_class='button white'))
+    Submit('submit', 'Guardar', css_class='button white')
                 
