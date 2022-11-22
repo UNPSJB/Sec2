@@ -9,12 +9,15 @@
     <thead>
       <tr>
         <th scope="col">Nombre</th>
+        <th scope="col">Apellido</th>
         <th scope="col">DNI</th>
         <th scope="col">Fecha de nacimiento</th>
         <th scope="col">CUIT (empleador)</th>
         <th scope="col">Categoria laboral</th>
         <th scope="col">Domicilio empresa</th>
-        <th scope="col">Opciones</th>
+        <th scope="col">Modificacion</th>
+        <th scope="col">Aceptar</th>
+        <th scope="col">Baja</th>
        
         
       </tr>
@@ -24,13 +27,15 @@
         {% for afiliado in object_list %}
         <tr class="bg-transition">
           <td>{{ afiliado.persona.nombre }}</td>
+          <td>{{ afiliado.persona.apellido }}</td>
           <td>{{ afiliado.persona.dni }}</td>
           <td>{{ afiliado.persona.fecha_nacimiento }}</td>
           <td>{{ afiliado.cuit_empleador }}</td>
           <td>{{ afiliado.categoria_laboral }}</td>
           <td>{{ afiliado.domicilio_empresa }}</td>
-         
           <td><a href= "{% url 'afiliados:modificarAfiliado' afiliado.pk %}" class="btn btn-primary">Modificar</a></td>
+          <td><a href= "{% url 'afiliados:aceptar_afiliado' afiliado.pk %}" class="btn btn-primary">Aceptar</a></td>
+          <td><a href= "{% url 'afiliados:modificarAfiliado' afiliado.pk %}" class="btn btn-primary">Desafiliar</a></td>
         </tr>
         {% endfor %}  
     </tbody>

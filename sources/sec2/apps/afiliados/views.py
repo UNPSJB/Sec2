@@ -89,3 +89,10 @@ class AfiliadoDeleteView(DeleteView):
             messages.add_message(self.request, messages.SUCCESS, f'Afiliado dado de baja con éxito')
         finally:
             return redirect(success_url)
+
+
+def afiliado_aceptar(request, pk):
+    a = Afiliado.objects.get(pk=pk)
+    a.estado= 2
+    a.save()
+    return redirect('afiliados:afiliado_listar')

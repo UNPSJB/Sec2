@@ -50,7 +50,7 @@ class Persona(models.Model):
         assert not self.es_afiliado, "ya soy afiliado" 
         afiliado.desde = fecha
         afiliado.persona = self
-        afiliado.es
+        afiliado.estado = 1
         afiliado.save()
         self.es_afiliado=True
         self.save()
