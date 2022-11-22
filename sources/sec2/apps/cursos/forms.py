@@ -5,8 +5,7 @@ from apps.cursos.models import Alumno
 from apps.personas.forms import PersonaForm
 from apps.personas.models import Persona
 from .models import Actividad
-from .models import Curso
-from .models import Aula , Profesor , Dictado
+from .models import Aula, Profesor, Dictado, Curso, Clase
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Fieldset, Submit, HTML
 from sec2.utils import FiltrosForm
@@ -291,8 +290,8 @@ class DictadoForm(forms.ModelForm):
                 }
 
     def save(self, curso, commit=False):
-        print('aca estoy')
-        print(self.cleaned_data)
+        # print('aca estoy')
+        # print(self.cleaned_data)
         # formDictado = FormDictado(data=self.cleaned_data)
         fecha_inicio= self.cleaned_data["fecha_inicio"]
         fecha_fin= self.cleaned_data["fecha_fin"]
@@ -328,3 +327,36 @@ class DictadoFilterForm(FiltrosForm):
     fecha_inicio  = forms.CharField(required=False)
     Submit('submit', 'Guardar', css_class='button white')
                 
+class ClaseForm(forms.ModelForm):
+    class Meta:
+        model = Clase
+        fields = ['dia','hora_inicio','hora_fin']
+
+        widgets ={   
+            'hora_inicio': forms.DateInput(attrs={'type':'time'}),
+            'hora_fin': forms.DateInput(attrs={'type':'time'}),
+                }
+
+    def save(self, dictado, commit=False):
+        # print('aca estoy')
+        # print(self.cleaned_data)
+        hora_inicio= self.cleaned_data["hora_inicio"]
+        hora_fin= self.cleaned_data["hora_fin"]
+        dia = self.cleaned_data["dia"]
+        # dictado = self.cleaned_data["dictado"]
+        dictado.asignar_clase(dia, hora_inicio, hora_fin)
+
+    def __init__(self, *args, **kwargs):
+            #curso = kwargs.pop('curso')
+            super().__init__(*args, **kwargs)
+            self.helper = FormHelper()
+            self.helper.layout = Layout(
+                HTML(
+                    '<h2><center>Formulario de Clase</center></h2>'),
+                Fieldset(
+                    "Datos",
+                    'dia',
+                    'hora_inicio',
+                    'hora_fin',
+                ),
+                Submit('submit', 'Guardar', css_class='button white'),)

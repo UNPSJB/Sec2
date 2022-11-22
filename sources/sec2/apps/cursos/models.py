@@ -63,6 +63,14 @@ class Dictado(models.Model):
     def __str__(self):
         return f"Fecha inicio: {self.fecha_inicio}, Fecha fin: {self.fecha_fin} Aula:{self.aula}"
 
+    def asignar_clase(self, dia, hora_inicio, hora_fin):
+        clase = Clase()
+        clase.hora_inicio = hora_inicio
+        clase.hora_fin = hora_fin
+        clase.dia = dia
+        clase.dictado = self
+        clase.save()
+    
 class Clase(models.Model):
     DIA=(
         (1, "Lunes"),
@@ -75,8 +83,8 @@ class Clase(models.Model):
     )
     dictado = models.ForeignKey(Dictado, related_name="clase", null=False, on_delete=models.CASCADE)
     dia=models.PositiveSmallIntegerField(choices=DIA)
-    hora_inicio=models.TimeField(auto_now_add=True)
-    hora_fin=models.TimeField(auto_now_add=True)
+    hora_inicio=models.TimeField()
+    hora_fin=models.TimeField()
     
 
 

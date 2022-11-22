@@ -3,8 +3,8 @@ from django.template import loader
 from django.http import HttpResponse
 from django.views.generic import DetailView, ListView
 from django.views.generic.edit import CreateView, DeleteView, UpdateView
-from .models import Actividad, Curso, Aula, Profesor,Dictado
-from .forms import ActividadForm, CursoForm, AulaForm , FormularioProfesor,DictadoForm, ActividadFilterForm,CursoFilterForm,DictadoFilterForm
+from .models import Actividad, Curso, Aula, Profesor, Dictado, Clase
+from .forms import ActividadForm, CursoForm, AulaForm , FormularioProfesor,DictadoForm, ActividadFilterForm,CursoFilterForm, DictadoFilterForm, ClaseForm
 from django.urls import reverse_lazy
 from django import forms
 from django.db.models import Q, Model
@@ -129,9 +129,22 @@ class DictadoCreateView(CreateView):
             form.save(curso)
         return redirect(self.success_url)
     
-
 class DictadoListView(ListFilterView):
     model = Dictado
     paginate_by = 100
     filter_class = DictadoFilterForm
     pk_url_kwarg= 'pk'
+
+
+class ClaseCreateView(CreateView):
+    model = Clase
+    form_class = ClaseForm
+    pk_url_kwarg= 'pk'
+    success_url = reverse_lazy('cursos:cursos')
+    
+    def post(self, *args, **kwargs):
+        form = ClaseForm(self.request.POST)
+        dictado = Dictado.objects.get(pk=self.kwargs.get("pk"))
+        if form.is_valid():
+            form.save(dictado)
+        return redirect(self.success_url)
