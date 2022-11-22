@@ -1,4 +1,4 @@
-{%extends "home_curso.html" %}
+{% extends "home_curso.html" %}
 {% load crispy_forms_tags %}
 {% load static %}
 
@@ -6,12 +6,13 @@
     <table class="table table-dark table-striped">
         <thead>
             <tr>
-                <th scope="col">fecha de inicio</th>
-                <th scope="col">fecha fin</th>
-                <th scope="col">aula</th>
+                <th scope="col">Fecha de inicio</th>
+                <th scope="col">Fecha fin</th>
+                <th scope="col">Aula</th>
                 <th scope="col">Editar</th>
                 <th scope="col">Eliminar</th>    
-                <th scope="col">Ver Dictados</th>               
+                <th scope="col">Clases</th>    
+                <th scope="col">Detalle de clases</th>           
               </tr>
         </thead>
         <tbody>
@@ -23,8 +24,8 @@
                     <td>{{ obj.aula.denominacion }}</td>
                     <td><a href="{% url 'cursos:curso_editar' obj.pk %}"class="btn btn-primary">Editar</a></td>
                     <td><a href="{% url 'cursos:curso_eliminar' obj.pk %}"class="btn btn-primary">Eliminar</a></td>
-                    <td><a href="{% url 'cursos:clase_crear' obj.pk %}"class="btn btn-primary">Alta clase</a></td>                
-                                                               
+                    <td><a href="{% url 'cursos:clase_crear' obj.pk %}"class="btn btn-primary">Nueva clase</a></td>                
+                    <td><a href="{% url 'cursos:ver_clases' obj.pk %}"class="btn btn-primary">Ver clases</a></td>                                           
                 </tr>
                 {% endfor %}
             </tr>

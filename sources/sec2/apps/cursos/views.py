@@ -148,3 +148,6 @@ class ClaseCreateView(CreateView):
         if form.is_valid():
             form.save(dictado)
         return redirect(self.success_url)
+
+class ClaseListView(ListFilterView):
+    pass

@@ -3,7 +3,7 @@ from django.urls import path
 from .views import ActividadCreateView, ActividadDetailView, ActividadListView, ActividadUpdateView, actividad_eliminar
 from .views import CursoCreateView, CursoListView, index, CursoUpdateView, curso_eliminar
 from .views import AulaListView, AulaCreateView, AulaDetailView, AulaUpdateView, aula_eliminar, ProfesorCreateView, DictadoCreateView, DictadoListView
-from .views import ClaseCreateView
+from .views import ClaseCreateView, ClaseListView
 
 app_name="cursos"
 
@@ -39,6 +39,6 @@ urlpatterns = [
 
     # * ------------------------  Clase  ------------------------------------
     path('dictado/<int:pk>/nuevaclase', ClaseCreateView.as_view(), name="clase_crear"),
-        
+    path('dictado/<int:pk>/verclases', ClaseListView.as_view(), name="ver_clases"),
     
 ]
