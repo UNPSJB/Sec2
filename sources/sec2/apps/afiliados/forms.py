@@ -17,7 +17,7 @@ class AfiliadoForm(forms.ModelForm):
     class Meta:
         model = Afiliado
         fields = '__all__'
-        exclude=['persona', 'tipo']
+        exclude=['persona', 'tipo', 'estado']
 
         widgets ={
             
@@ -119,8 +119,6 @@ class FormularioAfiliado(forms.ModelForm):
                     'estado_civil',
                     'cuil',
                     'celular',
-                    'familia',
-                    'estado'
                     
             ),
             
@@ -172,7 +170,7 @@ class FormularioAfiliadoUpdate(forms.ModelForm):
     class Meta:
         model = Persona
         fields = '__all__'
-        #exclude=['persona', 'tipo']
+        exclude=['familia']
         help_texts = {
             'dni': 'Tu numero de documento sin puntos',
         }
