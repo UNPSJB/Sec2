@@ -18,7 +18,7 @@
     <a class="navbar-brand" href="{% url 'home' %}">
       <img id="logo" src="{% static 'images/logo.png'%}" alt="My image"/>
     </a>
-    <form class="search" role="search">
+    <form class="search" role="search" >
       {% for field in buscador.visible_fields %}
        {{field}}
        {% endfor %}
