@@ -4,7 +4,7 @@ from django.http import HttpResponse
 from django.views.generic import DetailView, ListView
 from django.views.generic.edit import CreateView, DeleteView, UpdateView
 from .models import Actividad, Curso, Aula, Profesor, Dictado, Clase
-from .forms import ActividadForm, CursoForm, AulaForm , FormularioProfesor,DictadoForm, ActividadFilterForm,CursoFilterForm, DictadoFilterForm, ClaseForm
+from .forms import ActividadForm, CursoForm, AulaForm , FormularioProfesor,DictadoForm, ActividadFilterForm,CursoFilterForm, DictadoFilterForm, ClaseForm, ClaseFilterForm
 from django.urls import reverse_lazy
 from django import forms
 from django.db.models import Q, Model
@@ -63,10 +63,6 @@ def actividad_eliminar(request, pk):
 class ActividadDetailView(DetailView):
     model = Actividad
 
-
-     
-
-
 class ActividadListView(ListFilterView):
     model = Actividad
     paginate_by = 100  
@@ -108,7 +104,7 @@ class ProfesorCreateView(CreateView):
 class DictadoCreateView(CreateView):
     model = Dictado
     form_class = DictadoForm
-    pk_url_kwarg= 'pk'
+   
     success_url = reverse_lazy('cursos:cursos')
 
     def get_initial(self,*args, **kwargs):
@@ -119,7 +115,7 @@ class DictadoCreateView(CreateView):
         context = super().get_context_data(**kwargs)
         curso = Curso.objects.get(id = self.kwargs.get('pk'))
         print(curso)
-        context['curso_id'] = curso.id
+        context['curso'] = curso
         return context
     
     def post(self, *args, **kwargs):
@@ -133,13 +129,21 @@ class DictadoListView(ListFilterView):
     model = Dictado
     paginate_by = 100
     filter_class = DictadoFilterForm
-    pk_url_kwarg= 'pk'
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["curso"] = self.kwargs['pk']
+        return context
+    
+    def get_queryset(self):
+        print(self.args, self.kwargs)
+        return super().get_queryset().filter(curso__pk=self.kwargs['pk'])
 
 
 class ClaseCreateView(CreateView):
     model = Clase
     form_class = ClaseForm
-    pk_url_kwarg= 'pk'
+   
     success_url = reverse_lazy('cursos:cursos')
     
     def post(self, *args, **kwargs):
@@ -150,4 +154,7 @@ class ClaseCreateView(CreateView):
         return redirect(self.success_url)
 
 class ClaseListView(ListFilterView):
-    pass
+    model = Clase
+    paginate_by = 100
+    filter_class = ClaseFilterForm
+    

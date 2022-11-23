@@ -301,13 +301,14 @@ class DictadoForm(forms.ModelForm):
         
        
 
-    def __init__(self, *args, **kwargs):
-            #curso = kwargs.pop('curso')
-            super().__init__(*args, **kwargs)
+    def __init__(self,initial=None, *args, **kwargs):
+            curso = initial.pop('curso')
+            print(curso)
+            super().__init__(initial=initial,*args, **kwargs)
             self.helper = FormHelper()
             self.helper.layout = Layout(
                 HTML(
-                    '<h2><center>Formulario de Dictado</center></h2>'),
+                    f'<h2><center>Alta de dictado para el curso {curso.nombre} </center></h2>'),
                 Fieldset(
                     "Datos",
                     'fecha_inicio',
@@ -324,7 +325,9 @@ class ActividadFilterForm(FiltrosForm):
     nombre  = forms.CharField(required=False)
 
 class DictadoFilterForm(FiltrosForm):
-    fecha_inicio  = forms.CharField(required=False)
+    fecha_inicio  = forms.DateField(required=False)
+    fecha_fin =forms.DateField(required=False)
+
     Submit('submit', 'Guardar', css_class='button white')
                 
 class ClaseForm(forms.ModelForm):
@@ -360,3 +363,8 @@ class ClaseForm(forms.ModelForm):
                     'hora_fin',
                 ),
                 Submit('submit', 'Guardar', css_class='button white'),)
+
+
+class ClaseFilterForm (FiltrosForm):
+    dia = forms.DateField(required=False)
+    #actividad = forms.ChoiceField(required=False)
