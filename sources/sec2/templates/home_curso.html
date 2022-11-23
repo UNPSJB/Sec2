@@ -4,6 +4,8 @@
 {% block extracss %}
 <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
 <link href="{% static 'Libs/css/home.css' %}" rel="stylesheet"/>
+<link href="{% static 'Libs/css/nav_top.css' %}" rel="stylesheet"/>
+{{ buscador.media.css }}
 {% endblock %}
 
 {% block container %}
@@ -23,4 +25,12 @@
       {% endblock %}
     </div>
   </div>
-{% endblock %}
+  {% endblock %}
+
+  {% block extrajs %}
+  {{ buscador.media.js }}
+  <script type="text/javascript">
+      $('.django-select2').on("change", () => console.log("hola"));
+  </script>
+  {% endblock %}
+  
