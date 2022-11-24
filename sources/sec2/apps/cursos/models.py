@@ -89,8 +89,8 @@ class Clase(models.Model):
 
 
 class Alumno(Rol):
-    legajo = models.CharField(max_length=10)
-    dictado = models.ForeignKey(Dictado, related_name="alumnos", on_delete=models.CASCADE)
+    TIPO = 3
+    dictado = models.ForeignKey(Dictado, related_name="alumnos", on_delete=models.CASCADE, null=True)
     curso = models.ForeignKey(Curso, related_name="alumnos", null=False, on_delete=models.CASCADE)
     
     

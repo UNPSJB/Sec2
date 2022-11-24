@@ -39,13 +39,6 @@ class Persona(models.Model):
         self.es_profesor=True
         self.save()
 
-    def convertir_en_alumno(self,alumno):
-        assert not self.es_profesor, "ya soy Profesor" 
-        alumno.persona = self
-        alumno.save()
-        self.es_alumno=True
-        self.save()
-
     def afiliar(self, afiliado, fecha):
         assert not self.es_afiliado, "ya soy afiliado" 
         afiliado.desde = fecha

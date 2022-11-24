@@ -35,7 +35,6 @@ class FormularioAfiliado(forms.ModelForm):
     class Meta:
         model = Persona
         fields = '__all__'
-        #exclude=['persona', 'tipo']
         help_texts = {
             'dni': 'Tu numero de documento sin puntos',
         }

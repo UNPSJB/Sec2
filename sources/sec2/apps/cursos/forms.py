@@ -16,23 +16,6 @@ class DictadoForm(ModelForm):
         model = Dictado
         fields = ['fecha_inicio','fecha_fin']
 
-class AlumnoForm(ModelForm):
-    #curso = forms.ModelChoiceField(queryset=Curso.objects.all())
-    curso = forms.CharField()
-
-    class Meta:
-        model = Alumno
-        fields = "__all__"
-
-    def save(self, commit=False):
-        curso = self.cleaned_data["curso"]
-        persona = Persona(**self.cleaned_data)
-        alumno = self.save(commit=False)
-        persona.registrar_en_curso(alumno, curso)
-
-
-AlumnoForm.base_fields.update(PersonaForm.base_fields)
-
 
 class AulaForm(forms.ModelForm):
     class Meta:
