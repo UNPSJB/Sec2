@@ -52,6 +52,7 @@ class Persona(models.Model):
         assert afiliado.persona == self, "Afiliado incorrecto"
         afiliado.hasta = fecha
         afiliado.save()
+        afiliado.estado = 3
         self.es_afiliado = False
         self.save()
         

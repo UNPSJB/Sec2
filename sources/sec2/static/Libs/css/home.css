@@ -35,3 +35,16 @@
 .pt-5 {
     padding-top: 3rem !important;
 }
+
+.estado{
+    margin-bottom: 30px;
+    color: white;
+    background-color: black;
+}
+
+.tabla_afiliado{
+    
+    background-color:black;
+    border-style: solid;
+    border-radius: 5px;
+}

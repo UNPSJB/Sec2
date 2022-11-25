@@ -2,6 +2,7 @@
 from apps.afiliados.forms import Afiliado
 from django.template import loader
 from django.http import HttpResponse
+from datetime import datetime  
 
 from django.urls import reverse_lazy
 from django.http import JsonResponse
@@ -36,13 +37,23 @@ class AfiliadoCreateView(CreateView):
 
 class AfliadosListView(ListFilterView):
     model = Afiliado
-    
     filter_class = AfiliadoFilterForm
+  
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['titulo'] = "Listado de afiliados"
         return context
+
+    def get_queryset(self):
+        if self.request.GET.get('estado') is not None:
+            AfliadosListView.template_name = 'afiliado_list_aceptar.html'
+            return Afiliado.objects.filter(
+                estado__startswith = self.request.GET['estado']
+            )
+
+        return super().get_queryset()
+    
 
 
 
@@ -73,22 +84,12 @@ class AfiliadoUpdateView(UpdateView):
   #  persona = Persona.objects.get(pk=pk)
   #  Persona.desafiliar(Persona)
 
-class AfiliadoDeleteView(DeleteView):
-    model = Afiliado
-    success_url = reverse_lazy('afiliados:EliminarAfiliados')
-
-    def get(self, *args, **kwargs):
-        return self.post(*args, **kwargs)
-
-    def post(self, *args, **kwargs):
-        self.object = self.get_object()
-        success_url = self.get_success_url()
-        pk=kwargs.get('pk')
-        try:
-            self.object.delete() #utilizar el metodo desafiliar de persona
-            messages.add_message(self.request, messages.SUCCESS, f'Afiliado dado de baja con éxito')
-        finally:
-            return redirect(success_url)
+def afiliado_desafiliar(request, pk):
+    a = Afiliado.objects.get(pk=pk)
+    fecha = datetime.now()
+    a.persona.desafiliar(a,fecha)
+    a.save()
+    return redirect('afiliados:afiliado_listar')
 
 
 def afiliado_aceptar(request, pk):
