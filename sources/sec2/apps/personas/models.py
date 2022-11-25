@@ -101,7 +101,7 @@ class Rol(models.Model):
 
     def save(self, *args, **kwargs):
         if self.pk is None:
-            self.tipo = self.TIPO
+            self.tipo = self.__class__.TIPO
         super(Rol, self).save(*args, **kwargs)
 
     def related(self):
