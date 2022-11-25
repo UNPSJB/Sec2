@@ -13,7 +13,8 @@
                 <th scope="col">Periodo Pago</th>
                 <th scope="col">Editar</th>
                 <th scope="col">Eliminar</th>    
-                <th scope="col">Ver Dictados</th>               
+                <th scope="col">Ver Dictados</th>   
+                <th scope="col">Inscripcion</th>               
               </tr>
         </thead>
         <tbody>
@@ -27,8 +28,8 @@
                     <td>{{ obj.get_periodo_pago_display }}</td>
                     <td><a href="{% url 'cursos:curso_editar' obj.pk %}"class="btn btn-primary">Editar</a></td>
                     <td><a href="{% url 'cursos:curso_eliminar' obj.pk %}"class="btn btn-primary">Eliminar</a></td>
-                    #<td><a href="{% url 'cursos:ver_dictados' obj.pk %}"class="btn btn-primary">Ver Dictados</a></td>                
-                                                               
+                    <td><a href="{% url 'cursos:ver_dictados' obj.pk %}"class="btn btn-primary">Ver Dictados</a></td>                
+                    <td><a href="{% url 'cursos:inscripcion' obj.pk %}"class="btn btn-primary">Inscripcion</a></td>                                           
                 </tr>
                 {% endfor %}
             </tr>

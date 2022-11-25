@@ -23,7 +23,7 @@ class Persona(models.Model):
     es_profesor=models.BooleanField(default=False)
     es_encargado=models.BooleanField(default=False)
     fecha_nacimiento = models.DateField(null=False ,blank=False)
-    familia = models.ManyToManyField('self', through='Vinculo', null=True, blank=True)
+    familia = models.ManyToManyField('self', through='Vinculo', blank=True)
     #familia = models.ManyToManyField('self', through='Familiar')
 
     
@@ -101,7 +101,7 @@ class Rol(models.Model):
 
     def save(self, *args, **kwargs):
         if self.pk is None:
-            self.tipo = Rol.TIPO
+            self.tipo = self.__class__.TIPO
         super(Rol, self).save(*args, **kwargs)
 
     def related(self):
