@@ -4,6 +4,7 @@ from .views import ActividadCreateView, ActividadDetailView, ActividadListView, 
 from .views import CursoCreateView, CursoListView, index, CursoUpdateView, curso_eliminar
 from .views import AulaListView, AulaCreateView, AulaDetailView, AulaUpdateView, aula_eliminar, ProfesorCreateView, DictadoCreateView, DictadoListView
 from .views import ClaseCreateView, ClaseListView
+from .views import AlumnoCreateView
 
 app_name="cursos"
 
@@ -41,4 +42,6 @@ urlpatterns = [
     path('dictado/<int:pk>/nuevaclase', ClaseCreateView.as_view(), name="clase_crear"),
     path('dictado/<int:pk>/verclases', ClaseListView.as_view(), name="ver_clases"),
     
+    # * ------------------------  Alumno  ------------------------------------
+    path('<int:pk>/inscripcion', AlumnoCreateView.as_view(), name="inscripcion"),
 ]

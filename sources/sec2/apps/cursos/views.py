@@ -3,8 +3,19 @@ from django.template import loader
 from django.http import HttpResponse
 from django.views.generic import DetailView, ListView
 from django.views.generic.edit import CreateView, DeleteView, UpdateView
-from .models import Actividad, Curso, Aula, Profesor, Dictado, Clase
-from .forms import ActividadForm, CursoForm, AulaForm , FormularioProfesor,DictadoForm, ActividadFilterForm,CursoFilterForm, DictadoFilterForm, ClaseForm, ClaseFilterForm
+from .models import Actividad, Curso, Aula, Profesor, Dictado, Clase, Alumno
+from .forms import (
+    ActividadForm, 
+    CursoForm, 
+    AulaForm , 
+    FormularioProfesor,
+    DictadoForm, 
+    ActividadFilterForm,CursoFilterForm, 
+    DictadoFilterForm, 
+    ClaseForm, 
+    ClaseFilterForm, 
+    FormularioAlumno
+)
 from django.urls import reverse_lazy
 from django import forms
 from django.db.models import Q, Model
@@ -157,4 +168,30 @@ class ClaseListView(ListFilterView):
     model = Clase
     paginate_by = 100
     filter_class = ClaseFilterForm
+
+
+
+class AlumnoCreateView(CreateView):
+    model = Alumno
+    form_class = FormularioAlumno
+    success_url = reverse_lazy('cursos:cursos')
+
+    def get_initial(self,*args, **kwargs):
+        curso= Curso.objects.get(pk=self.kwargs.get("pk"))
+        return {'curso':curso}
     
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        curso = Curso.objects.get(id = self.kwargs.get('pk'))
+        context['curso'] = curso
+        return context
+    
+    def post(self, *args, **kwargs):
+        form = self.get_form() #FormularioAlumno(self.request.POST)
+        curso = Curso.objects.get(pk=self.kwargs.get("pk"))
+
+        if form.is_valid():
+            form.save(curso)
+        else: 
+            print(form.errors)
+        return redirect(self.success_url)

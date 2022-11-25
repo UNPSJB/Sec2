@@ -347,7 +347,82 @@ class ClaseForm(forms.ModelForm):
                 ),
                 Submit('submit', 'Guardar', css_class='button white'),)
 
-
 class ClaseFilterForm (FiltrosForm):
     dia = forms.DateField(required=False)
     #actividad = forms.ChoiceField(required=False)
+
+class AlumnoForm(forms.ModelForm):
+    class Meta:
+        model = Alumno
+        fields = '__all__'
+        exclude=['persona', 'tipo', 'dictado']
+
+
+class FormularioAlumno (forms.ModelForm):
+    class Meta:
+        model = Persona
+        fields = '__all__'
+        help_texts = {
+            'dni': 'Tu numero de documento sin puntos',
+        }
+        widgets ={
+           'fecha_nacimiento': forms.DateInput(attrs={'type':'date'}),
+            }
+        labels = {
+           'fecha_nacimiento': "Fecha de nacimiento",
+        }
+
+    
+    def save(self, curso, commit=False):
+        # print(self.cleaned_data)
+        try:
+            persona = Persona.objects.get(dni=self.cleaned_data['dni'])
+        except Persona.DoesNotExist:
+            persona = None
+
+        if persona is None:
+            personaForm = PersonaForm(data=self.cleaned_data)
+            persona = personaForm.save()
+        
+        alumnoForm = AlumnoForm(data={'curso': curso})
+        alumno = alumnoForm.save(commit=False)
+        # curso = self.cleaned_data[""]
+        persona.inscribir(alumno, curso)
+        print("estoy aca")
+        return alumno
+        
+        
+    def __init__(self, instance=None,*args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.layout = Layout(
+            HTML(
+                    '<h2><center>Formulario de Alumno</center></h2>'),
+            Fieldset(
+                   "Datos Personales",
+                   
+                HTML(
+                    '<hr/>'),
+                                             
+                    'dni', 
+                    'nombre',
+                    'apellido',
+                    'fecha_nacimiento',
+                    'direccion',
+                    'mail',
+                    'nacionalidad',
+                    'estado_civil',
+                    'cuil',
+                    'celular',
+                    
+            ),
+            
+            Fieldset(    
+                   
+                HTML(
+                    '<hr/>'),
+                    
+                         
+            ),
+            
+            Submit('submit', 'Guardar', css_class='button white'),)

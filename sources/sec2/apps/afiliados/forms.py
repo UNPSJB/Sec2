@@ -81,18 +81,6 @@ class FormularioAfiliado(forms.ModelForm):
         
     def __init__(self, instance=None,*args, **kwargs):
         print(kwargs)
-        #model_to_dict(instance)
-        
-        #if instance is not None:
-        #    persona= instance.persona 
-        #    afiliado= instance.afiliado
-        #    datapersona = model_to_dict(persona) 
-        #    dataafiliado = model_to_dict(afiliado)
-        #    print(datapersona)
-        #    print(dataafiliado)
-        #   # datapersona.fecha_nacimiento
-        #    datapersona.update(dataafiliado)
-        #    kwargs["initial"]= datapersona
         super().__init__(*args, **kwargs)
         print(instance)
         
