@@ -281,5 +281,5 @@ FormularioAfiliadoUpdate.base_fields.update(AfiliadoUpdateForm.base_fields)
 
 class AfiliadoFilterForm(FiltrosForm):
     Nombre = forms.CharField(required=False)
-    dni = forms.CharField(required=False)
-    cuit_empleador = forms.IntegerField(required=False)
+    DNI = forms.IntegerField(required=False)
+    # Estado = forms.IntegerField(required=False)
