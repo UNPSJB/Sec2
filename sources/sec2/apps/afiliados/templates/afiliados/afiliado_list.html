@@ -4,44 +4,95 @@
 
 {% block dinamica %}
 
-  <div class="table-responsive">
-  <table class="table table-dark table-striped">
-    <thead>
-      <tr>
-        <th scope="col">Nombre</th>
-        <th scope="col">Apellido</th>
-        <th scope="col">DNI</th>
-        <th scope="col">Fecha de nacimiento</th>
-        <th scope="col">CUIT (empleador)</th>
-        <th scope="col">Categoria laboral</th>
-        <th scope="col">Domicilio empresa</th>
-        <th scope="col">Modificacion</th>
-        <th scope="col">Aceptar</th>
-        <th scope="col">Baja</th>
-       
-        
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        {% for afiliado in object_list %}
-        <tr class="bg-transition">
-          <td>{{ afiliado.persona.nombre }}</td>
-          <td>{{ afiliado.persona.apellido }}</td>
-          <td>{{ afiliado.persona.dni }}</td>
-          <td>{{ afiliado.persona.fecha_nacimiento }}</td>
-          <td>{{ afiliado.cuit_empleador }}</td>
-          <td>{{ afiliado.categoria_laboral }}</td>
-          <td>{{ afiliado.domicilio_empresa }}</td>
-          <td><a href= "{% url 'afiliados:modificarAfiliado' afiliado.pk %}" class="btn btn-primary">Modificar</a></td>
-          <td><a href= "{% url 'afiliados:aceptar_afiliado' afiliado.pk %}" class="btn btn-primary">Aceptar</a></td>
-          <td><a href= "{% url 'afiliados:modificarAfiliado' afiliado.pk %}" class="btn btn-primary">Desafiliar</a></td>
-        </tr>
-        {% endfor %}  
-    </tbody>
-  </table>
-  {% crispy filtros %}
+<div class="container-sm">
+
+  <div class="dropdown">
+  <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+    Dropdown button
+  </button>
+  <ul class="dropdown-menu dropdown-menu-dark">
+    <li><a class="dropdown-item active" href="#">Action</a></li>
+    <li><a class="dropdown-item" href="#">Another action</a></li>
+    <li><a class="dropdown-item" href="#">Something else here</a></li>
+    <li><hr class="dropdown-divider"></li>
+    <li><a class="dropdown-item" href="#">Separated link</a></li>
+  </ul>
+</div>
+
+  {% comment %} <div class="btn-group dropend estado" >
+    <button type="button" class="btn btn-dark dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+      Estado de Afiliado
+    </button>
+    <ul class="dropdown-menu">
+      <li><a class="dropdown-item" href="{% url 'afiliados:afiliado_listar' %}?estado=2">Activo</a></li>
+      <li><a class="dropdown-item" href="{% url 'afiliados:afiliado_listar' %}?estado=1">Pendiente a confirmacion</a></li>
+      <li><a class="dropdown-item" href="{% url 'afiliados:afiliado_listar' %}?estado=3">Inactivo</a></li>
+    </ul>
+  </div> {% endcomment %}
   
+
+
+  <div class="table-responsive tabla_afiliado">
+    <table class="table table-dark table-striped">
+      <thead>
+        <tr>
+          <th scope="col">Nombre</th>
+          <th scope="col">Apellido</th>
+          <th scope="col">DNI</th>
+          <th scope="col">Fecha de nacimiento</th>
+          <th scope="col">CUIT (empleador)</th>
+          <th scope="col">Categoria laboral</th>
+          <th scope="col">Domicilio empresa</th>
+      
+          
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          
+
+          {% for afiliado in object_list %}
+          
+          <tr class="bg-transition">
+            <td>{{ afiliado.persona.nombre }}</td>
+            <td>{{ afiliado.persona.apellido }}</td>
+            <td>{{ afiliado.persona.dni }}</td>
+            <td>{{ afiliado.persona.fecha_nacimiento }}</td>
+            <td>{{ afiliado.cuit_empleador }}</td>
+            <td>{{ afiliado.categoria_laboral }}</td>
+            <td>{{ afiliado.domicilio_empresa }}</td>
+            
+            {%if afiliado.estado == 1 %}
+            <td><a href= "{% url 'afiliados:modificarAfiliado' afiliado.pk %}" class="btn btn-primary">Modificar</a></td>
+            <td><a href= "{% url 'afiliados:aceptar_afiliado' afiliado.pk %}" class="btn btn-success">Aceptar</a></td>
+            {% endif %}
+
+            {%if afiliado.estado == 2 %}
+            <td><a href= "{% url 'afiliados:modificarAfiliado' afiliado.pk %}" class="btn btn-primary">Modificar</a></td>
+            <td><a href= "{% url 'afiliados:desafiliar_afiliado' afiliado.pk %}" class="btn btn-danger">Desafiliar</a></td>
+            {%endif %}
+
+            {%if afiliado.estado == 3 %}
+            <td><a href= "{% url 'afiliados:modificarAfiliado' afiliado.pk %}" class="btn btn-primary">Modificar</a></td>
+            {% endif %}
+
+          </tr>
+          {% endfor %}  
+      </tbody>
+    </table>
   </div>
 
+
+
+  <div class="container">
+    {% comment %} {% crispy filtros %} {% endcomment %}
+  </div>
+  
+  </div>
+</div>
+{% block nav_lateral_filtro %}
+{% include 'nav_filtro_afiliado.html' %}
 {% endblock %}
+
+{% endblock %}
+

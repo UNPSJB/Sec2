@@ -20,11 +20,11 @@
   
   {% endblock %}
   <script src="{% static 'Libs/js/jquery.min.js' %}"></script>
-<script src="{% static 'Libs/js/popper.js' %}"></script>
-<script src="{% static 'Libs/js/main.js' %}"></script>
-  <script src="{% static 'Libs/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
-  <script src="{% static 'Libs/bootstrap/js/bootstrap.min.js' %}"></script>
-  {% comment %} <script type="text/javascript" src="{% static '/libs/jquery/jquery-3.1.1.min.js' %}"></script> {% endcomment %}
+  <script src="{% static 'Libs/js/popper.min.js' %}" integrity="sha384-oBqDVmMz9ATKxIep9tiCxS/Z9fNfEXiDAYTujMAeBAsjFuCZSmKbSSUnQlmh/jp3" crossorigin="anonymous"></script>
+  <script src="{% static 'Libs/bootstrap/js/bootstrap.min.js'%}" integrity="sha384-cuYeSxntonz0PPNlHhBs68uyIAVpIIOZZ5JqeqvYYIcEL727kskC66kF92t6Xl2V" crossorigin="anonymous"></script>
+  <script src="{% static 'Libs/js/main.js' %}"></script>
+
+  
   {% block extrajs %}{% endblock %}
 
 </body>
