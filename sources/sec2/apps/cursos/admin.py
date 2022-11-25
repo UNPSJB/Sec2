@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Actividad, Curso, Dictado, Aula
+from .models import Actividad, Curso, Dictado, Aula, Alumno, Profesor
 
 # Register your models here.
 class ActividadAdmin(admin.ModelAdmin):
@@ -24,4 +24,8 @@ admin.site.register(Dictado, DictadoAdmin)
 class AulaAdmin (admin.ModelAdmin):
     list_display= ('denominacion','tipo','cupo')
 
+
+
 admin.site.register(Aula, AulaAdmin)
+admin.site.register(Alumno)
+admin.site.register(Profesor)

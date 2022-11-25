@@ -46,12 +46,12 @@ class AfliadosListView(ListFilterView):
         return context
 
     def get_queryset(self):
+        
         if self.request.GET.get('estado') is not None:
             AfliadosListView.template_name = 'afiliado_list_aceptar.html'
             return Afiliado.objects.filter(
                 estado__startswith = self.request.GET['estado']
             )
-
         return super().get_queryset()
     
 
