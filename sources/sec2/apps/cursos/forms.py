@@ -5,16 +5,10 @@ from apps.cursos.models import Alumno
 from apps.personas.forms import PersonaForm
 from apps.personas.models import Persona
 from .models import Actividad
-from .models import Aula, Profesor, Dictado, Curso, Clase
+from .models import Aula, Profesor, Dictado, Curso, Clase, Titular
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Fieldset, Submit, HTML
 from sec2.utils import FiltrosForm
-
-
-class DictadoForm(ModelForm):
-    class Meta:
-        model = Dictado
-        fields = ['fecha_inicio','fecha_fin']
 
 
 class AulaForm(forms.ModelForm):
@@ -244,28 +238,10 @@ class FormularioProfesor(forms.ModelForm):
 FormularioProfesor.base_fields.update(ProfesorForm.base_fields)
 
 
-
-class FormDictado(forms.ModelForm):
-    class Meta:
-        model = Dictado
-        fields = '__all__'
-
-        widgets ={   
-            'fecha_inicio': forms.DateInput(attrs={'type':'date'}),
-            'fecha_fin': forms.DateInput(attrs={'type':'date'}),
-                }
-        
-        # labels = {
-        #     'fechaIngresoTrabajo': "fecha de ingreso al trabajo",
-        #     'fechaAfiliacion': "Fecha de afiliacion"
-        # }
-
-
-
 class DictadoForm(forms.ModelForm):
     class Meta:
         model = Dictado
-        fields = ['fecha_inicio','fecha_fin','aula']
+        fields = ['fecha_inicio','fecha_fin', 'aula']
 
         widgets ={   
             'fecha_inicio': forms.DateInput(attrs={'type':'date'}),
@@ -280,6 +256,7 @@ class DictadoForm(forms.ModelForm):
         fecha_fin= self.cleaned_data["fecha_fin"]
         aula = self.cleaned_data["aula"]
         curso.asignar_dictado(fecha_inicio, fecha_fin, aula)
+        
         
         
        

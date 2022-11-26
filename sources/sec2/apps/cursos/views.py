@@ -115,7 +115,6 @@ class ProfesorCreateView(CreateView):
 class DictadoCreateView(CreateView):
     model = Dictado
     form_class = DictadoForm
-   
     success_url = reverse_lazy('cursos:cursos')
 
     def get_initial(self,*args, **kwargs):
@@ -130,7 +129,7 @@ class DictadoCreateView(CreateView):
         return context
     
     def post(self, *args, **kwargs):
-        form = DictadoForm(self.request.POST)
+        form = self.get_form() #form = DictadoForm(self.request.POST)
         curso = Curso.objects.get(pk=self.kwargs.get("pk"))
         if form.is_valid():
             form.save(curso)
