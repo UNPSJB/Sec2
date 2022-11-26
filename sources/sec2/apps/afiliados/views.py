@@ -45,14 +45,24 @@ class AfliadosListView(ListFilterView):
         context['titulo'] = "Listado de afiliados"
         return context
 
-    def get_queryset(self):
-        
+"""     def get_queryset(self):
+        qs = Afiliado.objects.all()
         if self.request.GET.get('estado') is not None:
             AfliadosListView.template_name = 'afiliado_list_aceptar.html'
-            return Afiliado.objects.filter(
+            qs = qs.filter(
                 estado__startswith = self.request.GET['estado']
             )
-        return super().get_queryset()
+        
+        if self.request.GET.get('dni') is not None:
+            print('--------------------ACACCACACA-------------------------',self.request.GET['dni'])
+           # AfliadosListView.template_name = 'afiliado_list_aceptar.html'
+            qs = qs.filter(
+                persona__dni__icontains = self.request.GET['dni']
+            )
+
+        print(qs)
+
+        return qs """
     
 
 

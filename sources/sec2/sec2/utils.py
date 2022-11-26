@@ -55,6 +55,7 @@ class FiltrosForm(forms.Form):
         self.helper = FormHelper()
         self.helper.form_method="GET"
         fields = list(self.fields.keys())
+        fields = list(filter(lambda f: f != 'orden', fields))
         self.helper.layout = Layout(*fields,
             Submit('submit', 'Filtrar', css_class='button white'),) 
 
@@ -73,6 +74,4 @@ class ListFilterView(ListView):
             filtros = self.filter_class(self.request.GET)
             return filtros.apply(qs)
         return qs
-   
-
    
