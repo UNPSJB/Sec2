@@ -29,7 +29,7 @@ urlpatterns = [
     path('profesores/crear', ProfesorCreateView.as_view(), name="profesor_crear"),
     path('profesores', ProfesorListView.as_view(), name="profesores"),
     path('profesores/<int:pk>/editar', ProfesorUpdateView.as_view(), name="profesor_modificar"),
-
+    # path('profesores/<int:pk>/eliminar', actividad_eliminar, name="profesor_eliminar"),
     
     # * ------------------------  AULAS  ----------------------------------
     path('aulas', AulaListView.as_view(), name="aulas"),
