@@ -272,7 +272,8 @@ class DictadoForm(forms.ModelForm):
                 Fieldset(
                     "Datos",
                     'fecha_inicio',
-                    'fecha_fin','aula',
+                    'fecha_fin',
+                    'aula',
                 ),
                 Submit('submit', 'Guardar', css_class='button white'),)
 

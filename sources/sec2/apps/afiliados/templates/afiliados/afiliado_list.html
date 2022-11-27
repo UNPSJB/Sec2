@@ -47,7 +47,7 @@
             {% if afiliado.estado == 1 %}
               <td>PENDIENTE DE ACEPTACION</td>
               <td>
-                <a href= "{% url 'afiliados:modificarAfiliado' afiliado.pk %}" class="btn btn-primary">Modificar</a>
+                <a href= "{% url 'afiliados:modificarAfiliado' afiliado.pk %}" class="btn btn-primary">Editar</a>
                 <p></p>
                 <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#exampleModal_aceptar">
                   Aceptar
@@ -76,7 +76,7 @@
             {% if afiliado.estado == 2 %}
               <td> ACTIVO</td>
               <td>
-                <a href= "{% url 'afiliados:modificarAfiliado' afiliado.pk %}" class="btn btn-primary">Modificar</a>
+                <a href= "{% url 'afiliados:modificarAfiliado' afiliado.pk %}" class="btn btn-primary">Editar</a>
                 <p></p>
 
                 <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#exampleModal_desafiliar">
@@ -105,7 +105,7 @@
             {% if afiliado.estado == 3 %}
               <td>INACTIVO</td>
               <td>
-                <a href= "{% url 'afiliados:ver_Afiliado' afiliado.pk %}" class="btn btn-primary">ver</a>
+                <a href= "{% url 'afiliados:ver_Afiliado' afiliado.pk %}" class="btn btn-primary">Ver</a>
               </td>
             {% endif %}
           </tr>

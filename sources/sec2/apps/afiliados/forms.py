@@ -216,15 +216,13 @@ class FormularioAfiliadoUpdate(forms.ModelForm):
         #self.helper.form_action = 'afiliados:index'
         self.helper.layout = Layout(
             HTML(
-                '<h2><center>Formulario de Modificacion de Datos de Afiliado</center></h2>'),
+                f'<h2><center>Modificar datos de {persona.nombre} {persona.apellido} </center></h2>'),
             Fieldset(
                 "Datos Personales",
 
                 HTML(
                     '<hr/>'),
 
-                'dni',
-                    'dni', 
                 'dni',
                 'nombre',
                 'apellido',
@@ -335,7 +333,7 @@ class AfiliadoVer(forms.ModelForm):
         #self.helper.form_action = 'afiliados:index'
         self.helper.layout = Layout(
             HTML(
-                '<h2><center>Datos de afiliado</center></h2>'),
+                f'<h2><center>Datos de {persona.nombre} {persona.apellido}</center></h2>'),
             Fieldset(
                 "Datos Personales",
 
