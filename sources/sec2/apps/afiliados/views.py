@@ -107,3 +107,15 @@ def afiliado_aceptar(request, pk):
     a.estado= 2
     a.save()
     return redirect('afiliados:afiliado_listar')
+
+class afiliado_ver(UpdateView):
+    model = Afiliado
+   
+    form_class = AfiliadoVer
+    success_url = reverse_lazy('afiliados:afiliado_listar')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['titulo'] = "Ver Afiliado"
+        return context
+    

@@ -49,7 +49,27 @@
               <td>
                 <a href= "{% url 'afiliados:modificarAfiliado' afiliado.pk %}" class="btn btn-primary">Modificar</a>
                 <p></p>
-                <a href= "{% url 'afiliados:aceptar_afiliado' afiliado.pk %}" class="btn btn-success">Aceptar</a>
+                <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#exampleModal_aceptar">
+                  Aceptar
+                </button>
+                <div class="modal fade" id="exampleModal_aceptar" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                  <div class="modal-dialog">
+                    <div class="modal-content">
+                      <div class="modal-header">
+                        <h1 class="modal-title fs-5" id="exampleModalLabel">Confirmación</h1>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                      </div>
+                      <div class="modal-body">
+                        <h5>¿Estas seguro que deseas aceptar al afiliado?</h5>
+                      </div>
+                      <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                        <a href= "{% url 'afiliados:aceptar_afiliado' afiliado.pk %}" class="btn btn-success">Aceptar</a>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                
               </td>
             {% endif %}
 
@@ -58,14 +78,34 @@
               <td>
                 <a href= "{% url 'afiliados:modificarAfiliado' afiliado.pk %}" class="btn btn-primary">Modificar</a>
                 <p></p>
-                <a href= "{% url 'afiliados:desafiliar_afiliado' afiliado.pk %}" class="btn btn-danger">Desafiliar</a>
+
+                <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#exampleModal_desafiliar">
+                  Desafiliar
+                </button>
+                <div class="modal fade" id="exampleModal_desafiliar" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                  <div class="modal-dialog">
+                    <div class="modal-content">
+                      <div class="modal-header">
+                        <h1 class="modal-title fs-5" id="exampleModalLabel">Modal title</h1>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                      </div>
+                      <div class="modal-body">
+                        <h5>¿Estas seguro que deseas desafiliar?</h5>
+                      </div>
+                      <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                        <a href= "{% url 'afiliados:desafiliar_afiliado' afiliado.pk %}" class="btn btn-danger">Desafiliar</a>
+                      </div>
+                    </div>
+                  </div>
+                </div>
               </td>
             {% endif %}
 
             {% if afiliado.estado == 3 %}
               <td>INACTIVO</td>
               <td>
-                <a href= "{% url 'afiliados:modificarAfiliado' afiliado.pk %}" class="btn btn-primary">ver</a>
+                <a href= "{% url 'afiliados:ver_Afiliado' afiliado.pk %}" class="btn btn-primary">ver</a>
               </td>
             {% endif %}
           </tr>
