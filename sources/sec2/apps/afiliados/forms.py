@@ -5,12 +5,12 @@ from tkinter.ttk import Widget
 from django import forms
 from django.forms import ValidationError
 from .models import Afiliado
-from apps.personas.forms import PersonaForm
+from apps.personas.forms import PersonaForm, PersonaUpdateForm
 from apps.personas.models import Persona
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Fieldset, Submit, Div, HTML
 from django.forms.models import model_to_dict
-from sec2.utils import FiltrosForm
+from sec2.utils import FiltrosForm 
 
 
 class AfiliadoForm(forms.ModelForm):
@@ -158,34 +158,24 @@ class FormularioAfiliadoUpdate(forms.ModelForm):
         model = Persona
         fields = '__all__'
         exclude=['familia']
-        help_texts = {
-            'dni': 'Tu numero de documento sin puntos',
-        }
-        
         widgets ={
-            
-            
-          # 'fecha_nacimiento': forms.DateInput(attrs={'type':'date'}),
-            
-           
+            # 'fecha_nacimiento': forms.DateInput(attrs={'type':'date'}),
             }
         
         labels = {
            'fecha_nacimiento': "Fecha de nacimiento",
-          
-           
         }
         
-
-    def clean_dni(self):
-        self.persona = Persona.objects.filter(dni=self.cleaned_data['dni']).first()
-        if self.persona is not None and self.persona.es_afiliado:
-            raise ValidationError("Ya existe un afiliado activo con ese DNI")
-        return self.cleaned_data['dni']
+    # ** SE COMENTO ESTA LINEA PARA QUE NO LO CHEQUEARA 
+    # def clean_dni(self):
+    #     self.persona = Persona.objects.filter(dni=self.cleaned_data['dni']).first()
+    #     if self.persona is not None and self.persona.es_afiliado:
+    #         raise ValidationError("Ya existe un afiliado activo con ese DNI")
+    #     return self.cleaned_data['dni']
         
     def is_valid(self) -> bool:
         valid = super().is_valid()
-        personaForm = PersonaForm(data=self.cleaned_data)
+        personaForm = PersonaUpdateForm(data=self.cleaned_data)
         afiliadoForm = AfiliadoUpdateForm(data=self.cleaned_data)
         print(valid)
         print(personaForm.is_valid())
@@ -195,7 +185,7 @@ class FormularioAfiliadoUpdate(forms.ModelForm):
     def save(self, commit=False):
         print(self.cleaned_data)
         if self.persona is None:
-            personaForm = PersonaForm(data=self.cleaned_data)
+            personaForm = PersonaUpdateForm(data=self.cleaned_data)
             self.persona = personaForm.save()
         afiliadoForm = AfiliadoUpdateForm(data=self.cleaned_data)
         afiliado = afiliadoForm.save(commit=False)
@@ -262,7 +252,7 @@ class FormularioAfiliadoUpdate(forms.ModelForm):
                     'categoria_laboral',        
             ),
             
-            Submit('submit', 'Guardar', css_class='button white'),)
+            Submit('submit', 'Guardar nuevos cambios', css_class='button white'),)
 
 
 FormularioAfiliadoUpdate.base_fields.update(AfiliadoUpdateForm.base_fields)

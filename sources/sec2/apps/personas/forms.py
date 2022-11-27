@@ -44,6 +44,41 @@ class PersonaForm(ModelForm):
 
 PersonaForm.base_fields.update(PersonaForm.base_fields)
 
+class PersonaUpdateForm(ModelForm):
+   
+    class Meta:
+        model = Persona
+        fields = '__all__'
+        #exclude=['persona', 'tipo']
+        Widgets ={
+            'fechaNacimiento': forms.DateInput(attrs={'type':'datetime-local'}),
+            }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.form_action = 'guardarAfiliado'
+        self.helper.layout = Layout(
+            Fieldset(
+                   "",
+                HTML(
+                    '<hr/>'),
+                    'dni', 
+                    'fechaNacimiento',
+                    'nombre',
+                    'apellido',
+                    'direccion',
+                    'mail',
+                    'nacionalidad',
+                    'estado_civil',
+                    'cuil',
+                    'celular',      
+            
+            ),
+            Submit('submit', 'Guardar', css_class='button white'),)
+
+PersonaForm.base_fields.update(PersonaForm.base_fields)
+
 class PersonaWidget(s2forms.ModelSelect2Widget):
     search_fields = [
         "dni__icontains",
