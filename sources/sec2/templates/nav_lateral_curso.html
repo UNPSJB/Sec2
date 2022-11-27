@@ -19,15 +19,6 @@
         <li class="active">
           <a href="{% url 'cursos:actividad_crear' %}"><span class="fa fa-id-badge mr-3"></span>Alta de actividades</a>
         </li>
-      {% comment %}  <li class="active">
-          <a href="#"><span class="fa fa-id-badge mr-3"></span>Detalle de actividades</a>
-        </li>
-        <li class="active">
-          <a href="#"><span class="fa fa-id-badge mr-3"></span>Editar actividad</a>
-        </li>
-        <li class="active">
-          <a href="#"><span class="fa fa-id-badge mr-3"></span>Dar de baja actividad</a>
-        </li>{% endcomment %}
         <li class="active">
           <a href="{% url 'cursos:actividades' %}"><span class="fa fa-id-badge mr-3"></span>Lista de actividades</a>
         </li>
@@ -36,6 +27,12 @@
         </li>
         <li class="active">
           <a href="{% url 'cursos:cursos' %}"><span class="fa fa-id-badge mr-3"></span>Lista de cursos</a>
+        </li>
+        <li class="active">
+          <a href="{% url 'cursos:profesor_crear' %}"><span class="fa fa-id-badge mr-3"></span>Alta de profesor</a>
+        </li>
+        <li class="active">
+          <a href="{% url 'cursos:profesores' %}"><span class="fa fa-id-badge mr-3"></span>Lista de profesores</a>
         </li>
       </ul>
 

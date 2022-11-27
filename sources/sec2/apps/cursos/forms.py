@@ -283,8 +283,13 @@ class CursoFilterForm(FiltrosForm):
     actividad = forms.ChoiceField(required=False)
 
 class ActividadFilterForm(FiltrosForm):
-    nombre  = forms.CharField(required=False)
+    nombre = forms.CharField(required=False)
+    # Area = models.PositiveSmallIntegerField()
 
+class ProfesorFilterForm(FiltrosForm):
+    nombre = forms.CharField(required=False)
+    # Area = models.PositiveSmallIntegerField()
+    
 class DictadoFilterForm(FiltrosForm):
     fecha_inicio  = forms.DateField(required=False)
     fecha_fin =forms.DateField(required=False)

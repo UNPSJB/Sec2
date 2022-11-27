@@ -11,7 +11,9 @@ from .forms import (
     FormularioProfesor,
     DictadoForm, 
     ActividadFilterForm,CursoFilterForm, 
-    DictadoFilterForm, 
+    DictadoFilterForm,
+    ProfesorFilterForm,
+    ProfesorForm,
     ClaseForm, 
     ClaseFilterForm, 
     FormularioAlumno
@@ -95,7 +97,7 @@ class CursoListView(ListFilterView):
         if self.request.POST['submit'] == "Guardar y Crear Dictado":
             return reverse_lazy('cursos:dictado_crear', args=[self.object.pk])
         return super().get_success_url()
-
+    
 class CursoUpdateView(UpdateView):
     model = Curso
     form_class = CursoForm
@@ -110,7 +112,24 @@ def curso_eliminar(request, pk):
 class ProfesorCreateView(CreateView):
     model = Profesor
     form_class = FormularioProfesor
-    success_url = reverse_lazy('cursos:Profesor_crear')
+    success_url = reverse_lazy('cursos:profesores')
+    
+class ProfesorListView(ListFilterView):
+    model = Profesor
+    # paginate_by = 100  
+    filter_class = ProfesorFilterForm
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['titulo'] = "Listado de profesores"
+        return context
+
+
+class ProfesorUpdateView(UpdateView):
+    model = Profesor
+    form_class = FormularioProfesor
+    success_url = reverse_lazy('cursos:profesores')
+
 
 class DictadoCreateView(CreateView):
     model = Dictado
