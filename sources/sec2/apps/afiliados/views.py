@@ -59,9 +59,8 @@ class AfliadosListView(ListFilterView):
 
 class AfiliadoUpdateView(UpdateView):
     model = Afiliado
-   
     form_class = FormularioAfiliadoUpdate
-    success_url = reverse_lazy('afiliados:modificarAfiliado')
+    success_url = reverse_lazy('afiliados:afiliado_listar')
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -73,6 +72,8 @@ class AfiliadoUpdateView(UpdateView):
         return super().form_valid(form)
 
     def form_invalid(self, form):
+        print(form.errors)
+        print(form.non_field_errors())
         messages.add_message(self.request, messages.ERROR, form.errors)
         return super().form_invalid(form)
 

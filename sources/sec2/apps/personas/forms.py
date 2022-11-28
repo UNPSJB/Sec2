@@ -48,12 +48,8 @@ class PersonaUpdateForm(ModelForm):
    
     class Meta:
         model = Persona
-        fields = '__all__'
-        #exclude=['persona', 'tipo']
-        Widgets ={
-            'fechaNacimiento': forms.DateInput(attrs={'type':'datetime-local'}),
-            }
-
+        exclude=['dni', "familia",'es_afiliado','es_alumno','es_profesor','es_encargado']
+        
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.helper = FormHelper()
@@ -63,8 +59,7 @@ class PersonaUpdateForm(ModelForm):
                    "",
                 HTML(
                     '<hr/>'),
-                    'dni', 
-                    'fechaNacimiento',
+                    'fecha_nacimiento',
                     'nombre',
                     'apellido',
                     'direccion',
@@ -76,8 +71,6 @@ class PersonaUpdateForm(ModelForm):
             
             ),
             Submit('submit', 'Guardar', css_class='button white'),)
-
-PersonaForm.base_fields.update(PersonaForm.base_fields)
 
 class PersonaWidget(s2forms.ModelSelect2Widget):
     search_fields = [
