@@ -6,6 +6,17 @@
 <h1><center>Lista de afiliados</center></h1>
 
 <div class="container-sm">
+   {% comment %} <div class="btn-group dropend estado" >
+    <button type="button" class="btn btn-dark dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+      Estado de Afiliado
+    </button>
+    <ul class="dropdown-menu">
+      <li><a class="dropdown-item" href="{% url 'afiliados:afiliado_listar' %}?estado=2">Activo</a></li>
+      <li><a class="dropdown-item" href="{% url 'afiliados:afiliado_listar' %}?estado=1">Pendiente a confirmacion</a></li>
+      <li><a class="dropdown-item" href="{% url 'afiliados:afiliado_listar' %}?estado=3">Inactivo</a></li>
+    </ul>
+  </div> {% endcomment %}
+  
   <div class="table-responsive">
     <table class="table table-dark table-striped table-hover" style="background-color:gray;solid; ; border-radius: 10px;">
       <thead>
@@ -18,17 +29,7 @@
           <th scope="col">Categoria laboral</th>
           <th scope="col">Domicilio empresa</th>
           <th scope="col">Estado</th>
-          <th scope="col">
-            <div class="dropdown">
-              <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                Opcion
-              </button>
-              <ul class="dropdown-menu">
-                <li><a class="dropdown-item" href="{% url 'afiliados:afiliado_listar' %}?estado=2">Activo</a></li>
-                <li><a class="dropdown-item" href="{% url 'afiliados:afiliado_listar' %}?estado=1">Pendiente a confirmacion</a></li>
-                <li><a class="dropdown-item" href="{% url 'afiliados:afiliado_listar' %}?estado=3">Inactivo</a></li>
-              </ul>
-            </di>
+          <th scope="col">Opcion</th>
         </tr>
       </thead>
       <tbody>
