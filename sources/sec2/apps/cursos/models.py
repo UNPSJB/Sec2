@@ -71,11 +71,6 @@ class Dictado(models.Model):
         clase.dictado = self
         clase.save()
     
-    def asignarTitular(self, profesor):
-        titular = Titular()
-        titular.profesor = profesor
-        titular.dictado = self
-        titular.save()
     
 class Clase(models.Model):
     DIA=(
@@ -114,6 +109,7 @@ Rol.register(Profesor)
 class Titular(models.Model):
     profesor = models.ForeignKey(Profesor, on_delete=models.CASCADE)
     dictado= models.ForeignKey(Dictado, on_delete=models.CASCADE)
+    
 
 class Asistencia_profesor(models.Model):
     fecha_asistencia_profesor = models.DateField()
