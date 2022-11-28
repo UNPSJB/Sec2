@@ -240,8 +240,7 @@ FormularioProfesor.base_fields.update(ProfesorForm.base_fields)
 class DictadoForm(forms.ModelForm):
     class Meta:
         model = Dictado
-        fields = ['fecha_inicio','fecha_fin', 'aula']
-
+        fields = ['fecha_inicio','fecha_fin', 'aula', 'precio']
         widgets ={   
             'fecha_inicio': forms.DateInput(attrs={'type':'date'}),
             'fecha_fin': forms.DateInput(attrs={'type':'date'}),
@@ -252,7 +251,7 @@ class TitularForm(forms.ModelForm):
     class Meta:
         model = Titular
         fields = "__all__"
-        exclude = ['dicatdo']
+        exclude = ['dictado']
 
 
 class FormularioDictado(forms.Form):
@@ -273,7 +272,7 @@ class FormularioDictado(forms.Form):
             curso = initial.get('curso')
             self.dictadoForm = DictadoForm(initial=initial, instance=instance, *args, **kwargs)
             self.titularForm = TitularForm(initial=initial, *args, **kwargs)
-            
+            self.dictadoForm.fields['precio'].initial = curso.costo
             print(curso)
             super().__init__(initial=initial,*args, **kwargs)
             self.helper = FormHelper()
@@ -285,6 +284,7 @@ class FormularioDictado(forms.Form):
                     'fecha_inicio',
                     'fecha_fin',
                     'aula',
+                    'precio',
                 ),
                 
                 Fieldset(

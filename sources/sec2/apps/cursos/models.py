@@ -55,6 +55,7 @@ class Dictado(models.Model):
     fecha_fin = models.DateField()
     aula=models.ForeignKey(Aula, related_name="dictado", on_delete=models.CASCADE)
     curso=models.ForeignKey(Curso, related_name="curso", on_delete=models.CASCADE)
+    precio = models.DecimalField(help_text="costo", max_digits=10, decimal_places=2)
     
     def __str__(self):
         return f"Fecha inicio: {self.fecha_inicio}, Fecha fin: {self.fecha_fin} Aula:{self.aula}"
