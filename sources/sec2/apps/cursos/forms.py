@@ -237,7 +237,6 @@ class FormularioProfesor(forms.ModelForm):
 
 FormularioProfesor.base_fields.update(ProfesorForm.base_fields)
 
-
 class DictadoForm(forms.ModelForm):
     class Meta:
         model = Dictado
@@ -248,21 +247,33 @@ class DictadoForm(forms.ModelForm):
             'fecha_fin': forms.DateInput(attrs={'type':'date'}),
                 }
 
-    def save(self, curso, commit=False):
-        # print('aca estoy')
-        # print(self.cleaned_data)
-        # formDictado = FormDictado(data=self.cleaned_data)
-        fecha_inicio= self.cleaned_data["fecha_inicio"]
-        fecha_fin= self.cleaned_data["fecha_fin"]
-        aula = self.cleaned_data["aula"]
-        curso.asignar_dictado(fecha_inicio, fecha_fin, aula)
-        
-        
-        
-       
+    
+class TitularForm(forms.ModelForm):
+    class Meta:
+        model = Titular
+        fields = "__all__"
+        exclude = ['dicatdo']
 
-    def __init__(self,initial=None, *args, **kwargs):
-            curso = initial.pop('curso')
+
+class FormularioDictado(forms.Form):
+    def is_valid(self) -> bool:
+        return super().is_valid()  and self.dictadoForm.is_valid() and self.titularForm.is_valid()
+
+    def save(self, commit=False):
+        curso = self.initial.get("curso")
+        dictado = self.dictadoForm.save(commit=False)
+        titular = self.titularForm.save(commit=False)
+        dictado = curso.asignar_dictado(dictado)
+        dictado.save()
+        titular.dictado = dictado
+        titular.save()
+        return dictado
+
+    def __init__(self, initial=None, instance=None, *args, **kwargs):
+            curso = initial.get('curso')
+            self.dictadoForm = DictadoForm(initial=initial, instance=instance, *args, **kwargs)
+            self.titularForm = TitularForm(initial=initial, *args, **kwargs)
+            
             print(curso)
             super().__init__(initial=initial,*args, **kwargs)
             self.helper = FormHelper()
@@ -275,7 +286,15 @@ class DictadoForm(forms.ModelForm):
                     'fecha_fin',
                     'aula',
                 ),
+                
+                Fieldset(
+                    "Titularidad",
+                    'profesor',
+                ),
                 Submit('submit', 'Guardar', css_class='button white'),)
+
+FormularioDictado.base_fields.update(DictadoForm.base_fields)
+FormularioDictado.base_fields.update(TitularForm.base_fields)
 
 
 class CursoFilterForm(FiltrosForm):

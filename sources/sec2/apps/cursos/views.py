@@ -16,7 +16,8 @@ from .forms import (
     ProfesorForm,
     ClaseForm, 
     ClaseFilterForm, 
-    FormularioAlumno
+    FormularioAlumno,
+    FormularioDictado
 )
 from django.urls import reverse_lazy
 from django import forms
@@ -133,7 +134,7 @@ class ProfesorUpdateView(UpdateView):
 
 class DictadoCreateView(CreateView):
     model = Dictado
-    form_class = DictadoForm
+    form_class = FormularioDictado
     success_url = reverse_lazy('cursos:cursos')
 
     def get_initial(self,*args, **kwargs):
@@ -146,13 +147,7 @@ class DictadoCreateView(CreateView):
         print(curso)
         context['curso'] = curso
         return context
-    
-    def post(self, *args, **kwargs):
-        form = self.get_form() #form = DictadoForm(self.request.POST)
-        curso = Curso.objects.get(pk=self.kwargs.get("pk"))
-        if form.is_valid():
-            form.save(curso)
-        return redirect(self.success_url)
+
     
 class DictadoListView(ListFilterView):
     model = Dictado

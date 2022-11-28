@@ -46,13 +46,9 @@ class Curso(models.Model):
     def __str__(self):
         return f"{self.nombre} {self.actividad} Precio:{self.costo}"
     
-    def asignar_dictado(self, fecha_inicio, fecha_fin, aula):
-        dictado = Dictado()
-        dictado.fecha_inicio = fecha_inicio
-        dictado.fecha_fin = fecha_fin
-        dictado.aula = aula
+    def asignar_dictado(self, dictado):
         dictado.curso = self
-        dictado.save()
+        return dictado
 
 class Dictado(models.Model):
     fecha_inicio = models.DateField()
@@ -63,6 +59,8 @@ class Dictado(models.Model):
     def __str__(self):
         return f"Fecha inicio: {self.fecha_inicio}, Fecha fin: {self.fecha_fin} Aula:{self.aula}"
 
+    
+    
     def asignar_clase(self, dia, hora_inicio, hora_fin):
         clase = Clase()
         clase.hora_inicio = hora_inicio
@@ -104,6 +102,10 @@ class Profesor(Rol):
     actividades = models.ManyToManyField(Actividad, blank=True)
     dictados = models.ManyToManyField(Dictado, through = "Titular", related_name="profesores", blank=True)
 
+    def __str__(self):
+        return f"{self.persona.nombre}, {self.persona.apellido} - {self.persona.dni}"
+    
+    
 Rol.register(Profesor)
 
 class Titular(models.Model):
