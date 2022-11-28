@@ -25,8 +25,15 @@
         <li class="active">
           <a href="{% url 'cursos:curso_crear' %}"><span class="fa fa-id-badge mr-3"></span>Crear curso</a>
         </li>
+        
         <li class="active">
           <a href="{% url 'cursos:cursos' %}"><span class="fa fa-id-badge mr-3"></span>Lista de cursos</a>
+        </li>
+        <li class="active">
+          <a href="{% url 'cursos:aula_crear' %}"><span class="fa fa-id-badge mr-3"></span>Crear aula</a>
+        </li>
+        <li class="active">
+          <a href="{% url 'cursos:aulas' %}"><span class="fa fa-id-badge mr-3"></span>Lista de aula</a>
         </li>
         <li class="active">
           <a href="{% url 'cursos:profesor_crear' %}"><span class="fa fa-id-badge mr-3"></span>Alta de profesor</a>
@@ -34,6 +41,7 @@
         <li class="active">
           <a href="{% url 'cursos:profesores' %}"><span class="fa fa-id-badge mr-3"></span>Lista de profesores</a>
         </li>
+        
       </ul>
 
       <div class="mb-5">

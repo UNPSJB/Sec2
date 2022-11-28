@@ -32,20 +32,20 @@ urlpatterns = [
     # path('profesores/<int:pk>/eliminar', actividad_eliminar, name="profesor_eliminar"),
     
     # * ------------------------  AULAS  ----------------------------------
-    path('aulas', AulaListView.as_view(), name="aulas"),
-    path('aulas/crear', AulaCreateView.as_view(), name="aula_crear"),
+    path('aulas', AulaListView.as_view(), name="aulas"), #list
+    path('aulas/crear', AulaCreateView.as_view(), name="aula_crear"), #listo
     path('aulas/<int:pk>', AulaDetailView.as_view(), name="aula_detalles"),
     path('aulas/<int:pk>/editar', AulaUpdateView.as_view(), name="aula_editar"),
     path('aulas/<int:pk>/eliminar', aula_eliminar, name="aula_eliminar"),
     
     # * ------------------------  Dictado  ----------------------------------
-    path('dictado/<int:pk>', DictadoListView.as_view(), name="ver_dictados"),
-    path('<int:pk>/dictado/crear', DictadoCreateView.as_view(), name="dictado_crear"),
+    path('dictado/<int:pk>', DictadoListView.as_view(), name="ver_dictados"),#se accede desde el curso
+    path('<int:pk>/dictado/crear', DictadoCreateView.as_view(), name="dictado_crear"),#se accede desde el curso
 
     # * ------------------------  Clase  ------------------------------------
-    path('dictado/<int:pk>/nuevaclase', ClaseCreateView.as_view(), name="clase_crear"),
-    path('dictado/<int:pk>/verclases', ClaseListView.as_view(), name="ver_clases"),
+    path('dictado/<int:pk>/nuevaclase', ClaseCreateView.as_view(), name="clase_crear"),#se accede desde el dictado
+    path('dictado/<int:pk>/verclases', ClaseListView.as_view(), name="ver_clases"),#se accede desde el dictado
     
     # * ------------------------  Alumno  ------------------------------------
-    path('<int:pk>/inscripcion', AlumnoCreateView.as_view(), name="inscripcion"),
+    path('<int:pk>/inscripcion', AlumnoCreateView.as_view(), name="inscripcion"),#se accede desde el curso
 ]
