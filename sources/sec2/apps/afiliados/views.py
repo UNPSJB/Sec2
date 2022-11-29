@@ -96,6 +96,128 @@ def afiliado_aceptar(request, pk):
     a.save()
     return redirect('afiliados:afiliado_listar')
 
-def afiliado_ver(request, pk):
-    template = loader.get_template('home_afiliado.html')
+def afiliado_ver1(request, pk):
+    template = loader.get_template('afiliado_historial.html')
     return HttpResponse(template.render())
+
+class afiliado_ver(UpdateView):
+    model = Afiliado
+    form_class = FormularioAfiliadoUpdate
+    success_url = reverse_lazy('afiliados:afiliado_listar')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['titulo'] = "Modificar Afiliado"
+        return context
+    
+    def form_valid(self, form):
+        messages.add_message(self.request, messages.SUCCESS, 'afiliado modificada con éxito')
+        return super().form_valid(form)
+
+    def form_invalid(self, form):
+        print(form.errors)
+        print(form.non_field_errors())
+        messages.add_message(self.request, messages.ERROR, form.errors)
+        return super().form_invalid(form)
+
+class AfiliadoVer():
+    
+    fechaAfiliacion = forms.DateField()
+
+    class Meta:
+        model = Persona
+        fields = '__all__'
+        exclude = ['familia']
+        widgets = {
+            # 'fecha_nacimiento': forms.DateInput(attrs={'type':'date'}),
+        }
+
+        labels = {
+            'fecha_nacimiento': "Fecha de nacimiento",
+        }
+
+    # ** SE COMENTO ESTA LINEA PARA QUE NO LO CHEQUEARA
+    # def clean_dni(self):
+    #     self.persona = Persona.objects.filter(dni=self.cleaned_data['dni']).first()
+    #     if self.persona is not None and self.persona.es_afiliado:
+    #         raise ValidationError("Ya existe un afiliado activo con ese DNI")
+    #     return self.cleaned_data['dni']
+
+    # def is_valid(self) -> bool:
+    #     valid = super().is_valid()
+    #     personaForm = PersonaUpdateForm(data=self.cleaned_data)
+    #     afiliadoForm = AfiliadoUpdateForm(data=self.cleaned_data)
+    #     print(valid)
+    #     print(personaForm.is_valid())
+    #     print(afiliadoForm.is_valid())
+    #     return valid and personaForm.is_valid() and afiliadoForm.is_valid()
+
+    # def save(self, commit=False):
+    #     print(self.cleaned_data)
+    #     if self.persona is None:
+    #         personaForm = PersonaUpdateForm(data=self.cleaned_data)
+    #         self.persona = personaForm.save()
+    #     afiliadoForm = AfiliadoUpdateForm(data=self.cleaned_data)
+    #     afiliado = afiliadoForm.save(commit=False)
+    #     self.persona.afiliar(afiliado, self.cleaned_data['fechaAfiliacion'])
+    #     return afiliado
+
+    def __init__(self, instance=None, *args, **kwargs):
+        print(kwargs)
+        # model_to_dict(instance)
+
+        if instance is not None:
+            persona = instance.persona
+            afiliado = instance.afiliado
+            datapersona = model_to_dict(persona)
+            dataafiliado = model_to_dict(afiliado)
+            print(datapersona)
+            print(dataafiliado)
+           # datapersona.fecha_nacimiento
+            datapersona.update(dataafiliado)
+            kwargs["initial"] = datapersona
+        super().__init__(*args, **kwargs)
+        print(instance)
+
+        self.helper = FormHelper()
+        #self.helper.form_action = 'afiliados:index'
+        self.helper.layout = Layout(
+            HTML(
+                f'<h2><center>Datos de {persona.nombre} {persona.apellido}</center></h2>'),
+            Fieldset(
+                "Datos Personales",
+
+                HTML(
+                    '<hr/>'),
+                'dni',
+                'nombre',
+                'apellido',
+                'fecha_nacimiento',
+                'direccion',
+                'mail',
+                'nacionalidad',
+                'estado_civil',
+                'cuil',
+                'celular',
+                'familia',
+
+            ),
+
+            Fieldset(
+                "Datos Laborales",
+                HTML(
+                    '<hr/>'),
+
+                'razon_social',
+                'cuit_empleador',
+                'domicilio_empresa',
+                'localidad_empresa',
+                'fechaIngresoTrabajo',
+                'rama',
+                'sueldo',
+                'horaJornada',
+                'fechaAfiliacion',
+                'categoria_laboral',
+            ),
+
+            Submit('submit', 'Volver', css_class='button white'),)
