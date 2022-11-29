@@ -32,6 +32,8 @@ urlpatterns = [
     path('cursos/',include('apps.cursos.urls')),
     # path('pagos/',include('apps.pagos.urls')),
     path("select2/", include("django_select2.urls")),
+    path('home/afiliados/familia',include('apps.personas.urls')),
+
 ]
 
 

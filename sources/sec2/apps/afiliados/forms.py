@@ -237,7 +237,7 @@ class AfiliadoFilterForm(FiltrosForm):
 
 
 
-class AfiliadoVer(forms.ModelForm):
+class AfiliadoVer():
     fechaAfiliacion = forms.DateField()
 
     class Meta:
