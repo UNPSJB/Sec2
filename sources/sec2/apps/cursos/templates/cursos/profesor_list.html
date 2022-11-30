@@ -13,10 +13,10 @@
                 <th scope="col">Dni</th>
                 <th scope="col">Apellido</th>
                 <th scope="col">Nombre</th>
-                <th scope="col"></th>   
-                <th scope="col"></th>
-                <th scope="col"></th>
-                <th scope="col"></th>
+                <th scope="col">Editar</th>   
+                <th scope="col">Ditados a cargo</th>   
+                <th scope="col">Eliminar</th>
+                
               </tr>
             </thead>
             <tbody>
@@ -27,7 +27,7 @@
                         <td>{{ profesor.persona.apellido }}</td>
                         <td>{{ profesor.persona.nombre }}</td>
                         <td><a href="{% url 'cursos:profesor_modificar' profesor.pk %}"class="btn btn-primary">Editar</a></td>
-                        <td><a href="{% url 'cursos:ver_dictados' profesor.pk %}"class="btn btn-primary">Dictados</a></td>
+                        <td><a href="{% url 'cursos:ver_dictados' profesor.pk %}"class="btn btn-primary">Dictados</a></td> 
                         {% comment %} <td><a href="{% url 'cursos:inscripcion' profesor.pk %}"class="btn btn-primary">Inscripción</a></td> {% endcomment %}
                         <td>
                             <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#exampleModal_eliminar">
