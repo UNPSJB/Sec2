@@ -24,6 +24,7 @@ class Persona(models.Model):
     es_encargado=models.BooleanField(default=False)
     fecha_nacimiento = models.DateField(null=False ,blank=False)
     familia = models.ManyToManyField('self', through='Vinculo', blank=True)
+    objects = models.Manager()
     #familia = models.ManyToManyField('self', through='Familiar')
 
     
@@ -86,7 +87,21 @@ class Vinculo (models.Model):
     def __str__(self):
         return f"{self.vinculado} es {self.get_tipoVinculo_display()}"
 
-
+# class Familiar(models.Model):
+#     #se limita a familiares a los familiares hasta segunda linia 
+#    TIPOS=(
+#        (1,"hijo"),
+#        (2,"conyuge"),
+#        (3,"padre"),
+#        (4,"madre"),
+#        (5,"hermano"),
+#        (6,"tutor"),
+#    )
+#    AFILIADO = [1, 2, 3, 4, 5]
+#    ALUMNO = [3, 4, 6]
+#    persona=models.ForeignKey(Persona, related_name = "familiares", on_delete = models.CASCADE) 
+#    familiar_de=models.ForeignKey(Persona, related_name = "personas", on_delete = models.CASCADE) 
+#    tipo=models.PositiveSmallIntegerField(choices=TIPOS)
     
 class Rol(models.Model):
     TIPO = 0
@@ -124,23 +139,3 @@ class Rol(models.Model):
 
     def sos(self, Klass):
         return any([isinstance(rol, Klass) for rol in self.roles_related()])
-
-#class Familiar(models.Model):
-    #se limita a familiares a los familiares hasta segunda linia 
-#    TIPOS=(
-#        (1,"hijo"),
-#        (2,"conyuge"),
-#        (3,"padre"),
-#        (4,"madre"),
-#        (5,"hermano"),
-#        (6,"tutor"),
-#    )
-#    AFILIADO = [1, 2, 3, 4, 5]
-#    ALUMNO = [3, 4, 6]
-#    persona=models.ForeignKey(Persona, related_name = "familiares", on_delete = models.CASCADE) 
-#    familiar_de=models.ForeignKey(Persona, related_name = "personas", on_delete = models.CASCADE) 
-#    tipo=models.PositiveSmallIntegerField(choices=TIPOS)
-
-
-
-    

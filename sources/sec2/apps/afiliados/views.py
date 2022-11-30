@@ -136,32 +136,6 @@ class AfiliadoVer():
             'fecha_nacimiento': "Fecha de nacimiento",
         }
 
-    # ** SE COMENTO ESTA LINEA PARA QUE NO LO CHEQUEARA
-    # def clean_dni(self):
-    #     self.persona = Persona.objects.filter(dni=self.cleaned_data['dni']).first()
-    #     if self.persona is not None and self.persona.es_afiliado:
-    #         raise ValidationError("Ya existe un afiliado activo con ese DNI")
-    #     return self.cleaned_data['dni']
-
-    # def is_valid(self) -> bool:
-    #     valid = super().is_valid()
-    #     personaForm = PersonaUpdateForm(data=self.cleaned_data)
-    #     afiliadoForm = AfiliadoUpdateForm(data=self.cleaned_data)
-    #     print(valid)
-    #     print(personaForm.is_valid())
-    #     print(afiliadoForm.is_valid())
-    #     return valid and personaForm.is_valid() and afiliadoForm.is_valid()
-
-    # def save(self, commit=False):
-    #     print(self.cleaned_data)
-    #     if self.persona is None:
-    #         personaForm = PersonaUpdateForm(data=self.cleaned_data)
-    #         self.persona = personaForm.save()
-    #     afiliadoForm = AfiliadoUpdateForm(data=self.cleaned_data)
-    #     afiliado = afiliadoForm.save(commit=False)
-    #     self.persona.afiliar(afiliado, self.cleaned_data['fechaAfiliacion'])
-    #     return afiliado
-
     def __init__(self, instance=None, *args, **kwargs):
         print(kwargs)
         # model_to_dict(instance)

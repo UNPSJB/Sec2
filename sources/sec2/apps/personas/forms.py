@@ -1,5 +1,6 @@
 from apps.personas.models import Persona, Vinculo
-from django.forms import ModelForm, formset_factory, BaseFormSet
+from django.forms import ModelForm, modelformset_factory, BaseModelFormSet, ValidationError
+from django.forms import BaseFormSet
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Fieldset, Submit, Div, HTML
 from dataclasses import fields
@@ -87,15 +88,27 @@ class BuscadorPersonasForm(forms.Form):
 class VinculoForm(forms.ModelForm):
     class Meta:
         model = Vinculo
-        fields = ("tipoVinculo",
-                  "vinculado")
+        fields = '__all__'
+        # fields = ("tipo",
+        #           "vinculado")
+        widgets = {
+            'vinculado': PersonaWidget
+        }
 
 class BaseVinculoFormSet(BaseFormSet):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.helper = FormHelper()
+        self.helper.template = 'bootstrap5/table_inline_formset.html'
         self.helper.add_input(Submit('submit', 'Guardar'))
+    
+    def clean(self):
+        personas = [p['vinculado'].id for p in self.cleaned_data if 'vinculado' in p.keys()]
+        if len(set(personas)) != len(personas):
+            raise ValidationError("Solo puede existir un tipo de relacion con una persona")
+        # Validar no tener vinculos recursivos
 
-VinculoFormSet = formset_factory(VinculoForm, formset=BaseVinculoFormSet,
+VinculoFormSet = modelformset_factory(Vinculo, form=VinculoForm, formset=BaseVinculoFormSet,
     extra=1,
+    can_delete=True
 )
