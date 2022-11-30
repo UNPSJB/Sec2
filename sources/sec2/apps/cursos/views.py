@@ -4,6 +4,7 @@ from django.http import HttpResponse
 from django.views.generic import DetailView, ListView
 from django.views.generic.edit import CreateView, DeleteView, UpdateView
 from .models import Actividad, Curso, Aula, Profesor, Dictado, Clase, Alumno
+from django.contrib import messages
 from .forms import (
     ActividadForm, 
     CursoForm, 
@@ -17,7 +18,8 @@ from .forms import (
     ClaseForm, 
     ClaseFilterForm, 
     FormularioAlumno,
-    FormularioDictado
+    FormularioDictado,
+    FormularioProfesorUpdateFrom
 )
 from django.urls import reverse_lazy
 from django import forms
@@ -128,9 +130,23 @@ class ProfesorListView(ListFilterView):
 
 class ProfesorUpdateView(UpdateView):
     model = Profesor
-    form_class = FormularioProfesor
+    form_class = FormularioProfesorUpdateFrom
     success_url = reverse_lazy('cursos:profesores')
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['titulo'] = "Modificar Profesor"
+        return context
+    
+    def form_valid(self, form):
+        messages.add_message(self.request, messages.SUCCESS, 'profesor modificada con éxito')
+        return super().form_valid(form)
+
+    def form_invalid(self, form):
+        print(form.errors)
+        print(form.non_field_errors())
+        messages.add_message(self.request, messages.ERROR, form.errors)
+        return super().form_invalid(form)
 
 class DictadoCreateView(CreateView):
     model = Dictado

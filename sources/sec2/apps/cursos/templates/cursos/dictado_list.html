@@ -9,8 +9,7 @@
                 <th scope="col">Fecha de inicio</th>
                 <th scope="col">Fecha fin</th>
                 <th scope="col">Aula</th>
-                <th scope="col">Editar</th>
-                <th scope="col">Eliminar</th>    
+                {% comment %}<th scope="col">Editar</th>{% endcomment %}
                 <th scope="col">Clases</th>    
                 <th scope="col">Detalle de clases</th>           
               </tr>
@@ -22,8 +21,7 @@
                     <td>{{ obj.fecha_inicio }}</td>
                     <td>{{ obj.fecha_fin }}</td>
                     <td>{{ obj.aula.denominacion }}</td>
-                    <td><a href="{% url 'cursos:curso_editar' obj.pk %}"class="btn btn-primary">Editar</a></td>
-                    <td><a href="{% url 'cursos:curso_eliminar' obj.pk %}"class="btn btn-primary">Eliminar</a></td>
+                    {% comment %}<td><a href="{% url 'cursos:curso_editar' obj.pk %}"class="btn btn-primary">Editar</a></td>{% endcomment %}
                     <td><a href="{% url 'cursos:clase_crear' obj.pk %}"class="btn btn-primary">Nueva clase</a></td>                
                     <td><a href="{% url 'cursos:ver_clases' obj.pk %}"class="btn btn-primary">Ver clases</a></td>                                           
                 </tr>

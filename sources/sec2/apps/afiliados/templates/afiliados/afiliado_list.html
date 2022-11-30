@@ -25,11 +25,13 @@
           <th scope="col">Apellido</th>
           <th scope="col">Nombre</th>
           <th scope="col">Fecha de nacimiento</th>
-          {% comment %} <th scope="col">CUIT empleador</th> {% endcomment %}
-          {% comment %} <th scope="col">Categoria laboral</th> {% endcomment %}
-          {% comment %} <th scope="col">Domicilio empresa</th> {% endcomment %}
-          <th scope="col">Estado</th>
-          <th scope="col" class="text-center">Opcion</th>
+          <th scope="col">CUIT empleador</th> 
+          <th scope="col">Categoria laboral</th> 
+          <th scope="col">Domicilio empresa</th> 
+          <th scope="col">Editar</th>   
+          <th scope="col">desafiliar</th>
+         {% comment %} <th scope="col">Estado</th>
+          <th scope="col" class="text-center">Opcion</th>{% endcomment %}
         </tr>
       </thead>
       <tbody>
@@ -40,11 +42,35 @@
             <td>{{ afiliado.persona.apellido }}</td>
             <td>{{ afiliado.persona.nombre }}</td>
             <td>{{ afiliado.persona.fecha_nacimiento }}</td>
-            {% comment %} <td>{{ afiliado.cuit_empleador }}</td> {% endcomment %}
-            {% comment %} <td>{{ afiliado.categoria_laboral }}</td> {% endcomment %}
-            {% comment %} <td>{{ afiliado.domicilio_empresa }}</td> {% endcomment %}
-
-            {% if afiliado.estado == 1 %}
+            <td>{{ afiliado.cuit_empleador }}</td> 
+            <td>{{ afiliado.categoria_laboral }}</td> 
+            <td>{{ afiliado.domicilio_empresa }}</td> 
+            <td><a href="{% url 'afiliados:modificarAfiliado' afiliado.pk %}"class="btn btn-primary">Editar</a></td>
+                       {% comment %} <td><a href="{% url 'cursos:ver_dictados' profesor.pk %}"class="btn btn-primary">Dictados</a></td> 
+                         <td><a href="{% url 'cursos:inscripcion' profesor.pk %}"class="btn btn-primary">Inscripción</a></td> {% endcomment %}
+                        <td>
+                            <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#exampleModal_eliminar">
+                                desafiliar
+                            </button>
+                            <div class="modal fade" id="exampleModal_eliminar" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h1 class="modal-title fs-5" id="exampleModalLabel">Modal title</h1>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                        </div> 
+                                        <div class="modal-body">
+                                            <h5>¿Estas seguro que deseas desafiliar al afiliado?</h5>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                                            <a href="{% url 'afiliados:desafiliar_afiliado' afiliado.pk %}"class="btn btn-danger">desafiliar</a>                                </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </td>
+           {% comment %} {% if afiliado.estado == 1 %}
               <td>PENDIENTE</td>
               <td class="text-center">
                 <a href= "{% url 'afiliados:modificarAfiliado' afiliado.pk %}" class="btn btn-primary">Editar</a>
@@ -108,7 +134,9 @@
               <td class="text-center">
                 <a href= "{% url 'afiliados:ver_Afiliado' afiliado.pk %}" class="btn btn-primary">Ver</a>
               </td>
-            {% endif %}
+            {% endif %}{% endcomment %}
+            {% comment %} <a href= "{% url 'personas:crear_familiar' afiliado.pk %}" class="btn btn-primary">Grupo Familiar</a> {% endcomment %}
+
           </tr>
           {% endfor %}
         </tr>
