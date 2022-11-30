@@ -124,7 +124,7 @@
                   </div>
                 </div>
                 <p></p>
-                {% comment %} <a href= "{% url 'personas:familiaPersona' afiliado.pk %}" class="btn btn-primary">Grupo Familiar</a>
+                <a href= "{% url 'personas:crear_familiar' afiliado.pk %}" class="btn btn-primary">Grupo Familiar</a>
               </td>
 
             {% endif %}
@@ -135,6 +135,8 @@
                 <a href= "{% url 'afiliados:ver_Afiliado' afiliado.pk %}" class="btn btn-primary">Ver</a>
               </td>
             {% endif %}{% endcomment %}
+            {% comment %} <a href= "{% url 'personas:crear_familiar' afiliado.pk %}" class="btn btn-primary">Grupo Familiar</a> {% endcomment %}
+
           </tr>
           {% endfor %}
         </tr>

@@ -13,7 +13,6 @@ urlpatterns = [
     path('ver/<int:pk>', afiliado_ver.as_view(), name="ver_Afiliado"),
     path('mostrar/',AfliadosListView.as_view(), name="afiliado_listar"),
     path('mostrar/<int:pk>/aceptar', afiliado_aceptar, name="aceptar_afiliado"),
-    path('mostrar/<int:pk>/desafiliar', afiliado_desafiliar, name="desafiliar_afiliado"),
+    path('mostrar/<int:pk>/desafiliar', afiliado_desafiliar, name="desafiliar_afiliado"),    
     #path('modificar/<int:pk>', AfiliadoUpdateView.as_view(), name="baja_afiliado"),
-    path('algo/',include('apps.personas.urls')),
 ]
