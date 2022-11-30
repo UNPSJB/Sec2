@@ -3,7 +3,7 @@ from django.template import loader
 from django.http import HttpResponse
 from django.views.generic import DetailView, ListView
 from django.views.generic.edit import CreateView, DeleteView, UpdateView
-from .models import Actividad, Curso, Aula, Profesor, Dictado, Clase, Alumno
+from .models import Actividad, Curso, Aula, Profesor, Dictado, Clase, Alumno,Pago_alumno
 from django.contrib import messages
 from .forms import (
     ActividadForm, 
@@ -19,8 +19,9 @@ from .forms import (
     ClaseFilterForm, 
     FormularioAlumno,
     FormularioDictado,
-    FormularioProfesorUpdateFrom
-)
+    FormularioProfesorUpdateFrom,
+    FormularioPagoAlumno
+ )
 from django.urls import reverse_lazy
 from django import forms
 from django.db.models import Q, Model
@@ -224,3 +225,10 @@ class AlumnoCreateView(CreateView):
         else: 
             print(form.errors)
         return redirect(self.success_url)
+
+class PagoAlumnoCreateView(CreateView):
+    model = Pago_alumno
+    form_class = FormularioPagoAlumno
+    success_url = reverse_lazy('cursos:cursos')
+ 
+    

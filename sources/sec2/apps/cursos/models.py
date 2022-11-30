@@ -132,3 +132,5 @@ class Pago_alumno(models.Model):
     fecha_pago_alumno = models.DateField()
     monto= models.DecimalField(help_text="Monto pagado", max_digits=10, decimal_places=2)
 
+    def get_nombre_alumno(self):
+        return f'nombre de alumno: ({self.alumno.pk})'
