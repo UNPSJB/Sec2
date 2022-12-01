@@ -5,7 +5,7 @@ from apps.cursos.models import Alumno
 from apps.personas.forms import PersonaForm,PersonaUpdateForm
 from apps.personas.models import Persona
 from .models import Actividad
-from .models import Aula, Profesor, Dictado, Curso, Clase, Titular, Asistencia_alumno
+from .models import Aula, Profesor, Dictado, Curso, Clase, Titular
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Fieldset, Submit, HTML
 from sec2.utils import FiltrosForm
@@ -466,7 +466,6 @@ class AlumnoForm(forms.ModelForm):
         fields = '__all__'
         exclude=['persona', 'tipo', 'dictado']
 
-
 class FormularioAlumno (forms.ModelForm):
     class Meta:
         model = Persona
@@ -535,13 +534,3 @@ class FormularioAlumno (forms.ModelForm):
             ),
             
             Submit('submit', 'Guardar', css_class='button white'),)
-
-
-
-class AlumnoFilterForm(FiltrosForm):
-    persona__nombre = forms.CharField(required=False)
-    Submit('submit', 'Guardar', css_class='button white')
-
-class AlumnosDelDictadoFilterForm(FiltrosForm):
-    persona__nombre = forms.CharField(required=False)
-    persona__dni  = forms.CharField(required=False)
