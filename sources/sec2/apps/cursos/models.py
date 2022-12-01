@@ -125,7 +125,9 @@ class Pago_profesor(models.Model):
 
 class Asistencia_alumno(models.Model):
     alumno = models.ForeignKey(Alumno, related_name="asistencia", on_delete=models.CASCADE)
-    fecha_asistencia_alumno = models.DateField()
+    dictado = models.ForeignKey(Dictado, on_delete=models.CASCADE)
+    fecha_asistencia_alumno = models.DateTimeField(auto_now_add=True)
+    
 
 class Pago_alumno(models.Model):
     alumno = models.ForeignKey(Alumno, related_name="pago", on_delete=models.CASCADE)

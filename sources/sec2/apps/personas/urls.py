@@ -8,6 +8,6 @@ app_name="personas"
 urlpatterns = [
     
     # ----------------- PERSONAS -----------------
-     path('GrupoFamiliar/<int:pk>/crear', FamiliaCreateView, name="crear_familiar"),
+     path('grupoFamiliar/<int:pk>/crear', FamiliaCreateView, name="crear_familiar"),
 ]
 

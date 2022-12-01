@@ -5,7 +5,7 @@ from apps.cursos.models import Alumno
 from apps.personas.forms import PersonaForm,PersonaUpdateForm
 from apps.personas.models import Persona
 from .models import Actividad
-from .models import Aula, Profesor, Dictado, Curso, Clase, Titular
+from .models import Aula, Profesor, Dictado, Curso, Clase, Titular, Asistencia_alumno
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Fieldset, Submit, HTML
 from sec2.utils import FiltrosForm
@@ -148,18 +148,11 @@ class FormularioProfesor(forms.ModelForm):
         help_texts = {
             'dni': 'Tu numero de documento sin puntos',
         }
-        
         widgets ={
-            
            'fecha_nacimiento': forms.DateInput(attrs={'type':'date'}),
-            
-           
             }
-        
         labels = {
-           'fecha_nacimiento': "Fecha de nacimiento",
-          
-           
+           'fecha_nacimiento': "Fecha de nacimiento",   
         }
         
 
@@ -374,22 +367,25 @@ class FormularioDictado(forms.Form):
         return dictado
 
     def __init__(self, initial=None, instance=None, *args, **kwargs):
+        ### Falta ver bien como mostrar el precio sugerido en el campo precio
             curso = initial.get('curso')
             self.dictadoForm = DictadoForm(initial=initial, instance=instance, *args, **kwargs)
             self.titularForm = TitularForm(initial=initial, *args, **kwargs)
-            self.dictadoForm.fields['precio'].initial = curso.costo
-            print(curso)
+            initial.update()
+            initial["precio"]=curso.costo
             super().__init__(initial=initial,*args, **kwargs)
+            
             self.helper = FormHelper()
             self.helper.layout = Layout(
                 HTML(
-                    f'<h2><center>Alta de dictado para el curso {curso.nombre} </center></h2>'),
+                    f'<h2><center>Alta de dictado para el curso {curso.nombre}</center></h2>'),
                 Fieldset(
                     "Datos",
                     'fecha_inicio',
                     'fecha_fin',
                     'aula',
                     'precio',
+                    
                 ),
                 
                 Fieldset(
@@ -417,6 +413,12 @@ class ProfesorFilterForm(FiltrosForm):
 class DictadoFilterForm(FiltrosForm):
     fecha_inicio  = forms.DateField(required=False)
     fecha_fin =forms.DateField(required=False)
+
+    Submit('submit', 'Guardar', css_class='button white')
+
+class AlumnoFilterForm(FiltrosForm):
+    persona__nombre  = forms.CharField(required=False)
+    persona__apellido =forms.CharField(required=False)
 
     Submit('submit', 'Guardar', css_class='button white')
                 
@@ -533,3 +535,13 @@ class FormularioAlumno (forms.ModelForm):
             ),
             
             Submit('submit', 'Guardar', css_class='button white'),)
+
+
+
+class AlumnoFilterForm(FiltrosForm):
+    persona__nombre = forms.CharField(required=False)
+    Submit('submit', 'Guardar', css_class='button white')
+
+class AlumnosDelDictadoFilterForm(FiltrosForm):
+    persona__nombre = forms.CharField(required=False)
+    persona__dni  = forms.CharField(required=False)
