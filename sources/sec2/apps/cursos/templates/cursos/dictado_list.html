@@ -12,8 +12,10 @@
                 {% comment %}<th scope="col">Editar</th>{% endcomment %}
                 <th scope="col">Clases</th>    
                 <th scope="col">Detalle de clases</th>
+                <th scope="col">Marcar asistencia</th>  
                 <th scope="col">Titular</th>
-                <th scope="col">Marcar asistencia</th>           
+                <th scope="col">agregar alumno</th>
+                         
               </tr>
         </thead>
         <tbody>
@@ -25,9 +27,9 @@
                     <td>{{ dictado.aula.denominacion }}</td>
                     {% comment %}<td><a href="{% url 'cursos:curso_editar' obj.pk %}"class="btn btn-primary">Editar</a></td>{% endcomment %}
                     <td><a href="{% url 'cursos:clase_crear' dictado.pk %}"class="btn btn-primary">Nueva clase</a></td>                
-                    <td><a href="{% url 'cursos:ver_clases' dictado.pk %}"class="btn btn-primary">Ver clases</a></td>    
-                    <td><a href="{% url 'cursos:alumnos_dictado' dictado.pk  %}"class="btn btn-primary">Ver</a></td>
-                    <td><a href="{% url 'cursos:alumnos_dictado' dictado.pk  %}"class="btn btn-primary">Alumnos</a></td>                                           
+                    <td><a href="{% url 'cursos:ver_clases' dictado.pk %}"class="btn btn-primary">Ver clases</a></td> 
+                    <td><a href="{% url 'cursos:alumnos_dictado' dictado.curso.pk dictado.pk  %}"class="btn btn-primary">Agregar</a></td>     
+                    <td><a href="{% url 'cursos:alumnos_dictado' dictado.pk  %}"class="btn btn-primary">Asistencia</a></td>                                           
                 </tr>
                 {% endfor %}
             </tr>

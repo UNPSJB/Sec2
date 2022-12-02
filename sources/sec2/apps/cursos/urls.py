@@ -16,7 +16,8 @@ from .views import (AulaListView,
                     registrarAsistenciaAlumno,
                     AlumnosDelDictadoListView,
                     ProfesorDelDictadoListView,
-                    registrarAsistenciaProfesor
+                    registrarAsistenciaProfesor,
+                    agergarAlumnoCursoListView
                     )
 from .views import ClaseCreateView, ClaseListView
 from .views import AlumnoCreateView,PagoAlumnoCreateView
@@ -57,6 +58,7 @@ urlpatterns = [
     path('dictado/<int:pk>', DictadoListView.as_view(), name="ver_dictados"),#se accede desde el curso
     path('<int:pk>/dictado/crear', DictadoCreateView.as_view(), name="dictado_crear"),#se accede desde el curso
     path('<int:pk>/dictado/alumnos',  AlumnosDelDictadoListView.as_view(), name="alumnos_dictado"),#se accede desde el curso
+    path('<int:pk>/dictado/<int:dpk>/alumnos',  agergarAlumnoCursoListView.as_view(), name="alumnos_dictado"),#se accede desde dictado
     # * ------------------------  Clase  ------------------------------------
     path('dictado/<int:pk>/nuevaclase', ClaseCreateView.as_view(), name="clase_crear"),#se accede desde el dictado
     path('dictado/<int:pk>/verclases', ClaseListView.as_view(), name="ver_clases"),#se accede desde el dictado
@@ -71,6 +73,8 @@ urlpatterns = [
     path('<int:pk>/dictado/alumnos/<int:apk>/asistencia', registrarAsistenciaAlumno, name="asistencia_alumno"),
     
     # path('<int:pk>/inscriptos', AlumnosListView.as_view(), name="ver_inscriptos"),
+   path('<int:dpk>/dictado/<int:pk>/asistencia', registrarAsistenciaAlumno, name="asistencia_alumno"),
+   # path('<int:pk>/inscriptos', AlumnosListView.as_view(), name="ver_inscriptos"),
     # path('<int:pk>/inscriptos', alumno_inscribir, name="completar_inscripcion"),
     path('pagoalumno', PagoAlumnoCreateView.as_view(), name="pago_alumno"),
     
