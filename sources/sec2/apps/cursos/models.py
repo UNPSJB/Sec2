@@ -92,8 +92,17 @@ class Alumno(Rol):
     TIPO = 3
     dictado = models.ForeignKey(Dictado, related_name="alumnos", on_delete=models.CASCADE, null=True)
     curso = models.ForeignKey(Curso, related_name="alumnos", null=False, on_delete=models.CASCADE)
+
+    def agregateDictado(self, pk):
+        dictado = Dictado.objects.get(pk=pk)
+        self.dictado=dictado
+        self.save()
+        print("dictado!", self.dictado)
+        return dictado
     
-    
+    def esta_inscripto(self):
+        return self.dictado is not None
+
 Rol.register(Alumno)
 
 class Profesor(Rol):

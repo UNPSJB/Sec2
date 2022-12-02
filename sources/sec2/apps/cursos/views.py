@@ -289,6 +289,12 @@ class AlumnosDelDictadoListView(ListFilterView):
     paginate_by = 100
     filter_class = AlumnosDelDictadoFilterForm
     
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        dictado = Dictado.objects.get(id = self.kwargs.get('pk'))
+        context['dictado'] = dictado
+        return context
+
     def get_queryset(self):        
         return super().get_queryset().filter(curso_id=self.kwargs['pk'])
     
@@ -320,6 +326,7 @@ class ProfesorDelDictadoListView(ListFilterView):
           titular = super().get_queryset().filter(dictado__pk=self.kwargs['pk'])
           
           return titular
+
 class agregarAlumnoCursoListView(ListFilterView):
     model = Alumno
     paginate_by = 100
@@ -328,3 +335,9 @@ class agregarAlumnoCursoListView(ListFilterView):
     def get_queryset(self):
           print(self.args, self.kwargs)
           return super().get_queryset().filter(dictado__pk=self.kwargs['pk'])
+
+def registrarAlumnoADictado(request, pk, apk):
+    print("hola")
+    alumno = Alumno.objects.get(pk=apk)
+    dictado = alumno.agregateDictado(pk)
+    return redirect('cursos:alumnos_dictado', dictado.pk)
