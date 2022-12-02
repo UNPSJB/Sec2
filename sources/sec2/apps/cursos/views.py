@@ -300,9 +300,11 @@ class AlumnosDelDictadoListView(ListFilterView):
     
 def registrarAsistenciaAlumno(request, pk, apk):
     print("Estoy aca asistencia!")
-    asistencia_alumno = Asistencia_alumno(dictado_pk=pk, alumno_pk=apk)
+    asistencia_alumno = Asistencia_alumno(dictado_id=pk, alumno_id=apk)
     asistencia_alumno.save()
-    return redirect('alumnos_dictado')   
+    dictado = Dictado.objects.get(pk=pk)
+    curso = Curso.objects.get(pk=dictado.curso.pk)
+    return redirect('cursos:alumnos_dictado',curso.pk)   
 
 def registrarAsistenciaProfesor(request, pk, ppk):
     titular = Titular.objects.filter(titular_dictado_pk=pk)
@@ -324,7 +326,7 @@ class ProfesorDelDictadoListView(ListFilterView):
           titular = super().get_queryset().filter(dictado__pk=self.kwargs['pk'])
           
           return titular
-class agergarAlumnoCursoListView(ListFilterView):
+class agregarAlumnoCursoListView(ListFilterView):
     model = Alumno
     paginate_by = 100
     filter_class = AlumnosDelDictadoFilterForm

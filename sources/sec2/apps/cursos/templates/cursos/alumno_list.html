@@ -18,7 +18,7 @@
                         <td>{{ alumno.persona.nombre }}</td>
                         <td>{{ alumno.persona.apellido }}</td>
                         <td>{{ alumno.persona.dni }}</td>
-                        <td><a href="{% url 'cursos:asistencia_alumno' alumno.apk %}"class="btn btn-primary">Presente</a></td>                                        
+                    
                         <td><a href="{% url 'cursos:asistencia_alumno' alumno.dictado.pk alumno.pk %}"class="btn btn-primary">Presente</a></td>   
                                                              
                     </tr>

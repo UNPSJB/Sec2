@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Actividad, Curso, Dictado, Aula, Alumno, Profesor
+from .models import Actividad, Curso, Dictado, Aula, Alumno, Profesor, Asistencia_alumno, Asistencia_profesor
 
 # Register your models here.
 class ActividadAdmin(admin.ModelAdmin):
@@ -29,3 +29,5 @@ class AulaAdmin (admin.ModelAdmin):
 admin.site.register(Aula, AulaAdmin)
 admin.site.register(Alumno)
 admin.site.register(Profesor)
+admin.site.register(Asistencia_alumno)
+admin.site.register(Asistencia_profesor)
