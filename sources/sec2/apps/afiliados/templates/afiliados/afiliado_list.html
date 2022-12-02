@@ -26,8 +26,8 @@
           <th scope="col">Nombre</th>
           <th scope="col">Fecha de nacimiento</th>
           <th scope="col">CUIT empleador</th> 
-          <th scope="col">Categoria laboral</th> 
-          <th scope="col">Domicilio empresa</th> 
+          {% comment %} <th scope="col">Categoria laboral</th>  {% endcomment %}
+          {% comment %} <th scope="col">Domicilio empresa</th>  {% endcomment %}
           <th scope="col">Editar</th>   
           <th scope="col">desafiliar</th>
          {% comment %} <th scope="col">Estado</th>
@@ -43,12 +43,12 @@
             <td>{{ afiliado.persona.nombre }}</td>
             <td>{{ afiliado.persona.fecha_nacimiento }}</td>
             <td>{{ afiliado.cuit_empleador }}</td> 
-            <td>{{ afiliado.categoria_laboral }}</td> 
-            <td>{{ afiliado.domicilio_empresa }}</td> 
-            <td><a href="{% url 'afiliados:modificarAfiliado' afiliado.pk %}"class="btn btn-primary">Editar</a></td>
+            {% comment %} <td>{{ afiliado.categoria_laboral }}</td>  {% endcomment %}
+            {% comment %} <td>{{ afiliado.domicilio_empresa }}</td>  {% endcomment %}
+            {% comment %} <td><a href="{% url 'afiliados:modificarAfiliado' afiliado.pk %}"class="btn btn-primary">Editar</a></td> {% endcomment %}
                        {% comment %} <td><a href="{% url 'cursos:ver_dictados' profesor.pk %}"class="btn btn-primary">Dictados</a></td> 
                          <td><a href="{% url 'cursos:inscripcion' profesor.pk %}"class="btn btn-primary">Inscripción</a></td> {% endcomment %}
-                        <td>
+                        {% comment %} <td>
                             <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#exampleModal_eliminar">
                                 desafiliar
                             </button>
@@ -69,8 +69,8 @@
                                     </div>
                                 </div>
                             </div>
-                        </td>
-           {% comment %} {% if afiliado.estado == 1 %}
+                        </td> {% endcomment %}
+            {% if afiliado.estado == 1 %}
               <td>PENDIENTE</td>
               <td class="text-center">
                 <a href= "{% url 'afiliados:modificarAfiliado' afiliado.pk %}" class="btn btn-primary">Editar</a>
@@ -123,7 +123,6 @@
                     </div>
                   </div>
                 </div>
-                <p></p>
                 <a href= "{% url 'personas:crear_familiar' afiliado.pk %}" class="btn btn-primary">Grupo Familiar</a>
               </td>
 
@@ -134,7 +133,7 @@
               <td class="text-center">
                 <a href= "{% url 'afiliados:ver_Afiliado' afiliado.pk %}" class="btn btn-primary">Ver</a>
               </td>
-            {% endif %}{% endcomment %}
+            {% endif %}
             {% comment %} <a href= "{% url 'personas:crear_familiar' afiliado.pk %}" class="btn btn-primary">Grupo Familiar</a> {% endcomment %}
 
           </tr>
