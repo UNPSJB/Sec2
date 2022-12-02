@@ -252,6 +252,27 @@ class AlumnoCreateView(CreateView):
          print(request)
          print(pk)  
          return redirect('cursos:ver_inscriptos')
+    # def alumno_inscribir(request, pk):
+    #     a = Alumno.objects.get(pk=pk)
+    #     print("Imprimiendo")
+    #     # print(request)
+    #     # print(pk)  
+    #     return redirect('cursos:ver_inscriptos')
+
+    # def get_initial(self,*args, **kwargs):
+    #     dictado = Dictado.objects.get(pk=self.kwargs.get("pk"))
+    #     return {'dictado':dictado}
+    
+    # def get_context_data(self, **kwargs):
+    #     context = super().get_context_data(**kwargs)
+    #     dictado = Dictado.objects.get(id = self.kwargs.get('pk'))
+    #     context['dictado'] = dictado
+    #     return context
+    
+    # def post(self, *args, **kwargs):
+    #     form = self.get_form()
+    #     dictado = Dictado.objects.get(pk=self.kwargs.get("pk"))
+    #     return redirect(self.success_url)
 
    
 # class AlumnosListView(ListView):
