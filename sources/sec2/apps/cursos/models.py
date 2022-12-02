@@ -115,7 +115,7 @@ class Titular(models.Model):
     
 
 class Asistencia_profesor(models.Model):
-    fecha_asistencia_profesor = models.DateField()
+    fecha_asistencia_profesor = models.DateTimeField(auto_now_add=True)
     titular = models.ForeignKey(Titular, related_name="asistencia_profesor", on_delete=models.CASCADE)
 
 class Pago_profesor(models.Model):

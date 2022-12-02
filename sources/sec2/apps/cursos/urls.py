@@ -14,7 +14,9 @@ from .views import (AulaListView,
                     DictadoListView,
                     AlumnosListView,
                     registrarAsistenciaAlumno,
-                    AlumnosDelDictadoListView
+                    AlumnosDelDictadoListView,
+                    ProfesorDelDictadoListView,
+                    registrarAsistenciaProfesor
                     )
 from .views import ClaseCreateView, ClaseListView
 from .views import AlumnoCreateView,PagoAlumnoCreateView
@@ -64,8 +66,11 @@ urlpatterns = [
    
     
     # * ------------------------  Asistencia  ------------------------------------
-   path('<int:pk>/dictado/<int:apk>/asistencia', registrarAsistenciaAlumno, name="asistencia_alumno"),
-   # path('<int:pk>/inscriptos', AlumnosListView.as_view(), name="ver_inscriptos"),
+    path('<int:pk>/dictado/profesor',  ProfesorDelDictadoListView.as_view(), name="alumnos_dictado"),
+    path('<int:pk>/dictado/profesor/<int:ppk>/presente',  registrarAsistenciaProfesor, name="asistencia_profesor"),
+    path('<int:pk>/dictado/alumnos/<int:apk>/asistencia', registrarAsistenciaAlumno, name="asistencia_alumno"),
+    
+    # path('<int:pk>/inscriptos', AlumnosListView.as_view(), name="ver_inscriptos"),
     # path('<int:pk>/inscriptos', alumno_inscribir, name="completar_inscripcion"),
     path('pagoalumno', PagoAlumnoCreateView.as_view(), name="pago_alumno"),
     

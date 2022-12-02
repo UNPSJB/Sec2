@@ -3,7 +3,7 @@ from django.template import loader
 from django.http import HttpResponse
 from django.views.generic import DetailView, ListView
 from django.views.generic.edit import CreateView, DeleteView, UpdateView
-from .models import Actividad, Curso, Aula, Profesor, Dictado, Clase, Alumno, Asistencia_alumno, Pago_alumno
+from .models import Actividad, Curso, Aula, Profesor, Dictado, Clase, Alumno, Asistencia_alumno,Asistencia_profesor, Pago_alumno, Titular
 from django.contrib import messages
 from .forms import (
     ActividadForm, 
@@ -22,7 +22,8 @@ from .forms import (
     FormularioProfesorUpdateFrom,
     AlumnoFilterForm,
     AlumnosDelDictadoFilterForm,
-    FormularioPagoAlumno
+    FormularioPagoAlumno,
+    ProfesorDelDictadoFilterForm
     )
 from django.urls import reverse_lazy
 from django import forms
@@ -288,13 +289,29 @@ class AlumnosDelDictadoListView(ListFilterView):
           print(self.args, self.kwargs)
           return super().get_queryset().filter(dictado__pk=self.kwargs['pk'])
     
-def registrarAsistenciaAlumno(request, dpk, pk):
-    asistencia_alumno = Asistencia_alumno(dictado_pk=dpk, alumno_pk=pk)
+def registrarAsistenciaAlumno(request, pk, apk):
+    print("Estoy aca asistencia!")
+    asistencia_alumno = Asistencia_alumno(dictado_pk=pk, alumno_pk=apk)
     asistencia_alumno.save()
-    return redirect(alumnos_dictado)    
+    return redirect('alumnos_dictado')   
+
+def registrarAsistenciaProfesor(request, pk, ppk):
+    titular = Titular.objects.filter(titular_dictado_pk=pk)
+    asistencia_profesor = Asistencia_profesor(titular)
+    asistencia_profesor.save()
+
 class PagoAlumnoCreateView(CreateView):
     model = Pago_alumno
     form_class = FormularioPagoAlumno
     success_url = reverse_lazy('cursos:cursos')
  
+class ProfesorDelDictadoListView(ListFilterView):
+    model = Titular
+    paginate_by = 100
+    filter_class = ProfesorDelDictadoFilterForm
     
+    def get_queryset(self):
+          print(self.args, self.kwargs)
+          titular = super().get_queryset().filter(dictado__pk=self.kwargs['pk'])
+          
+          return titular
