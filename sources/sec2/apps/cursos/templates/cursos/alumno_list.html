@@ -9,7 +9,8 @@
               <th scope="col">Nombre</th>
               <th scope="col">Apellido</th>
               <th scope="col">DNI</th>
-              <th scope="col">Marcar Presente</th>
+              <th scope="col">agregar alumno</th>
+              {% if alumno.dictado.pk %}  <th scope="col">Marcar Presente</th>{% endif %}  
             </tr>
         </thead>
         <tbody>
@@ -19,7 +20,9 @@
                         <td>{{ alumno.persona.apellido }}</td>
                         <td>{{ alumno.persona.dni }}</td>
                     
-                        <td><a href="{% url 'cursos:asistencia_alumno' alumno.dictado.pk alumno.pk %}"class="btn btn-primary">Presente</a></td>   
+                        {% if alumno.dictado.pk %}      
+                         <td><a href="{% url 'cursos:asistencia_alumno' alumno.dictado.pk alumno.pk %}"class="btn btn-primary">Presente</a></td>
+                        {% endif %}  
                                                              
                     </tr>
                 {% endfor %}  

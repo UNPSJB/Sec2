@@ -289,14 +289,8 @@ class AlumnosDelDictadoListView(ListFilterView):
     paginate_by = 100
     filter_class = AlumnosDelDictadoFilterForm
     
-    # def get_context_data(self, **kwargs):
-    #      context = super().get_context_data(**kwargs)
-    #      context["dictado"] = self.kwargs['pk']
-    #      return context
-    
-    def get_queryset(self):
-          print(self.args, self.kwargs)
-          return super().get_queryset().filter(dictado__pk=self.kwargs['pk'])
+    def get_queryset(self):        
+        return super().get_queryset().filter(curso_id=self.kwargs['pk'])
     
 def registrarAsistenciaAlumno(request, pk, apk):
     print("Estoy aca asistencia!")
