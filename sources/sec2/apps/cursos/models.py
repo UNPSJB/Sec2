@@ -50,6 +50,14 @@ class Curso(models.Model):
         dictado.curso = self
         return dictado
 
+    def obtenerDictados(self,curso): 
+        dictados=[]
+        for dictado in Dictado:
+            dictadocurso=dictado.curso
+            if (dictadocurso.pk == curso.pk ):
+                dictados.append[dictadocurso]
+        return dictados
+   
 class Dictado(models.Model):
     fecha_inicio = models.DateField()
     fecha_fin = models.DateField()

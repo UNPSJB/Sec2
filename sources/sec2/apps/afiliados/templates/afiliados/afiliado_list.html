@@ -28,10 +28,10 @@
           <th scope="col">CUIT empleador</th> 
           {% comment %} <th scope="col">Categoria laboral</th>  {% endcomment %}
           {% comment %} <th scope="col">Domicilio empresa</th>  {% endcomment %}
-          <th scope="col">Editar</th>   
-          <th scope="col">desafiliar</th>
-         {% comment %} <th scope="col">Estado</th>
-          <th scope="col" class="text-center">Opcion</th>{% endcomment %}
+          <th scope="col">Datos afiliado</th>   
+          {% comment %}<th scope="col">desafiliar</th>{% endcomment %}
+          <th scope="col">Estado</th>
+          {% comment %}<th scope="col" class="text-center">Opcion</th>{% endcomment %}
         </tr>
       </thead>
       <tbody>
@@ -45,7 +45,9 @@
             <td>{{ afiliado.cuit_empleador }}</td> 
             {% comment %} <td>{{ afiliado.categoria_laboral }}</td>  {% endcomment %}
             {% comment %} <td>{{ afiliado.domicilio_empresa }}</td>  {% endcomment %}
-            {% comment %} <td><a href="{% url 'afiliados:modificarAfiliado' afiliado.pk %}"class="btn btn-primary">Editar</a></td> {% endcomment %}
+            <td><a href="{% url 'afiliados:Afiliado' afiliado.pk %}"class="btn btn-primary">ver Afiliado</a></td>
+            {% comment %}<td><a href="{% url 'afiliados:modificarAfiliado' afiliado.pk %}"class="btn btn-primary">Editar</a></td> {% endcomment %}
+            
                        {% comment %} <td><a href="{% url 'cursos:ver_dictados' profesor.pk %}"class="btn btn-primary">Dictados</a></td> 
                          <td><a href="{% url 'cursos:inscripcion' profesor.pk %}"class="btn btn-primary">Inscripción</a></td> {% endcomment %}
                         {% comment %} <td>
@@ -130,9 +132,6 @@
 
             {% if afiliado.estado == 3 %}
               <td>INACTIVO</td>
-              <td class="text-center">
-                <a href= "{% url 'afiliados:ver_Afiliado' afiliado.pk %}" class="btn btn-primary">Ver</a>
-              </td>
             {% endif %}
             {% comment %} <a href= "{% url 'personas:crear_familiar' afiliado.pk %}" class="btn btn-primary">Grupo Familiar</a> {% endcomment %}
 

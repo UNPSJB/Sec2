@@ -1,0 +1,86 @@
+{% extends "home_curso.html" %}
+{% load crispy_forms_tags %}
+{% load static %}
+
+{% block dinamica %}
+
+<h1><center>Curso {{curso.nombre}}</center></h1>
+
+<div class="container-sm">
+    <h1> Datos Curso</h1>
+    <p>Costo: {{ curso.costo }}</p>
+    <p>Modulos: {{ curso.modulos }}</p>
+    <p>Periodo de pago: {{ curso.get_periodo_pago_display }}</p>
+    <p>Actividad: {{ curso.actividad.get_area_display }}</p>
+    <p>Requiere certificado: {{ curso.requiere_certificado }}</p>
+</div>
+<div class="container-sm">
+   <td><a href="{% url 'cursos:curso_editar' curso.pk %}"class="btn btn-primary">Editar</a></td>
+                        <td><a href="{% url 'cursos:ver_dictados' curso.pk %}"class="btn btn-primary">Dictados</a></td>
+                        <td><a href="{% url 'cursos:inscripcion' curso.pk %}"class="btn btn-primary">Inscripción</a></td>
+                        <td>
+                            <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#exampleModal_eliminar">
+                                Eliminar
+                            </button>
+                            <div class="modal fade" id="exampleModal_eliminar" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h1 class="modal-title fs-5" id="exampleModalLabel">ELIMINAR CURSO</h1>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                        </div> 
+                                        <div class="modal-body">
+                                            <h5>¿Estas seguro que deseas eliminar el curso?</h5>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                                            <a href="{% url 'cursos:curso_eliminar' curso.pk %}"class="btn btn-danger">Eliminar</a>                                </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+    
+
+    
+    <table class="table table-dark table-striped">
+        <thead>
+            <tr>
+                <th scope="col">Fecha de inicio</th>
+                <th scope="col">Fecha fin</th>
+                <th scope="col">Aula</th>
+                {% comment %}<th scope="col">Editar</th>{% endcomment %}
+                <th scope="col">crear Clases</th>    
+                <th scope="col">Detalle de clases</th>
+                <th scope="col">agregar alumno</th>
+                <th scope="col">Marcar asistencia</th>  
+                <th scope="col">Titular</th>
+                        
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                
+                {% for curso in object_list %}
+                <tr class="bg-transition">
+                    <td>{{ curso.dictados.fecha_inicio }}</td>
+                    <td>{{ dictado.fecha_fin }}</td>
+                    <td>{{ dictado.aula.denominacion }}</td>
+                    {% comment %}<td><a href="{% url 'cursos:curso_editar' obj.pk %}"class="btn btn-primary">Editar</a></td>{% endcomment %}
+                    <td><a href="{% url 'cursos:clase_crear' dictado.pk %}"class="btn btn-primary">Nueva clase</a></td>                
+                    <td><a href="{% url 'cursos:ver_clases' dictado.pk %}"class="btn btn-primary">Ver clases</a></td> 
+                    <td><a href="{% url 'cursos:alumnos_dictado' dictado.curso.pk  %}"class="btn btn-primary">agregar</a></td>      
+                    <td><a href="{% url 'cursos:alumnos_dictado_curso' dictado.curso.pk dictado.pk  %}"class="btn btn-primary">Asistencia</a></td>                                          
+                    
+                </tr>
+                {% endfor %}
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+{% endblock %}
+
+{% block 1 %}
+    
+   
+{% endblock %}

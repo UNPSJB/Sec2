@@ -18,7 +18,8 @@ from .views import (AulaListView,
                     ProfesorDelDictadoListView,
                     registrarAsistenciaProfesor,
                     agregarAlumnoCursoListView,
-                    registrarAlumnoADictado
+                    registrarAlumnoADictado,
+                    CursoDetailView
                     )
 from .views import ClaseCreateView, ClaseListView
 from .views import AlumnoCreateView,PagoAlumnoCreateView
@@ -34,11 +35,12 @@ urlpatterns = [
     path('actividades/<int:pk>', ActividadDetailView.as_view(), name="actividad_detalles"),
     path('actividades/<int:pk>/editar', ActividadUpdateView.as_view(), name="actividad_editar"),
     path('actividades/<int:pk>/eliminar', actividad_eliminar, name="actividad_eliminar"),
-    
+    # path('/<int:pk>', ActividadDetailView.as_view(), name="actividad_detalles"),
+   
     # * ------------------------  CURSOS ----------------------------------
     path('cursos', CursoListView.as_view(), name="cursos"),
     path('crear/', CursoCreateView.as_view(), name="curso_crear"),
-    # path('/<int:pk>', ActividadDetailView.as_view(), name="actividad_detalles"),
+    path('curso/<int:pk>',CursoDetailView.as_view(), name="curso"),
     path('<int:pk>/editar', CursoUpdateView.as_view(), name="curso_editar"),
     path('<int:pk>/eliminar', curso_eliminar, name="curso_eliminar"),
     

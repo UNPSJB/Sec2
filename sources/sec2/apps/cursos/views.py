@@ -341,3 +341,15 @@ def registrarAlumnoADictado(request, pk, apk):
     alumno = Alumno.objects.get(pk=apk)
     dictado = alumno.agregateDictado(pk)
     return redirect('cursos:alumnos_dictado', dictado.pk)
+
+class CursoDetailView (DeleteView):
+    model = Curso
+  
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['titulo'] = "Curso" 
+        context['dictados'] = Curso.obtenerDictados     
+        return context
+   
+    
+   
