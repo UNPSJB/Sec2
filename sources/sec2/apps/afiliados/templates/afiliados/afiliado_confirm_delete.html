@@ -1,0 +1,98 @@
+{% extends 'home_afiliado.html' %}
+{% load crispy_forms_tags %}
+{% load static %}
+
+{% block dinamica %}
+<h1><center>Afiliado {{afiliado.persona.apellido}}, {{afiliado.persona.nombre}}</center></h1>
+
+<div class="container-sm">
+    <h1> Datos Personales</h1>
+    <p>Nombre: {{ afiliado.persona.nombre }}</p>
+    <p>Apellido: {{ afiliado.persona.apellido }}</p>
+    <p>Fecha de nacimiento: {{ afiliado.persona.fecha_nacimiento }}</p> 
+    <p>Numero de D.N.I.: {{ afiliado.persona.dni }}</p>  
+</div>
+<div class="container-sm">
+    <h1> Datos Afiliado</h1>
+    <p>razon social: {{afiliado.razon_social}} </p>
+    <p>cuit empleado: {{afiliado.cuit_empleador}}</p> 
+    <p>categoria laboral: {{afiliado.categoria_laboral}} </p> 
+    <p>domicilio empresa: {{afiliado.domicilio_empresa}}</p> 
+    <p>localidad empresa: {{afiliado.localidad_empresa}} </p> 
+    <p>rama: {{afiliado.rama}} </p> 
+    <p>fecha ingreso trabajo: {{afiliado.fechaIngresoTrabajo}} </p> 
+    <p>sueldo: {{afiliado.sueldo}} </p>
+    <p>horaJornada: {{afiliado.horaJornada}}</p> 
+    <p>fechaAfiliacion: {{afiliado.fechaAfiliacion}} </p>  
+    <p>estado: {{afiliado.estado.}} </p>
+</div>
+
+<div class="contariner Opcion">
+    <td><a href="{% url 'afiliados:modificarAfiliado' afiliado.pk %}"class="btn btn-primary">Editar</a></td>
+    
+    {% if afiliado.estado == 1 %}
+    <td>PENDIENTE</td>
+    <td class="text-center">
+      <a href= "{% url 'afiliados:modificarAfiliado' afiliado.pk %}" class="btn btn-primary">Editar</a>
+      <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#exampleModal_aceptar">
+        Aceptar
+      </button>
+      <div class="modal fade" id="exampleModal_aceptar" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h1 class="modal-title fs-5" id="exampleModalLabel">Confirmación</h1>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              <h5>¿Estas seguro que deseas aceptar al afiliado?</h5>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+              <a href= "{% url 'afiliados:aceptar_afiliado' afiliado.pk %}" class="btn btn-success">Aceptar</a>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+    </td>
+  {% endif %}
+
+  {% if afiliado.estado == 2 %}
+    <td> ACTIVO</td>
+    <td class="text-center">
+      <a href= "{% url 'afiliados:ver_Afiliado' afiliado.pk %}" class="btn btn-primary">Ver</a>
+      <a href= "{% url 'afiliados:modificarAfiliado' afiliado.pk %}" class="btn btn-primary">Editar</a>
+      <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#exampleModal_desafiliar">
+        Desafiliar
+      </button>
+      <div class="modal fade" id="exampleModal_desafiliar" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h1 class="modal-title fs-5" id="exampleModalLabel">Modal title</h1>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              <h5>¿Estas seguro que deseas desafiliar?</h5>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+              <a href= "{% url 'afiliados:desafiliar_afiliado' afiliado.pk %}" class="btn btn-danger">Desafiliar</a>
+            </div>
+          </div>
+        </div>
+      </div>
+      <a href= "{% url 'personas:crear_familiar' afiliado.pk %}" class="btn btn-primary">Grupo Familiar</a>
+    </td>
+
+  {% endif %}
+
+  {% if afiliado.estado == 3 %}
+    <td>INACTIVO</td>
+ {% endif %}
+
+ <td><a href="{% url 'personas:crear_familiar' afiliado.pk %}"class="btn btn-primary">Agregar Familiar</a></td>
+</div>
+
+{% endblock %}
