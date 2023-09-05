@@ -3,7 +3,6 @@ from django.db import models
 from apps.personas.models import Rol
 from datetime import date
 
-
 # Create your models here.
 class Afiliado(Rol):
     TIPO = 1
@@ -29,3 +28,14 @@ class Afiliado(Rol):
         return f"Tipo: {self.TIPO} Razon social: {self.razon_social} CUIT:{self.cuit_empleador}"
     
 Rol.register(Afiliado)
+
+
+class MiModelo(models.Model):
+    campo1 = models.CharField(max_length=100)
+    # campo2 = models.IntegerField()
+    # campo3 = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.campo1  # Esto define la representación en cadena del objeto
+
+    # Puedes agregar métodos personalizados u otras configuraciones aquí

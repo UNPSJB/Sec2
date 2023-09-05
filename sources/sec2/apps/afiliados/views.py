@@ -12,14 +12,33 @@ from django.views.generic.list import ListView
 from .models import *
 from .forms import *
 from django.contrib import messages
-from sec2.utils import ListFilterView 
-
+from sec2.utils import ListFilterView
+from django.views.generic.edit import CreateView
+from .models import MiModelo
 
 # ----------------------------- AFILIADO VIEW ----------------------------------- #
-
 def index(request):
-  template = loader.get_template('home_afiliado.html')
-  return HttpResponse(template.render())
+    template = loader.get_template('home_afiliado.html')
+    return HttpResponse(template.render())
+
+# class MiModeloCreateView(CreateView):
+#     model = MiModelo  # Especifica el modelo con el que trabajarás
+#     template_name = 'templates/afiliado_form.html'  # Especifica la plantilla HTML para el formulario
+#     # fields = ['campo1', 'campo2', 'campo3']  # Especifica los campos del modelo que se mostrarán en el formulario
+#     fields = ['campo1']  # Especifica los campos del modelo que se mostrarán en el formulario
+
+#     # Opcional: Si deseas personalizar el comportamiento después de que el objeto se haya creado con éxito
+#     def form_valid(self, form):
+#         # Personaliza el comportamiento después de que el formulario sea válido
+#         # Por ejemplo, puedes realizar acciones adicionales antes o después de guardar el objeto
+#         return super().form_valid(form)
+
+#     # Opcional: Si deseas redirigir a una página diferente después de que el objeto se haya creado con éxito
+#     def get_success_url(self):
+#         return reverse_lazy('afiliados:afiliado_crear')  # Reemplaza 'nombre_de_la_vista' con el nombre de la vista a la que deseas redirigir
+
+#     # Otras personalizaciones según tus necesidades
+
 
 class AfiliadoCreateView(CreateView):
     model = Afiliado
@@ -30,14 +49,10 @@ class AfiliadoCreateView(CreateView):
         context = super().get_context_data(**kwargs)
         context['titulo'] = "Alta de afiliados"
         return context
-    
-    
-
 
 class AfliadosListView(ListFilterView):
     model = Afiliado
     filter_class = AfiliadoFilterForm
-  
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)

@@ -1,12 +1,20 @@
 {% load static %}
 
 {% block extracss %}
-<link href="https://fonts.googleapis.com/css?family=Poppins:300,400,500,600,700,800,900" rel="stylesheet">
-<link href="{% static 'Libs/css/nav_lateral.css' %}" rel="stylesheet"/>
+<!-- <link href="https://fonts.googleapis.com/css?family=Poppins:300,400,500,600,700,800,900" rel="stylesheet"> -->
+<link href="{% static 'Libs/css/nav_lateral.css' %}" rel="stylesheet" />
 {% endblock%}
 
-<nav id="sidebar">
-    <div class="custom-menu">
+<h1> BIENVENIDO </h1>
+
+<ul>
+  <li>
+    <a href="{% url 'afiliados:index' %}"><span class="fa fa-user mr-3"></span>Gestión de afiliados</a>
+  </li>
+</ul>
+
+<!-- <nav id="sidebar"> -->
+<!-- <div class="custom-menu">
       <button type="button" id="sidebarCollapse" class="btn btn-primary" style="z-index:10">
         <i class="fa fa-bars"></i>
         <span class="sr-only">Toggle Menu</span>
@@ -38,5 +46,7 @@
         </p>
       </div>
 
-    </div>
-  </nav>
+    </div> -->
+
+
+<!-- </nav> -->
