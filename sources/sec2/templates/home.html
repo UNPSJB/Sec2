@@ -20,9 +20,12 @@
     {% endblock %}
     
     <div id="content" class="p-4 p-md-5 pt-5">
-      {% block dinamica %}
-      {% include 'index.html' %}
-      {% endblock %}
+      <div class="container">
+        {% block dinamica %}
+        {% include 'index.html' %}
+        {% endblock %}
+      </div>
+      
     </div>
   </div>
 {% endblock %}

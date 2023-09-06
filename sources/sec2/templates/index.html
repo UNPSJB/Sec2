@@ -1,15 +1,18 @@
-{% load static %}
-
-{% block dinamica %}
-
-<h1><center>Operaciones mas recurrentes</center></h1>
-<br>
+{% load static %} {% block dinamica %} {% block extracss %}
+<link href="{% static 'Libs/css/home.css' %}" rel="stylesheet" />
+{% endblock extracss %} {% comment %}
 <div class="row">
   <div class="col-sm-6">
-    <div class="card">
+    <div class="card cardname">
       <div class="card-body">
+        <a title="afiliado" href="{% url 'afiliados:afiliado_crear' %}">
+          <img src="{% static 'images/agregar-usuario.png' %}" alt="afiliado" />
+        </a>
+
         <h5 class="card-title">Alta de afiliado</h5>
-        <a href="{% url 'afiliados:afiliado_crear' %}" class="btn btn-primary">Ir</a>
+        <a href="{% url 'afiliados:afiliado_crear' %}" class="btn btn-primary"
+          >Ir</a
+        >
       </div>
     </div>
   </div>
@@ -23,7 +26,7 @@
     </div>
   </div>
 </div>
-<br>
+<br />
 <div class="row">
   <div class="col-sm-6">
     <div class="card">
@@ -42,5 +45,34 @@
     </div>
   </div>
 </div>
+{% endcomment %}
+<h2>Operaciones Frecuentes</h2>
+<div class="contenedor">
+  <div class="box-1">
+    <a title="afiliado" href="{% url 'afiliados:afiliado_crear' %}">
+      <img
+        class="img"
+        src="{% static 'images/agregar-usuario.png' %}"
+        alt="img"
+      />
+    </a>
+    <h2 class="titulo">Afiliado</h2>
+  </div>
 
+  <div class="box-1">
+    <a title="afiliado" href="{% url 'cursos:curso_crear' %}">
+      <img src="{% static 'images/curso.png' %}" alt="img" />
+    </a>
+    <h2 class="titulo">Curso</h2>
+  </div>
+  <div class="box-1">
+    <img src="{% static 'images/alquiler.png' %}" alt="img" />
+
+    <h2 class="titulo">Alquiler</h2>
+  </div>
+  <div class="box-1">
+    <img src="{% static 'images/pagos.png' %}" alt="img" />
+    <h2 class="titulo">pagos</h2>
+  </div>
+</div>
 {% endblock %}
