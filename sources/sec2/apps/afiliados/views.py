@@ -42,9 +42,9 @@ def index(request):
 
 
 
+# No se ha implementado
 def formEstetico(request):
         return render(request, 'form_estetico.html', {})
-   
 
 
 class AfiliadoCreateView(CreateView):

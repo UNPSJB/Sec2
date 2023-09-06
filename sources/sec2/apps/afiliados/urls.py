@@ -10,10 +10,10 @@ urlpatterns = [
 # para crear afiliado la url seria: afiliados/afiliado/crear
 
     path('',index, name="index"),
-    path('crear/',formEstetico, name="afiliado_crear"),
+    # path('crear/',formEstetico, name="afiliado_crear"),
     
     # path('crear/', MiModeloCreateView.as_view(), name='afiliado_crear'),  # Reemplaza 'crear_mi_modelo' con el nombre de la URL
-    # path('crear/',AfiliadoCreateView.as_view(), name="afiliado_crear"),
+    path('crear/',AfiliadoCreateView.as_view(), name="afiliado_crear"),
     path('modificar/<int:pk>', AfiliadoUpdateView.as_view(), name="modificarAfiliado"),
     path('afiliado/<int:pk>',AfiliadoDetailView.as_view(), name="Afiliado"),
     path('ver/<int:pk>', afiliado_ver.as_view(), name="ver_Afiliado"),
