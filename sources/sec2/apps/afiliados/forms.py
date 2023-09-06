@@ -12,7 +12,6 @@ from crispy_forms.layout import Layout, Fieldset, Submit, Div, HTML
 from django.forms.models import model_to_dict
 from sec2.utils import FiltrosForm
 
-
 class AfiliadoForm(forms.ModelForm):
     class Meta:
         model = Afiliado
@@ -20,7 +19,6 @@ class AfiliadoForm(forms.ModelForm):
         exclude = ['persona', 'tipo', 'estado']
 
         widgets = {
-
             'fechaIngresoTrabajo': forms.DateInput(attrs={'type': 'date'}),
             'fechaAfiliacion': forms.DateInput(attrs={'type': 'date'})
         }
@@ -42,17 +40,11 @@ class FormularioAfiliado(forms.ModelForm):
         }
 
         widgets = {
-
-
             'fecha_nacimiento': forms.DateInput(attrs={'type': 'date'}),
-
-
         }
 
         labels = {
             'fecha_nacimiento': "Fecha de nacimiento",
-
-
         }
 
     def clean_dni(self):
@@ -93,10 +85,8 @@ class FormularioAfiliado(forms.ModelForm):
                 '<h2><center>Formulario de Afiliación</center></h2>'),    
             Fieldset(
                 "Datos Personales",
-
                 HTML(
-                    '<hr/>'),
-
+                    '<h/>'),
                 'dni',
                 'nombre',
                 'apellido',
@@ -107,14 +97,12 @@ class FormularioAfiliado(forms.ModelForm):
                 'estado_civil',
                 'cuil',
                 'celular',
-
             ),
 
             Fieldset(
                 "Datos Laborales",
                 HTML(
                     '<hr/>'),
-
                 'razon_social',
                 'cuit_empleador',
                 'domicilio_empresa',

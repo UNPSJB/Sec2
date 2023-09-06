@@ -1,6 +1,16 @@
+
 {% load static %} {% block dinamica %} {% block extracss %}
 <link href="{% static 'Libs/css/home.css' %}" rel="stylesheet" />
 {% endblock extracss %} {% comment %}
+
+{% load static %}
+
+{% block dinamica %}
+
+<h1>
+  <center>Operaciones mas recurrentes</center>
+</h1>
+
 <div class="row">
   <div class="col-sm-6">
     <div class="card cardname">
@@ -15,9 +25,27 @@
         >
       </div>
     </div>
+    <div class="card">
+      <div class="card-body">
+        <h5 class="card-title">Alta de afiliado</h5>
+        <a href="{% url 'afiliados:afiliado_crear' %}" class="btn btn-primary">Ir</a>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-body">
+        <h5 class="card-title">Alta de afiliado</h5>
+        <a href="{% url 'afiliados:afiliado_crear' %}" class="btn btn-primary">Ir</a>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-body">
+        <h5 class="card-title">Alta de afiliado</h5>
+        <a href="{% url 'afiliados:afiliado_crear' %}" class="btn btn-primary">Ir</a>
+      </div>
+    </div>
   </div>
 
-  <div class="col-sm-6">
+  <!-- <div class="col-sm-6">
     <div class="card">
       <div class="card-body">
         <h5 class="card-title">Alta de curso</h5>
@@ -25,9 +53,10 @@
       </div>
     </div>
   </div>
-</div>
-<br />
-<div class="row">
+
+</div> -->
+<!-- <div class="row">
+
   <div class="col-sm-6">
     <div class="card">
       <div class="card-body">
@@ -35,8 +64,8 @@
         <a href="#" class="btn btn-primary">falta enlazar</a>
       </div>
     </div>
-  </div>
-  <div class="col-sm-6">
+  </div> -->
+  <!-- <div class="col-sm-6">
     <div class="card">
       <div class="card-body">
         <h5 class="card-title">Generar Alquiler</h5>
@@ -76,3 +105,8 @@
   </div>
 </div>
 {% endblock %}
+
+</div> -->
+
+{% endblock %}
+

@@ -1,4 +1,4 @@
-*{
+/* *{
     margin: 0px;
     padding: 0px;
     box-sizing: border-box;
@@ -97,4 +97,88 @@ h2{
 
 .titulo{
  color:rgb(41, 38, 38);
+} */
+
+/* Estilo para la barra de navegación lateral */
+#sidebar {
+    width: 250px;
+    background-color: #333;
+    color: #fff;
+    /* Ocupa el 100% de la altura del contenedor principal */
+    height: 100%;
+    /* Estilos adicionales */
 }
+
+#wrapper {
+    display: flex;
+    /* Altura del menu altura */
+    height: 92.4vh; /* 100% de la altura de la ventana (viewport height) */
+}
+
+/* Estilo para el contenido principal */
+#content {
+    /* Ocupa todo el espacio restante */
+    flex: 1;
+    /* Establece una altura máxima */
+    max-height: 100%;
+    max-width: 100%;
+    /* Agrega una barra de desplazamiento vertical cuando sea necesario */
+    overflow-y: auto;
+    overflow-x: hidden;
+    /* Estilos adicionales */
+
+    background-color: #EEEEEE;
+    /* Estilos adicionales */
+}
+
+
+/* .wrapper {
+    width: 100%;
+} */
+
+/* .d-flex {
+    display: -webkit-box !important;
+    display: -ms-flexbox !important;
+    display: flex !important;
+} */
+
+/* .align-items-stretch {
+    -webkit-box-align: stretch !important;
+    -ms-flex-align: stretch !important;
+    align-items: stretch !important;
+} */
+
+/* #content {
+    width: 100%;
+    padding: 0;
+    min-height: 100vh;
+    -webkit-transition: all 0.3s;
+    -o-transition: all 0.3s;
+    transition: all 0.3s;
+    background-color: rgb(200, 200, 200);
+} */
+
+/* .p-4 {
+    padding: 1.5rem !important;
+} */
+
+/* .p-md-5 {
+    padding: 3rem !important;
+} */
+
+/* .pt-5 {
+    padding-top: 3rem !important;
+} */
+
+/* .estado{
+    margin-bottom: 5px;
+    color: white;
+    /* background-color: black; */
+ 
+
+
+/* .tabla_listado{
+    background-color:aqua; */
+    /* border-style: solid; */
+    /* border-radius: 100px;
+} */
