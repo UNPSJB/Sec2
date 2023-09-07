@@ -21,27 +21,6 @@ def index(request):
     template = loader.get_template('home_afiliado.html')
     return HttpResponse(template.render())
 
-# class MiModeloCreateView(CreateView):
-#     model = MiModelo  # Especifica el modelo con el que trabajarás
-#     template_name = 'templates/afiliado_form.html'  # Especifica la plantilla HTML para el formulario
-#     # fields = ['campo1', 'campo2', 'campo3']  # Especifica los campos del modelo que se mostrarán en el formulario
-#     fields = ['campo1']  # Especifica los campos del modelo que se mostrarán en el formulario
-
-#     # Opcional: Si deseas personalizar el comportamiento después de que el objeto se haya creado con éxito
-#     def form_valid(self, form):
-#         # Personaliza el comportamiento después de que el formulario sea válido
-#         # Por ejemplo, puedes realizar acciones adicionales antes o después de guardar el objeto
-#         return super().form_valid(form)
-
-#     # Opcional: Si deseas redirigir a una página diferente después de que el objeto se haya creado con éxito
-#     def get_success_url(self):
-#         return reverse_lazy('afiliados:afiliado_crear')  # Reemplaza 'nombre_de_la_vista' con el nombre de la vista a la que deseas redirigir
-
-#     # Otras personalizaciones según tus necesidades
-
-
-
-
 # No se ha implementado
 def formEstetico(request):
         return render(request, 'form_estetico.html', {})

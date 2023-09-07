@@ -5,48 +5,39 @@
 <link href="{% static 'Libs/css/nav_lateral.css' %}" rel="stylesheet" />
 {% endblock%}
 
-<h1> BIENVENIDO </h1>
-
-<ul>
+<ul id="menu_principal">
+  <h1> BIENVENIDO </h1>
   <li>
-    <a href="{% url 'afiliados:index' %}"><span class="fa fa-user mr-3"></span>Gestión de afiliados</a>
+    <a id="mostrarMenuAfiliado"><span class="fa fa-user mr-3"></span>Gestión de afiliados</a>
   </li>
+
 </ul>
 
-<!-- <nav id="sidebar"> -->
-<!-- <div class="custom-menu">
-      <button type="button" id="sidebarCollapse" class="btn btn-primary" style="z-index:10">
-        <i class="fa fa-bars"></i>
-        <span class="sr-only">Toggle Menu</span>
-      </button>
-    </div>
-    <div class="p-4">
-      <h1><a href="{% url 'home' %}" class="logo">WELCOME</a></h1>
-      <h1><a href="{% url 'home' %}" class="logo"><span>Elija su gestión</span></a></h1>
-      <ul class="list-unstyled components mb-5">
-        <li class="active">
-          <a href="{% url 'afiliados:index' %}"><span class="fa fa-user mr-3"></span>  Gestión de afiliados</a>
-        </li>
-        <li class="active">
-            <a href="{% url 'cursos:index' %}"><span class="fa fa-graduation-cap mr-3"></span>Gestión de Cursos</a>
-        </li>
-        <li class="active">
-          <a href="#"><span class="fa fa-calendar-check-o mr-3"></span> Gestión de Alquileres</a>
-        </li>
-        <li class="active">
-          <a href="#"><span class="fa  fa-usd mr-3"></span> Gestión de Pagos</a>
-        </li>
-      </ul>
+<ul id="menu_afiliado" style="display: none;">
+  <h1> AFILIADOS </h1>
+  <li> <a id="mostrarMenuPrincipal" href="#">Volver al menu principal</a></li>
+  <li><a href="{% url 'afiliados:afiliado_crear' %}">Alta afiliado</a></li>
+  <li><a href="{% url 'afiliados:index' %}">Lista de afiliados</a></li>
+  <li><a href="{% url 'afiliados:index' %}">Aceptar afiliados</a></li>
+  <li><a href="{% url 'afiliados:index' %}">Afiliados</a></li>
+  <li><a href="{% url 'afiliados:index' %}">Grupo Familiar</a></li>
+</ul>
 
-      <div class="mb-5">
-      </div>
-      
-      <div class="footer">
-        <p>© 2022 Sindicato Empleados de Comercio | SEC2. Todos los derechos reservados
-        </p>
-      </div>
+<script>
+  // Obtener una referencia a los elementos de menú y botones
+  var menu1 = document.getElementById("menu_principal");
+  var menu2 = document.getElementById("menu_afiliado");
+  var botonMostrarMenu1 = document.getElementById("mostrarMenuPrincipal");
+  var botonMostrarMenu2 = document.getElementById("mostrarMenuAfiliado");
 
-    </div> -->
+  // Agregar eventos click a los botones para mostrar los menús correspondientes
+  botonMostrarMenu1.addEventListener("click", function () {
+    menu1.style.display = "block"; // Mostrar el menú 1
+    menu2.style.display = "none";  // Ocultar el menú 2
+  });
 
-
-<!-- </nav> -->
+  botonMostrarMenu2.addEventListener("click", function () {
+    menu1.style.display = "none";  // Ocultar el menú 1
+    menu2.style.display = "block"; // Mostrar el menú 2
+  });
+</script>
