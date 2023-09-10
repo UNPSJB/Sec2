@@ -6,9 +6,11 @@
 <!-- <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css"> -->
 <link href="{% static 'Libs/css/home.css' %}" rel="stylesheet" />
 <link href="{% static 'Libs/css/nav_top.css' %}" rel="stylesheet"/>
+  {% block extracss_intermedia %}
+  {% endblock %}
 <!-- Herramienta para buscar en el "navegador" -->
 <!-- {{ buscador.media.css }} -->
-{% endblock%}
+{% endblock %}
 
 {% block container %}
 {% block nav_top %}
@@ -34,6 +36,8 @@
 {% endblock %}
 
 {% block extrajs %}
+  {% block extrajs_intermedia %}
+  {% endblock %}
 <!--  {{ buscador.media.js }} -->
 <!-- <script type="text/javascript"> -->
 <!-- $('.django-select2').on("change", () => console.log("hola")); -->

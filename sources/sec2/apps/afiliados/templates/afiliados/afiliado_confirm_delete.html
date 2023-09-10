@@ -2,28 +2,17 @@
 {% load crispy_forms_tags %}
 {% load static %}
 
+{% block extracss_intermedia %}
+<link href="{% static 'css/afiliado_confirm_delete.css' %}" rel="stylesheet" />
+{% endblock %}
+
 {% block dinamica %}
-
-<h1>
-  <center>
-    Datos del afiliado
-  </center>
-</h1>
-
+<h1 id="titulo">Datos del afiliado</h1>
 <br>
-<br>
-
-<div class="container ">
-  <div class="row row-cols-1 row-cols-sm-2 row-cols-md-1">
-    <div class="col">
-      <h4 style="text-align: center;">Datos Personales</h4>
-    </div>
-  </div>
-</div>
-
-<div class="container ">
+<div class="container border border-success p-3 mb-3 col-md-8 offset-md-2">
+  <h4>Datos Personales</h4>
   <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3">
-    <div class="col col-lg-3   text-center">
+    <div class="col col-lg-3 text-center">
       <img src="{% static 'images/perfil.jpg' %}" class="img-thumbnail" alt="...">
       {% if afiliado.estado == 1 %}
       <p>PENDIENTE</p>
@@ -40,42 +29,50 @@
 
     <div class="col">
       <p>Nombre: {{ afiliado.persona.nombre }}</p>
-      <p>Fecha de nacimiento: {{ afiliado.persona.fecha_nacimiento }}</p>
-    </div>
-    <div class="col">
       <p>Apellido: {{ afiliado.persona.apellido }}</p>
-      <p>Numero de D.N.I.: {{ afiliado.persona.dni }}</p>
     </div>
-  </div>
-</div>
-
-<br>
-
-<div class="container ">
-  <div class="row row-cols-1 row-cols-sm-2 row-cols-md-1">
     <div class="col">
-      <h4 style="text-align: center;">Datos Afiliación</h4>
+      <p>DNI: {{ afiliado.persona.dni }}</p>
+      <p>nacimiento: {{ afiliado.persona.fecha_nacimiento }}</p>
     </div>
   </div>
-</div>
-
-<div class="container ">
-  <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3">
+  <h4>Datos Afiliación</h4>
+  <div class="row row-cols-1 row-cols-sm-1 row-cols-md-2 ">
     <div class="col">
       <p>Razon Social: {{afiliado.razon_social}} </p>
+    </div>
+
+    <div class="col">
       <p>Domicilio (empresa): {{afiliado.domicilio_empresa}}</p>
+    </div>
+
+    <div class="col">
       <p>Fecha ingreso trabajo: {{afiliado.fechaIngresoTrabajo}} </p>
+    </div>
+
+    <div class="col">
       <p>Fecha de afiliacion: {{afiliado.fechaAfiliacion}} </p>
     </div>
+
     <div class="col">
       <p>Cuit (empleado) : {{afiliado.cuit_empleador}}</p>
+    </div>
+
+    <div class="col">
       <p>Localidad (empresa): {{afiliado.localidad_empresa}} </p>
+    </div>
+
+    <div class="col">
       <p>Sueldo: {{afiliado.sueldo}} </p>
+    </div>
+
+    <div class="col">
       <p>Categoria laboral: {{afiliado.categoria_laboral}} </p>
     </div>
     <div class="col">
-
       <p>Rama: {{afiliado.rama}} </p>
+    </div>
+    <div class="col">
       <p>Hora Jornada: {{afiliado.horaJornada}}</p>
     </div>
   </div>
@@ -147,14 +144,10 @@
     </div>
   </div>
 </div>
+</div>
 
-<script>
-  function abrirNuevaVentana() {
-    var url = "{% url 'personas:crear_familiar' afiliado.pk %}";
-    window.open(url, "NombreDeLaVentana", "width=800,height=600");
-    // Devuelve false para evitar que el enlace se abra en la ventana actual
-    return false;
-  }
-</script>
+{% endblock %}
 
+{% block extrajs_intermedia %}
+<script src="{% static 'js/afiliado_confirm_delete.js' %}"></script>
 {% endblock %}

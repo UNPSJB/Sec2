@@ -1,94 +1,122 @@
 {% extends 'home_afiliado.html' %}
 {% load crispy_forms_tags %}
+
 {% load static %}
 
+{% block extracss_intermedia %}
+<link href="{% static 'css/afiliado_alta.css' %}" rel="stylesheet" />
+{% endblock %}
+
 {% block dinamica %}
-
-
 <div class="container ">
     <div class="row row-cols-1 row-cols-sm-1 row-cols-md-1">
         <div class="col">
-            <h1 style="text-align: center;">Formulario de Alta Afiliado</h1>
+            <h1 style="text-align: center;">Formulario de Afiliación</h1>
         </div>
     </div>
 </div>
 
+<br>
+
 <form method="post">
     {% csrf_token %}
     <fieldset>
-        <div class="container ">
+        <div class="container border p-3 mb-3 col-md-4 offset-md-4" id="datos-personales">
+            <h3>Datos personales</h3>
+            <div class="row row-cols-1 row-cols-sm-1 row-cols-md-2 ">
+                <div class="col">
+                    <p>Dni * {{ form.dni }}</p>
+                </div>
+                <div class="col">
+                    <p>Cuil * {{ form.cuil }} </p>
+                </div>
+                <div class="col">
+                    <p>Nombre * {{ form.nombre }}</p>
+                </div>
+                <div class="col">
+                    <p>Apellido * {{ form.apellido }}</p>
+                </div>
+                <div class="col">
+                    <p>Fecha nacimiento * {{ form.fecha_nacimiento }}</p>
+                </div>
+                <div class="col">
+                    <p>Celular * {{ form.celular }} </p>
+                </div>
+                <div class="col">
+                    <p>Dirección * {{ form.direccion }} </p>
+                </div>
+                <div class="col">
+                    <p>Nacionalidad * {{ form.nacionalidad }}</p>
+                </div>
+                <div class="col">
+                    <p>Email * {{ form.mail }}</p>
+                </div>
+                <div class="col">
+                    <p>Estado civil * {{ form.estado_civil }} </p>
+                </div>
+            </div>
+        </div>
 
-            <h3>Datos Personales</h3>
-
+        <div class="container border p-3 mb-3 col-md-6 offset-md-3" id="datos-laborales">
+            <h3>Datos de afiliación</h3>
             <div class="row row-cols-1 row-cols-sm-1 row-cols-md-3">
                 <div class="col">
-                    <p>Numero Documento {{ form.dni }}</p>
+                    <p>Razon social * {{ form.razon_social }}</p>
                 </div>
                 <div class="col">
-                    <p>Nombre {{ form.nombre }}</p>
+                    <p>Categoria laboral * {{ form.categoria_laboral }}</p>
                 </div>
                 <div class="col">
-                    <p>Apellido {{ form.apellido }}</p>
+                    <p>Rama a la que se dedica * {{ form.rama }} </p>
                 </div>
                 <div class="col">
-                    <p>Fecha nacimiento {{ form.fecha_nacimiento }}</p>
+                    <p>Sueldo * {{ form.sueldo }}</p>
                 </div>
                 <div class="col">
-                    <p>Dirección {{ form.direccion }} </p>
-                </div>
-                <div class="col">
-                    <p>Email {{ form.mail }}</p>
-                </div>
-                <div class="col">
-                    <p>Nacionalidad {{ form.nacionalidad }}</p>
-                </div>
-                <div class="col">
-                    <p>Estado civil {{ form.estado_civil }} </p>
-                </div>
-                <div class="col">
-                    <p>Cuil {{ form.cuil }} </p>
-                </div>
-                <div class="col">
-                    <p>Celular {{ form.celular }} </p>
+                    <p>Fecha Afiliación * {{ form.fechaAfiliacion }}</p>
                 </div>
             </div>
 
-            <h3>Datos Laborales</h3>
-
+            <h3>Datos empresariales</h3>
             <div class="row row-cols-1 row-cols-sm-1 row-cols-md-3">
                 <div class="col">
-                    <p>Razon social {{ form.razon_social }}</p>
+                    <p>Fecha de ingreso * {{ form.fechaIngresoTrabajo }}</p>
                 </div>
                 <div class="col">
-                    <p>Cuit empleador {{ form.cuit_empleador }}</p>
+                    <p>Cuit empleador * {{ form.cuit_empleador }}</p>
                 </div>
                 <div class="col">
-                    <p>Domicilio empresa {{ form.domicilio_empresa }}</p>
+                    <p>Localidad empresa * {{ form.localidad_empresa }} </p>
                 </div>
                 <div class="col">
-                    <p>Localidad empresa {{ form.localidad_empresa }} </p>
+                    <p>Domicilio de la empresa * {{ form.domicilio_empresa }}</p>
                 </div>
                 <div class="col">
-                    <p>Fecha ingreso trabajo {{ form.fechaIngresoTrabajo }}</p>
+                    <p>Hora jornada * {{ form.horaJornada }} </p>
+                </div>
+            </div>
+        </div>
+
+        <div class="container text-center">
+            <div class="row row-cols-1 row-cols-sm-1 row-cols-md-3">
+                <div class="col">
+                    <!-- FALTA: Boton cancelar que me mande a mi pagina principal -->
+                    <button type="button" class="btn btn-danger">Cancelar</button>
                 </div>
                 <div class="col">
-                    <p>Rama {{ form.rama }} </p>
+                    <button type="button" class="btn btn-info" id="btn-siguiente">Siguiente</button>
+                    <button type="button" class="btn btn-secondary" id="btn-anterior">Atrás</button>
                 </div>
                 <div class="col">
-                    <p>Sueldo {{ form.sueldo }}</p>
-                </div>
-                <div class="col">
-                    <p>Hora jornada {{ form.horaJornada }} </p>
-                </div>
-                <div class="col">
-                    <p>Fecha Afiliación {{ form.fechaAfiliacion }}</p>
-                </div>
-                <div class="col">
-                    <p>Categoria laboral {{ form.categoria_laboral }}</p>
+                    <input type="submit" value="Finalizar" class="btn btn-success" id="btn-guardar">
                 </div>
             </div>
         </div>
     </fieldset>
-    <input type="submit" value="Guardar" class="btn btn-primary">
 </form>
+
+{% endblock %}
+
+{% block extrajs_intermedia %}
+<script src="{% static 'js/afiliado_alta.js' %}"></script>
 {% endblock %}
