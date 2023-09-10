@@ -6,8 +6,21 @@ from django.views.generic.edit import CreateView, DeleteView, UpdateView
 from django.views.generic import DetailView, ListView
 from django.urls import reverse_lazy
 from django.shortcuts import redirect
+from django.views.generic.edit import CreateView
 
-def FamiliaCreateView(request, pk):
+"""
+CLASE CREADA DE PRUEBA PORQUE NO FUNCABA EL ALTA DE GRUPO FAMILIAR
+class FamiliaCreateView(CreateView):
+    model = Persona
+    form_class = PersonaForm
+    success_url = reverse_lazy('personas:crear_familiar')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['titulo'] = "Alta de Grupo Familiar"
+        return context """
+
+def FamiliaCreateView1(request, pk):
     persona = Persona.objects.get(pk=pk)
     if request.method == 'POST':
         formset = VinculoFormSet(request.POST, request.FILES)

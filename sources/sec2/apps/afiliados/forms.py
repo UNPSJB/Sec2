@@ -86,7 +86,7 @@ class FormularioAfiliado(forms.ModelForm):
             Fieldset(
                 "Datos Personales",
                 HTML(
-                    '<h/>'),
+                    '<br/>'),
                 'dni',
                 'nombre',
                 'apellido',

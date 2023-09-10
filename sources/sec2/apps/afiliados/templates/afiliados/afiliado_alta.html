@@ -1,0 +1,94 @@
+{% extends 'home_afiliado.html' %}
+{% load crispy_forms_tags %}
+{% load static %}
+
+{% block dinamica %}
+
+
+<div class="container ">
+    <div class="row row-cols-1 row-cols-sm-1 row-cols-md-1">
+        <div class="col">
+            <h1 style="text-align: center;">Formulario de Alta Afiliado</h1>
+        </div>
+    </div>
+</div>
+
+<form method="post">
+    {% csrf_token %}
+    <fieldset>
+        <div class="container ">
+
+            <h3>Datos Personales</h3>
+
+            <div class="row row-cols-1 row-cols-sm-1 row-cols-md-3">
+                <div class="col">
+                    <p>Numero Documento {{ form.dni }}</p>
+                </div>
+                <div class="col">
+                    <p>Nombre {{ form.nombre }}</p>
+                </div>
+                <div class="col">
+                    <p>Apellido {{ form.apellido }}</p>
+                </div>
+                <div class="col">
+                    <p>Fecha nacimiento {{ form.fecha_nacimiento }}</p>
+                </div>
+                <div class="col">
+                    <p>Dirección {{ form.direccion }} </p>
+                </div>
+                <div class="col">
+                    <p>Email {{ form.mail }}</p>
+                </div>
+                <div class="col">
+                    <p>Nacionalidad {{ form.nacionalidad }}</p>
+                </div>
+                <div class="col">
+                    <p>Estado civil {{ form.estado_civil }} </p>
+                </div>
+                <div class="col">
+                    <p>Cuil {{ form.cuil }} </p>
+                </div>
+                <div class="col">
+                    <p>Celular {{ form.celular }} </p>
+                </div>
+            </div>
+
+            <h3>Datos Laborales</h3>
+
+            <div class="row row-cols-1 row-cols-sm-1 row-cols-md-3">
+                <div class="col">
+                    <p>Razon social {{ form.razon_social }}</p>
+                </div>
+                <div class="col">
+                    <p>Cuit empleador {{ form.cuit_empleador }}</p>
+                </div>
+                <div class="col">
+                    <p>Domicilio empresa {{ form.domicilio_empresa }}</p>
+                </div>
+                <div class="col">
+                    <p>Localidad empresa {{ form.localidad_empresa }} </p>
+                </div>
+                <div class="col">
+                    <p>Fecha ingreso trabajo {{ form.fechaIngresoTrabajo }}</p>
+                </div>
+                <div class="col">
+                    <p>Rama {{ form.rama }} </p>
+                </div>
+                <div class="col">
+                    <p>Sueldo {{ form.sueldo }}</p>
+                </div>
+                <div class="col">
+                    <p>Hora jornada {{ form.horaJornada }} </p>
+                </div>
+                <div class="col">
+                    <p>Fecha Afiliación {{ form.fechaAfiliacion }}</p>
+                </div>
+                <div class="col">
+                    <p>Categoria laboral {{ form.categoria_laboral }}</p>
+                </div>
+            </div>
+        </div>
+    </fieldset>
+    <input type="submit" value="Guardar" class="btn btn-primary">
+</form>
+{% endblock %}

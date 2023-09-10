@@ -3,7 +3,7 @@ from apps.afiliados.forms import Afiliado
 from django.template import loader
 from django.http import HttpResponse
 from datetime import datetime  
-
+from . import views
 from django.urls import reverse_lazy
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
@@ -14,27 +14,31 @@ from .forms import *
 from django.contrib import messages
 from sec2.utils import ListFilterView
 from django.views.generic.edit import CreateView
-from .models import MiModelo
+# views.py
+from django.shortcuts import render
 
 # ----------------------------- AFILIADO VIEW ----------------------------------- #
 def index(request):
     template = loader.get_template('home_afiliado.html')
     return HttpResponse(template.render())
 
-# No se ha implementado
-def formEstetico(request):
-        return render(request, 'form_estetico.html', {})
-
-
 class AfiliadoCreateView(CreateView):
     model = Afiliado
     form_class = FormularioAfiliado
     success_url = reverse_lazy('afiliados:afiliado_crear')
+    template_name = 'afiliados/afiliado_alta.html'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['titulo'] = "Alta de afiliados"
         return context
+    
+    def form_valid(self, form):
+        afiliado = form.save()
+        # Puedes redirigir al usuario a una página de éxito o realizar otras acciones necesarias
+        return super().form_valid(form)
+
+
 
 class AfliadosListView(ListFilterView):
     model = Afiliado
@@ -196,10 +200,12 @@ class AfiliadoVer():
             ),
 
             Submit('submit', 'Volver', css_class='button white'),)
+        
 
 class AfiliadoDetailView (DeleteView):
+# class AfiliadoDetailView (DetailView):
     model = Afiliado
-
+    
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['titulo'] = "Afiliado"
