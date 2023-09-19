@@ -11,11 +11,10 @@
 
 {% block container %}
 
-<div>
+<div class="contenedor-login">
   <main class="form-signin animate__animated animate__zoomIn">
     <img src="{% static 'images/login.png'%}" alt="Sindicato Empleado de Comercio" class="logo">
     <hr class="divider">
-
     {% if form.errors or no_user %}
     <p class="error-message">Usuario y/o contraseña incorrecta. Intenta nuevamente.</p>
     {% endif %}

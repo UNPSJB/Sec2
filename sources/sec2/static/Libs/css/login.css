@@ -13,12 +13,12 @@ body {
     margin: auto;
     background-color: #eee;
     border-radius: 10px;
-    box-shadow: 0 0 20px rgba(0,0,0,.5);
+    box-shadow: 0 0 20px rgba(0, 0, 0, .5);
     transition: all 0.2s ease;
     position: relative;
 }
 
-.form-signin:hover{
+.form-signin:hover {
     transform: scale(1.05);
 }
 
@@ -44,7 +44,7 @@ body {
 .login-title {
     text-align: center;
     font-weight: bold;
-    color:rgba(0, 0, 0, .8)
+    color: rgba(0, 0, 0, .8)
 }
 
 .error-message {
@@ -55,13 +55,17 @@ body {
 
 .divider {
     height: 1px;
-    color:rgba(0, 0, 0, .4)
+    color: rgba(0, 0, 0, 0.4)
 }
 
-.logo{
-    left: 19%;
-position: relative;
+.logo {
+    left: 25%;
+    position: relative;
     text-align: center;
     width: 50%;
     padding: 1rem;
+}
+
+.contenedor-login {
+    margin-top: 8%;
 }

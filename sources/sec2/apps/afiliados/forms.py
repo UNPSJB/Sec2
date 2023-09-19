@@ -11,6 +11,7 @@ from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Fieldset, Submit, Div, HTML
 from django.forms.models import model_to_dict
 from sec2.utils import FiltrosForm
+from django.core.validators import RegexValidator
 
 class AfiliadoForm(forms.ModelForm):
     class Meta:
@@ -28,10 +29,8 @@ class AfiliadoForm(forms.ModelForm):
             'fechaAfiliacion': "Fecha de afiliacion"
         }
 
-
 class FormularioAfiliado(forms.ModelForm):
     fechaAfiliacion = forms.DateField()
-
     class Meta:
         model = Persona
         fields = '__all__'
@@ -57,6 +56,7 @@ class FormularioAfiliado(forms.ModelForm):
     def is_valid(self) -> bool:
         valid = super().is_valid()
         personaForm = PersonaForm(data=self.cleaned_data)
+        print("POR ACA PASA!!!!")
         afiliadoForm = AfiliadoForm(data=self.cleaned_data)
         print(valid)
         print(personaForm.is_valid())
@@ -87,7 +87,7 @@ class FormularioAfiliado(forms.ModelForm):
                 "Datos Personales",
                 HTML(
                     '<br/>'),
-                'dni',
+                # 'dni',
                 'nombre',
                 'apellido',
                 'fecha_nacimiento',
@@ -180,7 +180,7 @@ class FormularioAfiliadoUpdate(forms.Form):
                 HTML(
                     '<hr/>'),
 
-                # 'dni',
+                'dni',
                 'nombre',
                 'apellido',
                 'fecha_nacimiento',

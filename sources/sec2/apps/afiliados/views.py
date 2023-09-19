@@ -14,30 +14,54 @@ from .forms import *
 from django.contrib import messages
 from sec2.utils import ListFilterView
 from django.views.generic.edit import CreateView
-# views.py
 from django.shortcuts import render
+from django.contrib import messages
 
 # ----------------------------- AFILIADO VIEW ----------------------------------- #
 def index(request):
     template = loader.get_template('home_afiliado.html')
     return HttpResponse(template.render())
 
+# def alta_afiliado(request):
+#     if request.method == 'POST':
+#         persona_form = PersonaForm(request.POST)
+#         afiliado_form = AfiliadoForm(request.POST)
+        
+#         if persona_form.is_valid() and afiliado_form.is_valid():
+#             # Procesar y guardar los datos si ambos formularios son válidos
+#             persona = persona_form.save()
+#             afiliado = afiliado_form.save(commit=False)
+#             afiliado.persona = persona
+#             afiliado.save()
+            
+#             messages.success(request, 'Afiliado creado exitosamente.')
+#             return redirect('nombre_de_la_vista_de_exito')
+#         else:
+#             # Mostrar mensajes de error si alguno de los formularios no es válido
+#             messages.error(request, 'Corrija los errores en el formulario.')
+
+#     else:
+#         persona_form = PersonaForm()
+#         afiliado_form = AfiliadoForm()
+
+#     return render(request, 'afiliado_alta.html', {'persona_form': persona_form, 'afiliado_form': afiliado_form})
+
+
 class AfiliadoCreateView(CreateView):
     model = Afiliado
     form_class = FormularioAfiliado
     success_url = reverse_lazy('afiliados:afiliado_crear')
     template_name = 'afiliados/afiliado_alta.html'
-
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['titulo'] = "Alta de afiliados"
         return context
     
     def form_valid(self, form):
+        print("ESTOY EN FORM_VALID")
         afiliado = form.save()
-        # Puedes redirigir al usuario a una página de éxito o realizar otras acciones necesarias
+        messages.success(self.request, 'Afiliado creado con éxito.')
         return super().form_valid(form)
-
 
 
 class AfliadosListView(ListFilterView):
@@ -59,13 +83,12 @@ class AfliadosListView(ListFilterView):
         return super().get_queryset()
 
 
-
-
 class AfiliadoUpdateView(UpdateView):
     model = Afiliado
     form_class = FormularioAfiliadoUpdate
     success_url = reverse_lazy('afiliados:afiliado_listar')
-
+    template_name = 'afiliados/afiliado_detalle.html'
+    
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['titulo'] = "Modificar Afiliado"
@@ -121,6 +144,7 @@ class afiliado_ver(UpdateView):
 
     def form_invalid(self, form):
         print(form.errors)
+        print("DATA AFILIADO")
         print(form.non_field_errors())
         messages.add_message(self.request, messages.ERROR, form.errors)
         return super().form_invalid(form)
@@ -150,8 +174,12 @@ class AfiliadoVer():
             afiliado = instance.afiliado
             datapersona = model_to_dict(persona)
             dataafiliado = model_to_dict(afiliado)
-            print(datapersona)
-            print(dataafiliado)
+            if datapersona:
+                print("DATA PERSONA")
+                print(datapersona)
+            else:
+                print("DATA AFILIADO")
+                print(dataafiliado)
            # datapersona.fecha_nacimiento
             datapersona.update(dataafiliado)
             kwargs["initial"] = datapersona
@@ -203,7 +231,6 @@ class AfiliadoVer():
         
 
 class AfiliadoDetailView (DeleteView):
-# class AfiliadoDetailView (DetailView):
     model = Afiliado
     
     def get_context_data(self, **kwargs):

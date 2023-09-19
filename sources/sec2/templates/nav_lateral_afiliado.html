@@ -2,32 +2,23 @@
 
 {% block extracss %}
 <!-- <link href="https://fonts.googleapis.com/css?family=Poppins:300,400,500,600,700,800,900" rel="stylesheet"> -->
-<link href="{% static 'Libs/css/nav_lateral.css' %}" rel="stylesheet" />
+<link href="{% static 'Libs/css/nav_lateral_afiliado.css' %}" rel="stylesheet" />
 {% endblock%}
 
-<ul>
-  <h2>AFILIADOSv2</h2>
-  <li>
-    <a href="{% url 'home' %}" class="logo">Volver al menu principal</a>
-    <!-- <a href="{% url 'afiliados:index' %}"><span class="fa fa-user mr-3"></span>Volver al menu principal</a> -->
-  </li>
-  <li>
-    <a href="{% url 'afiliados:afiliado_crear' %}">Alta afiliado</a>
-    <!-- <a href="{% url 'afiliados:index' %}"><span class="fa fa-user mr-3"></span>Alta de afiliados</a> -->
-  </li>
-  <li>
-    <a href="{% url 'afiliados:afiliado_listar' %}"><span class="fa fa-user mr-3"></span>Lista de afiliados</a>
-  </li>
+<br>
 
-  <li>
-  </li>
-  <li>
-  </li>
-  <li>
-  </li>
+<ul id="menu_afiliado">
+  <h3> AFILIADOS</h3>
+  <li><a id="mostrarMenuPrincipal" href="/home">Volver al menú principal</a></li>
+  <li><a href="{% url 'afiliados:afiliado_crear' %}">Alta afiliado</a></li>
+  <li><a href="{% url 'afiliados:afiliado_listar' %}">Lista de afiliados</a></li>
+  <li><a href="{% url 'afiliados:index' %}">Aceptar afiliados</a></li>
+  <li><a href="{% url 'afiliados:index' %}">Afiliados</a></li>
+  <li><a href="{% url 'afiliados:index' %}">Grupo Familiar</a></li>
 </ul>
 
 {% block extrajs %}
+<!--!YA ESTA EN EL BASE LOS SIGUIENTES SCRIPT  -->
 <!-- <script src="{% static 'Libs/js/jquery.min.js' %}"></script>
 <script src="{% static 'Libs/js/popper.js' %}"></script>
 <script src="{% static 'Libs/js/main.js' %}"></script> -->

@@ -7,6 +7,7 @@
 <link href="{% static 'Libs/css/home.css' %}" rel="stylesheet" />
 <link href="{% static 'Libs/css/nav_top.css' %}" rel="stylesheet"/>
   {% block extracss_intermedia %}
+
   {% endblock %}
 <!-- Herramienta para buscar en el "navegador" -->
 <!-- {{ buscador.media.css }} -->
@@ -20,14 +21,12 @@
 <!-- <div class="wrapper d-flex align-items-stretch"> -->
 <div id="wrapper">
   <div id="sidebar">
-    <!-- estaria bueno modificar esto para que se oculte la informacion y no andar mostrando varios menú -->
     {% block nav_lateral %}
     {% include 'nav_lateral_afiliado.html' %}
     {% endblock %}
   </div>
 
   <div id="content">
-    <!-- estaria bueno modificar esto para que se oculte la informacion y no andar mostrando varios menú -->
     {% block dinamica %}
     {% include 'index.html' %}
     {% endblock %}
