@@ -30,11 +30,10 @@ class Afiliado(Rol):
     fechaAfiliacion= models.DateField()
     
     ESTADO = (
-       (1, "pendiente de aceptación"), 
-       (2, "activo"),
-       (3, "inactivo"),
-    )
-    
+        (1, "pendiente de aceptación"), 
+        (2, "activo"),
+        (3, "inactivo"),
+        )
     estado = models.PositiveSmallIntegerField(choices=ESTADO)
     
     def __str__(self):

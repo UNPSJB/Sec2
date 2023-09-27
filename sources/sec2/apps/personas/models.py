@@ -9,6 +9,7 @@ class Persona(models.Model):
         (2, 'casado'),
         (3, 'viudo'),
     )
+    #!FALTA: CHOICE DE NACIONALIDAD
     nombre=models.CharField(max_length=30)
     apellido=models.CharField(max_length=30)
     dni=models.CharField(max_length=8)

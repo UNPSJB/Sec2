@@ -46,32 +46,78 @@ class FormularioAfiliado(forms.ModelForm):
             'fecha_nacimiento': "Fecha de nacimiento",
         }
 
-    def clean_dni(self):
-        self.persona = Persona.objects.filter(
-            dni=self.cleaned_data['dni']).first()
-        if self.persona is not None and self.persona.es_afiliado:
-            raise ValidationError("Ya existe un afiliado activo con ese DNI")
-        return self.cleaned_data['dni']
+    # def clean_dni(self):
+    #     dni=self.cleaned_data['dni']
+    #     self.persona = Persona.objects.filter(
+    #         dni).first()
+        
+    #     if len(dni) > 8 :
+    #         print("DNI EXCEDE CARACTERES")
+
+     
+        # if self.persona is not None and self.persona.es_afiliado:
+        #     raise ValidationError("Ya existe un afiliado activo con ese DNI")
+        # return self.cleaned_data['dni']
 
     def is_valid(self) -> bool:
+        print("--------------------------------EJECUTO super().is_valid()")
         valid = super().is_valid()
-        personaForm = PersonaForm(data=self.cleaned_data)
-        print("POR ACA PASA!!!!")
-        afiliadoForm = AfiliadoForm(data=self.cleaned_data)
-        print(valid)
-        print(personaForm.is_valid())
-        print(afiliadoForm.is_valid())
-        return valid and personaForm.is_valid() and afiliadoForm.is_valid()
+
+       # personaForm = PersonaForm(data=self.cleaned_data)
+        return valid
 
     def save(self, commit=False):
-        print(self.cleaned_data)
-        if self.persona is None:
-            personaForm = PersonaForm(data=self.cleaned_data)
-            self.persona = personaForm.save()
-        afiliadoForm = AfiliadoForm(data=self.cleaned_data)
-        afiliado = afiliadoForm.save(commit=False)
-        self.persona.afiliar(afiliado, self.cleaned_data['fechaAfiliacion'])
-        return afiliado
+        dni = self.cleaned_data["dni"]
+        cuil = self.cleaned_data["cuil"]
+        nombre = self.cleaned_data["nombre"]
+        apellido = self.cleaned_data["apellido"]
+        fechaN = self.cleaned_data["fecha_nacimiento"]       
+        mail = self.cleaned_data["mail"]
+        celular = self.cleaned_data["celular"]
+        estadoCivil = self.cleaned_data["estado_civil"]
+        nacionalidad = self.cleaned_data["nacionalidad"]
+        direccion = self.cleaned_data["direccion"]
+        #creamos el objeto persona y validamos datos (en teoria xd)
+        
+        pearson = Persona(dni=dni,
+                        fecha_nacimiento=fechaN,
+                        cuil= cuil,
+                        nombre=nombre,
+                        apellido=apellido,
+                        direccion=direccion,
+                        mail=mail,
+                        celular=celular,
+                        estado_civil=estadoCivil,
+                        nacionalidad= nacionalidad)        
+        self.persona = pearson.save()
+
+        cuit_empleador = self.cleaned_data["cuit_empleador"]
+        categoria_laboral = self.cleaned_data["categoria_laboral"]
+        domicilio_empresa = self.cleaned_data["domicilio_empresa"]
+        localidad_empresa = self.cleaned_data["localidad_empresa"]
+        rama = self.cleaned_data["rama"]
+        fechaIngresoTrabajo = self.cleaned_data["fechaIngresoTrabajo"]
+        sueldo = self.cleaned_data["sueldo"]
+        horaJornada = self.cleaned_data["horaJornada"]
+        fechaAfiliacion = self.cleaned_data["fechaAfiliacion"]
+
+        afiliado = Afiliado(cuit_empleador=cuit_empleador,
+                            categoria_laboral = categoria_laboral,
+                            domicilio_empresa = domicilio_empresa,
+                            localidad_empresa=localidad_empresa,
+                            rama=rama,
+                            fechaIngresoTrabajo=fechaIngresoTrabajo,
+                            sueldo=sueldo,
+                            horaJornada=horaJornada,
+                            fechaAfiliacion=fechaAfiliacion,
+                            estado=1)
+        afiliado.persona = pearson
+        self.afiliado = afiliado.save()
+        # afiliadoForm = AfiliadoForm(data=self.cleaned_data)
+        # afiliado = afiliadoForm.save(commit=False)
+        # self.persona.afiliar(afiliado, self.cleaned_data['fechaAfiliacion'])
+
+        return self
 
     def __init__(self, instance=None, *args, **kwargs):
         print(kwargs)
@@ -247,24 +293,24 @@ class AfiliadoVer(forms.ModelForm):
     #         raise ValidationError("Ya existe un afiliado activo con ese DNI")
     #     return self.cleaned_data['dni']
 
-    # def is_valid(self) -> bool:
-    #     valid = super().is_valid()
-    #     personaForm = PersonaUpdateForm(data=self.cleaned_data)
-    #     afiliadoForm = AfiliadoUpdateForm(data=self.cleaned_data)
-    #     print(valid)
-    #     print(personaForm.is_valid())
-    #     print(afiliadoForm.is_valid())
-    #     return valid and personaForm.is_valid() and afiliadoForm.is_valid()
+    def is_valid(self) -> bool:
+        valid = super().is_valid()
+        personaForm = PersonaUpdateForm(data=self.cleaned_data)
+        afiliadoForm = AfiliadoUpdateForm(data=self.cleaned_data)
+        print(valid)
+        print(personaForm.is_valid())
+        print(afiliadoForm.is_valid())
+        return valid and personaForm.is_valid() and afiliadoForm.is_valid()
 
-    # def save(self, commit=False):
-    #     print(self.cleaned_data)
-    #     if self.persona is None:
-    #         personaForm = PersonaUpdateForm(data=self.cleaned_data)
-    #         self.persona = personaForm.save()
-    #     afiliadoForm = AfiliadoUpdateForm(data=self.cleaned_data)
-    #     afiliado = afiliadoForm.save(commit=False)
-    #     self.persona.afiliar(afiliado, self.cleaned_data['fechaAfiliacion'])
-    #     return afiliado
+    def save(self, commit=False):
+        print(self.cleaned_data)
+        if self.persona is None:
+            personaForm = PersonaUpdateForm(data=self.cleaned_data)
+            self.persona = personaForm.save()
+        afiliadoForm = AfiliadoUpdateForm(data=self.cleaned_data)
+        afiliado = afiliadoForm.save(commit=False)
+        self.persona.afiliar(afiliado, self.cleaned_data['fechaAfiliacion'])
+        return afiliado
 
     def __init__(self, instance=None, *args, **kwargs):
         print(kwargs)

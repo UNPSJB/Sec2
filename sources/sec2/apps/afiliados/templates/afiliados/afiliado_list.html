@@ -10,10 +10,9 @@
 {% block dinamica %}
 
 <br>
-<h1 id="titulo">Lista de afiliados</h1>
-<br>
-<div class="container-sm">
+<h2 id="titulo">Lista de afiliados</h2>
 
+<div class="container-sm">
   <!-- {% comment %} -->
   <!-- esto no se ocupa hasta ahora -->
   <!-- <div class="btn-group dropend estado">
@@ -30,7 +29,7 @@
   {% endcomment %} -->
 
   <div class="table-responsive">
-    <table id ="tabla-afiliados" class="table table-dark table-striped table-hover">
+    <table class="table table-striped table-hover table-secondary">
       <thead>
         <tr>
           <th scope="col">Dni</th>
@@ -46,7 +45,7 @@
       <tbody>
         <!-- <tr> -->
         {% for afiliado in object_list %}
-        <tr class="bg-transition">
+        <tr class="bg-transition fila-personalizada">
           <td>{{ afiliado.persona.dni }}</td>
           <td>{{ afiliado.persona.apellido }}</td>
           <td>{{ afiliado.persona.nombre }}</td>
@@ -74,7 +73,7 @@
           {% endif %}
 
           <td>
-            <a href="{% url 'afiliados:Afiliado' afiliado.pk %}" class="btn btn-primary">Detalle</a>
+            <a href="{% url 'afiliados:Afiliado' afiliado.pk %}" class="btn btn-primary btn-detalle">Detalle</a>
           </td>
 
           <!-- {% comment %}
@@ -85,7 +84,6 @@
       </tbody>
     </table>
   </div>
-  <!-- {% comment %} si se borra un div se descoloca todo {% endcomment %} -->
 </div>
 
 <div class="container ">
@@ -97,8 +95,12 @@
   </div>
 </div>
 </div>
-{% block nav_lateral_filtro %}
-  {% include 'nav_filtro_afiliado.html' %}
-{% endblock %}
 
 {% endblock %}
+
+<!--
+  {% block nav_lateral_filtro %}
+  {% include 'nav_filtro_afiliado.html' %}
+  {% endblock %}
+-->
+

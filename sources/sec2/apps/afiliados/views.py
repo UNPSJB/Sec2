@@ -52,16 +52,12 @@ class AfiliadoCreateView(CreateView):
     form_class = FormularioAfiliado
     success_url = reverse_lazy('afiliados:afiliado_crear')
     template_name = 'afiliados/afiliado_alta.html'
+    
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['titulo'] = "Alta de afiliados"
         return context
     
-    def form_valid(self, form):
-        print("ESTOY EN FORM_VALID")
-        afiliado = form.save()
-        messages.success(self.request, 'Afiliado creado con éxito.')
-        return super().form_valid(form)
 
 
 class AfliadosListView(ListFilterView):
