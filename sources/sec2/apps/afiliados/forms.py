@@ -13,6 +13,7 @@ from django.forms.models import model_to_dict
 from sec2.utils import FiltrosForm
 from django.core.validators import RegexValidator
 
+########### Utilizado para el AFILIADO CRATE VIEW ##############################################
 class AfiliadoForm(forms.ModelForm):
     class Meta:
         model = Afiliado
@@ -28,7 +29,6 @@ class AfiliadoForm(forms.ModelForm):
             'fechaIngresoTrabajo': "fecha de ingreso al trabajo",
             'fechaAfiliacion': "Fecha de afiliacion"
         }
-
 class FormularioAfiliado(forms.ModelForm):
     fechaAfiliacion = forms.DateField()
     class Meta:
@@ -60,10 +60,8 @@ class FormularioAfiliado(forms.ModelForm):
         # return self.cleaned_data['dni']
 
     def is_valid(self) -> bool:
-        print("--------------------------------EJECUTO super().is_valid()")
         valid = super().is_valid()
-
-       # personaForm = PersonaForm(data=self.cleaned_data)
+        # personaForm = PersonaForm(data=self.cleaned_data)
         return valid
 
     def save(self, commit=False):
@@ -113,17 +111,10 @@ class FormularioAfiliado(forms.ModelForm):
                             estado=1)
         afiliado.persona = pearson
         self.afiliado = afiliado.save()
-        # afiliadoForm = AfiliadoForm(data=self.cleaned_data)
-        # afiliado = afiliadoForm.save(commit=False)
-        # self.persona.afiliar(afiliado, self.cleaned_data['fechaAfiliacion'])
-
         return self
 
     def __init__(self, instance=None, *args, **kwargs):
-        print(kwargs)
         super().__init__(*args, **kwargs)
-        print(instance)
-
         self.helper = FormHelper()
         #self.helper.form_action = 'afiliados:index'
         self.helper.layout = Layout(
@@ -162,21 +153,23 @@ class FormularioAfiliado(forms.ModelForm):
             ),
 
             Submit('submit', 'Guardar', css_class='button white'),)
-
-
 FormularioAfiliado.base_fields.update(AfiliadoForm.base_fields)
 
+########### Utilizado para el AFILIADO fliadosListView ##############################################
 
-##############################################
+class AfiliadoFilterForm(FiltrosForm):
+    persona__nombre = forms.CharField(required=False)
+    persona__dni = forms.CharField(required=False)
+    cuit_empleador = forms.CharField(required=False)
+    # Estado = forms.IntegerField(required=False)
 
+########### Utilizado para el AFILIADO UPDATE ##############################################
 class AfiliadoUpdateForm(forms.ModelForm):
     class Meta:
         model = Afiliado
         fields = '__all__'
-        exclude = ['persona', 'tipo','estado']
-
+        exclude = ['persona','tipo','estado']
         widgets = {
-
             # 'fechaIngresoTrabajo': forms.DateInput(attrs={'type':'date'}),
             # 'fechaAfiliacion': forms.DateInput(attrs={'type':'date'})
         }
@@ -186,14 +179,13 @@ class AfiliadoUpdateForm(forms.ModelForm):
             'fechaAfiliacion': "Fecha de afiliacion"
         }
 
-
 class FormularioAfiliadoUpdate(forms.Form):
-    # ** SE COMENTO ESTA LINEA PARA QUE NO LO CHEQUEARA
-    ##def clean_dni(self):
-    ##     self.persona = Persona.objects#.filter(dni=self.cleaned_data['dni']).first()
-    ##     if self.persona is not None and self.persona.es_afiliado:
-    ##         raise ValidationError("Ya existe un afiliado activo con ese DNI")
-    ##     return self.cleaned_data['dni']
+    # # ** SE COMENTO ESTA LINEA PARA QUE NO LO CHEQUEARA
+    # def clean_dni(self):
+    #     self.persona = Persona.objects.filter(dni=self.cleaned_data['dni']).first()
+    #     if self.persona is not None and self.persona.es_afiliado:
+    #         raise ValidationError("Ya existe un afiliado activo con ese DNI")
+    #     return self.cleaned_data['dni']
 
     def is_valid(self) -> bool:
         sv = super().is_valid()
@@ -206,70 +198,14 @@ class FormularioAfiliadoUpdate(forms.Form):
         return self.afiliadoForm.save()
 
     def __init__(self, initial = {}, instance=None, *args, **kwargs):
-        print(args, kwargs)
         persona = instance.persona
         self.personaForm = PersonaUpdateForm(initial=initial, instance=instance.persona, *args, **kwargs)
         self.afiliadoForm = AfiliadoUpdateForm(initial=initial, instance=instance, *args, **kwargs)
         initial = dict(self.personaForm.initial)
         initial.update(self.afiliadoForm.initial)
         super().__init__(initial=initial, *args, **kwargs)
-
-
-        self.helper = FormHelper()
-        #self.helper.form_action = 'afiliados:index'
-        self.helper.layout = Layout(
-            HTML(
-                f'<h2><center>Modificar datos de {persona.nombre} {persona.apellido} </center></h2>'),
-            Fieldset(
-                "Datos Personales",
-
-                HTML(
-                    '<hr/>'),
-
-                'dni',
-                'nombre',
-                'apellido',
-                'fecha_nacimiento',
-                'direccion',
-                'mail',
-                'nacionalidad',
-                'estado_civil',
-                'cuil',
-                'celular',
-
-            ),
-
-            Fieldset(
-                "Datos Laborales",
-                HTML(
-                    '<hr/>'),
-
-                'razon_social',
-                'cuit_empleador',
-                'domicilio_empresa',
-                'localidad_empresa',
-                'fechaIngresoTrabajo',
-                'rama',
-                'sueldo',
-                'horaJornada',
-                'fechaAfiliacion',
-                'categoria_laboral',
-                ),
-
-            Submit('submit', 'Guardar nuevos cambios', css_class='button white'),)
-
 FormularioAfiliadoUpdate.base_fields.update(PersonaUpdateForm.base_fields)
 FormularioAfiliadoUpdate.base_fields.update(AfiliadoUpdateForm.base_fields)
-
-
-class AfiliadoFilterForm(FiltrosForm):
-    persona__nombre = forms.CharField(required=False)
-    persona__dni = forms.CharField(required=False)
-    cuit_empleador = forms.CharField(required=False)
-    # Estado = forms.IntegerField(required=False)
-
-
-
 
 class AfiliadoVer(forms.ModelForm):
     fechaAfiliacion = forms.DateField()

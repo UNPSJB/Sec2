@@ -11,13 +11,13 @@ urlpatterns = [
 # para crear afiliado la url seria: afiliados/afiliado/crear
 
     path('',index, name="index"),
-    # path('afiliacion/', views.afiliacion_view, name='afiliado_crear'),
-    path('afiliado/<int:pk>',AfiliadoDetailView.as_view(), name="Afiliado"),
-    path('mostrar/',AfliadosListView.as_view(), name="afiliado_listar"),
-
     path('crear/',AfiliadoCreateView.as_view(), name="afiliado_crear"),
+    path('mostrar/',AfliadosListView.as_view(), name="afiliado_listar"),
+    path('afiliado/<int:pk>',AfiliadoDetailView.as_view(), name="Afiliado"),
     path('modificar/<int:pk>', AfiliadoUpdateView.as_view(), name="modificarAfiliado"),
 
+    #cambiar esto
+    path('afiliado_modificado_exitosamente/', views.afiliado_modificado_exitosamente, name='afiliado_modificado_exitosamente'),
 
     # path('afiliado/<int:pk>',views.detalleAfiliado, name="Afiliado"),
     path('ver/<int:pk>', afiliado_ver.as_view(), name="ver_Afiliado"),

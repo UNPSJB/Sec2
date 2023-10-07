@@ -1,5 +1,4 @@
 from django.db import models
-#from apps import personas
 from apps.personas.models import Rol
 from datetime import date
 from django import forms

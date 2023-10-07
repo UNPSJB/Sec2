@@ -1,18 +1,18 @@
 document.addEventListener('DOMContentLoaded', function() {
-    const formulario = document.getElementById('miFormulario');
+const formulario = document.getElementById('miFormulario');
     formulario.addEventListener('submit', function(event) {
         event.preventDefault();  // Evitar el envío del formulario por defecto
 
         // Realizar la validación aquí
-        const dni = document.getElementById('id_dni').value;
-        const cuil = document.getElementById('id_cuil').value;
+        // const dni = document.getElementById('id_dni').value;
+        // const cuil = document.getElementById('id_cuil').value;
         // Agrega más campos y validaciones según tus necesidades
 
-        if (!validarDNI(dni) || !validarCUIL(cuil)) {
-            alert('Por favor, ingresa datos válidos.');
-        } else {
-            formulario.submit(); // Enviar el formulario si la validación es exitosa
-        }
+        // if (!validarDNI(dni) || !validarCUIL(cuil)) {
+        //     alert('Por favor, ingresa datos válidos.');
+        // } else {
+        //     formulario.submit(); // Enviar el formulario si la validación es exitosa
+        // }
     });
 
     function validarDNI(dni) {

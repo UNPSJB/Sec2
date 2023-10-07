@@ -49,7 +49,9 @@ class PersonaUpdateForm(ModelForm):
    
     class Meta:
         model = Persona
-        exclude=['dni', "familia",'es_afiliado','es_alumno','es_profesor','es_encargado']
+        # NO SE EXCLUYE EL DNI PARA QUE LO MUESTRE Y MODIFIQUE
+        # exclude=['dni', "familia",'es_afiliado','es_alumno','es_profesor','es_encargado']
+        exclude=["familia",'es_afiliado','es_alumno','es_profesor','es_encargado']
         
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
