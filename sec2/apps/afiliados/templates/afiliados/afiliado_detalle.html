@@ -32,7 +32,8 @@
             <h3>Datos personales</h3>
             <div class="row row-cols-1 row-cols-sm-1 row-cols-md-3">
                 <div class="col">
-                    <p>Dni * {{ form.dni }}</p>
+                    <span>Dni *</span>
+                    <h5>{{ form.dni.value }}</h5>
                 </div>
                 <div class="col">
                     <p>Cuil * {{form.cuil}}</p>
@@ -109,7 +110,7 @@
         <div class="container text-center">
             <div class="row row-cols-1 row-cols-sm-1 row-cols-md-2">
                 <div class="col">
-                    <button type="button" class="btn btn-danger">Cancelar</button>
+                    <a href="{% url 'afiliados:afiliado_listar' %}" class="btn btn-danger">Cancelar</a>
                 </div>
                 <div class="col">
                     <input type="submit" value="Finalizar" class="btn btn-success" id="btn-guardar">

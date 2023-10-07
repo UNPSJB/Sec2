@@ -28,6 +28,8 @@ def dict_to_query(filtros_dict):
     return filtro
 
 
+from crispy_forms.layout import HTML
+
 class FiltrosForm(forms.Form):
     orden = forms.CharField(required=False)
 
@@ -53,11 +55,16 @@ class FiltrosForm(forms.Form):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.helper = FormHelper()
-        self.helper.form_method="GET"
+        self.helper.form_method = "GET"
         fields = list(self.fields.keys())
         fields = list(filter(lambda f: f != 'orden', fields))
-        self.helper.layout = Layout(*fields,
-            Submit('submit', 'Filtrar', css_class='button white'),) 
+        
+        # Agregar un botón "Clear" que limpia los filtros
+        self.helper.layout = Layout(
+            *fields,
+            Submit('submit', 'Filtrar', css_class='button white'),
+            HTML('<a class="btn btn-secondary" href="?">Clear</a>'),  # Agregar el botón "Clear"
+        )
 
 class ListFilterView(ListView):
     filter_class = None

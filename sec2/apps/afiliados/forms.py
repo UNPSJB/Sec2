@@ -90,6 +90,7 @@ class FormularioAfiliado(forms.ModelForm):
         self.persona = pearson.save()
 
         cuit_empleador = self.cleaned_data["cuit_empleador"]
+        razon_social = self.cleaned_data["razon_social"]
         categoria_laboral = self.cleaned_data["categoria_laboral"]
         domicilio_empresa = self.cleaned_data["domicilio_empresa"]
         localidad_empresa = self.cleaned_data["localidad_empresa"]
@@ -100,6 +101,7 @@ class FormularioAfiliado(forms.ModelForm):
         fechaAfiliacion = self.cleaned_data["fechaAfiliacion"]
 
         afiliado = Afiliado(cuit_empleador=cuit_empleador,
+                            razon_social = razon_social,
                             categoria_laboral = categoria_laboral,
                             domicilio_empresa = domicilio_empresa,
                             localidad_empresa=localidad_empresa,
@@ -161,6 +163,7 @@ class AfiliadoFilterForm(FiltrosForm):
     persona__nombre = forms.CharField(required=False)
     persona__dni = forms.CharField(required=False)
     cuit_empleador = forms.CharField(required=False)
+    #!FALTA: Que filtre por Afiliado
     # Estado = forms.IntegerField(required=False)
 
 ########### Utilizado para el AFILIADO UPDATE ##############################################

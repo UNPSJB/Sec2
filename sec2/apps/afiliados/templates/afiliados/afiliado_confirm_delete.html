@@ -7,7 +7,7 @@
 {% endblock %}
 
 {% block dinamica %}
-<h1 id="titulo">Datos del afiliado</h1>
+<h1 id="titulo"> {{titulo }} </h1>
 <br>
 <div class="container border border-success p-3 mb-3 col-md-8 offset-md-2">
   <h4>Datos Personales</h4>
@@ -78,11 +78,20 @@
   </div>
 </div>
 <br>
-<div class="container text-center ">
-  <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3">
-    <div class="col">
-      <a href="{% url 'afiliados:modificarAfiliado' afiliado.pk %}" class="btn btn-primary">Modificar</a>
-    </div>
+
+  {% if afiliado.estado ==  2 %}
+    <div class="container text-center ">
+      <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3">
+        <div class="col">
+          <a href="{% url 'afiliados:afiliado_actualizar' afiliado.pk %}" class="btn btn-primary">Modificar</a>
+        </div>
+  {% else %}
+    <div class="container text-center ">
+      <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3">
+        <div class="col">
+          <a> </a>
+        </div>
+  {% endif %}
 
     <div class="col">
       <a target="_blank" onclick="return abrirNuevaVentana();" class="btn btn-primary">Grupo Familiar</a>
@@ -100,7 +109,7 @@
           <div class="modal-dialog">
             <div class="modal-content">
               <div class="modal-header">
-                <h1 class="modal-title fs-5" id="exampleModalLabel">Modal title</h1>
+                <h1 class="modal-title fs-5" id="exampleModalLabel">Confirmar</h1>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
               </div>
               <div class="modal-body">

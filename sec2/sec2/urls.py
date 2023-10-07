@@ -28,6 +28,8 @@ urlpatterns = [
 
     # * APLICACIONES ----------------------------
     path('home/afiliados/',include('apps.afiliados.urls')),
+
+    
     # path('alquileres/',include('apps.alquileres.urls')),
     path('cursos/',include('apps.cursos.urls')),
     # path('pagos/',include('apps.pagos.urls')),

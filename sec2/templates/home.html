@@ -3,19 +3,14 @@
 {% load static %}
 
 {% block extracss %}
-<!-- <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css"> -->
 <link href="{% static 'Libs/css/home.css' %}" rel="stylesheet" />
 <link href="{% static 'Libs/css/nav_top.css' %}" rel="stylesheet"/>
 <!-- Herramienta para buscar en el "navegador" -->
-<!-- {{ buscador.media.css }} -->
+{{ buscador.media.css }}
 {% endblock%}
 
 {% block container %}
-{% block nav_top %}
-{% include 'nav_top.html' %}
-{% endblock %}
 
-<!-- <div class="wrapper d-flex align-items-stretch"> -->
 <div id="wrapper">
   <div id="sidebar">
     <!-- estaria bueno modificar esto para que se oculte la informacion y no andar mostrando varios menú -->
@@ -25,7 +20,10 @@
   </div>
 
   <div id="content">
-    <!-- estaria bueno modificar esto para que se oculte la informacion y no andar mostrando varios menú -->
+    {% block nav_top %}
+      {% include 'nav_top.html' %}
+    {% endblock %}
+    
     {% block dinamica %}
     {% include 'index.html' %}
     {% endblock %}
@@ -34,8 +32,8 @@
 {% endblock %}
 
 {% block extrajs %}
-<!--  {{ buscador.media.js }} -->
-<!-- <script type="text/javascript"> -->
-<!-- $('.django-select2').on("change", () => console.log("hola")); -->
-<!-- </script> -->
+{{ buscador.media.js }} 
+<script type="text/javascript"> 
+$('.django-select2').on("change", () => console.log("hola")); 
+</script>
 {% endblock %}

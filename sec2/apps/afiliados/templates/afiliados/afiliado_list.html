@@ -10,7 +10,7 @@
 {% block dinamica %}
 
 <br>
-<h2 id="titulo">Lista de afiliados</h2>
+<h2 id="titulo"> {{ titulo }} </h2>
 
 <div class="container-sm">
   <!-- {% comment %} -->
@@ -28,7 +28,8 @@
   </div>
   {% endcomment %} -->
 
-  <div class="table-responsive">
+
+  <div class="table-responsive ">
     <table class="table table-striped table-hover table-secondary">
       <thead>
         <tr>
@@ -96,11 +97,10 @@
 </div>
 </div>
 
+
+
+{% block nav_lateral_filtro %}
+{% include 'nav_filtro_afiliado.html' %}
 {% endblock %}
 
-<!--
-  {% block nav_lateral_filtro %}
-  {% include 'nav_filtro_afiliado.html' %}
-  {% endblock %}
--->
-
+{% endblock %}
