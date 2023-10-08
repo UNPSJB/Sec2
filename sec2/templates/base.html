@@ -1,38 +1,38 @@
 {% load static %}
 <!DOCTYPE html>
 <html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Sindicato Empleados De Comercio</title>
+    <link href="{% static 'Libs/css/normalize.css' %}" rel="stylesheet" />
+    <link href="{% static 'Libs/bootstrap-5.3.1-dist/css/bootstrap.min.css' %}" rel="stylesheet" />
+    <link href="{% static 'Libs/css/base.css' %}" rel="stylesheet" />
+    <link href="{% static 'Libs/fontawesome-free-6.4.2-web/fontawesome-free-6.4.2-web/css/all.min.css' %}" rel="stylesheet" type="text/css" />
+    <link href="{% static 'Libs/fontawesome-free-6.4.2-web/fontawesome-free-6.4.2-web/css/brands.css' %}" rel="stylesheet" type="text/css" />
+    <link href="{% static 'Libs/fontawesome-free-6.4.2-web/fontawesome-free-6.4.2-web/css/solid.css' %}" rel="styleshe" />
+    <link rel="icon" type="image/x-icon" href="{% static 'images/logo.png' %}" />
+    <title>
+      {% block title %}
+        {{ title }}
+      {% endblock %}
+    </title>
+    {% block extracss %}
+    {% endblock %}
+  </head>
 
-<head>
-  <meta charset="UTF-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Sindicato Empleados De Comercio</title>
-  <link href="{% static 'Libs/css/normalize.css' %}" rel="stylesheet" />
-  <link href="{% static 'Libs/bootstrap-5.3.1-dist/css/bootstrap.min.css' %}" rel="stylesheet" />
-  <link href="{% static 'Libs/css/base.css' %}" rel="stylesheet" />
-  <link href="{% static 'Libs/fontawesome-free-6.4.2-web/fontawesome-free-6.4.2-web/css/all.min.css' %}" rel="stylesheet" type="text/css">
-  <link href="{% static 'Libs/fontawesome-free-6.4.2-web/fontawesome-free-6.4.2-web/css/brands.css' %}" rel="stylesheet" type="text/css">
-  <link href="{% static 'Libs/fontawesome-free-6.4.2-web/fontawesome-free-6.4.2-web/css/solid.css' %}" rel="styleshe
-  <link rel="icon" type="image/x-icon" href="{% static 'images/logo.png' %}" />
-  <title>{% block title %}{{title}}{% endblock %}</title>
-  {% block extracss %}{% endblock %}
-</head>
+  <body>
+    {% block container %}
 
-<body>
+    {% endblock %}
 
-  {% block container %}
-
-  
-  {% endblock %}
-
-
-  
-  <script src="{% static 'Libs/bootstrap-5.3.1-dist/js/bootstrap.bundle.min.js'%}"></script>
-  <!-- <script src="http://localhost:35729/livereload.js"></script> -->
-  <script src="{% static 'Libs/js/jquery.min.js' %}"></script>
-  <script src="{% static 'Libs/js/popper.min.js' %}"></script>
-  <script src="{% static 'Libs/js/main.js' %}"></script>
-  {% block extrajs %}{% endblock %}
-</body>
-
+    <script src="{% static 'Libs/bootstrap-5.3.1-dist/js/bootstrap.bundle.min.js' %}"></script>
+    <!-- <script src="http://localhost:35729/livereload.js"></script> -->
+    <script src="{% static 'Libs/js/jquery.min.js' %}"></script>
+    <script src="{% static 'Libs/js/popper.min.js' %}"></script>
+    <script src="{% static 'Libs/js/main.js' %}"></script>
+    {% block extrajs %}
+    {% endblock %}
+  </body>
 </html>

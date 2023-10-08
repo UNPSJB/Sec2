@@ -35,20 +35,18 @@ class AfiliadoCreateView(CreateView):
     template_name = 'afiliados/afiliado_alta.html'
 
     def get_context_data(self, **kwargs):
-        print("ESTO EN get_context_data DE AfiliadoCreateView")
         context = super().get_context_data(**kwargs)
         context['titulo'] = "Formulario de Afiliación"
         return context
 
     def form_valid(self, form):
-        print("ESTOY EN FORM_VALID DE AfiliadoCreateView")
         afiliado = form.save()
         messages.success(self.request, 'Alta de afiliado exitosa!')
         return redirect('afiliados:afiliado_listar')
     
     def form_invalid(self, form):
-        print("ESTOY EN FORM_INVALID DE AfiliadoCreateView")
         messages.warning(self.request, '<i class="fa-solid fa-triangle-exclamation fa-flip"></i> Por favor, corrija los errores a continuación.')
+        print(form)
         return render(self.request, self.template_name, {'form': form})
 
 # ----------------------------- AFILIADO LIST ----------------------------------- #

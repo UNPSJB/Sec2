@@ -54,14 +54,12 @@ class FormularioAfiliadoCreate(forms.ModelForm):
     #     return self.cleaned_data['dni']
 
     def is_valid(self) -> bool:
-        print("ESTOY EN IS_VALID DE FormularioAfiliado")
         valid = super().is_valid()
         print(valid)
         # personaForm = PersonaForm(data=self.cleaned_data)
         return False
 
     def save(self, commit=False):
-        print("ESTOY EN SAVE DE  FormularioAfiliado")
         dni = self.cleaned_data["dni"]
         cuil = self.cleaned_data["cuil"]
         nombre = self.cleaned_data["nombre"]

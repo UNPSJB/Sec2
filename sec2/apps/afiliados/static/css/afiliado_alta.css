@@ -1,6 +1,6 @@
 /* Configuracion principal */
 #datos-laborales, #btn-anterior, #btn-guardar{
-    display: none;
+    /* display: none; */
 }
 
 #titulo{

@@ -3,38 +3,77 @@ from apps.personas.models import Rol
 from datetime import date
 from django import forms
 from django.core.validators import RegexValidator
+from django.core.exceptions import ValidationError
+from django.utils import timezone
+from django.core.validators import MinValueValidator
 
-# Create your models here.
+XMARK_ICON = '<i class="fa-solid fa-xmark"></i>'
+
+def validate_positive_decimal(value):
+    if value < 0:
+        raise ValidationError(f'{XMARK_ICON} El sueldo no puede ser un valor negativo.')
 class Afiliado(Rol):
     TIPO = 1
-    razon_social = models.CharField(max_length=50)
-   #  cuit_empleador = models.CharField(
-   #     max_length=10,
-   #     validators=[
-   #        RegexValidator(
-   #           regex=r'^\d{11}$',  # Expresión regular para validar un CUIT
-   #           message='El CUIT debe contener exactamente 11 dígitos numéricos.',
-   #           code='invalid_cuit'
-   #           )
-   #           ]
-   #  )
-    cuit_empleador = models.CharField(max_length=10)
-    categoria_laboral = models.CharField(max_length=20)
-    domicilio_empresa = models.CharField(max_length=50)
-    localidad_empresa = models.CharField(max_length=50)
-    rama = models.CharField(max_length=50)
-    fechaIngresoTrabajo = models.DateField()
-    sueldo= models.DecimalField(max_digits=9, decimal_places=2)
-    horaJornada = models.PositiveIntegerField()
-    fechaAfiliacion= models.DateField()
-    
+    LOCALIDADES_CHUBUT = [
+        ("COMODORO RIVADAVIA", "Comodoro Rivadavia"),
+        ("RAWSON", "Rawson"),
+        ("PUERTO MADRYN", "Puerto Madryn"),
+        ("ESQUEL", "Esquel"),
+        ("GAIMAN", "Gaiman"),
+        ("TRELEW", "Trelew"),
+    ]
     ESTADO = (
         (1, "pendiente de aceptación"), 
         (2, "activo"),
         (3, "inactivo"),
         )
     estado = models.PositiveSmallIntegerField(choices=ESTADO)
+    text_and_numeric_validator = RegexValidator(
+        regex=r'^[A-Za-z0-9\s]+$',
+        message=f'{XMARK_ICON} Sin caracteres especiales.',
+        code='invalid_text'
+    )
+    numeric_validator = RegexValidator(
+        regex=r'^\d+$',
+        message=f'{XMARK_ICON} Debe contener solo dígitos numéricos.',
+        # message='<i class="fa-solid fa-xmark"></i> Debe contener solo dígitos numéricos.',
+        code='invalid_numeric'
+    )
+    text_validator = RegexValidator(
+        regex=r'^[A-Za-záéíóúÁÉÍÓÚñÑ\s]+$',
+        message=f'{XMARK_ICON} Debe contener letras y espacios.',
+        code='invalid_text'
+    )
+
+    razon_social = models.CharField(max_length=50, validators=[numeric_validator], help_text='Dni sin puntos ni guiones. Ej: 12345678')
+    categoria_laboral = models.CharField(max_length=20, validators=[numeric_validator])
+    rama = models.CharField(max_length=50, validators=[text_validator])
+    sueldo= models.DecimalField(max_digits=9, decimal_places=2, validators=[validate_positive_decimal])
+    # sueldo= models.DecimalField(max_digits=9, decimal_places=2, validators=[validate_positive_decimal])
     
+    def validate_fecha(value):
+        if value > timezone.now().date():
+            raise ValidationError('La fecha no puede ser en el futuro.')
+    
+    fechaAfiliacion= models.DateField(
+        null=False,
+        blank=False,
+        validators=[validate_fecha]
+    )
+    fechaIngresoTrabajo = models.DateField(
+        null=False,
+        blank=False,
+        validators=[validate_fecha]
+    )
+    cuit_empleador = models.CharField(max_length=10, validators=[numeric_validator], help_text='Cuil sin puntos y sin guiones. Ej: 0123456789')
+    localidad_empresa = models.CharField(
+        max_length=30,
+        choices=LOCALIDADES_CHUBUT,
+        default="TRELEW",
+    )
+    domicilio_empresa = models.CharField(max_length=50, validators=[text_and_numeric_validator])
+    horaJornada = models.PositiveIntegerField(validators=[MinValueValidator(1)])
+
     def __str__(self):
         return f"Tipo: {self.TIPO} Razon social: {self.razon_social} CUIT:{self.cuit_empleador}"
 

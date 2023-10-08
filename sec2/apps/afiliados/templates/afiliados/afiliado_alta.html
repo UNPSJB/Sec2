@@ -159,6 +159,7 @@
               {% if form.celular.errors %}
                 {% for error in form.celular.errors %}
                   <small class="error-text blink-text">{{ error|safe }}</small>
+                  <br />
                 {% endfor %}
               {% endif %}
               {{ form.celular }}
@@ -209,15 +210,47 @@
         </div>
       </div>
 
-      <div class="container border p-3 mb-3 col-md-6 offset-md-3" id="datos-laborales">
+      <div class="container border p-3 mb-3 col-md-7 offset-md-3" id="datos-laborales">
         <h3>Datos de afiliación</h3>
-        <div class="row row-cols-1 row-cols-sm-1 row-cols-md-3">
+        <br />
+        <div class="row row-cols-1 row-cols-sm-1 row-cols-md-2">
+          {% comment %}RAZON SOCIAL{% endcomment %}
           <div class="col">
-            <p>Razon social * {{ form.razon_social }}</p>
+            <span>Razon social *</span>
+            <p>
+              {% if form.razon_social.errors %}
+                {% for error in form.razon_social.errors %}
+                  <small class="error-text blink-text">{{ error|safe }}</small>
+                {% endfor %}
+              {% endif %}
+              {{ form.razon_social }}
+              <br />
+              <span>
+                {% if form.razon_social.help_text %}
+                  <small class="text-muted">{{ form.razon_social.help_text }}</small>
+                {% endif %}
+              </span>
+            </p>
           </div>
+          {% comment %}CATEGORIA LABORAL{% endcomment %}
           <div class="col">
-            <p>Categoria laboral * {{ form.categoria_laboral }}</p>
+            <span>Categoria laboral *</span>
+            <p>
+              {% if form.categoria_laboral.errors %}
+                {% for error in form.categoria_laboral.errors %}
+                  <small class="error-text blink-text">{{ error|safe }}</small>
+                {% endfor %}
+              {% endif %}
+              {{ form.categoria_laboral }}
+              <br />
+              <span>
+                {% if form.categoria_laboral.help_text %}
+                  <small class="text-muted">{{ form.categoria_laboral.help_text }}</small>
+                {% endif %}
+              </span>
+            </p>
           </div>
+          
           <div class="col">
             <p>Rama a la que se dedica * {{ form.rama }}</p>
           </div>
@@ -230,7 +263,7 @@
         </div>
 
         <h3>Datos empresariales</h3>
-        <div class="row row-cols-1 row-cols-sm-1 row-cols-md-3">
+        <div class="row row-cols-1 row-cols-sm-6 row-cols-md-3">
           <div class="col">
             <p>Fecha de ingreso * {{ form.fechaIngresoTrabajo }}</p>
           </div>
