@@ -6,3 +6,23 @@
 #titulo{
     text-align: center;
 }
+
+.error-text{
+    color: red;
+}
+
+@keyframes blink {
+    0% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.5;
+    }
+    100% {
+        opacity: 1;
+    }
+}
+
+.blink-text {
+    animation: blink 1s infinite; /* 1s controla la velocidad del parpadeo */
+}

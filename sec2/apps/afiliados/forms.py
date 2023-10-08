@@ -12,28 +12,19 @@ from crispy_forms.layout import Layout, Fieldset, Submit, Div, HTML
 from django.forms.models import model_to_dict
 from sec2.utils import FiltrosForm
 from django.core.validators import RegexValidator
+from datetime import date
+
 
 ########### Utilizado para el AFILIADO CRATE VIEW ##############################################
 class AfiliadoForm(forms.ModelForm):
     class Meta:
-        print("ESTOY EN META DE AFILIADO FORM")
         model = Afiliado
         fields = '__all__'
-        error_messages = {
-            'dni': {
-                'required': 'El DNI es obligatorio.',
-                'invalid': 'Por favor, ingrese un DNI válido.',
-                # Agrega más mensajes de error según tus necesidades
-            },
-        }
-        
         exclude = ['persona', 'tipo', 'estado']
-
         widgets = {
             'fechaIngresoTrabajo': forms.DateInput(attrs={'type': 'date'}),
             'fechaAfiliacion': forms.DateInput(attrs={'type': 'date'})
         }
-
         labels = {
             'fechaIngresoTrabajo': "fecha de ingreso al trabajo",
             'fechaAfiliacion': "Fecha de afiliacion"
@@ -41,25 +32,11 @@ class AfiliadoForm(forms.ModelForm):
 class FormularioAfiliadoCreate(forms.ModelForm):
     fechaAfiliacion = forms.DateField()
     class Meta:
-        print("ESTOY EN META DE FormularioAfiliado")
         model = Persona
         fields = '__all__'
-        dni = forms.CharField(error_messages={
-        'required': 'El DNI es obligatorio.',
-        'invalid': 'Por favor, ingrese un DNI válido. Debe contener solo números.',
-        })
-        error_messages = {
-            'dni': {
-                'required': 'El DNI es obligatorio.',
-                'invalid': 'Por favor, ingrese un DNI válido.',
-                # Agrega más mensajes de error según tus necesidades
-            },
-        }
-        help_texts = {
-            'dni': 'Tu numero de documento sin puntos',
-        }
         widgets = {
-            'fecha_nacimiento': forms.DateInput(attrs={'type': 'date'}),
+            'fecha_nacimiento': forms.DateInput(attrs={'type': 'date', 'max': str(date.today())}),
+            # 'fecha_nacimiento': forms.DateInput(attrs={'type': 'date'}),
         }
         labels = {
             'fecha_nacimiento': "Fecha de nacimiento",

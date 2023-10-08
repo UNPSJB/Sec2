@@ -48,7 +48,7 @@ class AfiliadoCreateView(CreateView):
     
     def form_invalid(self, form):
         print("ESTOY EN FORM_INVALID DE AfiliadoCreateView")
-        messages.error(self.request, 'Por favor, corrija los errores a continuación.')
+        messages.warning(self.request, '<i class="fa-solid fa-triangle-exclamation fa-flip"></i> Por favor, corrija los errores a continuación.')
         return render(self.request, self.template_name, {'form': form})
 
 # ----------------------------- AFILIADO LIST ----------------------------------- #

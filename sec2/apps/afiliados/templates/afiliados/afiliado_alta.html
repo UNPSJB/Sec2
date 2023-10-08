@@ -16,77 +16,195 @@
     </div>
   </div>
 
-  <br />
-  {% if messages %}
-  <div class="alert alert-danger">
-    <ul>
-      {% for message in messages %}
-        <li>{{ message }}</li>
-      {% endfor %}
-    </ul>
-  </div>
-{% endif %}
-
-<form method="post">
-    {% csrf_token %}
-    
-    <!-- Campo DNI -->
-    <div class="form-group">
-        <label for="{{ form.dni.id_for_label }}">DNI *</label>
-        {{ form.dni }}
-        <small class="form-text text-muted">{{ form.dni.help_text }}</small>
-    </div>
-    
-    <!-- Otros campos del formulario aquí -->
-    
-    <input type="submit" value="Guardar">
-</form>
-
   <form method="post">
     {% csrf_token %}
     <fieldset>
-      <div class="container border p-3 mb-3 col-md-4 offset-md-4" id="datos-personales">
+      <div class="container border p-3 mb-3 col-md-7 offset-md-3" id="datos-personales">
         <h3>Datos personales</h3>
+        <br />
         <div class="row row-cols-1 row-cols-sm-1 row-cols-md-2">
+          {% comment %}DNI{% endcomment %}
           <div class="col">
-            <p>Dni * {{ form.dni }}</p>
-            {% if form.dni.help_text %}
-              <small class="text-muted">{{ form.dni.help_text }}</small>
-            {% endif %}
-            {% if form.dni.errors %}
-            <ul class="errorlist">
+            <span>Dni *</span>
+            <p>
+              {% if form.dni.errors %}
                 {% for error in form.dni.errors %}
-                    <li>{{ error }}</li>
+                  <small class="error-text blink-text">{{ error|safe }}</small>
                 {% endfor %}
-            </ul>
-            {% endif %}
+              {% endif %}
+              {{ form.dni }}
+              <br />
+              <span>
+                {% if form.dni.help_text %}
+                  <small class="text-muted">{{ form.dni.help_text }}</small>
+                {% endif %}
+              </span>
+            </p>
           </div>
+          {% comment %}CUIL{% endcomment %}
           <div class="col">
-            <p>Cuil * {{ form.cuil }}</p>
+            <span>Cuil *</span>
+            <p>
+              {% if form.cuil.errors %}
+                {% for error in form.cuil.errors %}
+                  <small class="error-text blink-text">{{ error|safe }}</small>
+                {% endfor %}
+              {% endif %}
+              {{ form.cuil }}
+              <br />
+              <span>
+                {% if form.cuil.help_text %}
+                  <small class="text-muted">{{ form.cuil.help_text }}</small>
+                {% endif %}
+              </span>
+            </p>
           </div>
+          {% comment %}NOMBRE{% endcomment %}
           <div class="col">
-            <p>Nombre * {{ form.nombre }}</p>
+            <span>Nombre/s *</span>
+            <p>
+              {% if form.nombre.errors %}
+                {% for error in form.nombre.errors %}
+                  <small class="error-text blink-text">{{ error|safe }}</small>
+                {% endfor %}
+              {% endif %}
+              {{ form.nombre }}
+              <br />
+              <span>
+                {% if form.nombre.help_text %}
+                  <small class="text-muted">{{ form.nombre.help_text }}</small>
+                {% endif %}
+              </span>
+            </p>
           </div>
+          {% comment %}APELLIDO{% endcomment %}
           <div class="col">
-            <p>Apellido * {{ form.apellido }}</p>
+            <span>Apellido/s *</span>
+            <p>
+              {% if form.apellido.errors %}
+                {% for error in form.apellido.errors %}
+                  <small class="error-text blink-text">{{ error|safe }}</small>
+                {% endfor %}
+              {% endif %}
+              {{ form.apellido }}
+              <br />
+              <span>
+                {% if form.apellido.help_text %}
+                  <small class="text-muted">{{ form.apellido.help_text }}</small>
+                {% endif %}
+              </span>
+            </p>
           </div>
+          {% comment %}FECHA DE NACIMIENTO{% endcomment %}
           <div class="col">
-            <p>Fecha nacimiento * {{ form.fecha_nacimiento }}</p>
+            <span>Fecha de nacimiento *</span>
+            <p>
+              {% if form.fecha_nacimiento.errors %}
+                {% for error in form.fecha_nacimiento.errors %}
+                  <small class="error-text blink-text">{{ error|safe }}</small>
+                {% endfor %}
+              {% endif %}
+              {{ form.fecha_nacimiento }}
+              <br />
+              <span>
+                <small id="fecha-nacimiento-error" class="error-text blink-text"></small>
+                {% if form.fecha_nacimiento.help_text %}
+                  <small class="text-muted">{{ form.fecha_nacimiento.help_text }}</small>
+                {% endif %}
+              </span>
+            </p>
           </div>
+          {% comment %}EMAIL{% endcomment %}
           <div class="col">
-            <p>Celular * {{ form.celular }}</p>
+            <span>Email *</span>
+            <p>
+              {% if form.mail.errors %}
+                {% for error in form.mail.errors %}
+                  <small class="error-text blink-text">{{ error|safe }}</small>
+                {% endfor %}
+              {% endif %}
+              {{ form.mail }}
+              <br />
+              <span>
+                <small id="email-error" class="error-text blink-text"></small>
+                <br />
+                {% if form.mail.help_text %}
+                  {% comment %} <small class="text-muted">{{ form.mail.help_text }}</small> {% endcomment %}
+                {% endif %}
+              </span>
+            </p>
           </div>
+          {% comment %}DIRECCION Y NUMERO{% endcomment %}
           <div class="col">
-            <p>Dirección * {{ form.direccion }}</p>
+            <span>Dirección y numero *</span>
+            <p>
+              {% if form.direccion.errors %}
+                {% for error in form.direccion.errors %}
+                  <small class="error-text blink-text">{{ error|safe }}</small>
+                {% endfor %}
+              {% endif %}
+              {{ form.direccion }}
+              <br />
+              <span>
+                {% if form.direccion.help_text %}
+                  <small class="text-muted">{{ form.direccion.help_text }}</small>
+                {% endif %}
+              </span>
+            </p>
           </div>
+          {% comment %}CELULAR{% endcomment %}
           <div class="col">
-            <p>Nacionalidad * {{ form.nacionalidad }}</p>
+            <span>Celular *</span>
+            <p>
+              {% if form.celular.errors %}
+                {% for error in form.celular.errors %}
+                  <small class="error-text blink-text">{{ error|safe }}</small>
+                {% endfor %}
+              {% endif %}
+              {{ form.celular }}
+              <br />
+              <span>
+                {% if form.celular.help_text %}
+                  <small class="text-muted">{{ form.celular.help_text }}</small>
+                {% endif %}
+              </span>
+            </p>
           </div>
+          {% comment %}NACIONALIDAD{% endcomment %}
           <div class="col">
-            <p>Email * {{ form.mail }}</p>
+            <span>Nacionalidad *</span>
+            <p>
+              {% if form.nacionalidad.errors %}
+                {% for error in form.nacionalidad.errors %}
+                  <small class="error-text blink-text">{{ error|safe }}</small>
+                {% endfor %}
+              {% endif %}
+              {{ form.nacionalidad }}
+              <br />
+              <span>
+                {% if form.nacionalidad.help_text %}
+                  <small class="text-muted">{{ form.nacionalidad.help_text }}</small>
+                {% endif %}
+              </span>
+            </p>
           </div>
+          {% comment %}ESTADO CIVIL{% endcomment %}
           <div class="col">
-            <p>Estado civil * {{ form.estado_civil }}</p>
+            <span>Estado civil *</span>
+            <p>
+              {% if form.estado_civil.errors %}
+                {% for error in form.estado_civil.errors %}
+                  <small class="error-text blink-text">{{ error|safe }}</small>
+                {% endfor %}
+              {% endif %}
+              {{ form.estado_civil }}
+              <br />
+              <span>
+                {% if form.estado_civil.help_text %}
+                  <small class="text-muted">{{ form.estado_civil.help_text }}</small>
+                {% endif %}
+              </span>
+            </p>
           </div>
         </div>
       </div>
