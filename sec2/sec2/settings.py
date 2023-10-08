@@ -48,9 +48,7 @@ INSTALLED_APPS = [
     "crispy_bootstrap5",
     "django_extensions",
     'django_select2',
-
-    
-    
+    'fontawesomefree',
 ]
 
 

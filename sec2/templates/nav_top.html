@@ -4,33 +4,16 @@
   <div class="container-fluid">
     <div class="collapse navbar-collapse" id="navbarSupportedContent">
       <div class="mx-auto"> <!-- Esto centrará el contenido horizontalmente -->
+        
         <form class="d-flex" role="search">
           <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
-          <button class="btn btn-outline-success" type="submit">Search</button>
+          <button class="btn btn-outline-success" type="submit">
+            <i class="fa-sharp fa-solid fa-magnifying-glass"></i>
+            {% comment %} Search {% endcomment %}
+          </button>
         </form>
       </div>
     </div>
   </div>
 </nav>
 
-
-<!-- <nav class="navbar navbarPersonalizado" style="padding:0px">
-  <div class="container-fluid cabecera">
-    <a class="navbar-brand" href="{% url 'home' %}">
-      <img id="logo" src="{% static 'images/logo.png'%}" alt="My image"/>
-    </a>
-    <form class="search" role="search" >
-      {% for field in buscador.visible_fields %}
-       {{field}}
-       {% endfor %}
-    </form>
-    <div class="dropdown-center">
-      <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-        Sessión
-      </button>
-      <ul class="dropdown-menu">
-        <li><a class="dropdown-item" href="#">Salir</a></li>
-      </ul>
-    </div>
-  </div>
-</nav> -->

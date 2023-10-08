@@ -2,6 +2,7 @@ from random import choices
 from tokenize import blank_re
 from django.db import models
 from apps import afiliados, cursos
+from django.core.validators import RegexValidator
 
 class Persona(models.Model):
     ESTADO_CIVIL=(
@@ -12,7 +13,18 @@ class Persona(models.Model):
     #!FALTA: CHOICE DE NACIONALIDAD
     nombre=models.CharField(max_length=30)
     apellido=models.CharField(max_length=30)
-    dni=models.CharField(max_length=8)
+    dni_regex = r'^\d{8}$'  # Esto asegura que el DNI tenga exactamente 8 dígitos numéricos.
+    dni_validator = RegexValidator(
+        regex=dni_regex,
+        message='El DNI debe contener exactamente 8 dígitos numéricos.',
+        code='invalid_dni'
+    )
+
+    dni = models.CharField(
+        max_length=8,
+        validators=[dni_validator],
+        help_text='Tu número de documento sin puntos.'
+    )
     direccion=models.CharField(max_length=50)
     mail=models.CharField(max_length=50)
     nacionalidad=models.CharField(max_length=50)

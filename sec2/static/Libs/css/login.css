@@ -6,6 +6,17 @@ body {
     /* background-position: center center; */
 }
 
+#icono{
+    color: #3c053d;
+    text-align: center;
+    font-size: 300%;
+    /* max-width: 100px; */
+}
+
+#icono-div{
+    text-align: center;
+}
+
 .form-signin {
     width: 100%;
     max-width: 330px;

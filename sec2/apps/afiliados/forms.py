@@ -16,8 +16,17 @@ from django.core.validators import RegexValidator
 ########### Utilizado para el AFILIADO CRATE VIEW ##############################################
 class AfiliadoForm(forms.ModelForm):
     class Meta:
+        print("ESTOY EN META DE AFILIADO FORM")
         model = Afiliado
         fields = '__all__'
+        error_messages = {
+            'dni': {
+                'required': 'El DNI es obligatorio.',
+                'invalid': 'Por favor, ingrese un DNI válido.',
+                # Agrega más mensajes de error según tus necesidades
+            },
+        }
+        
         exclude = ['persona', 'tipo', 'estado']
 
         widgets = {
@@ -29,42 +38,53 @@ class AfiliadoForm(forms.ModelForm):
             'fechaIngresoTrabajo': "fecha de ingreso al trabajo",
             'fechaAfiliacion': "Fecha de afiliacion"
         }
-class FormularioAfiliado(forms.ModelForm):
+class FormularioAfiliadoCreate(forms.ModelForm):
     fechaAfiliacion = forms.DateField()
     class Meta:
+        print("ESTOY EN META DE FormularioAfiliado")
         model = Persona
         fields = '__all__'
+        dni = forms.CharField(error_messages={
+        'required': 'El DNI es obligatorio.',
+        'invalid': 'Por favor, ingrese un DNI válido. Debe contener solo números.',
+        })
+        error_messages = {
+            'dni': {
+                'required': 'El DNI es obligatorio.',
+                'invalid': 'Por favor, ingrese un DNI válido.',
+                # Agrega más mensajes de error según tus necesidades
+            },
+        }
         help_texts = {
             'dni': 'Tu numero de documento sin puntos',
         }
-
         widgets = {
             'fecha_nacimiento': forms.DateInput(attrs={'type': 'date'}),
         }
-
         labels = {
             'fecha_nacimiento': "Fecha de nacimiento",
         }
+
 
     # def clean_dni(self):
     #     dni=self.cleaned_data['dni']
     #     self.persona = Persona.objects.filter(
     #         dni).first()
-        
     #     if len(dni) > 8 :
     #         print("DNI EXCEDE CARACTERES")
-
-     
-        # if self.persona is not None and self.persona.es_afiliado:
-        #     raise ValidationError("Ya existe un afiliado activo con ese DNI")
-        # return self.cleaned_data['dni']
+    #     if self.persona is not None and self.persona.es_afiliado:
+    #         raise ValidationError("Ya existe un afiliado activo con ese DNI")
+    #     return self.cleaned_data['dni']
 
     def is_valid(self) -> bool:
+        print("ESTOY EN IS_VALID DE FormularioAfiliado")
         valid = super().is_valid()
+        print(valid)
         # personaForm = PersonaForm(data=self.cleaned_data)
-        return valid
+        return False
 
     def save(self, commit=False):
+        print("ESTOY EN SAVE DE  FormularioAfiliado")
         dni = self.cleaned_data["dni"]
         cuil = self.cleaned_data["cuil"]
         nombre = self.cleaned_data["nombre"]
@@ -116,47 +136,9 @@ class FormularioAfiliado(forms.ModelForm):
         return self
 
     def __init__(self, instance=None, *args, **kwargs):
+        print("ESTOY EN EL INIT DE FormularioAfiliado")
         super().__init__(*args, **kwargs)
-        self.helper = FormHelper()
-        #self.helper.form_action = 'afiliados:index'
-        self.helper.layout = Layout(
-            HTML(
-                '<h2><center>Formulario de Afiliación</center></h2>'),    
-            Fieldset(
-                "Datos Personales",
-                HTML(
-                    '<br/>'),
-                # 'dni',
-                'nombre',
-                'apellido',
-                'fecha_nacimiento',
-                'direccion',
-                'mail',
-                'nacionalidad',
-                'estado_civil',
-                'cuil',
-                'celular',
-            ),
-
-            Fieldset(
-                "Datos Laborales",
-                HTML(
-                    '<hr/>'),
-                'razon_social',
-                'cuit_empleador',
-                'domicilio_empresa',
-                'localidad_empresa',
-                'fechaIngresoTrabajo',
-                'rama',
-                'sueldo',
-                'horaJornada',
-                'fechaAfiliacion',
-                'categoria_laboral',
-            ),
-
-            Submit('submit', 'Guardar', css_class='button white'),)
-FormularioAfiliado.base_fields.update(AfiliadoForm.base_fields)
-
+FormularioAfiliadoCreate.base_fields.update(AfiliadoForm.base_fields)
 ########### Utilizado para el AFILIADO fliadosListView ##############################################
 
 class AfiliadoFilterForm(FiltrosForm):

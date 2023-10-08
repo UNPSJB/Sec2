@@ -9,17 +9,13 @@
 
 <ul id="menu_afiliado">
   <h3 id="titulo-afiliados"> AFILIADOS</h3>
-  <li><a id="mostrarMenuPrincipal" href="/home">Volver al menú principal</a></li>
-  <li><a href="{% url 'afiliados:afiliado_crear' %}">Alta afiliado</a></li>
-  <li><a href="{% url 'afiliados:afiliado_listar' %}">Lista de afiliados</a></li>
-  <li><a href="{% url 'afiliados:index' %}">Aceptar afiliados</a></li>
-  <li><a href="{% url 'afiliados:index' %}">Baja de afiliados</a></li>
+  <li><a id="mostrarMenuPrincipal" href="/home"><i class="fa-solid fa-arrow-left-long"></i> Volver</a></li>
+  <li><a href="{% url 'afiliados:afiliado_crear' %}"><i class="fa-solid fa-plus"></i> Alta afiliado</a></li>
+  <li><a href="{% url 'afiliados:afiliado_listar' %}"><i class="fa-solid fa-list"></i> Lista de afiliados</a></li>
+  <li><a href="{% url 'afiliados:index' %}"><i class="fa-solid fa-check-to-slot"></i> Aceptar afiliados</a></li>
+  <li><a href="{% url 'afiliados:index' %}"><i class="fa-regular fa-circle-down"></i> Baja de afiliados</a></li>
   <li><a href="{% url 'afiliados:index' %}">Grupo Familiar</a></li>
 </ul>
 
 {% block extrajs %}
-<!--!YA ESTA EN EL BASE LOS SIGUIENTES SCRIPT  -->
-<!-- <script src="{% static 'Libs/js/jquery.min.js' %}"></script>
-<script src="{% static 'Libs/js/popper.js' %}"></script>
-<script src="{% static 'Libs/js/main.js' %}"></script> -->
 {% endblock %}

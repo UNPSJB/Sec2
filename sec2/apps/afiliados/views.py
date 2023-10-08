@@ -23,42 +23,33 @@ from .models import Afiliado
 from .forms import AfiliadoUpdateForm
 from .forms import FormularioAfiliadoUpdate
 
-
 # ----------------------------- AFILIADO VIEW ----------------------------------- #
 def index(request):
     template = loader.get_template('home.html')
     return HttpResponse(template.render())
-
 # ----------------------------- AFILIADO CREATE ----------------------------------- #
 class AfiliadoCreateView(CreateView):
     model = Afiliado
-    form_class = FormularioAfiliado
+    form_class = FormularioAfiliadoCreate
     success_url = reverse_lazy('afiliados:afiliado_crear')
     template_name = 'afiliados/afiliado_alta.html'
-    
+
     def get_context_data(self, **kwargs):
+        print("ESTO EN get_context_data DE AfiliadoCreateView")
         context = super().get_context_data(**kwargs)
         context['titulo'] = "Formulario de Afiliación"
         return context
-    
-    def get_form(self, form_class=None):
-        form = super().get_form(form_class)
-        # Establecer el campo dni como solo lectura
-        form.fields['dni'].widget.attrs['readonly'] = 'readonly'
-        
-        return form
-    
 
     def form_valid(self, form):
-        """Se comento la linea porque primero lo verifica y despues
-        lo guarda en el form.py"""
+        print("ESTOY EN FORM_VALID DE AfiliadoCreateView")
+        afiliado = form.save()
         messages.success(self.request, 'Alta de afiliado exitosa!')
         return redirect('afiliados:afiliado_listar')
-
+    
     def form_invalid(self, form):
-        messages.error(self.request, 'Hubo errores en el formulario')
-        # return super().form_invalid(form)
-        return redirect('afiliados:afiliado_listar')
+        print("ESTOY EN FORM_INVALID DE AfiliadoCreateView")
+        messages.error(self.request, 'Por favor, corrija los errores a continuación.')
+        return render(self.request, self.template_name, {'form': form})
 
 # ----------------------------- AFILIADO LIST ----------------------------------- #
 class AfliadosListView(ListFilterView):
@@ -79,17 +70,13 @@ class AfliadosListView(ListFilterView):
                 estado__startswith = self.request.GET['estado']
             )
         return super().get_queryset()
-
 # ----------------------------- AFILIADO DETALLE ----------------------------------- #
-
 class AfiliadoDetailView (DeleteView):
     model = Afiliado
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['titulo'] = "Datos del afiliado"
         return context
-    
-    
 # ----------------------------- AFILIADO UPDATE ----------------------------------- #
 class AfiliadoUpdateView(UpdateView):
     model = Afiliado
