@@ -8,6 +8,10 @@ from django.utils import timezone
 
 XMARK_ICON = '<i class="fa-solid fa-xmark"></i>'
 
+# Define una función para validar si el valor es un número
+def is_numeric(value):
+    return value.isnumeric()
+
 class Persona(models.Model):
     ESTADO_CIVIL = (
         (1, 'soltero'),
@@ -240,13 +244,12 @@ class Persona(models.Model):
     numeric_validator = RegexValidator(
         regex=r'^\d+$',
         message=f'{XMARK_ICON} Debe contener solo dígitos numéricos.',
-        # message='<i class="fa-solid fa-xmark"></i> Debe contener solo dígitos numéricos.',
         code='invalid_numeric'
     )
 
     text_validator = RegexValidator(
         regex=r'^[A-Za-záéíóúÁÉÍÓÚñÑ\s]+$',
-        message=f'{XMARK_ICON} Debe contener letras y espacios.',
+        message=f'{XMARK_ICON} Debe contener letras y/o espacios.',
         code='invalid_text'
     )
 
@@ -262,8 +265,30 @@ class Persona(models.Model):
         code='invalid_celular_argentino'
     )
 
-    dni = models.CharField(max_length=8, validators=[numeric_validator], help_text='Dni sin puntos. Ej: 12345678')
-    cuil = models.CharField(max_length=11, validators=[numeric_validator], help_text='Cuil sin puntos y sin guiones. Ej: 01234567890')
+    dni = models.CharField(
+        max_length=8,
+        help_text='DNI sin puntos. Ej: 12345678',
+        validators=[
+            RegexValidator(
+                regex=r'^\d{8}$',  # Expresión regular para 8 dígitos
+                message=f'{XMARK_ICON} El DNI debe tener exactamente 8 dígitos.',
+                code='invalid_dni_format',
+            ),
+            is_numeric,  # Validador personalizado para verificar si es un número
+        ],
+    )
+    cuil = models.CharField(
+        max_length=11,
+        help_text='CUIL sin puntos ni guiones. Ej: 01234567890',
+        validators=[
+            RegexValidator(
+                regex=r'^\d{11}$',  # Expresión regular para 11 dígitos
+                message=f'{XMARK_ICON} El CUIL debe tener exactamente 11 dígitos.',
+                code='invalid_cuil_format',
+            ),
+            is_numeric,  # Validador personalizado para verificar si es un número
+        ],
+    )
     nombre = models.CharField(max_length=30, validators=[text_validator])
     apellido = models.CharField(max_length=30, validators=[text_validator])
 
@@ -283,7 +308,7 @@ class Persona(models.Model):
         help_text='Formato ###-########.'
     )
     
-    direccion = models.CharField(max_length=50, validators=[text_and_numeric_validator])
+    direccion = models.CharField(max_length=50, validators=[text_and_numeric_validator], help_text='Calle y numero')
     nacionalidad = models.CharField(
         max_length=2,
         choices=NACIONALIDADES,

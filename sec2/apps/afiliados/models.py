@@ -36,20 +36,18 @@ class Afiliado(Rol):
     numeric_validator = RegexValidator(
         regex=r'^\d+$',
         message=f'{XMARK_ICON} Debe contener solo dígitos numéricos.',
-        # message='<i class="fa-solid fa-xmark"></i> Debe contener solo dígitos numéricos.',
         code='invalid_numeric'
     )
     text_validator = RegexValidator(
         regex=r'^[A-Za-záéíóúÁÉÍÓÚñÑ\s]+$',
-        message=f'{XMARK_ICON} Debe contener letras y espacios.',
+        message=f'{XMARK_ICON} Debe contener letras y/o espacios.',
         code='invalid_text'
     )
 
-    razon_social = models.CharField(max_length=50, validators=[numeric_validator], help_text='Dni sin puntos ni guiones. Ej: 12345678')
-    categoria_laboral = models.CharField(max_length=20, validators=[numeric_validator])
-    rama = models.CharField(max_length=50, validators=[text_validator])
+    razon_social = models.CharField(max_length=30, validators=[numeric_validator,text_validator])
+    categoria_laboral = models.CharField(max_length=20, validators=[text_and_numeric_validator])
+    rama = models.CharField(max_length=50, validators=[text_and_numeric_validator])
     sueldo= models.DecimalField(max_digits=9, decimal_places=2, validators=[validate_positive_decimal])
-    # sueldo= models.DecimalField(max_digits=9, decimal_places=2, validators=[validate_positive_decimal])
     
     def validate_fecha(value):
         if value > timezone.now().date():
@@ -65,16 +63,17 @@ class Afiliado(Rol):
         blank=False,
         validators=[validate_fecha]
     )
-    cuit_empleador = models.CharField(max_length=10, validators=[numeric_validator], help_text='Cuil sin puntos y sin guiones. Ej: 0123456789')
+    cuit_empleador = models.CharField(max_length=11, validators=[numeric_validator], help_text='Cuit sin puntos y guiones. Ej: 01234567899')
     localidad_empresa = models.CharField(
         max_length=30,
         choices=LOCALIDADES_CHUBUT,
         default="TRELEW",
     )
-    domicilio_empresa = models.CharField(max_length=50, validators=[text_and_numeric_validator])
+    domicilio_empresa = models.CharField(max_length=50, validators=[text_and_numeric_validator], help_text='Calle y numero')
     horaJornada = models.PositiveIntegerField(validators=[MinValueValidator(1)])
 
     def __str__(self):
-        return f"Tipo: {self.TIPO} Razon social: {self.razon_social} CUIT:{self.cuit_empleador}"
+        return self.nombre
+        # return f"Tipo: {self.TIPO} Razon social: {self.razon_social} CUIT:{self.cuit_empleador}"
 
 Rol.register(Afiliado)

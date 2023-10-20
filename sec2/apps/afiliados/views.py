@@ -41,13 +41,15 @@ class AfiliadoCreateView(CreateView):
 
     def form_valid(self, form):
         afiliado = form.save()
-        messages.success(self.request, 'Alta de afiliado exitosa!')
+        messages.success(self.request, '<i class="fa-solid fa-square-check fa-beat-fade"></i> Alta de afiliado exitosa!')
         return redirect('afiliados:afiliado_listar')
     
     def form_invalid(self, form):
+        fecha_nacimiento_input = self.request.POST.get('fecha_nacimiento', '')  # Obtener el valor o cadena vacía si no está presente
+        # Opcionalmente, puedes agregar el valor al contexto para pasarlo a la plantilla
+        context = {'form': form, 'fecha_nacimiento_input': fecha_nacimiento_input}
         messages.warning(self.request, '<i class="fa-solid fa-triangle-exclamation fa-flip"></i> Por favor, corrija los errores a continuación.')
-        print(form)
-        return render(self.request, self.template_name, {'form': form})
+        return render(self.request, self.template_name, context)
 
 # ----------------------------- AFILIADO LIST ----------------------------------- #
 class AfliadosListView(ListFilterView):
@@ -68,6 +70,47 @@ class AfliadosListView(ListFilterView):
                 estado__startswith = self.request.GET['estado']
             )
         return super().get_queryset()
+
+# ----------------------------- AFILIADO LIST PENDIENTES DE ACTIVACION -------------------------- #
+class AfliadosListPendienteView(ListFilterView):
+    model = Afiliado
+    filter_class = AfiliadoFilterForm
+    success_url = reverse_lazy('afiliados:afiliado_listar_pendiente')
+    template_name = 'afiliados/afiliado_list_pendiente.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['titulo'] = "Listado de Afiliados Pendientes"
+        return context
+        
+    def get_queryset(self):
+        if self.request.GET.get('estado') is not None:
+            AfliadosListView.template_name = 'afiliado_list_aceptar.html'
+            return Afiliado.objects.filter(
+                estado__startswith = self.request.GET['estado']
+            )
+        return super().get_queryset()
+
+# ----------------------------- AFILIADO LIST INACTIVO -------------------------- #
+class AfliadosListActivoView(ListFilterView):
+    model = Afiliado
+    filter_class = AfiliadoFilterForm
+    success_url = reverse_lazy('afiliados:afiliado_listar_activos')
+    template_name = 'afiliados/afiliado_list_activos.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['titulo'] = "Listado de Afiliados Activos"
+        return context
+        
+    def get_queryset(self):
+        if self.request.GET.get('estado') is not None:
+            AfliadosListView.template_name = 'afiliado_listar_activos.html'
+            return Afiliado.objects.filter(
+                estado__startswith = self.request.GET['estado']
+            )
+        return super().get_queryset()
+
 # ----------------------------- AFILIADO DETALLE ----------------------------------- #
 class AfiliadoDetailView (DeleteView):
     model = Afiliado
@@ -87,7 +130,6 @@ class AfiliadoUpdateView(UpdateView):
         context['titulo'] = "Modificar Afiliado"
         return context
 
-#MUESTRA LOS MENSAJES
     def form_valid(self, form):
         """Se comento la linea porque primero lo verifica y despues
         lo guarda en el form.py"""
@@ -97,6 +139,8 @@ class AfiliadoUpdateView(UpdateView):
 
     def form_invalid(self, form):
         messages.error(self.request, 'Hubo errores en el formulario')
+        for field, errors in form.errors.items():
+            print(f"Campo: {field}, Errores: {', '.join(errors)}")
         return super().form_invalid(form)
 
 # ----------------------------- AFILIADO ACEPTAR ----------------------------------- #

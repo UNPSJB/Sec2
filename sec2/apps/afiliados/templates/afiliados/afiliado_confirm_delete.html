@@ -3,160 +3,142 @@
 {% load static %}
 
 {% block extracss_intermedia %}
-<link href="{% static 'css/afiliado_confirm_delete.css' %}" rel="stylesheet" />
+  <link href="{% static 'css/afiliado_confirm_delete.css' %}" rel="stylesheet" />
 {% endblock %}
 
 {% block dinamica %}
-<h1 id="titulo"> {{titulo }} </h1>
-<br>
-<div class="container border border-success p-3 mb-3 col-md-8 offset-md-2">
-  <h4>Datos Personales</h4>
-  <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3">
-    <div class="col col-lg-3 text-center">
-      <img src="{% static 'images/perfil.jpg' %}" class="img-thumbnail" alt="...">
-      {% if afiliado.estado == 1 %}
-      <p>PENDIENTE</p>
-      {% endif %}
+  <h1 id="titulo">{{ titulo }}</h1>
+  <br />
+  <div class="container border border-success p-3 mb-3 col-md-8 offset-md-2">
+    <h4>Datos Personales</h4>
+    <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3">
+      <div class="col col-lg-3 text-center">
+        <img src="{% static 'images/perfil.jpg' %}" class="img-thumbnail" alt="..." />
+        {% if afiliado.estado == 1 %}
+          <p class="letra_negrita">PENDIENTE</p>
+        {% endif %}
 
-      {% if afiliado.estado == 2 %}
-      <p>ACTIVO</p>
-      {% endif %}
+        {% if afiliado.estado == 2 %}
+          <p class="letra_negrita">ACTIVO</p>
+        {% endif %}
 
-      {% if afiliado.estado == 3 %}
-      <p>INACTIVO</p>
-      {% endif %}
+        {% if afiliado.estado == 3 %}
+          <p class="letra_negrita">INACTIVO</p>
+        {% endif %}
+      </div>
+
+      <div class="col">
+        <p>Nombre: {{ afiliado.persona.nombre }}</p>
+        <p>Apellido: {{ afiliado.persona.apellido }}</p>
+      </div>
+      <div class="col">
+        <p>DNI: {{ afiliado.persona.dni }}</p>
+        <p>nacimiento: {{ afiliado.persona.fecha_nacimiento }}</p>
+      </div>
     </div>
+    <h4>Datos Afiliación</h4>
+    <div class="row row-cols-1 row-cols-sm-1 row-cols-md-2">
+      <div class="col">
+        <p>Razon Social: {{ afiliado.razon_social }}</p>
+      </div>
 
-    <div class="col">
-      <p>Nombre: {{ afiliado.persona.nombre }}</p>
-      <p>Apellido: {{ afiliado.persona.apellido }}</p>
-    </div>
-    <div class="col">
-      <p>DNI: {{ afiliado.persona.dni }}</p>
-      <p>nacimiento: {{ afiliado.persona.fecha_nacimiento }}</p>
+      <div class="col">
+        <p>Domicilio (empresa): {{ afiliado.domicilio_empresa }}</p>
+      </div>
+
+      <div class="col">
+        <p>Fecha ingreso trabajo: {{ afiliado.fechaIngresoTrabajo }}</p>
+      </div>
+
+      <div class="col">
+        <p>Fecha de afiliacion: {{ afiliado.fechaAfiliacion }}</p>
+      </div>
+
+      <div class="col">
+        <p>Cuit (empleado) : {{ afiliado.cuit_empleador }}</p>
+      </div>
+
+      <div class="col">
+        <p>Localidad (empresa): {{ afiliado.localidad_empresa }}</p>
+      </div>
+
+      <div class="col">
+        <p>Sueldo: {{ afiliado.sueldo }}</p>
+      </div>
+
+      <div class="col">
+        <p>Categoria laboral: {{ afiliado.categoria_laboral }}</p>
+      </div>
+      <div class="col">
+        <p>Rama: {{ afiliado.rama }}</p>
+      </div>
+      <div class="col">
+        <p>Hora Jornada: {{ afiliado.horaJornada }}</p>
+      </div>
     </div>
   </div>
-  <h4>Datos Afiliación</h4>
-  <div class="row row-cols-1 row-cols-sm-1 row-cols-md-2 ">
-    <div class="col">
-      <p>Razon Social: {{afiliado.razon_social}} </p>
-    </div>
+  <br />
 
-    <div class="col">
-      <p>Domicilio (empresa): {{afiliado.domicilio_empresa}}</p>
-    </div>
-
-    <div class="col">
-      <p>Fecha ingreso trabajo: {{afiliado.fechaIngresoTrabajo}} </p>
-    </div>
-
-    <div class="col">
-      <p>Fecha de afiliacion: {{afiliado.fechaAfiliacion}} </p>
-    </div>
-
-    <div class="col">
-      <p>Cuit (empleado) : {{afiliado.cuit_empleador}}</p>
-    </div>
-
-    <div class="col">
-      <p>Localidad (empresa): {{afiliado.localidad_empresa}} </p>
-    </div>
-
-    <div class="col">
-      <p>Sueldo: {{afiliado.sueldo}} </p>
-    </div>
-
-    <div class="col">
-      <p>Categoria laboral: {{afiliado.categoria_laboral}} </p>
-    </div>
-    <div class="col">
-      <p>Rama: {{afiliado.rama}} </p>
-    </div>
-    <div class="col">
-      <p>Hora Jornada: {{afiliado.horaJornada}}</p>
-    </div>
-  </div>
-</div>
-<br>
-
-  {% if afiliado.estado ==  2 %}
-    <div class="container text-center ">
-      <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3">
-        <div class="col">
+  <div class="container text-center">
+    <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3">
+      <div class="col">
+        {% if afiliado.estado == 1 or afiliado.estado == 2 %}
           <a href="{% url 'afiliados:afiliado_actualizar' afiliado.pk %}" class="btn btn-primary"><i class="fa-regular fa-pen-to-square"></i> Modificar</a>
-        </div>
-  {% else %}
-    <div class="container text-center ">
-      <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3">
-        <div class="col">
-          <a> </a>
-        </div>
-  {% endif %}
+        {% endif %}
+      </div>
 
-    <div class="col">
-      <a target="_blank" onclick="return abrirNuevaVentana();" class="btn btn-primary"><i class="fa-solid fa-people-line"></i> Grupo Familiar</a>
-    </div>
+      <div class="col">
+        <a target="_blank" onclick="return abrirNuevaVentana();" class="btn btn-primary"><i class="fa-solid fa-people-line"></i> Grupo Familiar</a>
+      </div>
 
-    <div class="col">
-      {% if afiliado.estado == 2 %}
-      <td class="text-center">
-        <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#exampleModal_desafiliar">
-          <i class="fa-regular fa-circle-down"></i> Dar de baja
-        </button>
+      <div class="col">
+        {% if afiliado.estado == 2 %}
+          <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#exampleModal_desafiliar"><i class="fa-regular fa-circle-down"></i> Dar de baja</button>
 
-        <div class="modal fade" id="exampleModal_desafiliar" tabindex="-1" aria-labelledby="exampleModalLabel"
-          aria-hidden="true">
-          <div class="modal-dialog">
-            <div class="modal-content">
-              <div class="modal-header">
-                <h1 class="modal-title fs-5" id="exampleModalLabel">Confirmar</h1>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-              </div>
-              <div class="modal-body">
-                <h5>¿Estas seguro que deseas desafiliar?</h5>
-              </div>
-              <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
-                <a href="{% url 'afiliados:desafiliar_afiliado' afiliado.pk %}" class="btn btn-danger">Confirmar</a>
+          <div class="modal fade" id="exampleModal_desafiliar" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h1 class="modal-title fs-5" id="exampleModalLabel">Confirmar</h1>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                  <h5>¿Estás seguro de que deseas desafiliar?</h5>
+                </div>
+                <div class="modal-footer">
+                  <a href="{% url 'afiliados:desafiliar_afiliado' afiliado.pk %}" class="btn btn-danger">Confirmar</a>
+                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                </div>
               </div>
             </div>
           </div>
-        </div>
-      </td>
-      {% endif %}
+        {% endif %}
 
-      {% if afiliado.estado == 1 %}
-      <td class="text-center">
-        <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#exampleModal_aceptar">
-          Aceptar
-        </button>
-        <div class="modal fade" id="exampleModal_aceptar" tabindex="-1" aria-labelledby="exampleModalLabel"
-          aria-hidden="true">
-          <div class="modal-dialog">
-            <div class="modal-content">
-              <div class="modal-header">
-                <h1 class="modal-title fs-5" id="exampleModalLabel">Confirmación</h1>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-              </div>
-              <div class="modal-body">
-                <h5>¿Estas seguro que deseas aceptar al afiliado?</h5>
-              </div>
-              <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
-                <a href="{% url 'afiliados:aceptar_afiliado' afiliado.pk %}" class="btn btn-success">Aceptar</a>
+        {% if afiliado.estado == 1 %}
+          <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#exampleModal_aceptar">Aceptar</button>
+          <div class="modal fade" id="exampleModal_aceptar" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h1 class="modal-title fs-5" id="exampleModalLabel">Confirmación</h1>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                  <h5>¿Estás seguro de que deseas aceptar al afiliado?</h5>
+                </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                  <a href="{% url 'afiliados:aceptar_afiliado' afiliado.pk %}" class="btn btn-success">Aceptar</a>
+                </div>
               </div>
             </div>
           </div>
-        </div>
-      </td>
-      {% endif %}
+        {% endif %}
+      </div>
     </div>
   </div>
-</div>
-</div>
-
 {% endblock %}
 
 {% block extrajs_intermedia %}
-<script src="{% static 'js/afiliado_confirm_delete.js' %}"></script>
+  <script src="{% static 'js/afiliado_confirm_delete.js' %}"></script>
 {% endblock %}

@@ -12,8 +12,8 @@
   <li><a id="mostrarMenuPrincipal" href="/home"><i class="fa-solid fa-arrow-left-long"></i> Volver</a></li>
   <li><a href="{% url 'afiliados:afiliado_crear' %}"><i class="fa-solid fa-plus"></i> Alta afiliado</a></li>
   <li><a href="{% url 'afiliados:afiliado_listar' %}"><i class="fa-solid fa-list"></i> Lista de afiliados</a></li>
-  <li><a href="{% url 'afiliados:index' %}"><i class="fa-solid fa-check-to-slot"></i> Aceptar afiliados</a></li>
-  <li><a href="{% url 'afiliados:index' %}"><i class="fa-regular fa-circle-down"></i> Baja de afiliados</a></li>
+  <li><a href="{% url 'afiliados:afiliado_listar_pendiente' %}"><i class="fa-solid fa-check-to-slot"></i> Aceptar afiliados</a></li>
+  <li><a href="{% url 'afiliados:afiliado_listar_activos' %}"><i class="fa-regular fa-circle-down"></i> Baja de afiliados</a></li>
   <li><a href="{% url 'afiliados:index' %}">Grupo Familiar</a></li>
 </ul>
 

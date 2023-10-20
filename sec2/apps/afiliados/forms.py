@@ -12,8 +12,7 @@ from crispy_forms.layout import Layout, Fieldset, Submit, Div, HTML
 from django.forms.models import model_to_dict
 from sec2.utils import FiltrosForm
 from django.core.validators import RegexValidator
-from datetime import date
-
+from datetime import date, timedelta
 
 ########### Utilizado para el AFILIADO CRATE VIEW ##############################################
 class AfiliadoForm(forms.ModelForm):
@@ -29,11 +28,13 @@ class AfiliadoForm(forms.ModelForm):
             'fechaIngresoTrabajo': "fecha de ingreso al trabajo",
             'fechaAfiliacion': "Fecha de afiliacion"
         }
+
 class FormularioAfiliadoCreate(forms.ModelForm):
     fechaAfiliacion = forms.DateField()
     class Meta:
         model = Persona
         fields = '__all__'
+        
         widgets = {
             'fecha_nacimiento': forms.DateInput(attrs={'type': 'date', 'max': str(date.today())}),
             # 'fecha_nacimiento': forms.DateInput(attrs={'type': 'date'}),
@@ -41,8 +42,17 @@ class FormularioAfiliadoCreate(forms.ModelForm):
         labels = {
             'fecha_nacimiento': "Fecha de nacimiento",
         }
+        fecha_nacimiento = forms.DateField(
+            widget=forms.DateInput(attrs={'type': 'date'}),
+        )
 
-
+    def clean_fecha_nacimiento(self):
+            fecha_nacimiento = self.cleaned_data.get('fecha_nacimiento')
+            edad = date.today().year - fecha_nacimiento.year
+            if edad < 18 or edad >= 100:
+                raise forms.ValidationError("Debes ser mayor de 18 años y menor de 100 años.")
+            
+            return fecha_nacimiento
     # def clean_dni(self):
     #     dni=self.cleaned_data['dni']
     #     self.persona = Persona.objects.filter(
@@ -55,9 +65,8 @@ class FormularioAfiliadoCreate(forms.ModelForm):
 
     def is_valid(self) -> bool:
         valid = super().is_valid()
-        print(valid)
         # personaForm = PersonaForm(data=self.cleaned_data)
-        return False
+        return valid
 
     def save(self, commit=False):
         dni = self.cleaned_data["dni"]
@@ -70,8 +79,7 @@ class FormularioAfiliadoCreate(forms.ModelForm):
         estadoCivil = self.cleaned_data["estado_civil"]
         nacionalidad = self.cleaned_data["nacionalidad"]
         direccion = self.cleaned_data["direccion"]
-        #creamos el objeto persona y validamos datos (en teoria xd)
-        
+
         pearson = Persona(dni=dni,
                         fecha_nacimiento=fechaN,
                         cuil= cuil,
@@ -111,8 +119,15 @@ class FormularioAfiliadoCreate(forms.ModelForm):
         return self
 
     def __init__(self, instance=None, *args, **kwargs):
-        print("ESTOY EN EL INIT DE FormularioAfiliado")
         super().__init__(*args, **kwargs)
+        # Calcular la fecha mínima permitida para ser mayor de edad (18 años)
+        fecha_minima = date.today() - timedelta(days=18*365)
+        # Formatear la fecha mínima en el formato 'YYYY-MM-DD' requerido por el campo de fecha en HTML
+        fecha_minima_str = fecha_minima.strftime('%Y-%m-%d')
+        # Establecer la fecha mínima en el widget del campo de fecha de nacimiento
+        self.fields['fecha_nacimiento'].widget.attrs['min'] = fecha_minima_str
+        self.fields['fecha_nacimiento'].help_text = "Debe ser mayor de edad (mayor de 18 años)."
+
 FormularioAfiliadoCreate.base_fields.update(AfiliadoForm.base_fields)
 ########### Utilizado para el AFILIADO fliadosListView ##############################################
 
@@ -130,8 +145,8 @@ class AfiliadoUpdateForm(forms.ModelForm):
         fields = '__all__'
         exclude = ['persona','tipo','estado']
         widgets = {
-            # 'fechaIngresoTrabajo': forms.DateInput(attrs={'type':'date'}),
-            # 'fechaAfiliacion': forms.DateInput(attrs={'type':'date'})
+            'fechaIngresoTrabajo': forms.DateInput(attrs={'type':'date'}),
+            'fechaAfiliacion': forms.DateInput(attrs={'type':'date'})
         }
 
         labels = {
