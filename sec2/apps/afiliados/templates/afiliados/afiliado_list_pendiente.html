@@ -8,7 +8,7 @@
 {% endblock %}
 
 {% block dinamica %}
-<h2 id="titulo"> {{ titulo }} </h2>
+<h2 class="titulo"> {{ titulo }} </h2>
 <div class="container-sm">
   <div class="table-responsive ">
     <table class="table table-striped table-hover table-secondary">
@@ -35,7 +35,7 @@
               <td>{{ afiliado.persona.fecha_nacimiento }}</td>
               <td>{{ afiliado.cuit_empleador }}</td>
               <td>
-                <a href="{% url 'afiliados:Afiliado' afiliado.pk %}" class="btn btn-primary btn-detalle">Detalle</a>
+                <a href="{% url 'afiliados:Afiliado' afiliado.pk %}" class="btn btn-primary btn-detalle"><i class="fa-regular fa-eye"></i> Detalle</a>
               </td>
               <td>
                 <button type="button" class="btn btn-success btn-sm btn-detalle" data-bs-toggle="modal" data-bs-target="#exampleModal_aceptar">Aceptar</button>

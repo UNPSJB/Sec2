@@ -8,7 +8,7 @@
 {% endblock %}
 
 {% block dinamica %}
-<h2 id="titulo"> {{ titulo }} </h2>
+<h2 class="titulo"> {{ titulo }} </h2>
 <div class="container-sm">
   <!-- {% comment %} -->
   <!-- esto no se ocupa hasta ahora -->
@@ -24,8 +24,6 @@
     </ul>
   </div>
   {% endcomment %} -->
-
-
   <div class="table-responsive ">
     <table class="table table-striped table-hover table-secondary">
       <thead>
@@ -71,12 +69,8 @@
           {% endif %}
 
           <td>
-            <a href="{% url 'afiliados:Afiliado' afiliado.pk %}" class="btn btn-primary btn-detalle">Detalle</a>
+            <a href="{% url 'afiliados:Afiliado' afiliado.pk %}" class="btn btn-primary btn-detalle"><i class="fa-regular fa-eye"></i> Detalle</a>
           </td>
-
-          <!-- {% comment %}
-          <a href="{% url 'personas:crear_familiar' afiliado.pk %}" class="btn btn-primary">Grupo Familiar</a>
-          {% endcomment %} -->
         </tr>
         {% endfor %}
       </tbody>
@@ -93,9 +87,7 @@
   </div>
 </div>
 </div>
-
 {% block nav_lateral_filtro %}
 {% include 'nav_filtro_afiliado.html' %}
 {% endblock %}
-
 {% endblock %}

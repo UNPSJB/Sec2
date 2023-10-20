@@ -16,4 +16,7 @@ urlpatterns = [
     path('mostrar/',AfliadosListView.as_view(), name="afiliado_listar"),
     path('mostrar/pendientes',AfliadosListPendienteView.as_view(), name="afiliado_listar_pendiente"),
     path('mostrar/activos',AfliadosListActivoView.as_view(), name="afiliado_listar_activos"),
+
+    # FALTA IMPLEMENTAR LA PARTE DE GRUPO FAMILIAR
+    path('funcionalidad-pendiente/', views.funcionalidad_pendiente, name='funcionalidad_pendiente'),
 ]

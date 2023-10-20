@@ -153,13 +153,7 @@ def afiliado_aceptar(request, pk):
     messages.success(request, 'El afiliado ha sido aceptadov2.')
     return redirect('afiliados:afiliado_listar')
 
-
-
-#def desafiliar():
- #   pk=kwargs.get('pk')
-  #  persona = Persona.objects.get(pk=pk)
-  #  Persona.desafiliar(Persona)
-
+# ----------------------------- DESAFILIAR AFILIADO -----------------------------------
 def afiliado_desafiliar(request, pk):
     a = Afiliado.objects.get(pk=pk)
     fecha = datetime.now()
@@ -168,3 +162,12 @@ def afiliado_desafiliar(request, pk):
     messages.success(request, 'Se ha desafiliado.')
     return redirect('afiliados:afiliado_listar')
 
+#!ES NECESARIO ESTO??
+#def desafiliar():
+ #   pk=kwargs.get('pk')
+  #  persona = Persona.objects.get(pk=pk)
+  #  Persona.desafiliar(Persona)
+
+#---------- HTML PARA FUNCIONALIDADES PENDIENTES
+def funcionalidad_pendiente(request):
+    return render(request, 'funcionalidad_pendiente.html')
