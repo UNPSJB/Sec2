@@ -1,0 +1,12 @@
+.fila-personalizada td{
+    height: 100%; /* Ajusta la altura de las filas según tus necesidades */
+    /* Otros estilos personalizados */
+    padding: 0;
+}
+
+.btn-detalle {
+    font-size: 12px; /*Ajusta el tamaño de fuente del botón según tus necesidades */
+    padding: 5px 10px; /*Ajusta el espaciado interno del botón según tus necesidades*/
+    margin-top: 5px;
+    margin-bottom: 5px;
+}

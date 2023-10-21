@@ -2,19 +2,20 @@
 {% load crispy_forms_tags %}
 
 {% block extracss %}
-<link href="https://fonts.googleapis.com/css?family=Poppins:300,400,500,600,700,800,900" rel="stylesheet">
-<link href="{% static 'Libs/css/nav_lateral.css' %}" rel="stylesheet"/>
+{% comment %} <link href="https://fonts.googleapis.com/css?family=Poppins:300,400,500,600,700,800,900" rel="stylesheet"> {% endcomment %}
+<link href="{% static 'Libs/css/nav_filtro_afiliado.css' %}" rel="stylesheet"/>
 {% endblock%}
 
-<nav id="sidebar">
-    <div class="p-4">
-      <h1><a class="logo">Filtros</a></h1>
-      {% crispy filtros %}
-    </div>
-  </nav>
+<nav id="filtro">
+  <div class="p-4">
+    <h2 id="titulo-filtro">Filtros</h2>
+    {% crispy filtros %}
+  </div>
+</nav>
 
 {% block extrajs %}
-<script src="{% static 'Libs/js/jquery.min.js' %}"></script>
-<script src="{% static 'Libs/js/popper.js' %}"></script>
-<script src="{% static 'Libs/js/main.js' %}"></script>
+<!--!YA ESTA EN EL BASE LOS SIGUIENTES SCRIPT  -->
+{% comment %} <script src="{% static 'Libs/js/jquery.min.js' %}"></script> {% endcomment %}
+{% comment %} <script src="{% static 'Libs/js/popper.min.js' %}"></script> {% endcomment %}
+{% comment %} <script src="{% static 'Libs/js/main.js' %}"></script> {% endcomment %}
 {% endblock %}

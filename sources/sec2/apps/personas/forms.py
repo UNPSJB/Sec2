@@ -11,7 +11,6 @@ from django_select2 import forms as s2forms
 
 
 class PersonaForm(ModelForm):
-   
     class Meta:
         model = Persona
         fields = '__all__'
@@ -22,34 +21,15 @@ class PersonaForm(ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.helper = FormHelper()
-        self.helper.form_action = 'guardarAfiliado'
-        self.helper.layout = Layout(
-            Fieldset(
-                   "",
-                HTML(
-                    '<hr/>'),
-                    'dni', 
-                    'fechaNacimiento',
-                    'nombre',
-                    'apellido',
-                    'direccion',
-                    'mail',
-                    'nacionalidad',
-                    'estado_civil',
-                    'cuil',
-                    'celular',      
-            
-            ),
-            Submit('submit', 'Guardar', css_class='button white'),)
-
 PersonaForm.base_fields.update(PersonaForm.base_fields)
 
 class PersonaUpdateForm(ModelForm):
    
     class Meta:
         model = Persona
-        exclude=['dni', "familia",'es_afiliado','es_alumno','es_profesor','es_encargado']
+        # NO SE EXCLUYE EL DNI PARA QUE LO MUESTRE Y MODIFIQUE
+        # exclude=['dni', "familia",'es_afiliado','es_alumno','es_profesor','es_encargado']
+        exclude=["familia",'es_afiliado','es_alumno','es_profesor','es_encargado']
         
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

@@ -61,10 +61,51 @@ def aula_eliminar(request, pk):
     a.delete()
     return redirect('cursos:aulas') 
 
+## ------------ CREACION DE ACTIVIDAD -------------------
 class ActividadCreateView(CreateView):
     model = Actividad
     form_class = ActividadForm
-    success_url = reverse_lazy('cursos:actividades')
+    success_url = reverse_lazy('cursos:actividad_crear')
+    template_name = 'cursos/actividad_alta.html'
+    form_title = "Formulario Alta de Actividad"  # Define el título como una variable
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['titulo'] = self.form_title  # Utiliza la variable form_title en el contexto
+        return context
+
+    def form_valid(self, form):
+        success_message = "Alta de actividad exitosa!"
+        messages.success(self.request, f'<i class="fa-solid fa-square-check fa-beat-fade"></i> {success_message}')
+        return redirect('cursos:actividades_listado')
+    
+    def form_invalid(self, form):
+        error_message = "Por favor, corrija los errores a continuación."
+        messages.warning(self.request, f'<i class="fa-solid fa-triangle-exclamation fa-flip"></i> {error_message}')
+        return super().form_invalid(form)
+    
+    def post(self, *args, **kwargs):
+        self.object = None
+        form = ActividadForm(self.request.POST)
+
+        if form.is_valid():
+            form.save()
+            if 'guardar' in self.request.POST:
+                self.form_valid(self,form)
+                return redirect('cursos:actividad_listado')
+            return redirect('cursos:actividad_listado')
+        return self.form_invalid(form=form)
+
+## ------------ LISTADO DE ACTIVIDAD -------------------
+class ActividadListView(ListFilterView):
+    model = Actividad
+    paginate_by = 100  
+    filter_class = ActividadFilterForm
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['titulo'] = "Listado de Actividades"
+        return context
 
 class ActividadUpdateView(UpdateView):
     model = Actividad
@@ -74,7 +115,7 @@ class ActividadUpdateView(UpdateView):
 def actividad_eliminar(request, pk):
     a = Actividad.objects.get(pk=pk)
     a.delete()
-    return redirect('cursos:actividades') 
+    return redirect('cursos:actividad_listado') 
 
 #class ActividadDeleteView(DeleteView):
 #    model = Actividad
@@ -83,10 +124,7 @@ def actividad_eliminar(request, pk):
 class ActividadDetailView(DetailView):
     model = Actividad
 
-class ActividadListView(ListFilterView):
-    model = Actividad
-    paginate_by = 100  
-    filter_class = ActividadFilterForm
+
 
 class CursoCreateView(CreateView):
     model = Curso

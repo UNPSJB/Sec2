@@ -9,6 +9,7 @@ from .models import Aula, Profesor, Dictado, Curso, Clase, Titular, Pago_alumno
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Fieldset, Submit, HTML
 from sec2.utils import FiltrosForm
+from crispy_forms.layout import Layout, Fieldset, Submit, Div, HTML
 
 
 class AulaForm(forms.ModelForm):
@@ -59,21 +60,22 @@ class ActividadForm(forms.ModelForm):
     def clean(self):
         pass
 
+    def save(self, commit=True):
+        actividad = super(ActividadForm, self).save(commit=False)
+        # Modifica el campo nombre para que la primera letra sea mayúscula y el resto en minúscula
+        actividad.nombre = actividad.nombre.capitalize()
+        if commit:
+            actividad.save()
+        return actividad
+
     def is_valid(self) -> bool:
         valid = super().is_valid()
         return valid
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.helper = FormHelper()
-        self.helper.layout = Layout(
-            HTML(
-                '<h2><center>Formulario de Actividades</center></h2>'),
-            Fieldset(
-                "Datos",
-                'nombre', 'area',
-            ),
-            Submit('submit', 'Guardar', css_class='button white'),)
+
+
 
 
 class CursoForm(forms.ModelForm):

@@ -1,3 +1,22 @@
+body {
+    background-image: url("../../images/fondos.jpeg");
+    height: 580px;
+    background-size: auto;
+    /* background-repeat:no-repeat; */
+    /* background-position: center center; */
+}
+
+#icono{
+    color: #3c053d;
+    text-align: center;
+    font-size: 300%;
+    /* max-width: 100px; */
+}
+
+#icono-div{
+    text-align: center;
+}
+
 .form-signin {
     width: 100%;
     max-width: 330px;
@@ -5,12 +24,12 @@
     margin: auto;
     background-color: #eee;
     border-radius: 10px;
-    box-shadow: 0 0 20px rgba(0,0,0,.5);
+    box-shadow: 0 0 20px rgba(0, 0, 0, .5);
     transition: all 0.2s ease;
     position: relative;
 }
 
-.form-signin:hover{
+.form-signin:hover {
     transform: scale(1.05);
 }
 
@@ -36,7 +55,7 @@
 .login-title {
     text-align: center;
     font-weight: bold;
-    color:rgba(0, 0, 0, .8)
+    color: rgba(0, 0, 0, .8)
 }
 
 .error-message {
@@ -47,13 +66,17 @@
 
 .divider {
     height: 1px;
-    color:rgba(0, 0, 0, .4)
+    color: rgba(0, 0, 0, 0.4)
 }
 
-.logo{
-    left: 19%;
-position: relative;
+.logo {
+    left: 25%;
+    position: relative;
     text-align: center;
     width: 50%;
     padding: 1rem;
+}
+
+.contenedor-login {
+    margin-top: 8%;
 }

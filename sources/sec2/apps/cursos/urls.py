@@ -30,15 +30,15 @@ app_name="cursos"
 
 urlpatterns = [
     path('',index, name="index"),
-    
     # * ------------------------  ACTIVIDADES  ----------------------------
-    path('actividades/crear', ActividadCreateView.as_view(), name="actividad_crear"),
-    path('actividades', ActividadListView.as_view(), name="actividades"),
+    path('actividad/crear', ActividadCreateView.as_view(), name="actividad_crear"),
+    path('actividad/listado', ActividadListView.as_view(), name="actividad_listado"),
     path('actividades/<int:pk>', ActividadDetailView.as_view(), name="actividad_detalles"),
     path('actividades/<int:pk>/editar', ActividadUpdateView.as_view(), name="actividad_editar"),
     path('actividades/<int:pk>/eliminar', actividad_eliminar, name="actividad_eliminar"),
     # path('/<int:pk>', ActividadDetailView.as_view(), name="actividad_detalles"),
    
+
     # * ------------------------  CURSOS ----------------------------------
     path('cursos', CursoListView.as_view(), name="cursos"),
     path('crear/', CursoCreateView.as_view(), name="curso_crear"),

@@ -1,3 +1,6 @@
+
+resource/grupo-empresa.xlsx
+
 # Created by https://www.toptal.com/developers/gitignore/api/django,virtualenv,python
 # Edit at https://www.toptal.com/developers/gitignore?templates=django,virtualenv,python
 
@@ -9,6 +12,7 @@ __pycache__/
 local_settings.py
 db.sqlite3
 db.sqlite3-journal
+sources/sec2/apps/afiliados/migrations/
 media
 
 # If your build process includes running collectstatic, then you probably don't need or want to include staticfiles/

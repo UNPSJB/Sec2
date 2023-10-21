@@ -8,13 +8,14 @@
 
 <nav id="sidebar">
     <div class="p-4">
-      <h1><a class="logo">Filtros</a></h1>
+      <h3><a class="logo">Filtros</a></h3>
       {% crispy filtros %}
     </div>
   </nav>
 
 {% block extrajs %}
-<script src="{% static 'Libs/js/jquery.min.js' %}"></script>
+<!--!YA ESTA EN EL BASE LOS SIGUIENTES SCRIPT  -->
+<!-- <script src="{% static 'Libs/js/jquery.min.js' %}"></script>
 <script src="{% static 'Libs/js/popper.js' %}"></script>
-<script src="{% static 'Libs/js/main.js' %}"></script>
+<script src="{% static 'Libs/js/main.js' %}"></script> -->
 {% endblock %}

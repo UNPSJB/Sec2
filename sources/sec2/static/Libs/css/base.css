@@ -1,7 +1,34 @@
 body {
-    background-image: url("../../images/fondo.jpg");
-    height: 580px;
-    background-size: cover;
-    background-repeat:no-repeat;
-    background-position: center center;
+    /* background-image: url("../../images/fondos.jpeg"); */
+    /* height: 580px; */
+    /* background-size: auto; */
+    /* background-repeat:no-repeat; */
+    /* background-position: center center; */
+    overflow-y: hidden;
+    /* Oculta la barra de desplazamiento vertical */
+}
+
+/* Anchura de la barra de desplazamiento */
+::-webkit-scrollbar {
+    width: 10px;
+}
+
+/* Color de fondo de la barra de desplazamiento */
+::-webkit-scrollbar-track {
+    background-color: #f1f1f1;
+}
+
+/* Color de la barra de desplazamiento */
+::-webkit-scrollbar-thumb {
+    background-color: #888;
+}
+
+/* Efecto al pasar el mouse sobre la barra de desplazamiento */
+::-webkit-scrollbar-thumb:hover {
+    background-color: #555;
+}
+
+.titulo{
+    font-family: Georgia, serif;
+    text-align: center;
 }
