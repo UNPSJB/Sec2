@@ -22,6 +22,7 @@ from .views import (AulaListView,
                     CursoDetailView,
                     DictadoDetailView
                     )
+                    
 from .views import ClaseCreateView, ClaseListView
 from .views import AlumnoCreateView,PagoAlumnoCreateView
 
