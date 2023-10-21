@@ -101,6 +101,11 @@ class ActividadListView(ListFilterView):
     model = Actividad
     paginate_by = 100  
     filter_class = ActividadFilterForm
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['titulo'] = "Listado de Actividades"
+        return context
 
 class ActividadUpdateView(UpdateView):
     model = Actividad

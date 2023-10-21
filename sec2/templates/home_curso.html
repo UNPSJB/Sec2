@@ -9,7 +9,7 @@
 
   {% endblock %}
   <!-- Herramienta para buscar en el "navegador" -->
-  {{ buscador.media.css }} 
+  {{ buscador.media.css }}
 {% endblock %}
 
 {% block container %}
@@ -37,7 +37,7 @@
       {% block nav_top %}
         {% include 'nav_top.html' %}
       {% endblock %}
-      <br>
+      <br />
       {% block dinamica %}
         {% include 'index.html' %}
       {% endblock %}
@@ -46,15 +46,14 @@
 {% endblock %}
 
 {% block extrajs %}
-{% comment %} Creado para que los mensajes de desvanezcan {% endcomment %}
+  {% comment %}Creado para que los mensajes de desvanezcan{% endcomment %}
   <script src="{% static 'Libs/js/home_afiliado.js' %}"></script>
 
   {% block extrajs_intermedia %}
+
   {% endblock %}
   {{ buscador.media.js }}
   <script type="text/javascript">
-  $('.django-select2').on("change", () => console.log("hola")); 
-  </script> 
+    $('.django-select2').on('change', () => console.log('hola'))
+  </script>
 {% endblock %}
-
-  
