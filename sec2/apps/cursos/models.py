@@ -1,9 +1,17 @@
 from random import choices
 #from socket import TIPC_CONN_TIMEOUT
 from django.db import models
-
+from django.core.validators import RegexValidator
 # Create your models here.
 from apps.personas.models import Rol
+
+XMARK_ICON = '<i class="fa-solid fa-xmark"></i>'
+
+text_validator = RegexValidator(
+        regex=r'^[A-Za-záéíóúÁÉÍÓÚñÑ\s]+$',
+        message=f'{XMARK_ICON} Debe contener letras y/o espacios.',
+        code='invalid_text'
+)
 
 class Actividad(models.Model):
     AREAS = [
@@ -11,24 +19,23 @@ class Actividad(models.Model):
         (1, "Cultura"),
         (2, "Gimnasio"),
     ]
-    nombre = models.CharField(max_length=100)
+    nombre = models.CharField(
+        max_length=100,
+        validators=[text_validator],  # Añade tu validador personalizado si es necesario
+        help_text="Solo se permiten letras y espacios."
+    )
     area = models.PositiveSmallIntegerField(choices=AREAS)
     
     def __str__(self):
         return self.nombre
-    
 
 class Aula(models.Model):
     denominacion=models.CharField(max_length=50)
     tipo=models.CharField(max_length=50)
     cupo=models.PositiveIntegerField(help_text="capacidad maxima del aula")
-    
+
     def __str__(self):
         return self.denominacion
-    
-
-    
-    
 
 class Curso(models.Model):
     PERIODO_PAGO=(

@@ -6,7 +6,6 @@ app_name="afiliados"
 from . import views
 
 urlpatterns = [
-    
     path('',index, name="index"),
     path('crear/',AfiliadoCreateView.as_view(), name="afiliado_crear"),
     path('afiliado/<int:pk>',AfiliadoDetailView.as_view(), name="Afiliado"),
@@ -16,7 +15,6 @@ urlpatterns = [
     path('mostrar/',AfliadosListView.as_view(), name="afiliado_listar"),
     path('mostrar/pendientes',AfliadosListPendienteView.as_view(), name="afiliado_listar_pendiente"),
     path('mostrar/activos',AfliadosListActivoView.as_view(), name="afiliado_listar_activos"),
-
     # FALTA IMPLEMENTAR LA PARTE DE GRUPO FAMILIAR
     path('funcionalidad-pendiente/', views.funcionalidad_pendiente, name='funcionalidad_pendiente'),
 ]

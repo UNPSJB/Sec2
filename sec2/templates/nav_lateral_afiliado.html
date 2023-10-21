@@ -1,21 +1,31 @@
 {% load static %}
 
 {% block extracss %}
-<!-- <link href="https://fonts.googleapis.com/css?family=Poppins:300,400,500,600,700,800,900" rel="stylesheet"> -->
-<link href="{% static 'Libs/css/nav_lateral_afiliado.css' %}" rel="stylesheet" />
-{% endblock%}
+  <link href="{% static 'Libs/css/nav_lateral_aplicaciones.css' %}" rel="stylesheet" />
+{% endblock %}
 
-<br>
-
-<ul id="menu_afiliado">
-  <h3 id="titulo-afiliados"> AFILIADOS</h3>
-  <li><a id="mostrarMenuPrincipal" href="/home"><i class="fa-solid fa-arrow-left-long"></i> Volver</a></li>
-  <li><a href="{% url 'afiliados:afiliado_crear' %}"><i class="fa-solid fa-plus"></i> Alta afiliado</a></li>
-  <li><a href="{% url 'afiliados:afiliado_listar' %}"><i class="fa-solid fa-list"></i> Lista de afiliados</a></li>
-  <li><a href="{% url 'afiliados:afiliado_listar_pendiente' %}"><i class="fa-solid fa-check-to-slot"></i> Aceptar afiliados</a></li>
-  <li><a href="{% url 'afiliados:afiliado_listar_activos' %}"><i class="fa-regular fa-circle-down"></i> Baja de afiliados</a></li>
-  <li><a href="{% url 'afiliados:funcionalidad_pendiente' %}"><i class="fa-solid fa-people-line"></i> Grupo Familiar</a></li>
+<br />
+<ul class="menu" id="menu_afiliado">
+  <li>
+    <a id="mostrarMenuPrincipal" href="/home"><i class="fa-solid fa-arrow-left-long"></i> Volver</a>
+  </li>
+  <br>
+  <h3 id="titulo-afiliados">AFILIADOS</h3>
+  <li>
+    <a href="{% url 'afiliados:afiliado_crear' %}"><i class="fa-solid fa-plus"></i> Alta afiliado</a>
+  </li>
+  <li>
+    <a href="{% url 'afiliados:afiliado_listar' %}"><i class="fa-solid fa-list"></i> Lista de afiliados</a>
+  </li>
+  <li>
+    <a href="{% url 'afiliados:afiliado_listar_pendiente' %}"><i class="fa-solid fa-check-to-slot"></i> Aceptar afiliados</a>
+  </li>
+  <li>
+    <a href="{% url 'afiliados:afiliado_listar_activos' %}"><i class="fa-regular fa-circle-down"></i> Baja de afiliados</a>
+  </li>
+  <li>
+    <a href="{% url 'afiliados:funcionalidad_pendiente' %}"><i class="fa-solid fa-people-line"></i> Grupo Familiar</a>
+  </li>
 </ul>
-
 {% block extrajs %}
 {% endblock %}

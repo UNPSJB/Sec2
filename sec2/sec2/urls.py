@@ -20,21 +20,25 @@ from sec2.views import *
 
 urlpatterns = [
     
-    # ----------------- PRINCIPALES -----------------
+    # TODO: ----------------- PRINCIPALES -----------------
     path('', login, name="login"),
     # path('login/', login, name="login"),
     path('admin/', admin.site.urls),
     path('home/', home, name="home"),
-
-    # * APLICACIONES ----------------------------
-    path('home/afiliados/',include('apps.afiliados.urls')),
-
-    
-    # path('alquileres/',include('apps.alquileres.urls')),
-    path('cursos/',include('apps.cursos.urls')),
-    # path('pagos/',include('apps.pagos.urls')),
     path("select2/", include("django_select2.urls")),
+
+    # TODO: ----------------- APLICACIONES -----------------
+    path('home/afiliados/',include('apps.afiliados.urls')),
+    path('home/cursos/',include('apps.cursos.urls')),
+    
+    #! lo llama otra vez?
     path('home/afiliados/', include('apps.personas.urls')),
+
+    path('cursos/',include('apps.cursos.urls')),
+    # path('alquileres/',include('apps.alquileres.urls')),
+    # path('pagos/',include('apps.pagos.urls')),
+    
+
 
 ]
 

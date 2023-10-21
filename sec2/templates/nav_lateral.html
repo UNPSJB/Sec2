@@ -1,27 +1,89 @@
 {% load static %}
 
 {% block extracss %}
-<!-- <link href="https://fonts.googleapis.com/css?family=Poppins:300,400,500,600,700,800,900" rel="stylesheet"> -->
-<link href="{% static 'Libs/css/nav_lateral.css' %}" rel="stylesheet" />
-{% endblock%}
-
-<br>
-
-<ul id="menu_principal">
+  <link href="{% static 'Libs/css/nav_lateral.css' %}" rel="stylesheet" />
+{% endblock %}
+<br />
+<ul class="menu" id="menu_principal">
   <h3 class="titulo-afiliado">SEC2</h3>
-  <li><a href="#" id="mostrarMenuAfiliado"> <i class="fa-solid fa-person-dress"></i> Gestión de afiliados</a></li>
+  <li>
+    <a href="#" id="mostrarMenuAfiliado"><i class="fa-solid fa-person-dress"></i> Gestión Afiliados</a>
+  </li>
+  <li>
+    <a href="#" id="mostrarMenuCurso"><i class="fa-solid fa-graduation-cap"></i> Gestión Cursos</a>
+  </li>
 </ul>
 
-<ul id="menu_afiliado">
-  <h3 class="titulo-afiliado"> AFILIADOS </h3>
-  <li><a id="mostrarMenuPrincipal" href="/home"><i class="fa-solid fa-arrow-left-long"></i> Volver</a></li>
-  <li><a href="{% url 'afiliados:afiliado_crear' %}"><i class="fa-solid fa-plus"></i> Alta afiliado</a></li>
-  <li><a href="{% url 'afiliados:afiliado_listar' %}"><i class="fa-solid fa-list"></i> Lista de afiliados</a></li>
-  <li><a href="{% url 'afiliados:afiliado_listar_pendiente' %}"><i class="fa-solid fa-check-to-slot"></i> Aceptar afiliados</a></li>
-  <li><a href="{% url 'afiliados:afiliado_listar_activos' %}"><i class="fa-regular fa-circle-down"></i> Baja de afiliados</a></li>
-  <li><a href="{% url 'afiliados:funcionalidad_pendiente' %}"><i class="fa-solid fa-people-line"></i> Grupo Familiar</a></li>
+<ul class="menu" id="menu_afiliado">
+  <li>
+    <a id="mostrarMenuPrincipal" href="/home"><i class="fa-solid fa-arrow-left-long"></i> Volver</a>
+  </li>
+  <br />
+
+  <h3 class="titulo-afiliado">AFILIADOS</h3>
+  <li>
+    <a href="{% url 'afiliados:afiliado_crear' %}"><i class="fa-solid fa-plus"></i> Alta afiliado</a>
+  </li>
+  <li>
+    <a href="{% url 'afiliados:afiliado_listar' %}"><i class="fa-solid fa-list"></i> Lista de afiliados</a>
+  </li>
+  <li>
+    <a href="{% url 'afiliados:afiliado_listar_pendiente' %}"><i class="fa-solid fa-check-to-slot"></i> Aceptar afiliados</a>
+  </li>
+  <li>
+    <a href="{% url 'afiliados:afiliado_listar_activos' %}"><i class="fa-regular fa-circle-down"></i> Baja de afiliados</a>
+  </li>
+  <li>
+    <a href="{% url 'afiliados:funcionalidad_pendiente' %}"><i class="fa-solid fa-people-line"></i> Grupo Familiar</a>
+  </li>
+</ul>
+
+<ul class="menu" id="menu_curso">
+  <li>
+    <a id="mostrarMenuPrincipal" href="/home"><i class="fa-solid fa-arrow-left-long"></i> Volver</a>
+  </li>
+  <br />
+  <h4 class="text-center">ACTIVIDADES</h4>
+  <li>
+    <a href="{% url 'cursos:actividad_crear' %}"><i class="fa-solid fa-plus"></i> Alta de actividades</a>
+  </li>
+  <li>
+    <a href="{% url 'cursos:actividad_listado' %}"><i class="fa-solid fa-list"></i> Lista de actividades</a>
+  </li>
+  <br />
+  <h4 class="text-center">CURSOS</h4>
+  <li>
+    <a href="{% url 'cursos:curso_crear' %}"><i class="fa-solid fa-plus"></i>Crear curso</a>
+  </li>
+  <li>
+    <a href="{% url 'cursos:cursos' %}"><i class="fa-solid fa-list"></i>Lista de cursos</a>
+  </li>
+  <br />
+
+  <h4 class="text-center">AULAS</h4>
+  <li>
+    <a href="{% url 'cursos:aula_crear' %}"><i class="fa-solid fa-plus"></i>Crear aula</a>
+  </li>
+  <li>
+    <a href="{% url 'cursos:aulas' %}"><i class="fa-solid fa-list"></i> Lista de aula</a>
+  </li>
+  <br />
+
+  <h4 class="text-center">PROFESOR</h4>
+  <li>
+    <a href="{% url 'cursos:profesor_crear' %}"><i class="fa-solid fa-plus"></i>Alta de profesor</a>
+  </li>
+  <li>
+    <a href="{% url 'cursos:profesores' %}"><i class="fa-solid fa-list"></i>Lista de profesores</a>
+  </li>
+  <br />
+
+  <h4 class="text-center">PAGO</h4>
+  <li>
+    <a href="{% url 'cursos:pago_alumno' %}"><i class="fa-solid fa-sack-dollar"></i>pago de alumnos</a>
+  </li>
 </ul>
 
 {% block extrajs %}
-<script src="{% static 'Libs/js/nav_lateral.js' %}"></script>
-{% endblock%}
+  <script src="{% static 'Libs/js/nav_lateral.js' %}"></script>
+{% endblock %}
