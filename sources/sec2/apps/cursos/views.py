@@ -168,7 +168,15 @@ class DictadoCreateView(CreateView):
         context['curso'] = curso
         return context
 
-    
+
+class DictadoDetailView (DeleteView):
+    model = Dictado
+  
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['titulo'] = "Dictado" 
+        return context
+
 class DictadoListView(ListFilterView):
     model = Dictado
     paginate_by = 100
@@ -341,3 +349,15 @@ def registrarAlumnoADictado(request, pk, apk):
     alumno = Alumno.objects.get(pk=apk)
     dictado = alumno.agregateDictado(pk)
     return redirect('cursos:alumnos_dictado', dictado.pk)
+
+class CursoDetailView (DeleteView):
+    model = Curso
+  
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['titulo'] = "Curso" 
+        context['dictados'] = Curso.obtenerDictados     
+        return context
+   
+    
+   

@@ -18,7 +18,9 @@ from .views import (AulaListView,
                     ProfesorDelDictadoListView,
                     registrarAsistenciaProfesor,
                     agregarAlumnoCursoListView,
-                    registrarAlumnoADictado
+                    registrarAlumnoADictado,
+                    CursoDetailView,
+                    DictadoDetailView
                     )
 from .views import ClaseCreateView, ClaseListView
 from .views import AlumnoCreateView,PagoAlumnoCreateView
@@ -34,11 +36,12 @@ urlpatterns = [
     path('actividades/<int:pk>', ActividadDetailView.as_view(), name="actividad_detalles"),
     path('actividades/<int:pk>/editar', ActividadUpdateView.as_view(), name="actividad_editar"),
     path('actividades/<int:pk>/eliminar', actividad_eliminar, name="actividad_eliminar"),
-    
+    # path('/<int:pk>', ActividadDetailView.as_view(), name="actividad_detalles"),
+   
     # * ------------------------  CURSOS ----------------------------------
     path('cursos', CursoListView.as_view(), name="cursos"),
     path('crear/', CursoCreateView.as_view(), name="curso_crear"),
-    # path('/<int:pk>', ActividadDetailView.as_view(), name="actividad_detalles"),
+    path('curso/<int:pk>',CursoDetailView.as_view(), name="curso"),
     path('<int:pk>/editar', CursoUpdateView.as_view(), name="curso_editar"),
     path('<int:pk>/eliminar', curso_eliminar, name="curso_eliminar"),
     
@@ -60,6 +63,7 @@ urlpatterns = [
     path('<int:pk>/dictado/crear', DictadoCreateView.as_view(), name="dictado_crear"),#se accede desde el curso
     path('<int:pk>/dictado/alumnos',  AlumnosDelDictadoListView.as_view(), name="alumnos_dictado"),#se accede desde el curso
     path('<int:pk>/dictado/<int:dpk>/alumnos',  agregarAlumnoCursoListView.as_view(), name="alumnos_dictado_curso"),#se accede desde dictado
+     path('Dictado/<int:pk>',DictadoDetailView.as_view(), name="dictado"),
     path('<int:pk>/dictado/inscribir/<int:apk>',  registrarAlumnoADictado, name="carga_alumno_dictado"),
     # * ------------------------  Clase  ------------------------------------
     path('dictado/<int:pk>/nuevaclase', ClaseCreateView.as_view(), name="clase_crear"),#se accede desde el dictado

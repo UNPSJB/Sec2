@@ -15,22 +15,24 @@
                 <th scope="col">Costo</th>
                 <th scope="col">Modulos</th>
                 <th scope="col">Periodo Pago</th>
-                <th scope="col">Editar</th>
+                <th scope="col">Ver Curso</th>
+                {% comment %}<th scope="col">Editar</th>
                 <th scope="col">Dictados</th>   
                 <th scope="col">Inscripcion</th>
-                <th scope="col">Eliminar</th>               
+                <th scope="col">Eliminar</th> {% endcomment %}              
               </tr>
             </thead>
             <tbody>
                 <tr>
-                    {% for obj in object_list %}
+                    {% for curso in object_list %}
                     <tr class="bg-transition">
-                        <td>{{ obj.nombre }}</td>
-                        <td>{{ obj.actividad.get_area_display }}</td>
-                        <td>{{ obj.costo }}</td>
-                        <td>{{ obj.modulos }}</td>
-                        <td>{{ obj.get_periodo_pago_display }}</td>
-                        <td><a href="{% url 'cursos:curso_editar' obj.pk %}"class="btn btn-primary">Editar</a></td>
+                        <td>{{ curso.nombre }}</td>
+                        <td>{{ curso.actividad.get_area_display }}</td>
+                        <td>{{ curso.costo }}</td>
+                        <td>{{ curso.modulos }}</td>
+                        <td>{{ curso.get_periodo_pago_display }}</td>
+                        <td><a href="{% url 'cursos:curso' curso.pk %}"class="btn btn-primary">curso</a></td>
+                        {% comment %}<td><a href="{% url 'cursos:curso_editar' obj.pk %}"class="btn btn-primary">Editar</a></td>
                         <td><a href="{% url 'cursos:ver_dictados' obj.pk %}"class="btn btn-primary">Dictados</a></td>
                         <td><a href="{% url 'cursos:inscripcion' obj.pk %}"class="btn btn-primary">Inscripción</a></td>
                         <td>
@@ -53,7 +55,7 @@
                                         </div>
                                     </div>
                                 </div>
-                            </div>
+                            </div>{% endcomment %}
                         </td>
                     </tr>
                     {% endfor %}

@@ -103,7 +103,7 @@ def afiliado_ver1(request, pk):
 class afiliado_ver(UpdateView):
     model = Afiliado
     form_class = FormularioAfiliadoUpdate
-    success_url = reverse_lazy('afiliados:afiliado_listar')
+    success_url = reverse_lazy('afiliados:Afiliado')
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -195,3 +195,11 @@ class AfiliadoVer():
             ),
 
             Submit('submit', 'Volver', css_class='button white'),)
+
+class AfiliadoDetailView (DeleteView):
+    model = Afiliado
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['titulo'] = "Afiliado"
+        return context

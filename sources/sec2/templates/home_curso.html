@@ -11,29 +11,29 @@
 {% block container %}
 
   {% block nav_top %}
-  {% include 'nav_top.html' %}
+    {% include 'nav_top.html' %}
   {% endblock %}
   
 	<div class="wrapper d-flex align-items-stretch">
     {% block nav_lateral %}
-      {% include 'nav_lateral_curso.html' %}
+        {% include 'nav_lateral_curso.html' %}
     {% endblock %}
-    
+      
     <div id="content" class="p-4 p-md-5 pt-5">
       {% block dinamica %}
-      {% include 'index_curso.html' %}
+        {% include 'index_curso.html' %}
       {% endblock %}
     </div>
   </div>
-  {% endblock %}
+{% endblock %}
 
-  {% block nav_lateral_filtro %}
-  {% endblock %}
+{% block nav_lateral_filtro %}
+{% endblock %}
 
-  {% block extrajs %}
+{% block extrajs %}
   {{ buscador.media.js }}
   <script type="text/javascript">
       $('.django-select2').on("change", () => console.log("hola"));
   </script>
-  {% endblock %}
+{% endblock %}
   
