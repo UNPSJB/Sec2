@@ -12,7 +12,7 @@ __pycache__/
 local_settings.py
 db.sqlite3
 db.sqlite3-journal
-sources/sec2/apps/afiliados/migrations/
+sec2/apps/afiliados/migrations/
 media
 
 # If your build process includes running collectstatic, then you probably don't need or want to include staticfiles/
