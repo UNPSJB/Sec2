@@ -34,7 +34,7 @@ urlpatterns = [
     #! lo llama otra vez?
     path('home/afiliados/', include('apps.personas.urls')),
 
-    path('cursos/',include('apps.cursos.urls')),
+    # path('cursos/',include('apps.cursos.urls')),
     # path('alquileres/',include('apps.alquileres.urls')),
     # path('pagos/',include('apps.pagos.urls')),
     

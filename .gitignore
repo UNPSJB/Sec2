@@ -1,9 +1,6 @@
-
-resource/grupo-empresa.xlsx
-
 # Created by https://www.toptal.com/developers/gitignore/api/django,virtualenv,python
 # Edit at https://www.toptal.com/developers/gitignore?templates=django,virtualenv,python
-
+**/migrations/
 ### Django ###
 *.log
 *.pot
@@ -12,6 +9,7 @@ __pycache__/
 local_settings.py
 db.sqlite3
 db.sqlite3-journal
+sec2/apps/afiliados/migrations/
 sec2/apps/afiliados/migrations/
 media
 
