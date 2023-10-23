@@ -2,9 +2,8 @@
 {% load crispy_forms_tags %}
 
 {% block extracss %}
-{% comment %} <link href="https://fonts.googleapis.com/css?family=Poppins:300,400,500,600,700,800,900" rel="stylesheet"> {% endcomment %}
-<link href="{% static 'Libs/css/nav_filtro_afiliado.css' %}" rel="stylesheet"/>
-{% endblock%}
+  <link href="{% static 'Libs/css/nav_filtro.css' %}" rel="stylesheet" />
+{% endblock %}
 
 <nav id="filtro">
   <div class="p-4">
@@ -14,8 +13,5 @@
 </nav>
 
 {% block extrajs %}
-<!--!YA ESTA EN EL BASE LOS SIGUIENTES SCRIPT  -->
-{% comment %} <script src="{% static 'Libs/js/jquery.min.js' %}"></script> {% endcomment %}
-{% comment %} <script src="{% static 'Libs/js/popper.min.js' %}"></script> {% endcomment %}
-{% comment %} <script src="{% static 'Libs/js/main.js' %}"></script> {% endcomment %}
+
 {% endblock %}
