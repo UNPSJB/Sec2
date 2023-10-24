@@ -1,5 +1,6 @@
 from django.shortcuts import render, redirect
 from django.template import loader
+from django.shortcuts import get_object_or_404, redirect
 from django.http import HttpResponse
 from django.views.generic import DetailView, ListView
 from django.views.generic.edit import CreateView, DeleteView, UpdateView
@@ -34,7 +35,6 @@ from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Fieldset, Submit, HTML
 from sec2.utils import ListFilterView
 
-
 def index(request):
   template = loader.get_template('home_curso.html')
   return HttpResponse(template.render())
@@ -43,36 +43,22 @@ def index(request):
 class ActividadCreateView(CreateView):
     model = Actividad
     form_class = ActividadForm
-    success_url = reverse_lazy('cursos:actividad_crear')
     template_name = 'actividad/actividad_alta.html'
-    form_title = "Formulario Alta de Actividad"  # Define el título como una variable
-    
+    success_url = reverse_lazy('cursos:actividad_listado')
+    title = "Formulario Alta de Actividad"  # Agrega un título
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['titulo'] = self.form_title  # Utiliza la variable form_title en el contexto
+        context['titulo'] = self.title  # Agrega el título al contexto
         return context
 
     def form_valid(self, form):
-        success_message = "Alta de actividad exitosa!"
-        messages.success(self.request, f'<i class="fa-solid fa-square-check fa-beat-fade"></i> {success_message}')
-        return redirect('cursos:actividades_listado')
-    
-    def form_invalid(self, form):
-        error_message = "Por favor, corrija los errores a continuación."
-        messages.warning(self.request, f'<i class="fa-solid fa-triangle-exclamation fa-flip"></i> {error_message}')
-        return super().form_invalid(form)
-    
-    def post(self, *args, **kwargs):
-        self.object = None
-        form = ActividadForm(self.request.POST)
+        messages.success(self.request, '<i class="fa-solid fa-square-check fa-beat-fade"></i> Alta de actividad exitosa!')
+        return super().form_valid(form)
 
-        if form.is_valid():
-            form.save()
-            if 'guardar' in self.request.POST:
-                self.form_valid(self,form)
-                return redirect('cursos:actividad_listado')
-            return redirect('cursos:actividad_listado')
-        return self.form_invalid(form=form)
+    def form_invalid(self, form):
+        messages.warning(self.request, '<i class="fa-solid fa-triangle-exclamation fa-flip"></i> Por favor, corrija los errores a continuación.')
+        return super().form_invalid(form)
 
 ## ------------ LISTADO DE ACTIVIDAD -------------------
 class ActividadListView(ListFilterView):
@@ -85,6 +71,11 @@ class ActividadListView(ListFilterView):
         context = super().get_context_data(**kwargs)
         context['titulo'] = "Listado de Actividades"
         return context
+
+## ------------ ACTIVIDAD DETALLE -------------------
+class ActividadDetailView(DetailView):
+    model = Actividad
+    template_name = 'actividad/actividad_detalle.html'
 
 ## ------------ ACTIVIDAD UPDATE -------------------
 class ActividadUpdateView(UpdateView):
@@ -109,22 +100,16 @@ class ActividadUpdateView(UpdateView):
             print(f"Campo: {field}, Errores: {', '.join(errors)}")
         return super().form_invalid(form)
 
+## ------------ ACTIVIDAD DELETE -------------------
 def actividad_eliminar(request, pk):
-    a = Actividad.objects.get(pk=pk)
-    a.delete()
-    return redirect('cursos:actividad_listado') 
+    actividad = get_object_or_404(Actividad, pk=pk)
+    try:
+        actividad.delete()
+        messages.success(request, '<i class="fa-solid fa-square-check fa-beat-fade"></i> La actividad se eliminó correctamente.')
+    except Exception as e:
+        messages.error(request, 'Ocurrió un error al intentar eliminar la actividad.')
+    return redirect('cursos:actividad_listado')
 
-#class ActividadDeleteView(DeleteView):
-#    model = Actividad
-#    success_url = reverse_lazy('cursos:actividades')
-
-class ActividadDetailView(DetailView):
-    model = Actividad
-    template_name = 'actividad/actividad_detalle.html'  # Reemplaza 'nombre_de_la_plantilla.html' con el nombre de tu plantilla
-
-
-
-##----------------------------------------------------
 
 class AulaListView(ListView):
     model = Aula

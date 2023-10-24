@@ -34,7 +34,14 @@
           <p>
             <strong>Área:</strong> {{ object.get_area_display }}
           </p>
-          <a href="{% url 'cursos:actividad_actualizar' object.pk %}" class="btn btn-primary"><i class="fa-regular fa-pen-to-square"></i> Modificar</a>
+          <a href="{% url 'cursos:actividad_actualizar' object.pk %}" class="btn btn-primary btn-sm btn-detalle"><i class="fa-regular fa-pen-to-square"></i> Modificar</a>
+          <br />
+
+          <!-- Agrega un botón para abrir el modal de confirmación de baja -->
+          <button type="button" class="btn btn-danger btn-sm btn-detalle" data-bs-toggle="modal" data-bs-target="#exampleModal_dar_de_baja"><i class="fa-regular fa-circle-down"></i> Dar de Baja</button>
+
+          <!-- Incluye el contenido del modal de confirmación de baja -->
+          {% include 'actividad/modal_confirm_baja.html' %}
         </div>
       </div>
     </div>

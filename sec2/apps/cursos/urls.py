@@ -35,11 +35,8 @@ urlpatterns = [
     path('actividad/listado', ActividadListView.as_view(), name="actividad_listado"),
     path('actividad/<int:pk>', ActividadDetailView.as_view(), name="actividad_detalles"),
     path('actividades/<int:pk>/editar', ActividadUpdateView.as_view(), name="actividad_actualizar"),
-
-    
     path('actividades/<int:pk>/eliminar', actividad_eliminar, name="actividad_eliminar"),
-    # path('/<int:pk>', ActividadDetailView.as_view(), name="actividad_detalles"),
-   
+
 
     # * ------------------------  CURSOS ----------------------------------
     path('cursos', CursoListView.as_view(), name="cursos"),
