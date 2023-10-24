@@ -1,0 +1,21 @@
+{% extends 'home_curso.html' %}
+{% load crispy_forms_tags %}
+
+{% load static %}
+
+{% block extracss_intermedia %}
+{% endblock %}
+
+{% block dinamica %}
+  <h1>Detalles de la Actividad</h1>
+  <p>
+    <strong>Nombre:</strong> {{ object.nombre }}
+  </p>
+  <p>
+    <p><strong>Área:</strong> {{ object.get_area_display }}</p>
+  </p>
+{% endblock %}
+
+{% block extrajs_intermedia %}
+
+{% endblock %}

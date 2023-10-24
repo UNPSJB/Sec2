@@ -33,7 +33,8 @@ urlpatterns = [
     # * ------------------------  ACTIVIDADES  ----------------------------
     path('actividad/crear', ActividadCreateView.as_view(), name="actividad_crear"),
     path('actividad/listado', ActividadListView.as_view(), name="actividad_listado"),
-    path('actividades/<int:pk>', ActividadDetailView.as_view(), name="actividad_detalles"),
+    #!ACA QUEDE
+    path('actividad/<int:pk>', ActividadDetailView.as_view(), name="actividad_detalles"),
     path('actividades/<int:pk>/editar', ActividadUpdateView.as_view(), name="actividad_editar"),
     path('actividades/<int:pk>/eliminar', actividad_eliminar, name="actividad_eliminar"),
     # path('/<int:pk>', ActividadDetailView.as_view(), name="actividad_detalles"),

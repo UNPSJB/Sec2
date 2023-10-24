@@ -39,34 +39,12 @@ def index(request):
   template = loader.get_template('home_curso.html')
   return HttpResponse(template.render())
 
-class AulaListView(ListView):
-    model = Aula
-    paginate_by = 100
-
-class AulaCreateView(CreateView):
-    model = Aula
-    form_class = AulaForm
-    success_url = reverse_lazy('cursos:aulas')
-    
-class AulaDetailView(DetailView):
-    model = Aula
-
-class AulaUpdateView(UpdateView):
-    model = Aula
-    form_class = AulaForm
-    success_url = reverse_lazy('cursos:aulas')
-    
-def aula_eliminar(request, pk):
-    a = Aula.objects.get(pk=pk)
-    a.delete()
-    return redirect('cursos:aulas') 
-
 ## ------------ CREACION DE ACTIVIDAD -------------------
 class ActividadCreateView(CreateView):
     model = Actividad
     form_class = ActividadForm
     success_url = reverse_lazy('cursos:actividad_crear')
-    template_name = 'cursos/actividad_alta.html'
+    template_name = 'actividad/actividad_alta.html'
     form_title = "Formulario Alta de Actividad"  # Define el título como una variable
     
     def get_context_data(self, **kwargs):
@@ -101,7 +79,8 @@ class ActividadListView(ListFilterView):
     model = Actividad
     paginate_by = 100  
     filter_class = ActividadFilterForm
-    
+    template_name = 'actividad/actividad_list.html'
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['titulo'] = "Listado de Actividades"
@@ -123,6 +102,38 @@ def actividad_eliminar(request, pk):
 
 class ActividadDetailView(DetailView):
     model = Actividad
+    template_name = 'actividad/actividad_detalle.html'  # Reemplaza 'nombre_de_la_plantilla.html' con el nombre de tu plantilla
+
+
+
+##----------------------------------------------------
+
+class AulaListView(ListView):
+    model = Aula
+    paginate_by = 100
+
+class AulaCreateView(CreateView):
+    model = Aula
+    form_class = AulaForm
+    success_url = reverse_lazy('cursos:aulas')
+    
+class AulaDetailView(DetailView):
+    model = Aula
+
+class AulaUpdateView(UpdateView):
+    model = Aula
+    form_class = AulaForm
+    success_url = reverse_lazy('cursos:aulas')
+    
+def aula_eliminar(request, pk):
+    a = Aula.objects.get(pk=pk)
+    a.delete()
+    return redirect('cursos:aulas') 
+
+
+
+
+
 
 
 

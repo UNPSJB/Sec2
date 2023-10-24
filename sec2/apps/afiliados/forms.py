@@ -135,8 +135,6 @@ class AfiliadoFilterForm(FiltrosForm):
     persona__nombre = forms.CharField(required=False)
     persona__dni = forms.CharField(required=False)
     cuit_empleador = forms.CharField(required=False)
-    #!FALTA: Que filtre por Afiliado
-    # Estado = forms.IntegerField(required=False)
 
 ########### Utilizado para el AFILIADO UPDATE ##############################################
 class AfiliadoUpdateForm(forms.ModelForm):

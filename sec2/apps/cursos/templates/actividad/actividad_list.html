@@ -26,7 +26,7 @@
               <td style="border-left-width: 0px; padding-left: 20px;">{{ actividad.nombre }}</td>
               <td>{{ actividad.get_area_display }}</td>
               <td>
-                <a href="{% url 'cursos:actividad_editar' actividad.pk %}" class="btn btn-primary btn-detalle"><i class="fa-regular fa-eye"></i> Detalle</a>
+                <a href="{% url 'cursos:actividad_detalles' actividad.pk %}" class="btn btn-primary btn-detalle"><i class="fa-regular fa-eye"></i> Detalle</a>
                 {% comment %} <a href="{% url 'afiliados:Afiliado' afiliado.pk %}" class="btn btn-primary btn-detalle"><i class="fa-regular fa-eye"></i> Detalle</a> {% endcomment %}
               </td>
               {% comment %} <td>
