@@ -57,6 +57,14 @@
     </div>
     {% comment %}si se borra un div se descoloca todo{% endcomment %}
   </div>
+  <div class="container ">
+    <div class="row row-cols-1 row-cols-sm-2 row-cols-md-1">
+  
+      <div class="col" id="btn-new-afiliado">
+        <a href="{% url 'cursos:actividad_crear' %}" class="btn btn-primary"><i class="fa-solid fa-plus"></i> Nuevo</a>
+      </div>
+    </div>
+  </div>
 </div>
 
   {% block nav_lateral_filtro %}

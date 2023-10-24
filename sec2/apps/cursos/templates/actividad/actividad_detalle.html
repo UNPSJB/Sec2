@@ -4,16 +4,41 @@
 {% load static %}
 
 {% block extracss_intermedia %}
+  <link href="{% static 'css/curso_detalle.css' %}" rel="stylesheet" />
 {% endblock %}
 
 {% block dinamica %}
-  <h1>Detalles de la Actividad</h1>
-  <p>
-    <strong>Nombre:</strong> {{ object.nombre }}
-  </p>
-  <p>
-    <p><strong>Área:</strong> {{ object.get_area_display }}</p>
-  </p>
+  <h1 class="titulo">Detalles de la Actividad</h1>
+  <br />
+  <div class="container border rounded border-primary p-3 mb-3 col-md-8 offset-md-2 custom-border">
+    <br />
+    <div class="row">
+      <!-- Columna izquierda para la imagen -->
+      <div class="col-md-4 d-flex align-items-center justify-content-center">
+        {% if object.area == 0 %}
+          <img src="{% static 'images/capacitacion.jpg' %}" class="img-thumbnail img-custom" alt="Capacitación" />
+        {% elif object.area == 1 %}
+          <img src="{% static 'images/cultura.jpeg' %}" class="img-thumbnail img-custom" alt="Cultura" />
+        {% else %}
+          <img src="{% static 'images/gimnasio.jpg' %}" class="img-thumbnail img-custom" alt="Gimnasio" />
+        {% endif %}
+      </div>
+
+      <!-- Columna derecha para la información -->
+      <div class="col-md-8">
+        <h4>Datos</h4>
+        <div class="d-flex flex-column justify-content-between">
+          <p>
+            <strong>Nombre:</strong> {{ object.nombre }}
+          </p>
+          <p>
+            <strong>Área:</strong> {{ object.get_area_display }}
+          </p>
+          <a href="{% url 'cursos:actividad_actualizar' object.pk %}" class="btn btn-primary"><i class="fa-regular fa-pen-to-square"></i> Modificar</a>
+        </div>
+      </div>
+    </div>
+  </div>
 {% endblock %}
 
 {% block extrajs_intermedia %}

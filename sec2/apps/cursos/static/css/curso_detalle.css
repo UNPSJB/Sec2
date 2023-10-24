@@ -1,0 +1,23 @@
+#titulo {
+    text-align: center;
+}
+
+h4 {
+    text-align: left;
+}
+
+.letra_negrita {
+    font-weight: bold;
+}
+
+.img-custom {
+    width: 200px;
+    /* Ajusta el ancho a tu preferencia */
+    height: auto;
+    /* Mantiene la proporción de aspecto original */
+}
+
+.custom-border {
+    /* 3px de grosor y color azul Bootstrap */
+    border: 6px solid #007bff;
+}   

@@ -86,10 +86,28 @@ class ActividadListView(ListFilterView):
         context['titulo'] = "Listado de Actividades"
         return context
 
+## ------------ ACTIVIDAD UPDATE -------------------
 class ActividadUpdateView(UpdateView):
     model = Actividad
     form_class = ActividadForm
+    template_name = 'actividad/actividad_alta.html'
     success_url = reverse_lazy('cursos:actividades')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['titulo'] = "Modificar Actividad"
+        return context
+
+    def form_valid(self, form):
+        actividad = form.save()
+        messages.success(self.request, '<i class="fa-solid fa-square-check fa-beat-fade"></i> Actividad modificado con éxito')
+        return redirect('cursos:actividad_listado')
+
+    def form_invalid(self, form):
+        messages.warning(self.request, '<i class="fa-solid fa-triangle-exclamation fa-flip"></i> Por favor, corrija los errores a continuación.')
+        for field, errors in form.errors.items():
+            print(f"Campo: {field}, Errores: {', '.join(errors)}")
+        return super().form_invalid(form)
 
 def actividad_eliminar(request, pk):
     a = Actividad.objects.get(pk=pk)
