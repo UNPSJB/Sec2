@@ -1,68 +1,65 @@
-{% extends "home_curso.html" %}
+{% extends 'home_curso.html' %}
 {% load crispy_forms_tags %}
 
 {% load static %}
 
 {% block extracss_intermedia %}
-<link href="{% static 'css/curso_listado.css' %}" rel="stylesheet" />
+  <link href="{% static 'css/listado.css' %}" rel="stylesheet" />
 {% endblock %}
 
 {% block dinamica %}
-<h2 class="titulo">{{titulo}}</h2>
-<br>
-<div class="container-sm">
-  <div class="table-responsive">
-    <table class="table table-striped table-hover table-secondary">
-      <thead>
-        <tr>
-          <th scope="col">Nombre</th>
-          <th scope="col">Area</th>
-          <th scope="col"></th>
-          <th scope="col"></th>                 
-        </tr>
-      </thead>
-      <tbody>
+  <h2 class="titulo">{{ titulo }}</h2>
+  <br />
+  <div class="container-sm">
+    <div class="table-responsive">
+      <table class="table table-striped table-hover table-secondary">
+        <thead>
+          <tr>
+            <th scope="col" style="border-left-width: 0px; padding-left: 20px;">Nombre</th>
+            <th scope="col">Area</th>
+            <th scope="col"></th>
+          </tr>
+        </thead>
+        <tbody>
           {% for actividad in object_list %}
-          <tr class="bg-transition fila-personalizada">
-            <td>{{ actividad.nombre }}</td>
-            <td>{{ actividad.get_area_display }}</td>
-            <td>
-              <a href="{% url 'cursos:actividad_editar' actividad.pk %}" class="btn btn-primary btn-detalle"><i class="fa-regular fa-eye"></i>Detalle</a>
-              {% comment %} <a href="{% url 'afiliados:Afiliado' afiliado.pk %}" class="btn btn-primary btn-detalle"><i class="fa-regular fa-eye"></i> Detalle</a> {% endcomment %}
-            </td>
-            {% comment %} <td>
-              <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#exampleModal_eliminar">
-                Eliminar
-              </button>
-              <div class="modal fade" id="exampleModal_eliminar" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                <div class="modal-dialog">
-                  <div class="modal-content">
-                    <div class="modal-header">
-                      <h1 class="modal-title fs-5" id="exampleModalLabel">Confirmar</h1>
-                      <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div> 
-                    <div class="modal-body">
-                      <h5>¿Estas seguro que deseas eliminar la actividad?</h5>
-                    </div>
-                    <div class="modal-footer">
-                      <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
-                      <a href="{% url 'cursos:actividad_eliminar' actividad.pk %}" class="btn btn-danger">Eliminar</a>
+            <tr class="bg-transition fila-personalizada">
+              <td style="border-left-width: 0px; padding-left: 20px;">{{ actividad.nombre }}</td>
+              <td>{{ actividad.get_area_display }}</td>
+              <td>
+                <a href="{% url 'cursos:actividad_editar' actividad.pk %}" class="btn btn-primary btn-detalle"><i class="fa-regular fa-eye"></i> Detalle</a>
+                {% comment %} <a href="{% url 'afiliados:Afiliado' afiliado.pk %}" class="btn btn-primary btn-detalle"><i class="fa-regular fa-eye"></i> Detalle</a> {% endcomment %}
+              </td>
+              {% comment %} <td>
+                <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#exampleModal_eliminar">Eliminar</button>
+                <div class="modal fade" id="exampleModal_eliminar" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                  <div class="modal-dialog">
+                    <div class="modal-content">
+                      <div class="modal-header">
+                        <h1 class="modal-title fs-5" id="exampleModalLabel">Confirmar</h1>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                      </div>
+                      <div class="modal-body">
+                        <h5>¿Estas seguro que deseas eliminar la actividad?</h5>
+                      </div>
+                      <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                        <a href="{% url 'cursos:actividad_eliminar' actividad.pk %}" class="btn btn-danger">Eliminar</a>
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
-            </td>        {% endcomment %}
-          </tr>
-        {% endfor %}  
-      </tbody>
-    </table>
-    {% comment %} <a href="{% url 'cursos:actividad_crear' %}"class="btn btn-primary">Nueva Actividad</a> {% endcomment %}
-  </div> 
-  {% comment %} si se borra un div se descoloca todo {% endcomment %}
+              </td> {% endcomment %}
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      {% comment %} <a href="{% url 'cursos:actividad_crear' %}" class="btn btn-primary">Nueva Actividad</a> {% endcomment %}
+    </div>
+    {% comment %}si se borra un div se descoloca todo{% endcomment %}
   </div>
 </div>
-  {% block nav_lateral_filtro %}
-  {% include 'nav_filtro_actividad.html' %}
-  {% endblock %}
 
+  {% block nav_lateral_filtro %}
+    {% include 'nav_filtro.html' %}
+  {% endblock %}
 {% endblock %}

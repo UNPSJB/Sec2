@@ -9,7 +9,7 @@
 
   {% endblock %}
   <!-- Herramienta para buscar en el "navegador" -->
-  {{ buscador.media.css }}
+  {% comment %} {{ buscador.media.css }} {% endcomment %}
 {% endblock %}
 
 {% block container %}
@@ -47,13 +47,13 @@
 
 {% block extrajs %}
   {% comment %}Creado para que los mensajes de desvanezcan{% endcomment %}
-  <script src="{% static 'Libs/js/home_afiliado.js' %}"></script>
+  {% comment %} <script src="{% static 'Libs/js/home_afiliado.js' %}"></script> {% endcomment %}
 
   {% block extrajs_intermedia %}
 
   {% endblock %}
-  {{ buscador.media.js }}
+  {% comment %} {{ buscador.media.js }}
   <script type="text/javascript">
     $('.django-select2').on('change', () => console.log('hola'))
-  </script>
+  </script> {% endcomment %}
 {% endblock %}

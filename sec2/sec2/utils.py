@@ -62,10 +62,15 @@ class FiltrosForm(forms.Form):
         # Agregar un botón "Clear" que limpia los filtros
         self.helper.layout = Layout(
             *fields,
-            Submit('submit', 'Filtrar', css_class='button white'),
-            HTML('<a class="btn btn-secondary" href="?">Clear</a>'),  # Agregar el botón "Clear"
+            HTML('<div class="row">'),
+            HTML('<div class="col-md-6 text-center">'),
+            HTML('<button type="submit" class="btn btn-primary btn-sm"><i class="fa-solid fa-filter fa-xs"></i> Filtrar</button>'),
+            HTML('</div>'),
+            HTML('<div class="col-md-6">'),
+            HTML('<a class="btn btn-secondary btn-sm" href="?"><i class="fa-solid fa-broom fa-xs"></i> Clear</a>'),
+            HTML('</div>'),
+            HTML('</div>')
         )
-
 class ListFilterView(ListView):
     filter_class = None
     def get_context_data(self, **kwargs):
