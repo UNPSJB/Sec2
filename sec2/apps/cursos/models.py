@@ -7,12 +7,15 @@ from apps.personas.models import Rol
 
 XMARK_ICON = '<i class="fa-solid fa-xmark"></i>'
 
+
+#-------------------- VALIDADOR DE EXPRESIONES REGULARES ----------
 text_validator = RegexValidator(
         regex=r'^[A-Za-záéíóúÁÉÍÓÚñÑ\s]+$',
         message=f'{XMARK_ICON} Debe contener letras y/o espacios.',
         code='invalid_text'
 )
 
+# ---------------- ACTIVIDAD ---------------
 class Actividad(models.Model):
     AREAS = [
         (0, "Capacitación"),
@@ -29,22 +32,23 @@ class Actividad(models.Model):
     def __str__(self):
         return self.nombre
 
-class Aula(models.Model):
-    denominacion=models.CharField(max_length=50)
-    tipo=models.CharField(max_length=50)
-    cupo=models.PositiveIntegerField(help_text="capacidad maxima del aula")
-
-    def __str__(self):
-        return self.denominacion
-
+#------------- CURSO --------------------
 class Curso(models.Model):
     PERIODO_PAGO=(
         (1, 'mes'),
         (2, 'clase'),
     )
     actividad = models.ForeignKey(Actividad,related_name="cursos", on_delete=models.CASCADE)
-    costo=  models.DecimalField(help_text="costo total del curso", max_digits=10, decimal_places=2)
-    nombre=models.CharField(max_length=50)
+    costo = models.DecimalField(
+        help_text="costo total del curso sin puntos",
+        max_digits=10,
+        decimal_places=0
+    )
+    nombre = models.CharField(
+        max_length=50,
+        validators=[text_validator],  # Añade tu validador personalizado si es necesario
+        help_text="Solo se permiten letras y espacios."
+    )
     modulos= models.PositiveIntegerField(help_text="cantidad de horas del curso")
     requiere_certificado = models.BooleanField()
     periodo_pago=models.PositiveSmallIntegerField(choices=PERIODO_PAGO)
@@ -64,7 +68,17 @@ class Curso(models.Model):
             if (dictadocurso.pk == curso.pk ):
                 dictados.append[dictadocurso]
         return dictados
-   
+
+class Aula(models.Model):
+    denominacion=models.CharField(max_length=50)
+    tipo=models.CharField(max_length=50)
+    cupo=models.PositiveIntegerField(help_text="capacidad maxima del aula")
+
+    def __str__(self):
+        return self.denominacion
+
+
+
 class Dictado(models.Model):
     fecha_inicio = models.DateField()
     fecha_fin = models.DateField()

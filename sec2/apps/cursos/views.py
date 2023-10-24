@@ -35,10 +35,12 @@ from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Fieldset, Submit, HTML
 from sec2.utils import ListFilterView
 
+####################### PRINCIPAL #######################
 def index(request):
   template = loader.get_template('home_curso.html')
   return HttpResponse(template.render())
 
+####################### SECCION DE ACTIVIDAD #######################
 ## ------------ CREACION DE ACTIVIDAD -------------------
 class ActividadCreateView(CreateView):
     model = Actividad
@@ -59,18 +61,6 @@ class ActividadCreateView(CreateView):
     def form_invalid(self, form):
         messages.warning(self.request, '<i class="fa-solid fa-triangle-exclamation fa-flip"></i> Por favor, corrija los errores a continuación.')
         return super().form_invalid(form)
-
-## ------------ LISTADO DE ACTIVIDAD -------------------
-class ActividadListView(ListFilterView):
-    model = Actividad
-    paginate_by = 100  
-    filter_class = ActividadFilterForm
-    template_name = 'actividad/actividad_list.html'
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['titulo'] = "Listado de Actividades"
-        return context
 
 ## ------------ ACTIVIDAD DETALLE -------------------
 class ActividadDetailView(DetailView):
@@ -110,6 +100,40 @@ def actividad_eliminar(request, pk):
         messages.error(request, 'Ocurrió un error al intentar eliminar la actividad.')
     return redirect('cursos:actividad_listado')
 
+## ------------ LISTADO DE ACTIVIDAD -------------------
+class ActividadListView(ListFilterView):
+    model = Actividad
+    paginate_by = 100  
+    filter_class = ActividadFilterForm
+    template_name = 'actividad/actividad_list.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['titulo'] = "Listado de Actividades"
+        return context
+
+####################### SECCION DE CURSOS #######################
+##--------------- CREATE DE CURSOS--------------------------------
+class CursoCreateView(CreateView):
+    model = Curso
+    form_class = CursoForm
+    template_name = 'curso/curso_alta.html'
+    success_url = reverse_lazy('cursos:cursos')
+    title = "Formulario Alta de Curso"  # Agrega un título
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['titulo'] = self.title  # Agrega el título al contexto
+        return context
+
+    def form_valid(self, form):
+        messages.success(self.request, '<i class="fa-solid fa-square-check fa-beat-fade"></i> Alta de curso exitosa!')
+        return super().form_valid(form)
+
+    def form_invalid(self, form):
+        messages.warning(self.request, '<i class="fa-solid fa-triangle-exclamation fa-flip"></i> Por favor, corrija los errores a continuación.')
+        return super().form_invalid(form)
+
 
 class AulaListView(ListView):
     model = Aula
@@ -133,22 +157,11 @@ def aula_eliminar(request, pk):
     a.delete()
     return redirect('cursos:aulas') 
 
-
-
-
-
-
-
-
-class CursoCreateView(CreateView):
-    model = Curso
-    form_class = CursoForm
-    success_url = reverse_lazy('cursos:cursos')
-    
 class CursoListView(ListFilterView):
     model = Curso
     paginate_by = 100
     filter_class = CursoFilterForm
+    template_name = 'curso/curso_list.html'
 
     def get_success_url(self):
         print(self.object)

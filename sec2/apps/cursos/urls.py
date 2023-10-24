@@ -31,16 +31,16 @@ app_name="cursos"
 urlpatterns = [
     path('',index, name="index"),
     # * ------------------------  ACTIVIDADES  ----------------------------
-    path('actividad/crear', ActividadCreateView.as_view(), name="actividad_crear"),
-    path('actividad/listado', ActividadListView.as_view(), name="actividad_listado"),
-    path('actividad/<int:pk>', ActividadDetailView.as_view(), name="actividad_detalles"),
-    path('actividades/<int:pk>/editar', ActividadUpdateView.as_view(), name="actividad_actualizar"),
-    path('actividades/<int:pk>/eliminar', actividad_eliminar, name="actividad_eliminar"),
-
+    path('actividades/actividad/crear', ActividadCreateView.as_view(), name="actividad_crear"),
+    path('actividades/actividad/<int:pk>', ActividadDetailView.as_view(), name="actividad_detalles"),
+    path('actividades/actividad/<int:pk>/editar', ActividadUpdateView.as_view(), name="actividad_actualizar"),
+    path('actividades/actividad/<int:pk>/eliminar', actividad_eliminar, name="actividad_eliminar"),
+    path('actividades/listado', ActividadListView.as_view(), name="actividad_listado"),
 
     # * ------------------------  CURSOS ----------------------------------
-    path('cursos', CursoListView.as_view(), name="cursos"),
-    path('crear/', CursoCreateView.as_view(), name="curso_crear"),
+    path('curso/crear/', CursoCreateView.as_view(), name="curso_crear"),
+    path('cursos', CursoListView.as_view(), name="curso_listado"),
+    
     path('curso/<int:pk>',CursoDetailView.as_view(), name="curso"),
     path('<int:pk>/editar', CursoUpdateView.as_view(), name="curso_editar"),
     path('<int:pk>/eliminar', curso_eliminar, name="curso_eliminar"),

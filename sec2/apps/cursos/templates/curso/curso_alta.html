@@ -1,0 +1,75 @@
+{% extends 'home_curso.html' %}
+{% load crispy_forms_tags %}
+{% load static %}
+
+{% block extracss_intermedia %}
+  <link href="{% static 'css/curso_alta.css' %}" rel="stylesheet" />
+{% endblock %}
+
+{% block dinamica %}
+  <div class="container border p-3 mb-3 col-md-7 offset-md-3">
+    <h1 class="titulo">{{ titulo }}</h1>
+    <form method="post" class="curso-form">
+      {% csrf_token %}
+      {{ form.non_field_errors }}
+      <div class="row">
+        <div class="col-md-6">
+          <div class="form-group">
+            <label for="{{ form.actividad.id_for_label }}">Actividad:</label>
+            <br />
+            {{ form.actividad }}
+          </div>
+
+          <br />
+          <div class="form-group">
+            <label for="{{ form.costo.id_for_label }}">Costo:</label>
+            <br />
+            {{ form.costo }}
+          </div>
+
+          <br />
+          <div class="form-group">
+            <label for="{{ form.nombre.id_for_label }}">Nombre:</label>
+            <br />
+            {{ form.nombre }}
+          </div>
+        </div>
+
+        <div class="col-md-6">
+          <div class="form-group">
+            <label for="{{ form.modulos.id_for_label }}">Módulos:</label>
+            <br />
+            {{ form.modulos }}
+          </div>
+
+          <br />
+          <div class="form-group">
+            <label for="{{ form.periodo_pago.id_for_label }}">Período de pago:</label>
+            <br />
+            {{ form.periodo_pago }}
+          </div>
+          <br />
+          <div class="form-group">
+            <label for="{{ form.descuento.id_for_label }}">Descuento:</label>
+            <br />
+            {{ form.descuento }}
+          </div>
+          <br />
+          <div class="form-group">
+            <label for="{{ form.requiere_certificado.id_for_label }}">Requiere certificado:</label>
+            <br />
+            {{ form.requiere_certificado }}
+          </div>
+        </div>
+      </div>
+      <br />
+      <button type="submit" class="btn btn-primary">Guardar</button>
+      <button type="submit" name="crear_dictado" class="btn btn-secondary">Guardar y Crear Dictado</button>
+    </form>
+    <a href="{% url 'cursos:curso_listado' %}" class="btn btn-secondary">Volver</a>
+  </div>
+{% endblock %}
+
+{% block extrajs_intermedia %}
+
+{% endblock %}
