@@ -1,6 +1,10 @@
 # Created by https://www.toptal.com/developers/gitignore/api/django,virtualenv,python
 # Edit at https://www.toptal.com/developers/gitignore?templates=django,virtualenv,python
-**/migrations/
+
+# Ignorar carpetas de migraciones
+*/migrations/
+!*/migrations/__init__.py
+
 ### Django ###
 *.log
 *.pot
