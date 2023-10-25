@@ -2,7 +2,8 @@
 # Edit at https://www.toptal.com/developers/gitignore?templates=django,virtualenv,python
 
 # Ignorar carpetas de migraciones
-*/migrations/
+# Ignorar las migraciones de todas las aplicaciones
+**/migrations/
 # !*/migrations/__init__.py
 
 ### Django ###
