@@ -3,7 +3,7 @@
 
 # Ignorar carpetas de migraciones
 */migrations/
-!*/migrations/__init__.py
+# !*/migrations/__init__.py
 
 ### Django ###
 *.log
