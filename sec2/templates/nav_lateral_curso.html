@@ -1,55 +1,135 @@
 {% load static %}
 
 {% block extracss %}
-  <link href="{% static 'Libs/css/nav_lateral_aplicaciones.css' %}" rel="stylesheet" />
+  <link href="{% static 'Libs/css/nav_lateral_aplicaciones.css' %}" rel="stylesheet">
 {% endblock %}
 <br />
-<ul class="menu" id="menu_curso">
-  <li>
-    <a id="mostrarMenuPrincipal" href="/home"><i class="fa-solid fa-arrow-left-long"></i> Volver</a>
-  </li>
-  <br />
-  <h5 class="text-left">ACTIVIDADES</h5>
-  <li>
-    <a href="{% url 'cursos:actividad_crear' %}"><i class="fa-solid fa-plus"></i> Alta de actividades</a>
-  </li>
-  <li>
-    <a href="{% url 'cursos:actividad_listado' %}"><i class="fa-solid fa-list"></i> Lista de actividades</a>
-  </li>
-  <br />
-  <h5 class="text-left">CURSOS</h5>
-  <li>
-    <a href="{% url 'cursos:curso_crear' %}"><i class="fa-solid fa-plus"></i> Crear curso</a>
-  </li>
-  <li>
-    <a href="{% url 'cursos:curso_listado' %}"><i class="fa-solid fa-list"></i>Lista de cursos</a>
-  </li>
-  <br />
+<!-- Botón para Actividades -->
+<button class="btn btn-primary" type="button" data-bs-toggle="collapse" data-bs-target="#menu_actividades" aria-expanded="false">
+  Actividades
+</button>
 
-  <h5 class="text-left">AULAS</h5>
-  <li>
-    <a href="{% url 'cursos:aula_crear' %}"><i class="fa-solid fa-plus"></i>Crear aula</a>
-  </li>
-  <li>
-    <a href="{% url 'cursos:aulas' %}"><i class="fa-solid fa-list"></i> Lista de aula</a>
-  </li>
-  <br />
+<!-- Menú desplegable para Actividades -->
+<div class="collapse multi-collapse" id="menu_actividades">
+  <ul class="menu">
+    <li>
+      <a id="mostrarMenuPrincipal" href="/home"><i class="fa-solid fa-arrow-left-long"></i> Volver</a>
+    </li>
+    <li>
+      <h5 class="text-left">ACTIVIDADES</h5>
+    </li>
+    <li>
+      <a href="{% url 'cursos:actividad_crear' %}"><i class="fa-solid fa-plus"></i> Alta de actividades</a>
+    </li>
+    <li>
+      <a href="{% url 'cursos:actividad_listado' %}"><i class="fa-solid fa-list"></i> Lista de actividades</a>
+    </li>
+  </ul>
+</div>
 
-  <h5 class="text-left">PROFESOR</h5>
-  <li>
-    <a href="{% url 'cursos:profesor_crear' %}"><i class="fa-solid fa-plus"></i>Alta de profesor</a>
-  </li>
-  <li>
-    <a href="{% url 'cursos:profesores' %}"><i class="fa-solid fa-list"></i>Lista de profesores</a>
-  </li>
-  <br />
+<!-- Botón para Cursos -->
+<button class="btn btn-primary" type="button" data-bs-toggle="collapse" data-bs-target="#menu_cursos" aria-expanded="false">
+  Cursos
+</button>
 
-  <h5 class="text-left">PAGO</h5>
-  <li>
-    <a href="{% url 'cursos:pago_alumno' %}"><i class="fa-solid fa-sack-dollar"></i>pago de alumnos</a>
-  </li>
-</ul>
+<!-- Menú desplegable para Cursos -->
+<div class="collapse multi-collapse" id="menu_cursos">
+  <ul class="menu">
+    <li>
+      <a id="mostrarMenuPrincipal" href="/home"><i class="fa-solid fa-arrow-left-long"></i> Volver</a>
+    </li>
+    <li>
+      <h5 class="text-left">CURSOS</h5>
+    </li>
+    <li>
+      <a href="{% url 'cursos:curso_crear' %}"><i class="fa-solid fa-plus"></i> Crear curso</a>
+    </li>
+    <li>
+      <a href"{% url 'cursos:curso_listado' %}"><i class="fa-solid fa-list"></i> Lista de cursos</a>
+    </li>
+  </ul>
+</div>
+
+<div class="collapse multi-collapse" id="menu_actividades">
+  <ul class="menu">
+    <li>
+      <a id="mostrarMenuPrincipal" href="/home"><i class="fa-solid fa-arrow-left-long"></i> Volver</a>
+    </li>
+    <h5 class="text-left">ACTIVIDADES</h5>
+    <li>
+      <a href="{% url 'cursos:actividad_crear' %}"><i class="fa-solid fa-plus"></i> Alta de actividades</a>
+    </li>
+    <li>
+      <a href="{% url 'cursos:actividad_listado' %}"><i class="fa-solid fa-list"></i> Lista de actividades</a>
+    </li>
+  </ul>
+</div>
+
+<button class="btn btn-primary" type="button" data-bs-toggle="collapse" data-bs-target="#menu_cursos" aria-expanded="false">Cursos</button>
+
+<div class="collapse multi-collapse" id="menu_cursos">
+  <ul class="menu">
+    <li>
+      <a id="mostrarMenuPrincipal" href="/home"><i class="fa-solid fa-arrow-left-long"></i> Volver</a>
+    </li>
+    <h5 class="text-left">CURSOS</h5>
+    <li>
+      <a href="{% url 'cursos:curso_crear' %}"><i class="fa-solid fa-plus"></i> Crear curso</a>
+    </li>
+    <li>
+      <a href="{% url 'cursos:curso_listado' %}"><i class="fa-solid fa-list"></i> Lista de cursos</a>
+    </li>
+  </ul>
+</div>
+
+<button class="btn btn-primary" type="button" data-bs-toggle="collapse" data-bs-target="#menu_aulas" aria-expanded="false">Aulas</button>
+
+<div class="collapse multi-collapse" id="menu_aulas">
+  <ul class="menu">
+    <li>
+      <a id="mostrarMenuPrincipal" href="/home"><i class="fa-solid fa-arrow-left-long"></i> Volver</a>
+    </li>
+    <h5 class="text-left">AULAS</h5>
+    <li>
+      <a href="{% url 'cursos:aula_crear' %}"><i class="fa-solid fa-plus"></i> Crear aula</a>
+    </li>
+    <li>
+      <a href="{% url 'cursos:aulas' %}"><i class="fa-solid fa-list"></i> Lista de aulas</a>
+    </li>
+  </ul>
+</div>
+
+<button class="btn btn-primary" type="button" data-bs-toggle="collapse" data-bs-target="#menu_profesor" aria-expanded="false">Profesor</button>
+
+<div class="collapse multi-collapse" id="menu_profesor">
+  <ul class="menu">
+    <li>
+      <a id="mostrarMenuPrincipal" href="/home"><i class="fa-solid fa-arrow-left-long"></i> Volver</a>
+    </li>
+    <h5 class="text-left">PROFESOR</h5>
+    <li>
+      <a href="{% url 'cursos:profesor_crear' %}"><i class="fa-solid fa-plus"></i> Alta de profesor</a>
+    </li>
+    <li>
+      <a href="{% url 'cursos:profesores' %}"><i class="fa-solid fa-list"></i> Lista de profesores</a>
+    </li>
+  </ul>
+</div>
+
+<button class="btn btn-primary" type="button" data-bs-toggle="collapse" data-bs-target="#menu_pagos" aria-expanded="false">Pagos</button>
+
+<div class="collapse multi-collapse" id="menu_pagos">
+  <ul class="menu">
+    <li>
+      <a id="mostrarMenuPrincipal" href="/home"><i class="fa-solid fa-arrow-left-long"></i> Volver</a>
+    </li>
+    <h5 class="text-left">PAGOS</h5>
+    <li>
+      <a href="{% url 'cursos:pago_alumno' %}"><i class="fa-solid fa-sack-dollar"></i> Pago de alumnos</a>
+    </li>
+  </ul>
+</div>
 
 {% block extrajs %}
-
+  <!-- Agrega aquí cualquier JavaScript adicional que puedas necesitar -->
 {% endblock %}
