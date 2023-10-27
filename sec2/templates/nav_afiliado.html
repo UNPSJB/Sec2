@@ -1,0 +1,30 @@
+{% load static %}
+
+{% block extracss %}
+  <link href="{% static 'Libs/css/nav_principal.css' %}" rel="stylesheet" />
+{% endblock %}
+
+<div id="menu_afiliado">
+  <br />
+  <h3 class="titulo-menu">AFILIADOS</h3>
+  <ul class="menu">
+    <li>
+      <a href="/home" id="mostrarMenuPrincipal"><i class="fa-solid fa-arrow-left-long"></i> Menu principal</a>
+    </li>
+    <li>
+      <a href="{% url 'afiliados:afiliado_crear' %}"><i class="fa-solid fa-plus"></i> Alta afiliado</a>
+    </li>
+    <li>
+      <a href="{% url 'afiliados:afiliado_listar' %}"><i class="fa-solid fa-list"></i> Lista de afiliados</a>
+    </li>
+    <li>
+      <a href="{% url 'afiliados:afiliado_listar_pendiente' %}"><i class="fa-solid fa-check-to-slot"></i> Aceptar afiliados</a>
+    </li>
+    <li>
+      <a href="{% url 'afiliados:afiliado_listar_activos' %}"><i class="fa-regular fa-circle-down"></i> Baja de afiliados</a>
+    </li>
+    <li>
+      <a href="{% url 'afiliados:funcionalidad_pendiente' %}"><i class="fa-solid fa-people-line"></i> Grupo Familiar</a>
+    </li>
+  </ul>
+</div>
