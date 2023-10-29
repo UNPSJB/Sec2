@@ -9,6 +9,9 @@ from datetime import datetime
 from .models import Afiliado
 from .forms import *
 from sec2.utils import ListFilterView
+from django.shortcuts import get_object_or_404
+from django.http import Http404
+from django.forms import inlineformset_factory
 
 #CONSTANTE
 from utils.constants import *
@@ -72,7 +75,6 @@ class AfiliadoCreateView(CreateView):
 
             messages.success(self.request, f'{ICON_CHECK} Alta de afiliado exitosa!')
             return redirect('afiliados:afiliado_listar')
-
 
     def form_invalid(self, form):
         messages.warning(self.request, f'{ICON_TRIANGLE} {MSJ_CORRECTION}')
@@ -148,27 +150,29 @@ class AfiliadoDetailView (DeleteView):
 # ----------------------------- AFILIADO UPDATE ----------------------------------- #
 class AfiliadoUpdateView(UpdateView):
     model = Afiliado
-    form_class = FormularioAfiliadoUpdate
-    template_name = 'afiliados/afiliado_detalle.html'
-    success_url = reverse_lazy('afiliados:afiliado_actualizar')
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['titulo'] = "Modificar Afiliado"
-        return context
+    form_class = AfiliadoUpdateForm
+    template_name = 'afiliados/afiliado_alta.html'
+    # template_name = 'afiliados/afiliado_actualizar.html'
+    success_url = reverse_lazy('afiliados:afiliado_listar_activos')
 
     def form_valid(self, form):
-        """Se comento la linea porque primero lo verifica y despues
-        lo guarda en el form.py"""
-        afiliado = form.save()
-        messages.success(self.request, 'f{ICON_CHECK} Afiliado modificado con éxito')
-        return redirect('afiliados:afiliado_listar')
+        # Aquí puedes realizar las operaciones necesarias para guardar los datos de Afiliado y Persona
+        afiliado = form.save(commit=False)
+        # Actualiza los campos de Afiliado según sea necesario
+        # afiliado.<campo> = form.cleaned_data['<campo>']
+        # ...
 
-    def form_invalid(self, form):
-        messages.error(self.request, f'{ICON_ERROR} Hubo errores en el formulario')
-        for field, errors in form.errors.items():
-            print(f"Campo: {field}, Errores: {', '.join(errors)}")
-        return super().form_invalid(form)
+        # A continuación, puedes actualizar los campos de Persona relacionados con el Afiliado
+        persona = afiliado.persona
+        # persona.<campo> = form.cleaned_data['<campo>']
+        # ...
+
+        # Guarda los cambios en ambas entidades
+        afiliado.save()
+        persona.save()
+
+        return super().form_valid(form)
+
 
 # ----------------------------- AFILIADO ACEPTAR ----------------------------------- #
 

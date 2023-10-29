@@ -7,15 +7,16 @@
 {% endblock %}
 
 {% block dinamica %}
+  <h3 class="titulo">{{ titulo }}</h3>
   <div id="form-container" class="container">
     <div class="row">
       <div class="col-12">
         <ul class="nav nav-tabs" id="form-tabs">
           <li class="nav-item">
-            <a class="nav-link active" id="tab-section-1" data-toggle="tab" href="#section1">Sección 1</a>
+            <a class="nav-link active" id="tab-section-1" data-toggle="tab">Sección 1</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" id="tab-section-2" data-toggle="tab" href="#section2">Sección 2</a>
+            <a class="nav-link" id="tab-section-2" data-toggle="tab">Sección 2</a>
           </li>
         </ul>
       </div>
@@ -32,7 +33,6 @@
                   <div class="form-group">
                     <label for="{{ form.dni.id_for_label }}">DNI:</label><br />
                     {{ form.dni }}
-                    <br />
                     <span class="help-text">{{ form.dni.help_text }}</span>
                     <span class="error-text">{{ form.dni.errors }}</span>
                   </div>
@@ -119,7 +119,7 @@
                   <div class="form-group">
                     <label for="{{ form.direccion.id_for_label }}">Dirección:</label><br />
                     {{ form.direccion }}
-                    <br>
+                    <br />
                     <small class="help-text">{{ form.direccion.help_text }}</small><br />
                     <small class="error-text">{{ form.direccion.errors }}</small>
                     <br />
@@ -131,7 +131,7 @@
                     <label for="{{ form.mail.id_for_label }}">Correo Electrónico:</label>
                     <br />
                     {{ form.mail }}
-                    <br>
+                    <br />
                     <small class="help-text">{{ form.mail.help_text }}</small><br />
                     <small class="error-text">{{ form.mail.errors }}</small>
                     <br />
@@ -247,7 +247,7 @@
                     {{ form.horaJornada }}
                     <small class="help-text">{{ form.horaJornada.help_text }}</small><br />
                     <small class="error-text">{{ form.horaJornada.errors }}</small>
-                    <br>
+                    <br />
                   </div>
                 </div>
               </div>

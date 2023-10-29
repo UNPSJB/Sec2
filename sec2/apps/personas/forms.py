@@ -24,12 +24,12 @@ class PersonaForm(ModelForm):
 PersonaForm.base_fields.update(PersonaForm.base_fields)
 
 class PersonaUpdateForm(ModelForm):
-   
     class Meta:
-        model = Persona
-        # NO SE EXCLUYE EL DNI PARA QUE LO MUESTRE Y MODIFIQUE
-        # exclude=['dni', "familia",'es_afiliado','es_alumno','es_profesor','es_encargado']
-        exclude=["familia",'es_afiliado','es_alumno','es_profesor','es_encargado']
+        model = Persona  # Asocia el formulario al modelo Persona
+        fields = ['dni', 'cuil', 'nombre', 'apellido', 'fecha_nacimiento', 'celular', 'direccion', 'nacionalidad', 'mail', 'estado_civil']
+        widgets = {
+            'fecha_nacimiento': forms.DateInput(attrs={'type': 'date'}),
+        }
         
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
