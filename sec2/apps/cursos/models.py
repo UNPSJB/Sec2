@@ -4,8 +4,7 @@ from django.db import models
 from django.core.validators import RegexValidator
 # Create your models here.
 from apps.personas.models import Rol
-
-XMARK_ICON = '<i class="fa-solid fa-xmark"></i>'
+from utils.constants import *
 
 
 #-------------------- VALIDADOR DE EXPRESIONES REGULARES ----------

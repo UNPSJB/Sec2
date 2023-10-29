@@ -5,8 +5,8 @@ from apps import afiliados, cursos
 from django.core.validators import RegexValidator, EmailValidator
 from django.core.exceptions import ValidationError
 from django.utils import timezone
+from utils.constants import *
 
-XMARK_ICON = '<i class="fa-solid fa-xmark"></i>'
 
 # Define una función para validar si el valor es un número
 def is_numeric(value):
@@ -279,7 +279,7 @@ class Persona(models.Model):
     )
     cuil = models.CharField(
         max_length=11,
-        help_text='CUIL sin puntos ni guiones. Ej: 01234567890',
+        help_text='Sin puntos y guiones. Ej: 01234567890',
         validators=[
             RegexValidator(
                 regex=r'^\d{11}$',  # Expresión regular para 11 dígitos

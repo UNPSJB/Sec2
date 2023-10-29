@@ -3,17 +3,13 @@
 <nav class="navbar navbar-expand-lg bg-body-tertiary">
   <div class="container-fluid">
     <div class="collapse navbar-collapse" id="navbarSupportedContent">
-      <div class="mx-auto"> <!-- Esto centrará el contenido horizontalmente -->
-        
+      <div class="mx-auto">
+        <!-- Esto centrará el contenido horizontalmente -->
         <form class="d-flex" role="search">
-          <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
-          <button class="btn btn-outline-success" type="submit">
-            <i class="fa-sharp fa-solid fa-magnifying-glass"></i>
-            {% comment %} Search {% endcomment %}
-          </button>
+          <input class="form-control me-2" type="search" id="searchInput" placeholder="Search by ID" aria-label="Search" />
+          <ul id="searchResults" class="list-group"></ul>
         </form>
       </div>
     </div>
   </div>
 </nav>
-

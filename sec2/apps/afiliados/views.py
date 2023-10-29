@@ -1,38 +1,29 @@
-# from django.shortcuts import render
 from apps.afiliados.forms import Afiliado
 from django.template import loader
 from django.http import HttpResponse
-from datetime import datetime  
-from . import views
-from django.urls import reverse_lazy
-from django.http import JsonResponse
-from django.shortcuts import get_object_or_404, redirect, render
+from django.shortcuts import redirect, render
 from django.views.generic.edit import CreateView, DeleteView, UpdateView
-from django.views.generic.list import ListView
-from .models import *
-from .forms import *
-from django.contrib import messages
-from sec2.utils import ListFilterView
-from django.views.generic.edit import CreateView
-from django.shortcuts import render
-from django.contrib import messages
 from django.contrib import messages
 from django.urls import reverse_lazy
-from django.views.generic.edit import UpdateView
+from datetime import datetime  
 from .models import Afiliado
-from .forms import AfiliadoUpdateForm
-from .forms import FormularioAfiliadoUpdate
+from .forms import *
+from sec2.utils import ListFilterView
+
+#CONSTANTE
+from utils.constants import *
 
 # ----------------------------- AFILIADO VIEW ----------------------------------- #
 def index(request):
     template = loader.get_template('home.html')
     return HttpResponse(template.render())
+
 # ----------------------------- AFILIADO CREATE ----------------------------------- #
 class AfiliadoCreateView(CreateView):
-    model = Afiliado
-    form_class = FormularioAfiliadoCreate
-    success_url = reverse_lazy('afiliados:afiliado_crear')
+    model = Persona
+    form_class = AfiliadoPersonaForm #utiliza un formulario unificado
     template_name = 'afiliados/afiliado_alta.html'
+    success_url = reverse_lazy('afiliados:afiliado_crear')
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -40,16 +31,52 @@ class AfiliadoCreateView(CreateView):
         return context
 
     def form_valid(self, form):
-        afiliado = form.save()
-        messages.success(self.request, '<i class="fa-solid fa-square-check fa-beat-fade"></i> Alta de afiliado exitosa!')
-        return redirect('afiliados:afiliado_listar')
-    
+        dni = form.cleaned_data["dni"]
+        existing_person = Persona.objects.filter(dni=dni).first()
+
+        if existing_person:
+            messages.error(self.request, f'{ICON_ERROR} La persona ya está registrada en el sistema.')
+            form = AfiliadoPersonaForm(self.request.POST)
+            return self.render_to_response(self.get_context_data(form=form))
+        else:
+            persona = Persona(
+                dni=dni,
+                cuil=form.cleaned_data["cuil"],
+                nombre=form.cleaned_data["nombre"],
+                apellido=form.cleaned_data["apellido"],
+                fecha_nacimiento=form.cleaned_data["fecha_nacimiento"],
+                mail=form.cleaned_data["mail"],
+                celular=form.cleaned_data["celular"],
+                estado_civil=form.cleaned_data["estado_civil"],
+                nacionalidad=form.cleaned_data["nacionalidad"],
+                direccion=form.cleaned_data["direccion"],
+            )
+            persona.save()
+
+            # Crear una instancia de Afiliado
+            afiliado = Afiliado(
+                persona=persona,
+                razon_social=form.cleaned_data["razon_social"],
+                categoria_laboral=form.cleaned_data["categoria_laboral"],
+                rama=form.cleaned_data["rama"],
+                sueldo=form.cleaned_data["sueldo"],
+                fechaAfiliacion=form.cleaned_data["fechaAfiliacion"],
+                fechaIngresoTrabajo=form.cleaned_data["fechaIngresoTrabajo"],
+                cuit_empleador=form.cleaned_data["cuit_empleador"],
+                localidad_empresa=form.cleaned_data["localidad_empresa"],
+                domicilio_empresa=form.cleaned_data["domicilio_empresa"],
+                horaJornada=form.cleaned_data["horaJornada"],
+            )
+            print("VOY A ENTRAR EN EL SAVE")
+            afiliado.save()
+
+            messages.success(self.request, f'{ICON_CHECK} Alta de afiliado exitosa!')
+            return redirect('afiliados:afiliado_listar')
+
+
     def form_invalid(self, form):
-        fecha_nacimiento_input = self.request.POST.get('fecha_nacimiento', '')  # Obtener el valor o cadena vacía si no está presente
-        # Opcionalmente, puedes agregar el valor al contexto para pasarlo a la plantilla
-        context = {'form': form, 'fecha_nacimiento_input': fecha_nacimiento_input}
-        messages.warning(self.request, '<i class="fa-solid fa-triangle-exclamation fa-flip"></i> Por favor, corrija los errores a continuación.')
-        return render(self.request, self.template_name, context)
+        messages.warning(self.request, f'{ICON_TRIANGLE} {MSJ_CORRECTION}')
+        return super().form_invalid(form)
 
 # ----------------------------- AFILIADO LIST ----------------------------------- #
 class AfliadosListView(ListFilterView):
@@ -134,11 +161,11 @@ class AfiliadoUpdateView(UpdateView):
         """Se comento la linea porque primero lo verifica y despues
         lo guarda en el form.py"""
         afiliado = form.save()
-        messages.success(self.request, 'Afiliado modificado con éxito')
+        messages.success(self.request, 'f{ICON_CHECK} Afiliado modificado con éxito')
         return redirect('afiliados:afiliado_listar')
 
     def form_invalid(self, form):
-        messages.error(self.request, 'Hubo errores en el formulario')
+        messages.error(self.request, f'{ICON_ERROR} Hubo errores en el formulario')
         for field, errors in form.errors.items():
             print(f"Campo: {field}, Errores: {', '.join(errors)}")
         return super().form_invalid(form)
@@ -150,7 +177,7 @@ def afiliado_aceptar(request, pk):
     a.estado= 2
     a.save()
     # mensaje de exito
-    messages.success(request, 'El afiliado ha sido aceptadov2.')
+    messages.success(request, f'{ICON_CHECK} El afiliado ha sido aceptado.')
     return redirect('afiliados:afiliado_listar')
 
 # ----------------------------- DESAFILIAR AFILIADO -----------------------------------
@@ -159,7 +186,7 @@ def afiliado_desafiliar(request, pk):
     fecha = datetime.now()
     a.persona.desafiliar(a,fecha)
     a.save()
-    messages.success(request, 'Se ha desafiliado.')
+    messages.success(request, 'f{ICON_CHECK} Se ha desafiliado.')
     return redirect('afiliados:afiliado_listar')
 
 #!ES NECESARIO ESTO??

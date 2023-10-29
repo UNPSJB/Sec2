@@ -139,7 +139,7 @@ class AulaListView(ListView):
     model = Aula
     paginate_by = 100
 
-class AulaCreateView(CreateView):
+class AulaCreateView(CreateView):   
     model = Aula
     form_class = AulaForm
     success_url = reverse_lazy('cursos:aulas')

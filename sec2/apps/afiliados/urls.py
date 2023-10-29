@@ -1,9 +1,17 @@
-from django.contrib import admin
-from django.urls import path, include
+# Importaciones del sistema
+from django.urls import path
+
+# Importaciones locales
 from .views import *
-from apps.afiliados.views import AfliadosListView, index,afiliado_desafiliar, afiliado_aceptar,AfiliadoDetailView, AfliadosListPendienteView,AfliadosListActivoView
-app_name="afiliados"
 from . import views
+from apps.afiliados.views import (
+    index,
+    afiliado_desafiliar,
+    afiliado_aceptar,
+    AfiliadoDetailView
+)
+
+app_name = "afiliados"
 
 urlpatterns = [
     path('',index, name="index"),

@@ -5,34 +5,44 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Sindicato Empleados De Comercio</title>
+    <!-- Enlace a hojas de estilo CSS desde archivos estáticos -->
     <link href="{% static 'Libs/css/normalize.css' %}" rel="stylesheet" />
     <link href="{% static 'Libs/bootstrap-5.3.1-dist/css/bootstrap.min.css' %}" rel="stylesheet" />
     <link href="{% static 'Libs/css/base.css' %}" rel="stylesheet" />
     <link href="{% static 'Libs/fontawesome-free-6.4.2-web/fontawesome-free-6.4.2-web/css/all.min.css' %}" rel="stylesheet" type="text/css" />
     <link href="{% static 'Libs/fontawesome-free-6.4.2-web/fontawesome-free-6.4.2-web/css/brands.css' %}" rel="stylesheet" type="text/css" />
-    <link href="{% static 'Libs/fontawesome-free-6.4.2-web/fontawesome-free-6.4.2-web/css/solid.css' %}" rel="styleshe" />
+    <link href="{% static 'Libs/fontawesome-free-6.4.2-web/fontawesome-free-6.4.2-web/css/solid.css' %}" rel="stylesheet" />
+
+    <!-- Icono de la pestaña del navegador desde archivos estáticos -->
     <link rel="icon" type="image/x-icon" href="{% static 'images/logo.png' %}" />
+
+    <!-- Título de la página, se puede sobrescribir en plantillas secundarias -->
     <title>
       {% block title %}
         {{ title }}
       {% endblock %}
     </title>
+
+    <!-- Contenido adicional de hojas de estilo que se puede sobrescribir en plantillas secundarias -->
     {% block extracss %}
 
     {% endblock %}
   </head>
-
   <body>
+    <!-- Contenido principal de la página que se puede sobrescribir en plantillas secundarias -->
     {% block container %}
 
     {% endblock %}
+
+    <!-- Enlaces a scripts JavaScript -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="{% static 'Libs/bootstrap-5.3.1-dist/js/bootstrap.bundle.min.js' %}"></script>
     <!-- <script src="http://localhost:35729/livereload.js"></script> -->
     <script src="{% static 'Libs/js/jquery.min.js' %}"></script>
     <script src="{% static 'Libs/js/popper.min.js' %}"></script>
     <script src="{% static 'Libs/js/main.js' %}"></script>
-    
+
+    <!-- Scripts JavaScript adicionales que se pueden sobrescribir en plantillas secundarias -->
     {% block extrajs %}
 
     {% endblock %}
