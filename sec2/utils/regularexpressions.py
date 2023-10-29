@@ -24,11 +24,9 @@ def validate_positive_decimal(value):
     if value < 0:
         raise ValidationError(f'{XMARK_ICON} El sueldo no puede ser un valor negativo.')
 
-LOCALIDADES_CHUBUT = [
-        ("COMODORO RIVADAVIA", "Comodoro Rivadavia"),
-        ("RAWSON", "Rawson"),
-        ("PUERTO MADRYN", "Puerto Madryn"),
-        ("ESQUEL", "Esquel"),
-        ("GAIMAN", "Gaiman"),
-        ("TRELEW", "Trelew"),
-    ]
+celular_validator = RegexValidator(
+        regex=r'^\d{3}-\d{8}$',
+        message=f'{XMARK_ICON} Número no válido',
+        code='invalid_celular_argentino'
+    )
+

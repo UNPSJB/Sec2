@@ -3,7 +3,7 @@
 {% load static %}
 
 {% block extracss_intermedia %}
-  <link href="{% static 'css/afiliado_alta.css' %}" rel="stylesheet" />
+  <link href="{% static 'css/afiliado_formulario.css' %}" rel="stylesheet" />
 {% endblock %}
 
 {% block dinamica %}
@@ -33,6 +33,7 @@
                   <div class="form-group">
                     <label for="{{ form.dni.id_for_label }}">DNI:</label><br />
                     {{ form.dni }}
+                    <br>
                     <span class="help-text">{{ form.dni.help_text }}</span>
                     <span class="error-text">{{ form.dni.errors }}</span>
                   </div>
@@ -271,5 +272,5 @@
 
 {% block extrajs_intermedia %}
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-  <script src="{% static 'js/afiliado_alta.js' %}"></script>
+  <script src="{% static 'js/afiliado_formulario.js' %}"></script>
 {% endblock %}

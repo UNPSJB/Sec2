@@ -9,10 +9,9 @@ from datetime import datetime
 from .models import Afiliado
 from .forms import *
 from sec2.utils import ListFilterView
-from django.shortcuts import get_object_or_404
-from django.http import Http404
-from django.forms import inlineformset_factory
-
+from django.db import transaction  # Agrega esta línea para importar el módulo transaction
+from django.urls import reverse
+from django.http import HttpResponseRedirect
 #CONSTANTE
 from utils.constants import *
 
@@ -25,7 +24,7 @@ def index(request):
 class AfiliadoCreateView(CreateView):
     model = Persona
     form_class = AfiliadoPersonaForm #utiliza un formulario unificado
-    template_name = 'afiliados/afiliado_alta.html'
+    template_name = 'afiliados/afiliado_formulario.html'
     success_url = reverse_lazy('afiliados:afiliado_crear')
 
     def get_context_data(self, **kwargs):
@@ -151,28 +150,47 @@ class AfiliadoDetailView (DeleteView):
 class AfiliadoUpdateView(UpdateView):
     model = Afiliado
     form_class = AfiliadoUpdateForm
-    template_name = 'afiliados/afiliado_alta.html'
-    # template_name = 'afiliados/afiliado_actualizar.html'
-    success_url = reverse_lazy('afiliados:afiliado_listar_activos')
-
+    template_name = 'afiliados/afiliado_formulario.html'
+    success_url = reverse_lazy('afiliados:afiliado_listar')
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['titulo'] = "Modicacion de Afiliación"
+        return context
+    
     def form_valid(self, form):
-        # Aquí puedes realizar las operaciones necesarias para guardar los datos de Afiliado y Persona
-        afiliado = form.save(commit=False)
-        # Actualiza los campos de Afiliado según sea necesario
-        # afiliado.<campo> = form.cleaned_data['<campo>']
-        # ...
+        dni = form.cleaned_data["dni"]
+        existing_person = Persona.objects.filter(dni=dni).first()
 
-        # A continuación, puedes actualizar los campos de Persona relacionados con el Afiliado
-        persona = afiliado.persona
-        # persona.<campo> = form.cleaned_data['<campo>']
-        # ...
+        if existing_person:
+            afiliado = form.save(commit=False)
 
-        # Guarda los cambios en ambas entidades
-        afiliado.save()
-        persona.save()
+            # Utiliza el formulario personalizado para validar los datos de la persona
+            persona_form = PersonaUpdateForm(form.cleaned_data, instance=existing_person)
+            
+            if persona_form.is_valid():
+                persona = persona_form.save(commit=False)
+                
+                # Utiliza una transacción para garantizar la integridad de los datos
+                with transaction.atomic():
+                    persona.save()
+                    afiliado.save()
 
-        return super().form_valid(form)
+                messages.success(self.request, f'{ICON_CHECK} Modificación exitosa!')
 
+                # Redirige al usuario al detalle del afiliado
+                afiliado_detail_url = reverse('afiliados:Afiliado', kwargs={'pk': afiliado.pk})
+                return HttpResponseRedirect(afiliado_detail_url)
+            else:
+                # Si el formulario de la persona no es válido, maneja los errores adecuadamente
+                # Por ejemplo, podrías mostrar los errores en el formulario o tomar otra acción
+                messages.error(self.request, f'{ICON_ERROR} Error en la validación de datos de la persona.')
+                return self.render_to_response(self.get_context_data(form=persona_form))
+
+        else:
+            messages.error(self.request, f'{ICON_ERROR} La persona no está registrada en el sistema.')
+            form = AfiliadoPersonaForm(self.request.POST)
+            return self.render_to_response(self.get_context_data(form=form))
 
 # ----------------------------- AFILIADO ACEPTAR ----------------------------------- #
 

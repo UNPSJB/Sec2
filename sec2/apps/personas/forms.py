@@ -33,25 +33,6 @@ class PersonaUpdateForm(ModelForm):
         
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.helper = FormHelper()
-        self.helper.form_action = 'guardarAfiliado'
-        self.helper.layout = Layout(
-            Fieldset(
-                   "",
-                HTML(
-                    '<hr/>'),
-                    'fecha_nacimiento',
-                    'nombre',
-                    'apellido',
-                    'direccion',
-                    'mail',
-                    'nacionalidad',
-                    'estado_civil',
-                    'cuil',
-                    'celular',      
-            
-            ),
-            Submit('submit', 'Guardar', css_class='button white'),)
 
 class PersonaWidget(s2forms.ModelSelect2Widget):
     search_fields = [

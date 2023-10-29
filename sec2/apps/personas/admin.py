@@ -6,9 +6,9 @@ from .models import Rol
 
 # Register your models here.
 class PersonaAdmin(admin.ModelAdmin):
-    list_display = ('nombre', 'apellido', 'fecha_nacimiento')
-    list_filter = ('nombre','apellido')
-    ordering = ('nombre', 'fecha_nacimiento')
+    list_display = ('dni', 'apellido', 'nombre', 'fecha_nacimiento')
+    list_filter = ('dni','apellido')
+    ordering = ('dni', 'apellido')
 
 admin.site.register(Persona, PersonaAdmin)
 

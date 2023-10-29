@@ -1,10 +1,89 @@
-#titulo{
+.container {
+    font-family: Arial, sans-serif;
+    background-color: #f5f5f5;
+    margin: 0;
+    padding: 0;
+    background-color: #fff;
+    padding: 20px;
+    margin: 20px auto;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+/* Perfil de usuario */
+.profile-container {
+    display: flex;
+    align-items: center;
+}
+
+.profile-image {
+    flex: 1;
     text-align: center;
 }
 
-h4{
-    text-align: center;
+img.img-thumbnail {
+    max-width: 150px;
+    border: 2px solid #333;
+    border-radius: 50%;
 }
-.letra_negrita{
+
+.status {
     font-weight: bold;
+    margin-top: 10px;
+}
+
+.pending-status {
+    color: #f00;
+}
+
+.active-status {
+    color: #0f0;
+}
+
+.inactive-status {
+    color: #777;
+}
+
+/* Detalles de perfil */
+.profile-details {
+    flex: 2;
+}
+
+/* Detalles de afiliación */
+.affiliation-details {
+    margin-top: 20px;
+}
+
+/* Botones de acción */
+.action-buttons {
+    margin-top: 20px;
+}
+
+.btn {
+    margin: 5px;
+}
+
+/* Iconos de FontAwesome */
+i {
+    margin-right: 5px;
+}
+
+/* Estilo de los modales */
+.modal-content {
+    background-color: #fff;
+    border: none;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.modal-header {
+    background-color: #007bff;
+    color: #fff;
+}
+
+.modal-body {
+    padding: 20px;
+}
+
+.modal-footer {
+    background-color: #f5f5f5;
+    border-top: none;
 }

@@ -15,7 +15,10 @@ from sec2.utils import FiltrosForm
 from django.core.validators import RegexValidator
 from datetime import date, timedelta
 from utils.regularexpressions import *
+from utils.constants import *
 from django.utils import timezone
+import re
+
 
 ########### Utilizado para el AFILIADO CRATE VIEW ##############################################
 class AfiliadoPersonaForm(forms.ModelForm):
@@ -71,20 +74,105 @@ class AfiliadoUpdateForm(forms.ModelForm):
     class Meta:
         model = Afiliado
         fields = '__all__'
+        exclude = ['tipo', 'hasta', 'estado', 'persona']
+        widgets = {
+            # 'fechaAfiliacion': forms.DateInput(attrs={'type': 'date'}),
+            # 'fechaIngresoTrabajo': forms.DateInput(attrs={'type': 'date'})
+        }
+        labels = {
+            'fechaIngresoTrabajo': "Fecha de ingreso al trabajo",
+            'fechaAfiliacion': "Fecha de afiliación",
+        }
 
     def __init__(self, *args, **kwargs):
-        print("|-------------------------------------------------------|")
-        print("|------------------   ESTOY AQUI   ---------------------|")
-        print("|-------------------------------------------------------|")
         super(AfiliadoUpdateForm, self).__init__(*args, **kwargs)
-        # Agrega campos de Persona al formulario
         persona_fields = ['dni', 'cuil', 'nombre', 'apellido', 'fecha_nacimiento', 'celular', 'direccion', 'nacionalidad', 'mail', 'estado_civil']
+        
         for field_name in persona_fields:
-            self.fields[field_name] = forms.CharField(
-                required=False,
-                initial=getattr(self.instance.persona, field_name)
-            )
-            self.fields[field_name].widget.attrs['readonly'] = True
+            if field_name == 'fecha_nacimiento':
+                self.fields[field_name] = forms.DateField(
+                    required=True,
+                    initial=getattr(self.instance.persona, field_name),
+                )
+            elif field_name == 'estado_civil':
+                self.fields[field_name] = forms.ChoiceField(
+                    choices=ESTADO_CIVIL,
+                    required=True,
+                    initial=getattr(self.instance.persona, field_name),
+                )
+            elif field_name == 'nacionalidad':
+                self.fields[field_name] = forms.ChoiceField(
+                    choices=NACIONALIDADES,
+                    required=True,
+                    initial=getattr(self.instance.persona, field_name),
+                )
+            elif field_name in MAX_LENGTHS:
+                max_length = MAX_LENGTHS[field_name]
+                self.fields[field_name] = forms.CharField(
+                    max_length=max_length,
+                    required=True,
+                    initial=getattr(self.instance.persona, field_name),
+                    help_text=getattr(self.instance.persona._meta.get_field(field_name), 'help_text', '')
+                )
+            else:
+                self.fields[field_name] = forms.CharField(
+                    required=True,
+                    initial=getattr(self.instance.persona, field_name),
+                    help_text=getattr(self.instance.persona._meta.get_field(field_name), 'help_text', '')
+                )
+            self.fields[field_name].widget.attrs['readonly'] = False  # P
+
+    def clean_fecha_nacimiento(self):
+        fecha_nacimiento = self.cleaned_data['fecha_nacimiento']
+
+        if fecha_nacimiento > timezone.now().date():
+            raise forms.ValidationError('La fecha de nacimiento no puede estar en el futuro.')
+
+        return fecha_nacimiento
+
+    def clean_nombre(self):
+        nombre = self.cleaned_data['nombre']
+
+        if not nombre.isalpha():
+            raise forms.ValidationError('El nombre debe contener solo letras y espacios.')
+
+        return nombre
+
+    def clean_apellido(self):
+        apellido = self.cleaned_data['apellido']
+
+        if not apellido.isalpha():
+            raise forms.ValidationError('El apellido debe contener solo letras y espacios.')
+
+        return apellido
+
+    def clean_mail(self):
+        mail = self.cleaned_data['mail']
+        # Expresión regular para validar una dirección de correo electrónico
+        email_pattern = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
+
+        if not re.match(email_pattern, mail):
+            raise forms.ValidationError('El correo electrónico no es válido.')
+
+        return mail
+
+
+    def clean_celular(self):
+        celular = self.cleaned_data['celular']
+
+        if not re.match(r'^\d{3}-\d{8}$', celular):
+            raise forms.ValidationError('El número de celular debe tener el formato correcto (###-########).')
+
+        return celular
+
+    def clean_direccion(self):
+        direccion = self.cleaned_data['direccion']
+
+        # Agrega tus propias validaciones de dirección si es necesario
+        if not direccion.isalnum():
+            raise forms.ValidationError('La dirección no es válida.')
+
+        return direccion
 
     def save(self, commit=True):
         # Actualiza los campos de Afiliado

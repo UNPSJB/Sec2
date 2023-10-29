@@ -6,6 +6,7 @@ from django.core.validators import RegexValidator, EmailValidator
 from django.core.exceptions import ValidationError
 from django.utils import timezone
 from utils.constants import *
+from utils.regularexpressions import *
 
 
 # Define una función para validar si el valor es un número
@@ -13,258 +14,6 @@ def is_numeric(value):
     return value.isnumeric()
 
 class Persona(models.Model):
-    ESTADO_CIVIL = (
-        (1, 'soltero'),
-        (2, 'casado'),
-        (3, 'viudo'),
-    )
-
-    # Arreglo amplio de nacionalidades
-    NACIONALIDADES = [
-    ("AF", "Afganistán"),
-    ("AL", "Albania"),
-    ("DE", "Alemania"),
-    ("AD", "Andorra"),
-    ("AO", "Angola"),
-    ("AI", "Anguila"),
-    ("AQ", "Antártida"),
-    # ("AG", "Antigua y Barbuda"),
-    # ("AN", "Antillas Neerlandesas"),
-    ("SA", "Arabia Saudita"),
-    ("DZ", "Argelia"),
-    ("AR", "Argentina"),
-    ("AM", "Armenia"),
-    ("AW", "Aruba"),
-    ("AU", "Australia"),
-    ("AT", "Austria"),
-    ("AZ", "Azerbaiyán"),
-    ("BS", "Bahamas"),
-    ("BH", "Bahréin"),
-    ("BD", "Bangladesh"),
-    ("BB", "Barbados"),
-    ("BE", "Bélgica"),
-    ("BZ", "Belice"),
-    ("BJ", "Benín"),
-    ("BM", "Bermudas"),
-    ("BY", "Bielorrusia"),
-    ("MM", "Birmania"),
-    ("BO", "Bolivia"),
-    # ("BA", "Bosnia y Herzegovina"),
-    ("BW", "Botsuana"),
-    ("BR", "Brasil"),
-    ("BN", "Brunéi"),
-    ("BG", "Bulgaria"),
-    ("BF", "Burkina Faso"),
-    ("BI", "Burundi"),
-    ("BT", "Bután"),
-    ("CV", "Cabo Verde"),
-    ("KH", "Camboya"),
-    ("CM", "Camerún"),
-    ("CA", "Canadá"),
-    ("TD", "Chad"),
-    ("CL", "Chile"),
-    ("CN", "China"),
-    ("CY", "Chipre"),
-    # ("VA", "Ciudad del Vaticano"),
-    ("CO", "Colombia"),
-    ("KM", "Comoras"),
-    ("CG", "Congo"),
-    # ("CD", "Congo, República Democrática del"),
-    ("KP", "Corea del Norte"),
-    ("KR", "Corea del Sur"),
-    ("CI", "Costa de Marfil"),
-    ("CR", "Costa Rica"),
-    ("HR", "Croacia"),
-    ("CU", "Cuba"),
-    ("DK", "Dinamarca"),
-    ("DM", "Dominica"),
-    ("EC", "Ecuador"),
-    ("EG", "Egipto"),
-    ("SV", "El Salvador"),
-    ("AE", "Emiratos Árabes"),
-    ("ER", "Eritrea"),
-    ("SK", "Eslovaquia"),
-    ("SI", "Eslovenia"),
-    ("ES", "España"),
-    ("US", "Estados Unidos"),
-    ("EE", "Estonia"),
-    ("ET", "Etiopía"),
-    ("PH", "Filipinas"),
-    ("FI", "Finlandia"),
-    ("FJ", "Fiyi"),
-    ("FR", "Francia"),
-    ("GA", "Gabón"),
-    ("GM", "Gambia"),
-    ("GE", "Georgia"),
-    ("GH", "Ghana"),
-    ("GI", "Gibraltar"),
-    ("GD", "Granada"),
-    ("GR", "Grecia"),
-    ("GL", "Groenlandia"),
-    ("GP", "Guadalupe"),
-    ("GU", "Guam"),
-    ("GT", "Guatemala"),
-    ("GY", "Guayana"),
-    ("GF", "Guayana Francesa"),
-    ("GN", "Guinea"),
-    ("GQ", "Guinea Ecuatorial"),
-    ("GW", "Guinea-Bisáu"),
-    ("HT", "Haití"),
-    ("HN", "Honduras"),
-    ("HU", "Hungría"),
-    ("IN", "India"),
-    ("ID", "Indonesia"),
-    ("IR", "Irán"),
-    ("IQ", "Iraq"),
-    ("IE", "Irlanda"),
-    ("IS", "Islandia"),
-    ("IL", "Israel"),
-    ("IT", "Italia"),
-    ("JM", "Jamaica"),
-    ("JP", "Japón"),
-    ("JO", "Jordania"),
-    ("KZ", "Kazajistán"),
-    ("KE", "Kenia"),
-    ("KG", "Kirguistán"),
-    ("KW", "Kuwait"),
-    ("LA", "Laos"),
-    ("LS", "Lesoto"),
-    ("LV", "Letonia"),
-    ("LB", "Líbano"),
-    ("LR", "Liberia"),
-    ("LY", "Libia"),
-    ("LI", "Liechtenstein"),
-    ("LT", "Lituania"),
-    ("LU", "Luxemburgo"),
-    ("MK", "Macedonia"),
-    ("MG", "Madagascar"),
-    ("MY", "Malasia"),
-    ("MW", "Malaui"),
-    ("MV", "Maldivas"),
-    ("ML", "Malí"),
-    ("MT", "Malta"),
-    ("MA", "Marruecos"),
-    ("MQ", "Martinica"),
-    ("MU", "Mauricio"),
-    ("MR", "Mauritania"),
-    ("YT", "Mayotte"),
-    ("MX", "México"),
-    ("FM", "Micronesia"),
-    ("MD", "Moldavia"),
-    ("MC", "Mónaco"),
-    ("MN", "Mongolia"),
-    ("MS", "Montserrat"),
-    ("MZ", "Mozambique"),
-    ("NA", "Namibia"),
-    ("NR", "Nauru"),
-    ("NP", "Nepal"),
-    ("NI", "Nicaragua"),
-    ("NE", "Níger"),
-    ("NG", "Nigeria"),
-    ("NU", "Niue"),
-    ("NF", "Norfolk"),
-    ("NO", "Noruega"),
-    ("NC", "Nueva Caledonia"),
-    ("NZ", "Nueva Zelanda"),
-    ("OM", "Omán"),
-    ("NL", "Países Bajos"),
-    ("PA", "Panamá"),
-    ("PG", "Papúa Nueva Guinea"),
-    ("PK", "Pakistán"),
-    ("PY", "Paraguay"),
-    ("PE", "Perú"),
-    ("PN", "Pitcairn"),
-    ("PF", "Polinesia Francesa"),
-    ("PL", "Polonia"),
-    ("PT", "Portugal"),
-    ("PR", "Puerto Rico"),
-    ("QA", "Qatar"),
-    ("UK", "Reino Unido"),
-    # ("CF", "República Centroafricana"),
-    ("CZ", "República Checa"),
-    ("DO", "República Dominicana"),
-    ("RE", "Reunión"),
-    ("RW", "Ruanda"),
-    ("RO", "Rumania"),
-    ("RU", "Rusia"),
-    ("EH", "Sahara Occidental"),
-    ("WS", "Samoa"),
-    ("AS", "Samoa Americana"),
-    # ("KN", "San Cristóbal y Nieves"),
-    ("SM", "San Marino"),
-    ("PM", "San Pedro y Miquelón"),
-    # ("VC", "San Vicente y las Granadinas"),
-    ("SH", "Santa Elena"),
-    ("LC", "Santa Lucía"),
-    ("ST", "Santo Tomé y Príncipe"),
-    ("SN", "Senegal"),
-    ("CS", "Serbia y Montenegro"),
-    ("SC", "Seychelles"),
-    ("SL", "Sierra Leona"),
-    ("SG", "Singapur"),
-    ("SY", "Siria"),
-    ("SO", "Somalia"),
-    ("LK", "Sri Lanka"),
-    ("SZ", "Suazilandia"),
-    ("ZA", "Sudáfrica"),
-    ("SD", "Sudán"),
-    ("SE", "Suecia"),
-    ("CH", "Suiza"),
-    ("SR", "Surinam"),
-    # ("SJ", "Svalbard y Jan Mayen"),
-    ("TH", "Tailandia"),
-    ("TW", "Taiwán"),
-    ("TZ", "Tanzania"),
-    ("TJ", "Tayikistán"),
-    # ("IO", "Territorio Británico del Océano Índico"),
-    # ("TF", "Territorios Australes Franceses"),
-    ("TL", "Timor Oriental"),
-    ("TG", "Togo"),
-    ("TK", "Tokelau"),
-    ("TO", "Tonga"),
-    ("TT", "Trinidad y Tobago"),
-    ("TN", "Túnez"),
-    ("TM", "Turkmenistán"),
-    ("TR", "Turquía"),
-    ("TV", "Tuvalu"),
-    ("UA", "Ucrania"),
-    ("UG", "Uganda"),
-    ("UY", "Uruguay"),
-    ("UZ", "Uzbekistán"),
-    ("VU", "Vanuatu"),
-    ("VE", "Venezuela"),
-    ("VN", "Vietnam"),
-    ("WF", "Wallis y Futuna"),
-    ("YE", "Yemen"),
-    ("DJ", "Yibuti"),
-    ("ZM", "Zambia"),
-    ("ZW", "Zimbabue"),
-    ]
-
-    numeric_validator = RegexValidator(
-        regex=r'^\d+$',
-        message=f'{XMARK_ICON} Debe contener solo dígitos numéricos.',
-        code='invalid_numeric'
-    )
-
-    text_validator = RegexValidator(
-        regex=r'^[A-Za-záéíóúÁÉÍÓÚñÑ\s]+$',
-        message=f'{XMARK_ICON} Debe contener letras y/o espacios.',
-        code='invalid_text'
-    )
-
-    text_and_numeric_validator = RegexValidator(
-        regex=r'^[A-Za-z0-9\s]+$',
-        message=f'{XMARK_ICON} Sin caracteres especiales.',
-        code='invalid_text'
-    )
-
-    celular_validator = RegexValidator(
-        regex=r'^\d{3}-\d{8}$',
-        message=f'{XMARK_ICON} Número no válido',
-        code='invalid_celular_argentino'
-    )
-
     dni = models.CharField(
         max_length=8,
         help_text='DNI sin puntos. Ej: 12345678',
@@ -329,7 +78,7 @@ class Persona(models.Model):
     objects = models.Manager()
 
     def __str__(self):
-        return f"{self.nombre} {self.apellido} DNI:{self.dni}"
+        return f"{self.dni} {self.nombre} {self.apellido}"
 
     #convierte una persona en profesor
     def convertir_en_profesor(self, profesor):
@@ -369,11 +118,8 @@ class Persona(models.Model):
         assert alumno.persona == self, "alumno equivocado"
         alumno.hasta = fecha
         alumno.save()
-        
         self.es_alumno = False
         self.save()
-
-
 
 class Vinculo (models.Model): 
     CONYUGE=0
