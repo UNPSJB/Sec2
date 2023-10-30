@@ -210,12 +210,6 @@ def afiliado_desafiliar(request, pk):
     messages.success(request, 'f{ICON_CHECK} Se ha desafiliado.')
     return redirect('afiliados:afiliado_listar')
 
-#!ES NECESARIO ESTO??
-#def desafiliar():
- #   pk=kwargs.get('pk')
-  #  persona = Persona.objects.get(pk=pk)
-  #  Persona.desafiliar(Persona)
-
 #---------- HTML PARA FUNCIONALIDADES PENDIENTES
 def funcionalidad_pendiente(request):
     return render(request, 'funcionalidad_pendiente.html')

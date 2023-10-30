@@ -1,24 +1,12 @@
-from cProfile import label
-from dataclasses import fields
-from pyexpat import model
-from tkinter.ttk import Widget
-from django import forms
-from django.forms import ValidationError
 from .models import Afiliado
-from apps.personas.forms import PersonaForm
-from apps.personas.forms import PersonaUpdateForm
 from apps.personas.models import Persona
-from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Layout, Fieldset, Submit, Div, HTML
-from django.forms.models import model_to_dict
 from sec2.utils import FiltrosForm
-from django.core.validators import RegexValidator
-from datetime import date, timedelta
+from datetime import date
 from utils.regularexpressions import *
 from utils.constants import *
+from django import forms
 from django.utils import timezone
 import re
-
 
 ########### Utilizado para el AFILIADO CRATE VIEW ##############################################
 class AfiliadoPersonaForm(forms.ModelForm):
@@ -87,7 +75,6 @@ class AfiliadoUpdateForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super(AfiliadoUpdateForm, self).__init__(*args, **kwargs)
         persona_fields = ['dni', 'cuil', 'nombre', 'apellido', 'fecha_nacimiento', 'celular', 'direccion', 'nacionalidad', 'mail', 'estado_civil']
-        
         for field_name in persona_fields:
             if field_name == 'fecha_nacimiento':
                 self.fields[field_name] = forms.DateField(
@@ -124,54 +111,41 @@ class AfiliadoUpdateForm(forms.ModelForm):
 
     def clean_fecha_nacimiento(self):
         fecha_nacimiento = self.cleaned_data['fecha_nacimiento']
-
         if fecha_nacimiento > timezone.now().date():
             raise forms.ValidationError('La fecha de nacimiento no puede estar en el futuro.')
-
         return fecha_nacimiento
 
     def clean_nombre(self):
         nombre = self.cleaned_data['nombre']
-
         if not nombre.isalpha():
             raise forms.ValidationError('El nombre debe contener solo letras y espacios.')
-
         return nombre
 
     def clean_apellido(self):
         apellido = self.cleaned_data['apellido']
-
         if not apellido.isalpha():
             raise forms.ValidationError('El apellido debe contener solo letras y espacios.')
-
         return apellido
 
     def clean_mail(self):
         mail = self.cleaned_data['mail']
         # Expresión regular para validar una dirección de correo electrónico
         email_pattern = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
-
         if not re.match(email_pattern, mail):
             raise forms.ValidationError('El correo electrónico no es válido.')
-
         return mail
-
 
     def clean_celular(self):
         celular = self.cleaned_data['celular']
-
         if not re.match(r'^\d{3}-\d{8}$', celular):
             raise forms.ValidationError('El número de celular debe tener el formato correcto (###-########).')
-
         return celular
 
     def clean_direccion(self):
         direccion = self.cleaned_data['direccion']
-
         # Agrega tus propias validaciones de dirección si es necesario
         if not direccion.isalnum():
             raise forms.ValidationError('La dirección no es válida.')
-
         return direccion
 
     def save(self, commit=True):
@@ -180,7 +154,6 @@ class AfiliadoUpdateForm(forms.ModelForm):
         # No olvides guardar los campos de Afiliado aquí, si es necesario
         if commit:
             afiliado.save()
-
         return afiliado
 
     def is_valid(self):
@@ -189,95 +162,3 @@ class AfiliadoUpdateForm(forms.ModelForm):
     def clean(self):
         cleaned_data = super(AfiliadoUpdateForm, self).clean()
         return cleaned_data
-
-####-------------------------------------------
-class AfiliadoVer(forms.ModelForm):
-    fechaAfiliacion = forms.DateField()
-
-    class Meta:
-        model = Persona
-        fields = '__all__'
-        exclude = ['familia']
-        widgets = {
-            # 'fecha_nacimiento': forms.DateInput(attrs={'type':'date'}),
-        }
-
-        labels = {
-            'fecha_nacimiento': "Fecha de nacimiento",
-        }
-
-    # ** SE COMENTO ESTA LINEA PARA QUE NO LO CHEQUEARA
-    # def clean_dni(self):
-    #     self.persona = Persona.objects.filter(dni=self.cleaned_data['dni']).first()
-    #     if self.persona is not None and self.persona.es_afiliado:
-    #         raise ValidationError("Ya existe un afiliado activo con ese DNI")
-    #     return self.cleaned_data['dni']
-
-    def is_valid(self) -> bool:
-        valid = super().is_valid()
-        personaForm = PersonaUpdateForm(data=self.cleaned_data)
-        afiliadoForm = AfiliadoUpdateForm(data=self.cleaned_data)
-        return valid and personaForm.is_valid() and afiliadoForm.is_valid()
-
-    def save(self, commit=False):
-        if self.persona is None:
-            personaForm = PersonaUpdateForm(data=self.cleaned_data)
-            self.persona = personaForm.save()
-        afiliadoForm = AfiliadoUpdateForm(data=self.cleaned_data)
-        afiliado = afiliadoForm.save(commit=False)
-        self.persona.afiliar(afiliado, self.cleaned_data['fechaAfiliacion'])
-        return afiliado
-
-    def __init__(self, instance=None, *args, **kwargs):
-        # model_to_dict(instance)
-        if instance is not None:
-            persona = instance.persona
-            afiliado = instance.afiliado
-            datapersona = model_to_dict(persona)
-            dataafiliado = model_to_dict(afiliado)
-           # datapersona.fecha_nacimiento
-            datapersona.update(dataafiliado)
-            kwargs["initial"] = datapersona
-        super().__init__(*args, **kwargs)
-        self.helper = FormHelper()
-        #self.helper.form_action = 'afiliados:index'
-        self.helper.layout = Layout(
-            HTML(
-                f'<h2><center>Datos de {persona.nombre} {persona.apellido}</center></h2>'),
-            Fieldset(
-                "Datos Personales",
-
-                HTML(
-                    '<hr/>'),
-                'dni',
-                'nombre',
-                'apellido',
-                'fecha_nacimiento',
-                'direccion',
-                'mail',
-                'nacionalidad',
-                'estado_civil',
-                'cuil',
-                'celular',
-                'familia',
-
-            ),
-
-            Fieldset(
-                "Datos Laborales",
-                HTML(
-                    '<hr/>'),
-
-                'razon_social',
-                'cuit_empleador',
-                'domicilio_empresa',
-                'localidad_empresa',
-                'fechaIngresoTrabajo',
-                'rama',
-                'sueldo',
-                'horaJornada',
-                'fechaAfiliacion',
-                'categoria_laboral',
-            ),
-
-            Submit('submit', 'Volver', css_class='button white'),)

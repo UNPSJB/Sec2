@@ -1,4 +1,3 @@
-from random import choices
 from django.db import models
 from apps.personas.models import Rol
 from utils.constants import *

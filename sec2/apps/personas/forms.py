@@ -1,14 +1,9 @@
 from apps.personas.models import Persona, Vinculo
-from django.forms import ModelForm, modelformset_factory, BaseModelFormSet, ValidationError
-from django.forms import BaseFormSet
+from django.forms import ModelForm, modelformset_factory, ValidationError, BaseFormSet
 from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Layout, Fieldset, Submit, Div, HTML
-from dataclasses import fields
-from pyexpat import model
-from tkinter.ttk import Widget
+from crispy_forms.layout import Submit
 from django import forms
 from django_select2 import forms as s2forms
-
 
 class PersonaForm(ModelForm):
     class Meta:

@@ -1,10 +1,6 @@
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit
-
 from django.contrib.auth.forms import AuthenticationForm
-
-
-# Login
 
 class SecAuthenticationForm(AuthenticationForm):
     def __init__(self, *args, **kwargs):

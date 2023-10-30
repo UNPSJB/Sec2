@@ -1,12 +1,10 @@
 from django import forms
-from django.db.models import Q, Model, fields
-from django.http import HttpResponse
+from django.db.models import Q, Model
 from decimal import Decimal
 from datetime import date
 from django.views.generic.list import ListView
-import csv
 from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Layout, Fieldset, Submit, HTML
+from crispy_forms.layout import Layout, HTML
 
 def dict_to_query(filtros_dict):
     filtro = Q()

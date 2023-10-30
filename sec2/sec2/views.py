@@ -3,8 +3,6 @@ from django.contrib.auth import logout as django_logout, login as django_login, 
 from django.urls import reverse_lazy
 from .forms import SecAuthenticationForm
 from apps.personas.forms import BuscadorPersonasForm
-from apps.afiliados.models import Afiliado
-from django.shortcuts import render
 
 # @login_required(login_url='/login')
 def login(request):

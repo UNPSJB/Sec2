@@ -1,12 +1,15 @@
-from django.shortcuts import render, redirect
 from django.template import loader
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse_lazy
 from django.http import HttpResponse
 from django.views.generic import DetailView, ListView
 from django.views.generic.edit import CreateView, DeleteView, UpdateView
-from .models import Actividad, Curso, Aula, Profesor, Dictado, Clase, Alumno, Asistencia_alumno,Asistencia_profesor, Pago_alumno, Titular
 from django.contrib import messages
+from .models import Actividad, Curso, Aula, Profesor, Dictado, Clase, Alumno, Asistencia_alumno,Asistencia_profesor, Pago_alumno, Titular
+from django.urls import reverse_lazy
+from sec2.utils import ListFilterView
+from utils.constants import *
+
 from .forms import (
     ActividadForm, 
     CursoForm, 
@@ -27,15 +30,6 @@ from .forms import (
     FormularioPagoAlumno,
     ProfesorDelDictadoFilterForm
     )
-from django.urls import reverse_lazy
-from django import forms
-from django.db.models import Q, Model
-from decimal import Decimal
-from datetime import date
-from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Layout, Fieldset, Submit, HTML
-from sec2.utils import ListFilterView
-from utils.constants import *
 
 ####################### PRINCIPAL #######################
 def index(request):
@@ -253,6 +247,7 @@ class ProfesorUpdateView(UpdateView):
         messages.add_message(self.request, messages.ERROR, form.errors)
         return super().form_invalid(form)
 
+##--------------- DICTADO CREATE --------------------------------
 class DictadoCreateView(CreateView):
     model = Dictado
     form_class = FormularioDictado
@@ -268,7 +263,7 @@ class DictadoCreateView(CreateView):
         context['curso'] = curso
         return context
 
-
+##--------------- DICTADO DETALLE --------------------------------
 class DictadoDetailView (DeleteView):
     model = Dictado
     def get_context_data(self, **kwargs):

@@ -1,8 +1,13 @@
-from django.contrib import admin
 from django.urls import path
-from .views import ActividadCreateView, ActividadDetailView, ActividadListView, ActividadUpdateView, actividad_eliminar
-from .views import CursoCreateView, CursoListView, index, CursoUpdateView, curso_eliminar
-from .views import (AulaListView, 
+from .views import (index, 
+                    CursoCreateView,
+                    CursoListView,
+                    CursoUpdateView, 
+                    curso_eliminar,
+                    ActividadCreateView, 
+                    ActividadDetailView, 
+                    ActividadListView, 
+                    ActividadUpdateView, 
                     AulaCreateView,
                     AulaDetailView,
                     AulaUpdateView,
@@ -20,11 +25,14 @@ from .views import (AulaListView,
                     agregarAlumnoCursoListView,
                     registrarAlumnoADictado,
                     CursoDetailView,
-                    DictadoDetailView
+                    DictadoDetailView,
+                    ClaseCreateView, 
+                    ClaseListView,
+                    AlumnoCreateView,
+                    PagoAlumnoCreateView,
+                    AulaListView,
+                    actividad_eliminar
                     )
-                    
-from .views import ClaseCreateView, ClaseListView
-from .views import AlumnoCreateView,PagoAlumnoCreateView
 
 app_name="cursos"
 

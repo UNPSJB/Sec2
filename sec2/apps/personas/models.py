@@ -1,13 +1,9 @@
-from random import choices
-from tokenize import blank_re
 from django.db import models
-from apps import afiliados, cursos
 from django.core.validators import RegexValidator, EmailValidator
 from django.core.exceptions import ValidationError
 from django.utils import timezone
 from utils.constants import *
 from utils.regularexpressions import *
-
 
 # Define una función para validar si el valor es un número
 def is_numeric(value):
