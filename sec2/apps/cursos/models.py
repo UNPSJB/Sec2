@@ -1,18 +1,8 @@
 from random import choices
-#from socket import TIPC_CONN_TIMEOUT
 from django.db import models
-from django.core.validators import RegexValidator
-# Create your models here.
 from apps.personas.models import Rol
 from utils.constants import *
-
-
-#-------------------- VALIDADOR DE EXPRESIONES REGULARES ----------
-text_validator = RegexValidator(
-        regex=r'^[A-Za-záéíóúÁÉÍÓÚñÑ\s]+$',
-        message=f'{XMARK_ICON} Debe contener letras y/o espacios.',
-        code='invalid_text'
-)
+from utils.regularexpressions import *
 
 # ---------------- ACTIVIDAD ---------------
 class Actividad(models.Model):
@@ -33,10 +23,6 @@ class Actividad(models.Model):
 
 #------------- CURSO --------------------
 class Curso(models.Model):
-    PERIODO_PAGO=(
-        (1, 'mes'),
-        (2, 'clase'),
-    )
     actividad = models.ForeignKey(Actividad,related_name="cursos", on_delete=models.CASCADE)
     costo = models.DecimalField(
         help_text="costo total del curso sin puntos",
@@ -68,6 +54,7 @@ class Curso(models.Model):
                 dictados.append[dictadocurso]
         return dictados
 
+
 class Aula(models.Model):
     denominacion=models.CharField(max_length=50)
     tipo=models.CharField(max_length=50)
@@ -76,8 +63,7 @@ class Aula(models.Model):
     def __str__(self):
         return self.denominacion
 
-
-
+#------------- DICTADO --------------------
 class Dictado(models.Model):
     fecha_inicio = models.DateField()
     fecha_fin = models.DateField()
@@ -88,8 +74,6 @@ class Dictado(models.Model):
     def __str__(self):
         return f"Fecha inicio: {self.fecha_inicio}, Fecha fin: {self.fecha_fin} Aula:{self.aula}"
 
-    
-    
     def asignar_clase(self, dia, hora_inicio, hora_fin):
         clase = Clase()
         clase.hora_inicio = hora_inicio
@@ -97,8 +81,7 @@ class Dictado(models.Model):
         clase.dia = dia
         clase.dictado = self
         clase.save()
-    
-    
+
 class Clase(models.Model):
     DIA=(
         (1, "Lunes"),

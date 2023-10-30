@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect
 from django.template import loader
 from django.shortcuts import get_object_or_404, redirect
+from django.urls import reverse_lazy
 from django.http import HttpResponse
 from django.views.generic import DetailView, ListView
 from django.views.generic.edit import CreateView, DeleteView, UpdateView
@@ -34,6 +35,7 @@ from datetime import date
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Fieldset, Submit, HTML
 from sec2.utils import ListFilterView
+from utils.constants import *
 
 ####################### PRINCIPAL #######################
 def index(request):
@@ -47,19 +49,18 @@ class ActividadCreateView(CreateView):
     form_class = ActividadForm
     template_name = 'actividad/actividad_alta.html'
     success_url = reverse_lazy('cursos:actividad_listado')
-    title = "Formulario Alta de Actividad"  # Agrega un título
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['titulo'] = self.title  # Agrega el título al contexto
+        context['titulo'] ="Formulario Alta de Actividad"
         return context
 
     def form_valid(self, form):
-        messages.success(self.request, '<i class="fa-solid fa-square-check fa-beat-fade"></i> Alta de actividad exitosa!')
+        messages.success(self.request, f'{ICON_CHECK} Alta de actividad exitosa!')
         return super().form_valid(form)
 
     def form_invalid(self, form):
-        messages.warning(self.request, '<i class="fa-solid fa-triangle-exclamation fa-flip"></i> Por favor, corrija los errores a continuación.')
+        messages.warning(self.request, f'{ICON_TRIANGLE} Por favor, corrija los errores a continuación.')
         return super().form_invalid(form)
 
 ## ------------ ACTIVIDAD DETALLE -------------------
@@ -117,8 +118,8 @@ class ActividadListView(ListFilterView):
 class CursoCreateView(CreateView):
     model = Curso
     form_class = CursoForm
-    template_name = 'curso/curso_alta.html'
-    success_url = reverse_lazy('cursos:cursos')
+    template_name = 'curso/curso_form.html'
+    success_url = reverse_lazy('cursos:curso_listado')
     title = "Formulario Alta de Curso"  # Agrega un título
 
     def get_context_data(self, **kwargs):
@@ -127,13 +128,69 @@ class CursoCreateView(CreateView):
         return context
 
     def form_valid(self, form):
-        messages.success(self.request, '<i class="fa-solid fa-square-check fa-beat-fade"></i> Alta de curso exitosa!')
+        messages.success(self.request, f'{ICON_CHECK} Alta de curso exitosa!')
         return super().form_valid(form)
 
     def form_invalid(self, form):
         messages.warning(self.request, '<i class="fa-solid fa-triangle-exclamation fa-flip"></i> Por favor, corrija los errores a continuación.')
         return super().form_invalid(form)
 
+##--------------- CURSO LIST --------------------------------
+class CursoListView(ListFilterView):
+    model = Curso
+    paginate_by = 100
+    filter_class = CursoFilterForm
+    template_name = 'curso/curso_list.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['titulo'] = "Listado de Cursos"
+        return context
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        form = CursoFilterForm(self.request.GET)
+        if form.is_valid():
+            nombre = form.cleaned_data.get('nombre')
+            actividad = form.cleaned_data.get('actividad')
+            periodo_pago = form.cleaned_data.get('periodo_pago')
+            if nombre:
+                queryset = queryset.filter(nombre__icontains=nombre)
+            if actividad:
+                queryset = queryset.filter(actividad=actividad)
+            if periodo_pago:
+                queryset = queryset.filter(periodo_pago=periodo_pago)
+        return queryset
+
+    def get_success_url(self):
+        print(self.object)
+        print(self.request.POST)
+        if self.request.POST['submit'] == "Guardar y Crear Dictado":
+            return reverse_lazy('cursos:dictado_crear', args=[self.object.pk])
+        return super().get_success_url()
+
+##--------------- CURSO UPDATE --------------------------------
+class CursoUpdateView(UpdateView):
+    model = Curso
+    form_class = CursoForm
+    template_name = 'curso/curso_form.html'
+    success_url = reverse_lazy('cursos:cursos')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['titulo'] = "Modificar Curso"  # Agrega el título al contexto
+        return context
+    
+    def form_valid(self, form):
+        curso = form.save()
+        messages.success(self.request, '<i class="fa-solid fa-square-check fa-beat-fade"></i> Curso modificado con éxito')
+        return redirect('cursos:curso')
+
+    def form_invalid(self, form):
+        messages.warning(self.request, '<i class="fa-solid fa-triangle-exclamation fa-flip"></i> Por favor, corrija los errores a continuación.')
+        for field, errors in form.errors.items():
+            print(f"Campo: {field}, Errores: {', '.join(errors)}")
+        return super().form_invalid(form)
 
 class AulaListView(ListView):
     model = Aula
@@ -157,23 +214,6 @@ def aula_eliminar(request, pk):
     a.delete()
     return redirect('cursos:aulas') 
 
-class CursoListView(ListFilterView):
-    model = Curso
-    paginate_by = 100
-    filter_class = CursoFilterForm
-    template_name = 'curso/curso_list.html'
-
-    def get_success_url(self):
-        print(self.object)
-        print(self.request.POST)
-        if self.request.POST['submit'] == "Guardar y Crear Dictado":
-            return reverse_lazy('cursos:dictado_crear', args=[self.object.pk])
-        return super().get_success_url()
-    
-class CursoUpdateView(UpdateView):
-    model = Curso
-    form_class = CursoForm
-    success_url = reverse_lazy('cursos:cursos')
 
 
 def curso_eliminar(request, pk):
@@ -236,7 +276,6 @@ class DictadoCreateView(CreateView):
 
 class DictadoDetailView (DeleteView):
     model = Dictado
-  
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['titulo'] = "Dictado" 
@@ -246,9 +285,11 @@ class DictadoListView(ListFilterView):
     model = Dictado
     paginate_by = 100
     filter_class = DictadoFilterForm
-    
+    template_name = 'dictado/dictado_list.html'
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        context["titulo"] = "Dictados del curso"
         context["curso"] = self.kwargs['pk']
         return context
     
@@ -417,12 +458,10 @@ def registrarAlumnoADictado(request, pk, apk):
 
 class CursoDetailView (DeleteView):
     model = Curso
-  
+    template_name = 'curso/curso_detalle.html'
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['titulo'] = "Curso" 
+        context['titulo'] = "Detalle de Curso" 
         context['dictados'] = Curso.obtenerDictados     
         return context
-   
-    
-   

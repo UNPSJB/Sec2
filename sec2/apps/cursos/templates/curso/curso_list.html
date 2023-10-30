@@ -1,73 +1,47 @@
-{% extends "home_curso.html" %}
+{% extends 'home_curso.html' %}
 {% load crispy_forms_tags %}
+
 {% load static %}
 
-{% block dinamica %}
-<h1 class="titulo">Listado de Cursos</h1>
+{% block extracss_intermedia %}
+  <link href="{% static 'css/listado.css' %}" rel="stylesheet" />
+{% endblock %}
 
-<div class="container-sm">
+{% block dinamica %}
+  <h2 class="titulo">{{ titulo }}</h2>
+  <br />
+  <div class="container-sm">
     <div class="table-responsive">
-        <table class="table table-dark table-striped table-hover" style="background-color:gray;solid; ; border-radius: 10px;">
-          <thead>
-            <tr align= "center">
-                <th scope="col">Nombre</th>
-                <th scope="col">Actividad</th>
-                <th scope="col">Costo</th>
-                <th scope="col">Modulos</th>
-                <th scope="col">Periodo Pago</th>
-                <th scope="col">Ver Curso</th>
-                {% comment %}<th scope="col">Editar</th>
-                <th scope="col">Dictados</th>   
-                <th scope="col">Inscripcion</th>
-                <th scope="col">Eliminar</th> {% endcomment %}              
-              </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    {% for curso in object_list %}
-                    <tr class="bg-transition">
-                        <td>{{ curso.nombre }}</td>
-                        <td>{{ curso.actividad.get_area_display }}</td>
-                        <td>{{ curso.costo }}</td>
-                        <td>{{ curso.modulos }}</td>
-                        <td>{{ curso.get_periodo_pago_display }}</td>
-                        <td><a href="{% url 'cursos:curso' curso.pk %}"class="btn btn-primary">curso</a></td>
-                        {% comment %}<td><a href="{% url 'cursos:curso_editar' obj.pk %}"class="btn btn-primary">Editar</a></td>
-                        <td><a href="{% url 'cursos:ver_dictados' obj.pk %}"class="btn btn-primary">Dictados</a></td>
-                        <td><a href="{% url 'cursos:inscripcion' obj.pk %}"class="btn btn-primary">Inscripción</a></td>
-                        <td>
-                            <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#exampleModal_eliminar">
-                                Eliminar
-                            </button>
-                            <div class="modal fade" id="exampleModal_eliminar" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                                <div class="modal-dialog">
-                                    <div class="modal-content">
-                                        <div class="modal-header">
-                                            <h1 class="modal-title fs-5" id="exampleModalLabel">Modal title</h1>
-                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                        </div> 
-                                        <div class="modal-body">
-                                            <h5>¿Estas seguro que deseas eliminar el curso?</h5>
-                                        </div>
-                                        <div class="modal-footer">
-                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
-                                            <a href="{% url 'cursos:curso_eliminar' obj.pk %}"class="btn btn-danger">Eliminar</a>                                </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>{% endcomment %}
-                        </td>
-                    </tr>
-                    {% endfor %}
-                </tr>
-            </tbody>
-          </table>
-          {% comment %} <a href="{% url 'cursos:actividad_crear' %}"class="btn btn-primary">Nueva Actividad</a> {% endcomment %}
-        </div> 
-        {% comment %} si se borra un div se descoloca todo {% endcomment %}
-        </div>
-      </div>
-        {% block nav_lateral_filtro %}
-        {% include 'nav_filtro.html' %}
-        {% endblock %}
+      <table class="table table-striped table-hover table-secondary">
+        <thead>
+          <tr>
+            <th scope="col" style="border-left-width: 0px; padding-left: 20px;">Nombre</th>
+            <th scope="col">Actividad</th>
+            <th scope="col">Costo</th>
+            <th scope="col">Modulos</th>
+            <th scope="col">Periodo Pago</th>
+            <th scope="col">Ver Curso</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for curso in object_list %}
+            <tr class="bg-transition fila-personalizada">
+              <td style="border-left-width: 0px; padding-left: 20px;">{{ curso.nombre }}</td>
+              <td>{{ curso.actividad.nombre }}</td>
+              <td>{{ curso.costo }}</td>
+              <td>{{ curso.modulos }}</td>
+              <td>{{ curso.get_periodo_pago_display }}</td>
+              <td>
+                <a href="{% url 'cursos:curso' curso.pk %}" class="btn btn-primary btn-detalle"><i class="fa-regular fa-eye"></i> Detalle</a>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+</div>
+</div>
+  {% block nav_lateral_filtro %}
+    {% include 'nav_filtro.html' %}
+  {% endblock %}
 {% endblock %}

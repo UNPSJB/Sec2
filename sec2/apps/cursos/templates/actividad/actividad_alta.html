@@ -3,31 +3,33 @@
 {% load static %}
 
 {% block extracss_intermedia %}
-
+  <link href="{% static 'css/actividad_alta.css' %}" rel="stylesheet" />
 {% endblock %}
 
 {% block dinamica %}
-<div class="container border p-3 mb-3 col-md-7 offset-md-3">
-  <h1 class="titulo">{{ titulo }}</h1>
-  <form method="post">
-    {% csrf_token %}
-    {{ form.nombre.label_tag }} {# Muestra la etiqueta del campo nombre #}
-    <br>
-    {{ form.nombre }} {# Muestra el campo nombre #}
-    <small class="error-text blink-text" style="color: red;">{{ form.nombre.errors.0|safe }} </small>{# Muestra los errores del campo nombre, si los hay #}
-    <br>
-    <small class="text-muted  ">{{ form.nombre.help_text }}</small> {# Muestra el help_text del campo nombre #}
-    <br><br>
-    {{ form.area.label_tag }}
-    <br>
-    {{ form.area }}
-    <br><br>
-    <div class="row row-cols-1 row-cols-sm-1 row-cols-md-2">
-      <div class="col"><a href="{% url 'cursos:index' %}" class="btn btn-secondary">Cancelar</a></div>
-      <div class="col"><button type="submit" class="btn btn-primary">Guardar</button></div>
-    </div>
-  </form>
-</div>
+  <div class="container border p-3 mb-3 col-md-7 offset-md-3">
+    <h2 class="titulo">{{ titulo }}</h2>
+    <form method="post">
+      {% csrf_token %}
+      <div class="form-group">
+        {{ form.nombre.label_tag }}
+        <br>
+        {{ form.nombre }}
+        <small class="error-text" style="color: red;">{{ form.nombre.errors.0 }}</small>
+        {% comment %} <small class="text-muted">{{ form.nombre.help_text }}</small> {% endcomment %}
+      </div>
+      <div class="form-group">{{ form.area.label_tag }}
+        {{ form.area }}</div>
+      <div class="row row-cols-1 row-cols-sm-1 row-cols-md-2">
+        <div class="col">
+          <a href="{% url 'cursos:index' %}" class="btn btn-secondary">Cancelar</a>
+        </div>
+        <div class="col">
+          <button type="submit" class="btn btn-primary">Guardar</button>
+        </div>
+      </div>
+    </form>
+  </div>
 {% endblock %}
 
 {% block extrajs_intermedia %}

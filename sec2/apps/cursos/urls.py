@@ -30,21 +30,27 @@ app_name="cursos"
 
 urlpatterns = [
     path('',index, name="index"),
-    # * ------------------------  ACTIVIDADES  ----------------------------
+    # TODO:------------------------  ACTIVIDADES  ----------------------------
     path('actividades/actividad/crear', ActividadCreateView.as_view(), name="actividad_crear"),
     path('actividades/actividad/<int:pk>', ActividadDetailView.as_view(), name="actividad_detalles"),
     path('actividades/actividad/<int:pk>/editar', ActividadUpdateView.as_view(), name="actividad_actualizar"),
     path('actividades/actividad/<int:pk>/eliminar', actividad_eliminar, name="actividad_eliminar"),
     path('actividades/listado', ActividadListView.as_view(), name="actividad_listado"),
 
-    # * ------------------------  CURSOS ----------------------------------
+    # TODO:------------------------  CURSOS ----------------------------------
     path('curso/crear/', CursoCreateView.as_view(), name="curso_crear"),
     path('cursos', CursoListView.as_view(), name="curso_listado"),
-    
     path('curso/<int:pk>',CursoDetailView.as_view(), name="curso"),
     path('<int:pk>/editar', CursoUpdateView.as_view(), name="curso_editar"),
+    #! FALTA CHECKEAR
     path('<int:pk>/eliminar', curso_eliminar, name="curso_eliminar"),
+
+    # TODO:------------------------  DICTADOS  ----------------------------------
+    path('curso/<int:pk>/dictados', DictadoListView.as_view(), name="dictados_listado"),#se accede desde el curso
     
+    path('<int:pk>/dictado/crear', DictadoCreateView.as_view(), name="dictado_crear"),#se accede desde el curso
+
+
     # * ------------------------  PROFESORES  ----------------------------
     path('profesores/crear', ProfesorCreateView.as_view(), name="profesor_crear"),
     path('profesores', ProfesorListView.as_view(), name="profesores"),
@@ -58,9 +64,7 @@ urlpatterns = [
     path('aulas/<int:pk>/editar', AulaUpdateView.as_view(), name="aula_editar"),
     path('aulas/<int:pk>/eliminar', aula_eliminar, name="aula_eliminar"),
     
-    # * ------------------------  Dictado  ----------------------------------
-    path('dictado/<int:pk>', DictadoListView.as_view(), name="ver_dictados"),#se accede desde el curso
-    path('<int:pk>/dictado/crear', DictadoCreateView.as_view(), name="dictado_crear"),#se accede desde el curso
+
     path('<int:pk>/dictado/alumnos',  AlumnosDelDictadoListView.as_view(), name="alumnos_dictado"),#se accede desde el curso
     path('<int:pk>/dictado/<int:dpk>/alumnos',  agregarAlumnoCursoListView.as_view(), name="alumnos_dictado_curso"),#se accede desde dictado
     path('Dictado/<int:pk>',DictadoDetailView.as_view(), name="dictado"),

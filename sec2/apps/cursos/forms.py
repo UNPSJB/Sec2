@@ -10,6 +10,7 @@ from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Fieldset, Submit, HTML
 from sec2.utils import FiltrosForm
 from crispy_forms.layout import Layout, Fieldset, Submit, Div, HTML
+from utils.constants import *
 
 ##------------------ ACTIVIDAD --------------------
 class ActividadForm(forms.ModelForm):
@@ -88,19 +89,8 @@ class AulaForm(forms.ModelForm):
 class CursoForm(forms.ModelForm):
     class Meta:
         model = Curso
-        fields = [
-                  'actividad',
-                  'costo',
-                  'nombre',
-                  'modulos',
-                  'requiere_certificado',
-                  'dictado',
-                  'periodo_pago',
-                  'descuento'
-                  ]
-        exclude=['dictado']
-    
-    
+        fields = '__all__'
+
     def clean_nombre(self):
         nombre = self.cleaned_data['nombre']
         nombre = nombre.lower()
@@ -109,28 +99,12 @@ class CursoForm(forms.ModelForm):
     def clean(self):
         pass
 
-
     def is_valid(self) -> bool:
         valid = super().is_valid()
         return valid
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.helper = FormHelper()
-        self.helper.layout = Layout(
-            HTML(
-                '<h2><center>Formulario de Cursos</center></h2>'),
-            Fieldset(
-                "Datos",
-                'actividad',
-                'costo',
-                'nombre',
-                'modulos',
-                'requiere_certificado',
-                'periodo_pago',
-                'descuento',            ),
-            Submit('submit', 'Guardar', css_class='button white'),Submit('submit', 'Guardar y Crear Dictado', css_class='button white'))
-
 class ProfesorForm(forms.ModelForm):
     class Meta:
         model = Profesor
@@ -410,7 +384,14 @@ FormularioDictado.base_fields.update(TitularForm.base_fields)
 
 class CursoFilterForm(FiltrosForm):
     nombre = forms.CharField(required=False)
-    actividad = forms.ChoiceField(required=False)
+    # actividad = forms.ChoiceField(required=False)
+    periodo_pago = forms.ChoiceField(
+        label='Periodo de pago',
+        choices=[('', '---------')] + list(PERIODO_PAGO),
+        required=False,
+        widget=forms.Select(attrs={'class': 'form-control'})
+    )
+
 
 
 
@@ -422,8 +403,7 @@ class DictadoFilterForm(FiltrosForm):
     fecha_inicio  = forms.DateField(required=False)
     fecha_fin =forms.DateField(required=False)
 
-    Submit('submit', 'Guardar', css_class='button white')
-                
+
 class ClaseForm(forms.ModelForm):
     class Meta:
         model = Clase

@@ -12,9 +12,12 @@ MSJ_CORRECTION = 'Por favor, corrija los errores a continuación.'
 
 
 ESTADO_CIVIL = (
-        (1, 'soltero'),
-        (2, 'casado'),
-        (3, 'viudo'),
+        (1, 'Soltero'),
+        (2, 'Casado'),
+        (3, 'Divorciado'),
+        (4, 'Viudo/a'),
+        (5, 'Separado/a'),
+        (6, 'Convivencia')
     )
 
 LOCALIDADES_CHUBUT = [
@@ -258,3 +261,8 @@ MAX_LENGTHS = {
         'nacionalidad': 2,
         'mail': 50,
     }
+
+PERIODO_PAGO=(
+        (1, 'mes'),
+        (2, 'clase'),
+    )

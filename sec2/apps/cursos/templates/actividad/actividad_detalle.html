@@ -8,7 +8,7 @@
 {% endblock %}
 
 {% block dinamica %}
-  <h1 class="titulo">Detalles de la Actividad</h1>
+  <h3 class="titulo">Detalles de la Actividad</h3>
   <br />
   <div class="container border rounded border-primary p-3 mb-3 col-md-8 offset-md-2 custom-border">
     <br />
@@ -39,7 +39,6 @@
 
           <!-- Agrega un botón para abrir el modal de confirmación de baja -->
           <button type="button" class="btn btn-danger btn-sm btn-detalle" data-bs-toggle="modal" data-bs-target="#exampleModal_dar_de_baja"><i class="fa-regular fa-circle-down"></i> Dar de Baja</button>
-
           <!-- Incluye el contenido del modal de confirmación de baja -->
           {% include 'actividad/modal_confirm_baja.html' %}
         </div>

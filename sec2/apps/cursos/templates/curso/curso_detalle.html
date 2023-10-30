@@ -1,0 +1,102 @@
+{% extends 'home_curso.html' %}
+{% load crispy_forms_tags %}
+{% load static %}
+
+{% block extracss_intermedia %}
+  <link href="{% static 'css/curso_detalle.css' %}" rel="stylesheet" />
+{% endblock %}
+
+{% block dinamica %}
+  <div class="container-sm">
+    <h2 class="titulo">Curso {{ curso.nombre }}</h2>
+    <br />
+    <div class="perfil">
+      <img src="{% static 'images/curso.jpg' %}" alt="Imagen de perfil" class="img-thumbnail" />
+      <div class="informacion-curso">
+        <p>
+          <strong>Costo:</strong> ${{ curso.costo }}
+        </p>
+        <p>
+          <strong>Módulos:</strong> {{ curso.modulos }}
+        </p>
+        <p>
+          <strong>Período de Pago:</strong> {{ curso.get_periodo_pago_display }}
+        </p>
+        <p>
+          <strong>Actividad:</strong> {{ curso.actividad.get_area_display }}
+        </p>
+        {% if curso.requiere_certificado %}
+          <p>
+            <strong>Requiere Certificado:</strong> Sí requiere
+          </p>
+        {% else %}
+          <p>
+            <strong>Requiere Certificado:</strong> No requiere
+          </p>
+        {% endif %}
+      </div>
+    </div>
+    <br />
+    <div class="acciones">
+      <a href="{% url 'cursos:curso_editar' curso.pk %}" class="btn btn-primary">Editar</a>
+      <a href="{% url 'cursos:dictados_listado' curso.pk %}" class="btn btn-primary" onclick="window.open('{% url 'cursos:dictados_listado' curso.pk %}', 'NuevaVentana', 'width=800, height=600'); return false;">Dictados</a>
+      <a href="{% url 'cursos:inscripcion' curso.pk %}" class="btn btn-primary">Inscripción</a>
+
+      <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#exampleModal_eliminar">Eliminar</button>
+      <div class="modal fade" id="exampleModal_eliminar" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h1 class="modal-title fs-5" id="exampleModalLabel">ELIMINAR CURSO</h1>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              <h5>¿Estás seguro que deseas eliminar el curso?</h5>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+              <a href="{% url 'cursos:curso_eliminar' curso.pk %}" class="btn btn-danger">Eliminar</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <table class="table table-dark table-striped">
+      <thead>
+        <tr>
+          <th scope="col">Fecha de Inicio</th>
+          <th scope="col">Fecha de Fin</th>
+          <th scope="col">Aula</th>
+          <th scope="col">Crear Clases</th>
+          <th scope="col">Detalle de Clases</th>
+          <th scope="col">Agregar Alumno</th>
+          <th scope="col">Marcar Asistencia</th>
+          <th scope="col">Titular</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        {% for dictado in object_list %}
+          <tr class="bg-transition">
+            <td>{{ dictado.fecha_inicio }}</td>
+            <td>{{ dictado.fecha_fin }}</td>
+            <td>{{ dictado.aula.denominacion }}</td>
+            <td>
+              <a href="{% url 'cursos:clase_crear' dictado.pk %}" class="btn btn-primary">Nueva Clase</a>
+            </td>
+            <td>
+              <a href="{% url 'cursos:ver_clases' dictado.pk %}" class="btn btn-primary">Ver Clases</a>
+            </td>
+            <td>
+              <a href="{% url 'cursos:alumnos_dictado' dictado.curso.pk %}" class="btn btn-primary">Agregar Alumno</a>
+            </td>
+            <td>
+              <a href="{% url 'cursos:alumnos_dictado_curso' dictado.curso.pk dictado.pk %}" class="btn btn-primary">Asistencia</a>
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+{% endblock %}
