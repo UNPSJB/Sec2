@@ -108,7 +108,6 @@ class Alumno(Rol):
         dictado = Dictado.objects.get(pk=pk)
         self.dictado=dictado
         self.save()
-        print("dictado!", self.dictado)
         return dictado
     
     def esta_inscripto(self):

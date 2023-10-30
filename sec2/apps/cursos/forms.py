@@ -159,13 +159,9 @@ class FormularioProfesor(forms.ModelForm):
         valid = super().is_valid()
         personaForm = PersonaForm(data=self.cleaned_data)
         profesorForm = ProfesorForm(data=self.cleaned_data)
-        print(valid)
-        print(personaForm.is_valid())
-        print(profesorForm.is_valid())
         return valid and personaForm.is_valid() and profesorForm.is_valid()
     
     def save(self, commit=False):
-        print(self.cleaned_data)
         if self.persona is None:
             personaForm = PersonaForm(data=self.cleaned_data)
             self.persona = personaForm.save()
@@ -256,16 +252,12 @@ class FormularioProfesorUpdateFrom(forms.Form):
       ##  valid = super().is_valid()
       ##  personaForm = PersonaForm(data=self.cleaned_data)
       ##  profesorForm = ProfesorForm(data=self.cleaned_data)
-      ##  print(valid)
-      ##  print(personaForm.is_valid())
-      ##  print(profesorForm.is_valid())
       ##  return valid and personaForm.is_valid() and profesorForm.is_valid()
     
     def save(self, commit=False):
         self.personaForm.save()
         return self.profesorForm.save()
         
-        ##print(self.cleaned_data)
        ## if self.persona is None:
         ##    personaForm = PersonaForm(data=self.cleaned_data)
          ##   self.persona = personaForm.save()
@@ -358,7 +350,6 @@ class FormularioDictado(forms.Form):
             self.dictadoForm = DictadoForm(initial=initial, instance=instance, *args, **kwargs)
             self.titularForm = TitularForm(initial=initial, *args, **kwargs)
             self.dictadoForm.fields['precio'].initial = curso.costo
-            print(curso)
             super().__init__(initial=initial,*args, **kwargs)
             self.helper = FormHelper()
             self.helper.layout = Layout(
@@ -415,8 +406,6 @@ class ClaseForm(forms.ModelForm):
                 }
 
     def save(self, dictado, commit=False):
-        # print('aca estoy')
-        # print(self.cleaned_data)
         hora_inicio= self.cleaned_data["hora_inicio"]
         hora_fin= self.cleaned_data["hora_fin"]
         dia = self.cleaned_data["dia"]
@@ -465,8 +454,6 @@ class FormularioAlumno (forms.ModelForm):
 
     
     def save(self, curso, commit=False):
-        # print(self.cleaned_data)
-        
         try:
             persona = Persona.objects.get(dni=self.cleaned_data['dni'])
         except Persona.DoesNotExist:
@@ -480,7 +467,6 @@ class FormularioAlumno (forms.ModelForm):
         alumno = alumnoForm.save(commit=False)
         # curso = self.cleaned_data[""]
         persona.inscribir(alumno, curso)
-        print("estoy aca")
         return alumno
         
         
@@ -555,7 +541,6 @@ class FormularioPagoAlumno(forms.Form):
             self.alumnoForm = AlumnoForm(initial=initial, instance=instance, *args, **kwargs)
             self.pagoAlumnoForm = PagoAlumnoForms(initial=initial, *args, **kwargs)
             #self.dictadoForm.fields['precio'].initial = curso.costo
-            #print(curso)
             super().__init__(initial=initial,*args, **kwargs)
             self.helper = FormHelper()
             self.helper.layout = Layout(

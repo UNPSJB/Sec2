@@ -69,7 +69,6 @@ class AfiliadoCreateView(CreateView):
                 domicilio_empresa=form.cleaned_data["domicilio_empresa"],
                 horaJornada=form.cleaned_data["horaJornada"],
             )
-            print("VOY A ENTRAR EN EL SAVE")
             afiliado.save()
 
             messages.success(self.request, f'{ICON_CHECK} Alta de afiliado exitosa!')

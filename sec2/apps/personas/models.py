@@ -89,7 +89,6 @@ class Persona(models.Model):
         self.save()
 
     def afiliar(self, afiliado, fecha):
-        print("ESTOY EN AFILIAR DE Persona")
         assert not self.es_afiliado, "ya soy afiliado" 
         afiliado.desde = fecha
         afiliado.persona = self

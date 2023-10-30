@@ -31,7 +31,6 @@ def FamiliaCreateView1(request, pk):
                 v.save()
             for d in formset.deleted_objects:
                 d.delete()
-        print(formset.errors)
     formset = VinculoFormSet(queryset=persona.vinculados.all())
     return render(request, 'personas/vinculo_form.html', {
         'formset': formset, 'persona': persona})

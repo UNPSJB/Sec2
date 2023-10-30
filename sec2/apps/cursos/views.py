@@ -163,8 +163,6 @@ class CursoListView(ListFilterView):
         return queryset
 
     def get_success_url(self):
-        print(self.object)
-        print(self.request.POST)
         if self.request.POST['submit'] == "Guardar y Crear Dictado":
             return reverse_lazy('cursos:dictado_crear', args=[self.object.pk])
         return super().get_success_url()
@@ -252,8 +250,6 @@ class ProfesorUpdateView(UpdateView):
         return super().form_valid(form)
 
     def form_invalid(self, form):
-        print(form.errors)
-        print(form.non_field_errors())
         messages.add_message(self.request, messages.ERROR, form.errors)
         return super().form_invalid(form)
 
@@ -269,7 +265,6 @@ class DictadoCreateView(CreateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         curso = Curso.objects.get(id = self.kwargs.get('pk'))
-        print(curso)
         context['curso'] = curso
         return context
 
@@ -294,7 +289,6 @@ class DictadoListView(ListFilterView):
         return context
     
     def get_queryset(self):
-        print(self.args, self.kwargs)
         return super().get_queryset().filter(curso__pk=self.kwargs['pk'])
     
 class AlumnosListView(ListFilterView):
@@ -308,7 +302,6 @@ class AlumnosListView(ListFilterView):
         return context
     
     def get_queryset(self):
-        print(self.args, self.kwargs)
         return super().get_queryset().filter(curso__pk=self.kwargs['pk'])
 
  
@@ -351,26 +344,17 @@ class AlumnoCreateView(CreateView):
     def post(self, *args, **kwargs):
         form = self.get_form()
         curso = Curso.objects.get(pk=self.kwargs.get("pk"))
-        #print("------------------------", form)
         if form.is_valid():
             
             form.save(curso)
         else: 
-            print("--------------ERROR----------------", )
-            print(form.errors)
-        return redirect(self.success_url)
+            return redirect(self.success_url)
 
     def alumno_inscribir(request, pk):
          a = Alumno.objects.get(pk=pk)
-         print("Imprimiendo")
-         print(request)
-         print(pk)  
          return redirect('cursos:ver_inscriptos')
     # def alumno_inscribir(request, pk):
     #     a = Alumno.objects.get(pk=pk)
-    #     print("Imprimiendo")
-    #     # print(request)
-    #     # print(pk)  
     #     return redirect('cursos:ver_inscriptos')
 
     # def get_initial(self,*args, **kwargs):
@@ -413,7 +397,6 @@ class AlumnosDelDictadoListView(ListFilterView):
         return super().get_queryset().filter(curso_id=self.kwargs['pk'])
     
 def registrarAsistenciaAlumno(request, pk, apk):
-    print("Estoy aca asistencia!")
     asistencia_alumno = Asistencia_alumno(dictado_id=pk, alumno_id=apk)
     asistencia_alumno.save()
     dictado = Dictado.objects.get(pk=pk)
@@ -436,7 +419,6 @@ class ProfesorDelDictadoListView(ListFilterView):
     filter_class = ProfesorDelDictadoFilterForm
     
     def get_queryset(self):
-          print(self.args, self.kwargs)
           titular = super().get_queryset().filter(dictado__pk=self.kwargs['pk'])
           
           return titular
@@ -447,11 +429,9 @@ class agregarAlumnoCursoListView(ListFilterView):
     filter_class = AlumnosDelDictadoFilterForm
 
     def get_queryset(self):
-          print(self.args, self.kwargs)
           return super().get_queryset().filter(dictado__pk=self.kwargs['pk'])
 
 def registrarAlumnoADictado(request, pk, apk):
-    print("hola")
     alumno = Alumno.objects.get(pk=apk)
     dictado = alumno.agregateDictado(pk)
     return redirect('cursos:alumnos_dictado', dictado.pk)
