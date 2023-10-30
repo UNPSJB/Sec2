@@ -8,6 +8,8 @@ from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Fieldset, Submit, HTML
 from sec2.utils import FiltrosForm
 from utils.constants import *
+from crispy_forms.layout import Layout, Fieldset, Div, HTML
+
 
 ##------------------ ACTIVIDAD --------------------
 class ActividadForm(forms.ModelForm):
@@ -342,30 +344,33 @@ class FormularioDictado(forms.Form):
         titular.save()
         return dictado
 
-    def __init__(self, initial=None, instance=None, *args, **kwargs):
-            curso = initial.get('curso')
-            self.dictadoForm = DictadoForm(initial=initial, instance=instance, *args, **kwargs)
-            self.titularForm = TitularForm(initial=initial, *args, **kwargs)
-            self.dictadoForm.fields['precio'].initial = curso.costo
-            super().__init__(initial=initial,*args, **kwargs)
-            self.helper = FormHelper()
-            self.helper.layout = Layout(
-                HTML(
-                    f'<h2><center>Alta de dictado para el curso {curso.nombre} </center></h2>'),
-                Fieldset(
-                    "Datos",
-                    'fecha_inicio',
-                    'fecha_fin',
-                    'aula',
-                    'precio',
-                ),
-                
-                Fieldset(
-                    "Titularidad",
-                    'profesor',
-                ),
-                Submit('submit', 'Guardar', css_class='button white'),)
 
+    def __init__(self, initial=None, instance=None, *args, **kwargs):
+        curso = initial.get('curso')
+        self.dictadoForm = DictadoForm(initial=initial, instance=instance, *args, **kwargs)
+        self.titularForm = TitularForm(initial=initial, *args, **kwargs)
+        self.dictadoForm.fields['precio'].initial = curso.costo
+        super().__init__(initial=initial, *args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.layout = Layout(
+            Fieldset(
+                "Datos",
+                'fecha_inicio',
+                'fecha_fin',
+                'aula',
+                'precio',
+            ),
+            Fieldset(
+                "Titularidad",
+                'profesor',
+            ),
+            Div(  # Agrega un div aquí
+                Div('campo_1', css_class='col-md-3'),  # Ajusta el ancho a col-md-3
+                Div('campo_2', css_class='col-md-3'),  # Ajusta el ancho a col-md-3
+                css_class='row'
+            ),
+            Submit('submit', 'Guardar', css_class='button white'),
+        )
 FormularioDictado.base_fields.update(DictadoForm.base_fields)
 FormularioDictado.base_fields.update(TitularForm.base_fields)
 

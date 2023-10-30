@@ -55,7 +55,6 @@ urlpatterns = [
 
     # TODO:------------------------  DICTADOS  ----------------------------------
     path('curso/<int:pk>/dictados', DictadoListView.as_view(), name="dictados_listado"),#se accede desde el curso
-    
     path('<int:pk>/dictado/crear', DictadoCreateView.as_view(), name="dictado_crear"),#se accede desde el curso
 
 

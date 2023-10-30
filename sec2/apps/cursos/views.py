@@ -251,6 +251,7 @@ class ProfesorUpdateView(UpdateView):
 class DictadoCreateView(CreateView):
     model = Dictado
     form_class = FormularioDictado
+    template_name = 'dictado/dictado_form.html'
     success_url = reverse_lazy('cursos:cursos')
 
     def get_initial(self,*args, **kwargs):
@@ -261,6 +262,7 @@ class DictadoCreateView(CreateView):
         context = super().get_context_data(**kwargs)
         curso = Curso.objects.get(id = self.kwargs.get('pk'))
         context['curso'] = curso
+        context['titulo'] = f"Alta de dictado para el curso {curso.nombre}"
         return context
 
 ##--------------- DICTADO DETALLE --------------------------------
