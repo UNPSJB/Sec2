@@ -33,8 +33,10 @@ class Curso(models.Model):
         validators=[text_validator],  # Añade tu validador personalizado si es necesario
         help_text="Solo se permiten letras y espacios."
     )
+    # 1 modulo es igual a un tiempo que equivale la duración de cada clase
     modulos= models.PositiveIntegerField(help_text="cantidad de horas del curso")
-    requiere_certificado = models.BooleanField()
+    # se le dejara a los cursos de gimnasio obligatorio certificado medico
+    certificado_medico = models.BooleanField()
     periodo_pago=models.PositiveSmallIntegerField(choices=PERIODO_PAGO)
     descuento=models.PositiveIntegerField(help_text="porcentaje de descuento")
 
@@ -53,23 +55,22 @@ class Curso(models.Model):
                 dictados.append[dictadocurso]
         return dictados
 
-
-class Aula(models.Model):
-    denominacion=models.CharField(max_length=50)
-    tipo=models.CharField(max_length=50)
-    cupo=models.PositiveIntegerField(help_text="capacidad maxima del aula")
-
-    def __str__(self):
-        return self.denominacion
-
 #------------- DICTADO --------------------
 class Dictado(models.Model):
-    fecha_inicio = models.DateField()
-    fecha_fin = models.DateField()
-    aula=models.ForeignKey(Aula, related_name="dictado", on_delete=models.CASCADE)
+    # las fechas se eliminaron ya que se modifico el modelo
+    # fecha_inicio = models.DateField()
+    # fecha_fin = models.DateField()
+    cantidad_clase= models.PositiveIntegerField(help_text="Cantidad total de clase")
+    minimo_alumnos= models.PositiveIntegerField(help_text="Minimo de alumnos")
+    max_alumnos= models.PositiveIntegerField(help_text="Minimo de alumnos")
+    nombre = models.CharField(
+        max_length=50,
+        validators=[text_validator],  # Añade tu validador personalizado si es necesario
+        help_text="Solo se permiten letras y espacios."
+    )    
     curso=models.ForeignKey(Curso, related_name="curso", on_delete=models.CASCADE)
-    precio = models.DecimalField(help_text="costo", max_digits=10, decimal_places=2)
-    
+    # Se elimina porque el precio es el mismo que el curso
+    # precio = models.DecimalField(help_text="costo", max_digits=10, decimal_places=2)    
     def __str__(self):
         return f"Fecha inicio: {self.fecha_inicio}, Fecha fin: {self.fecha_fin} Aula:{self.aula}"
 
@@ -81,21 +82,22 @@ class Dictado(models.Model):
         clase.dictado = self
         clase.save()
 
+class Aula(models.Model):
+    #denominacion es el nombre del aula, ej: Aula 22, laboratorio1
+    denominacion=models.CharField(max_length=50)
+    tipo=models.CharField(max_length=50)
+    cupo=models.PositiveIntegerField(help_text="capacidad maxima del aula")
+    def __str__(self):
+        return self.denominacion
+
 class Clase(models.Model):
-    DIA=(
-        (1, "Lunes"),
-        (2, "Martes"),
-        (3, "Miercoles"),
-        (4, "Jueves"),
-        (5, "Viernes"),
-        (6, "Sabado"),
-        (7, "Domingo"),
-    )
     dictado = models.ForeignKey(Dictado, related_name="clase", null=False, on_delete=models.CASCADE)
-    dia=models.PositiveSmallIntegerField(choices=DIA)
-    hora_inicio=models.TimeField()
-    hora_fin=models.TimeField()
-    
+    aula=models.ForeignKey(Aula, related_name="aula", on_delete=models.CASCADE)
+
+    # se incorporo la fecha, reemplazando los días
+    fecha = models.DateField()
+    hora_inicio=models.TimeField() 
+    hora_fin=models.TimeField() # SE calcula desde la hora inicio más el modulo del curso
 
 
 class Alumno(Rol):
