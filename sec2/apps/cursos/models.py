@@ -98,7 +98,7 @@ class Clase(models.Model):
     fecha = models.DateField()
     hora_inicio=models.TimeField() 
     hora_fin=models.TimeField() # SE calcula desde la hora inicio más el modulo del curso
-
+    dia = models.CharField(max_length=255)
 
 class Alumno(Rol):
     TIPO = 3

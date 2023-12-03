@@ -316,7 +316,8 @@ FormularioProfesorUpdateFrom.base_fields.update(ProfesorUpdateForm.base_fields)
 class DictadoForm(forms.ModelForm):
     class Meta:
         model = Dictado
-        fields = ['fecha_inicio','fecha_fin', 'aula', 'precio']
+        fields = '__all__'
+        # fields = ['fecha_inicio','fecha_fin', 'aula', 'precio']
         widgets ={   
             'fecha_inicio': forms.DateInput(attrs={'type':'date'}),
             'fecha_fin': forms.DateInput(attrs={'type':'date'}),
