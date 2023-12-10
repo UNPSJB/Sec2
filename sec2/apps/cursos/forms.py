@@ -321,9 +321,8 @@ class DictadoForm(forms.ModelForm):
         widgets ={   
             'fecha_inicio': forms.DateInput(attrs={'type':'date'}),
             'fecha_fin': forms.DateInput(attrs={'type':'date'}),
-                }
+            }
 
-    
 class TitularForm(forms.ModelForm):
     class Meta:
         model = Titular
@@ -337,6 +336,8 @@ class FormularioDictado(forms.Form):
 
     def save(self, commit=False):
         curso = self.initial.get("curso")
+        print("CURSOOO--")
+        print(curso)
         dictado = self.dictadoForm.save(commit=False)
         titular = self.titularForm.save(commit=False)
         dictado = curso.asignar_dictado(dictado)
@@ -350,25 +351,20 @@ class FormularioDictado(forms.Form):
         curso = initial.get('curso')
         self.dictadoForm = DictadoForm(initial=initial, instance=instance, *args, **kwargs)
         self.titularForm = TitularForm(initial=initial, *args, **kwargs)
-        self.dictadoForm.fields['precio'].initial = curso.costo
+        # self.dictadoForm.fields['precio'].initial = curso.costo
+        # del self.dictadoForm.fields['curso']
         super().__init__(initial=initial, *args, **kwargs)
         self.helper = FormHelper()
         self.helper.layout = Layout(
             Fieldset(
                 "Datos",
-                'fecha_inicio',
-                'fecha_fin',
-                'aula',
-                'precio',
+                'cantidad_clase',
+                'minimo_alumnos',
+                'max_alumnos',
             ),
             Fieldset(
                 "Titularidad",
                 'profesor',
-            ),
-            Div(  # Agrega un div aquí
-                Div('campo_1', css_class='col-md-3'),  # Ajusta el ancho a col-md-3
-                Div('campo_2', css_class='col-md-3'),  # Ajusta el ancho a col-md-3
-                css_class='row'
             ),
             Submit('submit', 'Guardar', css_class='button white'),
         )

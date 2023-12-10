@@ -10,50 +10,24 @@
 
 {% block container %}
   <br />
-  <h2 class="titulo">{{ titulo }}</h2>
+  <h2 class="titulo">{{ titulo }} {{ curso.nombre }}</h2>
   <br />
   <div class="container-sm">
     <div class="table-responsive">
       <table class="table table-striped table-hover table-secondary">
         <thead>
           <tr>
-            <th scope="col" style="border-left-width: 0px; padding-left: 20px;">Fecha de inicio</th>
-            <th scope="col">Fecha fin</th>
-            <th scope="col">Aula</th>
+            <th scope="col" style="border-left-width: 0px; padding-left: 20px;">N° Clases</th>
             <th scope="col"></th>
-            {% comment %}
-            <th scope="col">crear Clases</th>
-            <th scope="col">Detalle de clases</th>
-            <th scope="col">agregar alumno</th>
-            <th scope="col">Marcar asistencia</th>
-            <th scope="col">Titular</th>
-            {% endcomment %}
           </tr>
         </thead>
         <tbody>
           {% for dictado in object_list %}
             <tr class="bg-transition fila-personalizada">
-              <td style="border-left-width: 0px; padding-left: 20px;">{{ dictado.fecha_inicio }}</td>
-              <td>{{ dictado.fecha_fin }}</td>
-              <td>{{ dictado.aula.denominacion }}</td>
+              <td style="border-left-width: 0px; padding-left: 20px;">{{ dictado.cantidad_clase }}</td>
               <td>
                 <a href="{% url 'cursos:dictado' dictado.pk %}" class="btn btn-primary btn-detalle"><i class="fa-regular fa-eye"></i> Detalle</a>
               </td>
-              {% comment %} <td>
-                <a href="{% url 'cursos:curso_editar' obj.pk %}" class="btn btn-primary">Editar</a>
-              </td>
-              <td>
-                <a href="{% url 'cursos:clase_crear' dictado.pk %}" class="btn btn-primary">Nueva clase</a>
-              </td>
-              <td>
-                <a href="{% url 'cursos:ver_clases' dictado.pk %}" class="btn btn-primary">Ver clases</a>
-              </td>
-              <td>
-                <a href="{% url 'cursos:alumnos_dictado' dictado.curso.pk %}" class="btn btn-primary">agregar</a>
-              </td>
-              <td>
-                <a href="{% url 'cursos:alumnos_dictado_curso' dictado.curso.pk dictado.pk %}" class="btn btn-primary">Asistencia</a>
-              </td> {% endcomment %}
             </tr>
           {% endfor %}
         </tbody>

@@ -1,28 +1,30 @@
-{% extends "home_curso.html" %}
+{% extends 'base.html' %}
 {% load crispy_forms_tags %}
+
 {% load static %}
 
-{% block dinamica %}
+{% block container %}
+<br>
+  <h1 class="titulo">Dictado {{ dictado.curso.nombre }}</h1>
+  <br /><br />
+  <div class="container-sm">
+    <p>Cantidad de clases: {{ dictado.cantidad_clase }}</p>
+    <p>Min Alumnos: {{ dictado.minimo_alumnos }}</p>
+    <p>Max Alumnos: {{ dictado.max_alumnos }}</p>
+  </div>
 
-<h1><center>Dictado {{dictado.curso.nombre}}</center></h1>
-
-<div class="container-sm">
-    <h1> Datos del Dictado</h1>
-    <p>Fecha Inicio: {{ dictado.fecha_inicio }}</p>
-    <p>Fecha Fin: {{ dictado.fecha_fin }}</p>
-    <p>Aula N°: {{ dictado.aula }}</p>
-    <p>Precio: ${{ dictado.precio }}</p>
-</div>
-<div class="container-sm">
-    <td><a href="{% url 'cursos:clase_crear' dictado.pk %}"class="btn btn-primary">Nueva clase</a></td>                
-    <td><a href="{% url 'cursos:ver_clases' dictado.pk %}"class="btn btn-primary">Ver clases</a></td> 
-    <td><a href="{% url 'cursos:alumnos_dictado' dictado.curso.pk  %}"class="btn btn-primary">agregar</a></td>      
-    <td><a href="{% url 'cursos:alumnos_dictado_curso' dictado.curso.pk dictado.pk  %}"class="btn btn-primary">Asistencia</a></td> 
-</div>
-
-{% endblock %}
-
-{% block 1 %}
-    
-   
+  <div class="container-sm">
+    <td>
+      <a href="{% url 'cursos:clase_crear' dictado.pk %}" class="btn btn-primary">Generar clase</a>
+    </td>
+    <td>
+      <a href="{% url 'cursos:ver_clases' dictado.pk %}" class="btn btn-primary">Ver clases</a>
+    </td>
+    <td>
+      <a href="{% url 'cursos:alumnos_dictado' dictado.curso.pk %}" class="btn btn-primary">agregar</a>
+    </td>
+    <td>
+      <a href="{% url 'cursos:alumnos_dictado_curso' dictado.curso.pk dictado.pk %}" class="btn btn-primary">Asistencia</a>
+    </td>
+  </div>
 {% endblock %}

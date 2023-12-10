@@ -9,6 +9,8 @@ from .models import Actividad, Curso, Aula, Profesor, Dictado, Clase, Alumno, As
 from django.urls import reverse_lazy
 from sec2.utils import ListFilterView
 from utils.constants import *
+from django.shortcuts import render
+from django.urls import reverse
 
 from .forms import (
     ActividadForm, 
@@ -119,7 +121,21 @@ class CursoCreateView(CreateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['titulo'] = self.title  # Agrega el título al contexto
+        # Verificar si hay alguna actividad
+        tiene_actividad = Actividad.objects.exists()
+        context['tiene_actividad'] = tiene_actividad
         return context
+    
+    def get(self, request, *args, **kwargs):
+        # Verificar si hay alguna actividad antes de renderizar el formulario
+        tiene_actividad = Actividad.objects.exists()
+        
+        if tiene_actividad:
+            # return render(request, 'curso/curso_form.html', {'titulo': 'te falta calle'})
+            return super().get(request, *args, **kwargs)
+        else:
+            # Renderizar un mensaje indicando que falta crear una actividad
+            return render(request, 'curso/falta_actividad.html', {'titulo': 'Te falta menos calle'})
 
     def form_valid(self, form):
         messages.success(self.request, f'{ICON_CHECK} Alta de curso exitosa!')
@@ -184,6 +200,9 @@ class CursoUpdateView(UpdateView):
             print(f"Campo: {field}, Errores: {', '.join(errors)}")
         return super().form_invalid(form)
 
+
+####################### SECCION DE ______ #######################
+
 class AulaListView(ListView):
     model = Aula
     paginate_by = 100
@@ -213,6 +232,7 @@ def curso_eliminar(request, pk):
     a.delete()
     return redirect('cursos:cursos')
 
+####################### SECCION DE PROFESOR #######################
 class ProfesorCreateView(CreateView):
     model = Profesor
     form_class = FormularioProfesor
@@ -227,7 +247,6 @@ class ProfesorListView(ListFilterView):
         context = super().get_context_data(**kwargs)
         context['titulo'] = "Listado de profesores"
         return context
-
 
 class ProfesorUpdateView(UpdateView):
     model = Profesor
@@ -247,12 +266,14 @@ class ProfesorUpdateView(UpdateView):
         messages.add_message(self.request, messages.ERROR, form.errors)
         return super().form_invalid(form)
 
-##--------------- DICTADO CREATE --------------------------------
+
+####################### SECCION DE DICTADO #######################
+##--------------- CREACION DE DICTADO --------------------------------
 class DictadoCreateView(CreateView):
     model = Dictado
     form_class = FormularioDictado
     template_name = 'dictado/dictado_form.html'
-    success_url = reverse_lazy('cursos:cursos')
+    # success_url = reverse_lazy('cursos:dictados_listado')
 
     def get_initial(self,*args, **kwargs):
         curso= Curso.objects.get(pk=self.kwargs.get("pk"))
@@ -263,7 +284,22 @@ class DictadoCreateView(CreateView):
         curso = Curso.objects.get(id = self.kwargs.get('pk'))
         context['curso'] = curso
         context['titulo'] = f"Alta de dictado para el curso {curso.nombre}"
+        tiene_profesor = Profesor.objects.exists()
+        context['tiene_profesor'] = tiene_profesor
         return context
+
+    def get(self, request, *args, **kwargs):
+        # Verificar si hay alguna actividad antes de renderizar el formulario
+        if Profesor.objects.exists():
+            return super().get(request, *args, **kwargs)
+        else:
+            return render(request, 'dictado/falta_profesor.html', {'titulo': 'Te falta menos calle'})
+
+    def get_success_url(self):
+        # Obtiene el pk del curso desde los kwargs de la vista
+        pk_curso = self.kwargs.get('pk', None)
+        # Construye la URL inversa con el pk del curso
+        return reverse('cursos:dictados_listado', kwargs={'pk': pk_curso})
 
 ##--------------- DICTADO DETALLE --------------------------------
 class DictadoDetailView (DeleteView):
@@ -273,6 +309,7 @@ class DictadoDetailView (DeleteView):
         context['titulo'] = "Dictado" 
         return context
 
+##--------------- DICTADO LIST VIEW --------------------------------
 class DictadoListView(ListFilterView):
     model = Dictado
     paginate_by = 100
@@ -281,13 +318,52 @@ class DictadoListView(ListFilterView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["titulo"] = "Dictados del curso"
+        curso = Curso.objects.get(id = self.kwargs.get('pk'))
+        context['titulo'] = f"Listado de dictado para {curso.nombre}"
         context["curso"] = self.kwargs['pk']
         return context
     
     def get_queryset(self):
         return super().get_queryset().filter(curso__pk=self.kwargs['pk'])
-    
+
+
+####################### SECCION DE CLASE #######################
+##--------------- CREACION DE CLASE --------------------------------
+class ClaseCreateView(CreateView):
+    model = Clase
+    form_class = ClaseForm
+    template_name = 'clase/clase_form.html'
+
+    def get_initial(self,*args, **kwargs):
+        dictado= Dictado.objects.get(pk=self.kwargs.get("pk"))
+        return {'dictado':dictado}
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        dictado = Dictado.objects.get(id = self.kwargs.get('pk'))
+        context['dictado'] = dictado
+        context['titulo'] = f"Alta de clase para el dictado {dictado.cantidad_clase}"
+        tiene_aula = Aula.objects.exists()
+        context['tiene_aula'] = tiene_aula
+        return context
+
+    def get(self, request, *args, **kwargs):
+        # Verificar si hay alguna actividad antes de renderizar el formulario
+        if Aula.objects.exists():
+            return super().get(request, *args, **kwargs)
+        else:
+            return render(request, 'clase/falta_aula.html', {'titulo': 'Te falta menos calle'})
+        
+    def post(self, *args, **kwargs):
+        form = ClaseForm(self.request.POST)
+        dictado = Dictado.objects.get(pk=self.kwargs.get("pk"))
+        if form.is_valid():
+            form.save(dictado)
+        return redirect(self.success_url)
+
+
+
+
 class AlumnosListView(ListFilterView):
     model = Alumno
     paginate_by = 100
@@ -301,20 +377,14 @@ class AlumnosListView(ListFilterView):
     def get_queryset(self):
         return super().get_queryset().filter(curso__pk=self.kwargs['pk'])
 
- 
 
-class ClaseCreateView(CreateView):
-    model = Clase
-    form_class = ClaseForm
-   
-    success_url = reverse_lazy('cursos:cursos')
-    
-    def post(self, *args, **kwargs):
-        form = ClaseForm(self.request.POST)
-        dictado = Dictado.objects.get(pk=self.kwargs.get("pk"))
-        if form.is_valid():
-            form.save(dictado)
-        return redirect(self.success_url)
+
+####################### SECCION DE CLASE #######################
+
+
+
+
+
 
 class ClaseListView(ListFilterView):
     model = Clase
