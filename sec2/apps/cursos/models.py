@@ -30,7 +30,7 @@ class Curso(models.Model):
     )
     nombre = models.CharField(
         max_length=50,
-        validators=[text_validator],  # Añade tu validador personalizado si es necesario
+        validators=[text_and_numeric_validator],  # Añade tu validador personalizado si es necesario
         help_text="Solo se permiten letras y espacios."
     )
     # 1 modulo es igual a un tiempo que equivale la duración de cada clase
