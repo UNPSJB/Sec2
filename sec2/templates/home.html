@@ -3,37 +3,35 @@
 {% load static %}
 
 {% block extracss %}
-<link href="{% static 'Libs/css/home.css' %}" rel="stylesheet" />
-<link href="{% static 'Libs/css/nav_top.css' %}" rel="stylesheet"/>
-<!-- Herramienta para buscar en el "navegador" -->
-{{ buscador.media.css }}
-{% endblock%}
+  <link href="{% static 'Libs/css/home.css' %}" rel="stylesheet" />
+  <link href="{% static 'Libs/css/nav_top.css' %}" rel="stylesheet" />
+  {{ buscador.media.css }}
+{% endblock %}
 
 {% block container %}
+  <div id="wrapper">
+    <div id="sidebar">
+      <!-- estaria bueno modificar esto para que se oculte la informacion y no andar mostrando varios menú -->
+      {% block nav_lateral %}
+        {% include 'nav_principal.html' %}
+      {% endblock %}
+    </div>
 
-<div id="wrapper">
-  <div id="sidebar">
-    <!-- estaria bueno modificar esto para que se oculte la informacion y no andar mostrando varios menú -->
-    {% block nav_lateral %}
-    {% include 'nav_principal.html' %}
-    {% endblock %}
-  </div>
+    <div id="content">
+      {% block nav_top %}
+        {% include 'nav_top.html' %}
+      {% endblock %}
 
-  <div id="content">
-    {% block nav_top %}
-      {% include 'nav_top.html' %}
-    {% endblock %}
-    
-    {% block dinamica %}
-    {% include 'index.html' %}
-    {% endblock %}
+      {% block dinamica %}
+        {% include 'index.html' %}
+      {% endblock %}
+    </div>
   </div>
-</div>
 {% endblock %}
 
 {% block extrajs %}
-{{ buscador.media.js }} 
-<script type="text/javascript"> 
-$('.django-select2').on("change", () => console.log("hola")); 
-</script>
+  {{ buscador.media.js }}
+  <script type="text/javascript">
+    $('.django-select2').on('change', () => console.log('hola'))
+  </script>
 {% endblock %}

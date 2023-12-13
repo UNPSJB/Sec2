@@ -8,13 +8,16 @@
 {% endblock %}
 
 {% block dinamica %}
-<h1 class="titulo"> {{ titulo }} </h1>
+
+{% block listado %}
+<br>
+<h2 class="titulo"> {{ titulo }} </h2>
 <div class="container-sm">
   <div class="table-responsive ">
-    <table class="table table-striped table-hover table-secondary ">
+    <table class="table table-sm">
       <thead>
         <tr>
-          <th scope="col" style="border-left-width: 0px; padding-left: 20px;">Dni</th>
+          <th scope="col">Dni</th>
           <th scope="col">Apellido</th>
           <th scope="col">Nombre</th>
           <th scope="col">Fecha nacimiento</th>
@@ -27,20 +30,12 @@
       <tbody>
         <!-- <tr> -->
         {% for afiliado in object_list %}
-        <tr class="bg-transition fila-personalizada">
-          <td style="border-left-width: 0px; padding-left: 20px;">{{ afiliado.persona.dni }}</td>
+        <tr>
+          <td>{{ afiliado.persona.dni }}</td>
           <td>{{ afiliado.persona.apellido }}</td>
           <td>{{ afiliado.persona.nombre }}</td>
           <td>{{ afiliado.persona.fecha_nacimiento }}</td>
           <td>{{ afiliado.cuit_empleador }}</td>
-          <!-- {% comment %}
-          <td>
-            <a href="{% url 'cursos:ver_dictados' profesor.pk %}" class="btn btn-primary">Dictados</a>
-          </td>
-          <td>
-            <a href="{% url 'cursos:inscripcion' profesor.pk %}" class="btn btn-primary">Inscripción</a>
-          </td>
-          {% endcomment %} -->
 
           {% if afiliado.estado == 1 %}
           <td>PENDIENTE</td>
@@ -72,7 +67,10 @@
     </div>
   </div>
 </div>
+
 </div>
+
+{% endblock %}
 {% block nav_lateral_filtro %}
 {% include 'nav_filtro.html' %}
 {% endblock %}

@@ -3,27 +3,38 @@
 {% load static %}
 
 {% block container %}
+  <link href="{% static 'css/info_detalle.css' %}" rel="stylesheet" />
+  <link href="{% static 'css/listado.css' %}" rel="stylesheet" />
+
   <br />
   <h1 class="titulo">Dictado {{ dictado.curso.nombre }}</h1>
-  <br /><br />
+
   <div class="container-sm">
-    <p>Cantidad de clases: {{ dictado.cantidad_clase }}</p>
-    <p>Profesor: {{ nombre_profesor }}</p>
-    <p>Min Alumnos: {{ dictado.minimo_alumnos }}</p>
-    <p>Max Alumnos: {{ dictado.max_alumnos }}</p>
+    <p>
+      <strong>Cantidad de clases:</strong> {{ dictado.cantidad_clase }}
+    </p>
+    <p>
+      <strong>Profesor:</strong> {{ nombre_profesor }}
+    </p>
+    <p>
+      <strong>Min Alumnos:</strong> {{ dictado.minimo_alumnos }}
+    </p>
+    <p>
+      <strong>Max Alumnos:</strong> {{ dictado.max_alumnos }}
+    </p>
+    <br />
+    <div class="acciones">
+      <td>
+        <a href="{% url 'cursos:clase_crear' dictado.pk %}" class="btn btn-primary">Generar clase</a>
+      </td>
+    </div>
   </div>
 
   <div class="container-sm">
-    <td>
-      <a href="{% url 'cursos:clase_crear' dictado.pk %}" class="btn btn-primary">Generar clase</a>
-    </td>
-  </div>
-
-  <div class="container-sm">
-    <br>
+    <br />
     <h3>Clases Asociadas:</h3>
     {% if clases %}
-      <table class="table">
+      <table class="table table-sm">
         <thead>
           <tr>
             <th>Fecha</th>
@@ -38,7 +49,7 @@
               <td>{{ clase.fecha }}</td>
               <td>{{ clase.hora_inicio }}</td>
               <td>{{ clase.hora_fin }}</td>
-              <td> 
+              <td>
                 <a href="{% url 'cursos:index' %}" class="btn btn-success">Marcar asistencia</a>
               </td>
             </tr>

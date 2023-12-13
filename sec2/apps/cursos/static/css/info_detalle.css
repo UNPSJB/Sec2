@@ -2,20 +2,10 @@
 .container-sm {
     margin: 20px;
     padding: 20px;
+    width: 97%;
+    border-radius: 30px;
     background-color: #fff;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-}
-
-/* Título del curso */
-h1 {
-    text-align: center;
-    color: #007bff;
-}
-
-/* Datos del curso */
-.container-sm h1 {
-    font-size: 24px;
-    color: #333;
 }
 
 /* Botones de acción */
@@ -39,28 +29,6 @@ h1 {
 
 .btn-secondary:hover {
     background-color: #555e66;
-}
-
-/* Tabla de dictados */
-.table {
-    margin-top: 20px;
-}
-
-.table th {
-    background-color: #007bff;
-    color: #fff;
-}
-
-.table td {
-    background-color: #f5f5f5;
-}
-
-.bg-transition {
-    transition: background-color 0.3s;
-}
-
-.bg-transition:hover {
-    background-color: #f0f0f0;
 }
 
 .perfil {

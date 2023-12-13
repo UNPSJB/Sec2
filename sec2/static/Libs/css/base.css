@@ -1,13 +1,3 @@
-body {
-    /* background-image: url("../../images/fondos.jpeg"); */
-    /* height: 580px; */
-    /* background-size: auto; */
-    /* background-repeat:no-repeat; */
-    /* background-position: center center; */
-    overflow-y: hidden;
-    /* Oculta la barra de desplazamiento vertical */
-}
-
 /* Anchura de la barra de desplazamiento */
 ::-webkit-scrollbar {
     width: 10px;

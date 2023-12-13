@@ -4,7 +4,7 @@
 
 {% block dinamica %}
     <h1> Listado de Aulas </h1>
-    <table class="table table-dark table-striped">
+    <table class="table table-sm">
         <thead>
             <tr>
               <th scope="col">Denominación</th>
@@ -16,12 +16,14 @@
         </thead>
         <tbody>
                 {% for obj in object_list %}
-                    <tr class="bg-transition">
+                    <tr>
                         <td>{{ obj.denominacion }}</td>
                         <td>{{ obj.tipo }}</td>
                         <td>{{ obj.cupo }}</td>
-                        <td><a href="{% url 'cursos:aula_editar' obj.pk %}"class="btn btn-primary">Editar</a></td>
-                                                                 
+                        <td>
+                            <a href="{% url 'cursos:aula_editar' obj.pk %}"class="btn btn-primary">Editar</a>
+                        </td>
+                        
                         <td>
                             <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#exampleModal_eliminar">
                                 eliminar

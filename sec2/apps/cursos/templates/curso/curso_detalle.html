@@ -1,11 +1,11 @@
 {% extends 'home_curso.html' %}
+
 {% load crispy_forms_tags %}
 {% load static %}
 
 {% block extracss_intermedia %}
-  <link href="{% static 'css/curso_detalle.css' %}" rel="stylesheet" />
+  <link href="{% static 'css/info_detalle.css' %}" rel="stylesheet" />
   <link href="{% static 'css/listado.css' %}" rel="stylesheet" />
-  <link href="{% static 'css/dictado_list.css' %}" rel="stylesheet" />
 {% endblock %}
 
 {% block dinamica %}
@@ -14,7 +14,7 @@
     <br />
     <div class="perfil">
       <img src="{% static 'images/curso.jpg' %}" alt="Imagen de perfil" class="img-thumbnail" />
-      <div class="informacion-curso">
+      <div >
         <p>
           <strong>Costo:</strong> ${{ curso.costo }}
         </p>
@@ -38,6 +38,7 @@
         {% endif %}
       </div>
     </div>
+    
     <br />
     <div class="acciones">
       <a href="{% url 'cursos:curso_editar' curso.pk %}" class="btn btn-primary">Editar</a>
@@ -63,13 +64,14 @@
   </div>
 
   <div class="container-sm">
-    <h2>Dictados Asociados:</h2>
+    <h3>Dictados Asociados:</h3>
     {% if dictados_info %}
       <table class="table">
         <thead>
           <tr>
             <th>N° Clases</th>
             <th>Profesor/a</th>
+            <th>Cupo</th>
             <th></th>
           </tr>
         </thead>
@@ -78,6 +80,7 @@
             <tr>
               <td>{{ dictado_info.dictado.cantidad_clase }}</td>
               <td>{{ dictado_info.nombre_profesor }}</td>
+              <td>0/10</td>
               <td>
                 <a href="{% url 'cursos:dictado' dictado_info.dictado.pk %}" class="btn btn-primary btn-detalle" onclick="window.open('{% url 'cursos:dictado' dictado_info.dictado.pk %}', 'NuevaVentana', 'width=800, height=600'); return false;"><i class="fa-regular fa-eye"></i> Detalle</a>
               </td>

@@ -7,6 +7,7 @@
 {% endblock %}
 
 {% block dinamica %}
+  <br />
   <h3 class="titulo">{{ titulo }}</h3>
   <div id="form-container" class="container">
     <div class="row">
@@ -33,7 +34,7 @@
                   <div class="form-group">
                     <label for="{{ form.dni.id_for_label }}">DNI:</label><br />
                     {{ form.dni }}
-                    <br>
+                    <br />
                     <span class="help-text">{{ form.dni.help_text }}</span>
                     <span class="error-text">{{ form.dni.errors }}</span>
                   </div>

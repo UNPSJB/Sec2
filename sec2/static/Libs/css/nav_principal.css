@@ -1,3 +1,7 @@
+body {
+    overflow-y: hidden;
+}
+
 /* Estilos generales para los menús */
 #menu_principal,
 #menu_curso_principal,

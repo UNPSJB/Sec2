@@ -253,10 +253,9 @@ class AulaCreateView(CreateView):
 
 class AulaListView(ListView):
     model = Aula
+    template_name = 'aula/aula_list.html'
     paginate_by = 100
 
-
-    
 class AulaDetailView(DetailView):
     model = Aula
 
@@ -281,11 +280,13 @@ def curso_eliminar(request, pk):
 class ProfesorCreateView(CreateView):
     model = Profesor
     form_class = FormularioProfesor
+    template_name = 'profesor/profesor_form.html'  
     success_url = reverse_lazy('cursos:profesores')
     
 class ProfesorListView(ListFilterView):
     model = Profesor
-    # paginate_by = 100  
+    paginate_by = 100  
+    template_name = 'profesor/profesor_list.html'  
     filter_class = ProfesorFilterForm
     
     def get_context_data(self, **kwargs):
