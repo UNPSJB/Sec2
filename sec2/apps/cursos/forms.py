@@ -8,7 +8,8 @@ from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Fieldset, Submit, HTML
 from sec2.utils import FiltrosForm
 from utils.constants import *
-from crispy_forms.layout import Layout, Fieldset, Div, HTML
+
+
 
 
 ##------------------ ACTIVIDAD --------------------
@@ -410,7 +411,7 @@ class ClaseForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
         self.helper = FormHelper()
         self.helper.layout = Layout(
-            HTML('<h2 class= "titulo"> {{ titulo }} </h2>'),
+            HTML('<h2 class="titulo"> {{ titulo }} </h2>'),
             Fieldset(
                 "Datos",
                 'fecha',
@@ -419,6 +420,7 @@ class ClaseForm(forms.ModelForm):
                 'hora_fin',
             ),
             Submit('submit', 'Guardar', css_class='button white'),
+            HTML('<a class="btn btn-secondary" href="{% url \'cursos:dictado\' dictado.pk %}">Cancelar</a>'),
         )
 
 class ClaseFilterForm (FiltrosForm):

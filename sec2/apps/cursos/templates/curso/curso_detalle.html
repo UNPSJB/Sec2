@@ -41,8 +41,6 @@
     <br />
     <div class="acciones">
       <a href="{% url 'cursos:curso_editar' curso.pk %}" class="btn btn-primary">Editar</a>
-      <a href="{% url 'cursos:dictados_listado' curso.pk %}" class="btn btn-primary" onclick="window.open('{% url 'cursos:dictados_listado' curso.pk %}', 'NuevaVentana', 'width=800, height=600'); return false;">Dictados</a>
-
       <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#exampleModal_eliminar">Eliminar</button>
       <div class="modal fade" id="exampleModal_eliminar" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
         <div class="modal-dialog">
