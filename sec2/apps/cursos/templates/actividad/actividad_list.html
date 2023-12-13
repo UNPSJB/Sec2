@@ -1,50 +1,31 @@
-{% extends 'home_curso.html' %}
+{% extends 'listado.html' %}
 {% load crispy_forms_tags %}
 
 {% load static %}
 
-{% block extracss_intermedia %}
-  <link href="{% static 'css/listado.css' %}" rel="stylesheet" />
+{% block tabla_listado %}
+  <table class="table table-sm table-hover">
+    <thead>
+      <tr>
+        <th scope="col">Nombre</th>
+        <th scope="col">Area</th>
+        <th scope="col"></th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for actividad in object_list %}
+        <tr class="bg-transition fila-personalizada">
+          <td>{{ actividad.nombre }}</td>
+          <td>{{ actividad.get_area_display }}</td>
+          <td>
+            <a href="{% url 'cursos:actividad_detalles' actividad.pk %}" class="btn btn-primary btn-detalle"><i class="fa-regular fa-eye"></i> Detalle</a>
+          </td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
 {% endblock %}
 
-{% block dinamica %}
-  <h2 class="titulo">{{ titulo }}</h2>
-  <br />
-  <div class="container-sm">
-    <div class="table-responsive">
-      <table class="table table-striped table-hover table-secondary">
-        <thead>
-          <tr>
-            <th scope="col" style="border-left-width: 0px; padding-left: 20px;">Nombre</th>
-            <th scope="col">Area</th>
-            <th scope="col"></th>
-          </tr>
-        </thead>
-        <tbody>
-          {% for actividad in object_list %}
-            <tr class="bg-transition fila-personalizada">
-              <td style="border-left-width: 0px; padding-left: 20px;">{{ actividad.nombre }}</td>
-              <td>{{ actividad.get_area_display }}</td>
-              <td>
-                <a href="{% url 'cursos:actividad_detalles' actividad.pk %}" class="btn btn-primary btn-detalle"><i class="fa-regular fa-eye"></i> Detalle</a>
-              </td>
-            </tr>
-          {% endfor %}
-        </tbody>
-      </table>
-    </div>
-  </div>
-  <div class="container ">
-    <div class="row row-cols-1 row-cols-sm-2 row-cols-md-1">
-  
-      <div class="col" id="btn-new-afiliado">
-        <a href="{% url 'cursos:actividad_crear' %}" class="btn btn-primary"><i class="fa-solid fa-plus"></i> Nuevo</a>
-      </div>
-    </div>
-  </div>
-</div>
-
-  {% block nav_lateral_filtro %}
-    {% include 'nav_filtro.html' %}
-  {% endblock %}
+{% block botones %}
+  <a href="{% url 'cursos:actividad_crear' %}" class="btn btn-primary"><i class="fa-solid fa-plus"></i> Nuevo</a>
 {% endblock %}

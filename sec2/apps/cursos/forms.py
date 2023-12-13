@@ -51,6 +51,10 @@ class ActividadFilterForm(FiltrosForm):
         widget=forms.Select(attrs={'class': 'form-control'})
     )
 
+## ------------ FILTRO PARA AULA --------------
+class AulaFilterForm(FiltrosForm):
+    cupo = forms.CharField(required=False)
+
 ## ------------ FORMULARIO DE AULA --------------
 class AulaForm(forms.ModelForm):
     class Meta:
@@ -71,9 +75,9 @@ class AulaForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
         self.helper = FormHelper()
         self.helper.layout = Layout(
-            HTML('<h2><center>Formulario de Aulas</center></h2>'),
+            
             Fieldset(
-                "Datos",
+                "",
                 'denominacion', 'tipo', 'cupo'
             ),
             Submit('submit', 'Guardar', css_class='button white'),
@@ -119,43 +123,36 @@ class FormularioProfesor(forms.ModelForm):
         model = Persona
         fields = '__all__'
         exclude=['persona', 'tipo']
-        help_texts = {
-            'dni': 'Tu numero de documento sin puntos',
-        }
-        
         widgets ={
-            
-           'fecha_nacimiento': forms.DateInput(attrs={'type':'date'}),
-            
-           
+            'fecha_nacimiento': forms.DateInput(attrs={'type':'date'}),
             }
-        
         labels = {
-           'fecha_nacimiento': "Fecha de nacimiento",
-          
-           
-        }
-        
+            'fecha_nacimiento': "Fecha de nacimiento",
+            }
 
     def clean_dni(self):
+        print("ESTOY EN EL CLEAN_DNI")
         self.persona = Persona.objects.filter(dni=self.cleaned_data['dni']).first()
         if self.persona is not None and self.persona.es_profesor:
             raise ValidationError("Ya existe un Profesor activo con ese DNI")
         return self.cleaned_data['dni']
 
     def clean_cuil(self):
+        print("ESTOY EN EL CLEAN CUIL")
         self.persona = Persona.objects.filter(dni=self.cleaned_data['cuil']).first()
         if self.persona is not None and self.persona.es_profesor:
             raise ValidationError("Ya existe un Profesor activo con ese cuil")
         return self.cleaned_data['cuil']
         
     def is_valid(self) -> bool:
+        print("ESTOY EN EL IS_VALID")
         valid = super().is_valid()
         personaForm = PersonaForm(data=self.cleaned_data)
         profesorForm = ProfesorForm(data=self.cleaned_data)
         return valid and personaForm.is_valid() and profesorForm.is_valid()
     
     def save(self, commit=False):
+        print("ESTOY EN EL SAVE")
         if self.persona is None:
             personaForm = PersonaForm(data=self.cleaned_data)
             self.persona = personaForm.save()
@@ -166,44 +163,6 @@ class FormularioProfesor(forms.ModelForm):
         
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.helper = FormHelper()
-        #self.helper.form_action = 'Profesors:index'
-        self.helper.layout = Layout(
-            HTML(
-                    '<h2><center>Formulario de Profesor</center></h2>'),
-            Fieldset(
-                   "Datos Personales",
-                   
-                HTML(
-                    '<hr/>'),
-                                             
-                    'dni', 
-                    'nombre',
-                    'apellido',
-                    'fecha_nacimiento',
-                    'direccion',
-                    'mail',
-                    'nacionalidad',
-                    'estado_civil',
-                    'cuil',
-                    'celular',
-                   
-                    
-            ),
-            
-            Fieldset(    
-                   "Datos Academicos",
-                HTML(
-                    '<hr/>'),
-                    'capacitaciones',
-                    'ejerce_desde',
-                    'actividades',
-                    'dictados'
-                    
-            ),
-            
-            Submit('submit', 'Guardar', css_class='button white'),)
-
 
 FormularioProfesor.base_fields.update(ProfesorForm.base_fields)
 
@@ -411,7 +370,7 @@ class ClaseForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
         self.helper = FormHelper()
         self.helper.layout = Layout(
-            HTML('<h2 class="titulo"> {{ titulo }} </h2>'),
+            HTML('<br> <h2 class="titulo"> {{ titulo }} </h2>'),
             Fieldset(
                 "Datos",
                 'fecha',
@@ -539,10 +498,8 @@ class FormularioPagoAlumno(forms.Form):
             super().__init__(initial=initial,*args, **kwargs)
             self.helper = FormHelper()
             self.helper.layout = Layout(
-                HTML(
-                    f'<h2><center> Pago del alumno  </center></h2>'),
                 Fieldset(
-                    "Datos Pago",
+                    "",
                     'fecha_pago_alumno',
                     'monto',
                     ),

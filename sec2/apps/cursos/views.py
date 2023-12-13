@@ -18,6 +18,7 @@ from .forms import (
     AulaForm , 
     FormularioProfesor,
     DictadoForm, 
+    AulaFilterForm,
     ActividadFilterForm,CursoFilterForm, 
     DictadoFilterForm,
     ProfesorFilterForm,
@@ -251,10 +252,24 @@ class AulaCreateView(CreateView):
     template_name = 'aula/aula_form.html'  
     success_url = reverse_lazy('cursos:aulas')
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['titulo'] = "Formulario de alta de aulas"
+        return context
+    
 class AulaListView(ListView):
     model = Aula
+    paginate_by = 100  
+    filter_class = AulaFilterForm
     template_name = 'aula/aula_list.html'
-    paginate_by = 100
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        # Aquí creas una instancia del formulario y la agregas al contexto
+        filter_form = AulaFilterForm(self.request.GET)
+        context['filtros'] = filter_form
+        context['titulo'] = "Listado de Aulas"
+        return context
 
 class AulaDetailView(DetailView):
     model = Aula
@@ -282,6 +297,19 @@ class ProfesorCreateView(CreateView):
     form_class = FormularioProfesor
     template_name = 'profesor/profesor_form.html'  
     success_url = reverse_lazy('cursos:profesores')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['titulo'] ="Alta de Profesor"
+        return context
+
+    def form_valid(self, form):
+        messages.success(self.request, f'{ICON_CHECK} Profesor dado de alta con exitoso!')
+        return super().form_valid(form)
+
+    def form_invalid(self, form):
+        messages.warning(self.request, f'{ICON_TRIANGLE} Por favor, corrija los errores a continuación.')
+        return super().form_invalid(form)
     
 class ProfesorListView(ListFilterView):
     model = Profesor
@@ -574,8 +602,14 @@ def registrarAsistenciaProfesor(request, pk, ppk):
 class PagoAlumnoCreateView(CreateView):
     model = Pago_alumno
     form_class = FormularioPagoAlumno
+    template_name = 'otro/pago_alumno_form.html'  
     success_url = reverse_lazy('cursos:cursos')
- 
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['titulo'] = "Listado de profesores"
+        return context
+
 class ProfesorDelDictadoListView(ListFilterView):
     model = Titular
     paginate_by = 100

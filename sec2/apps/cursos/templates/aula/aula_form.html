@@ -1,22 +1,16 @@
-{% extends 'home_curso.html' %}
+{% extends 'alta.html' %}
 {% load crispy_forms_tags %}
 {% load static %}
 
-{% block dinamica %}
+{% block formulario %}
   {% if form.errors %}
     <div class="alert alert-danger" role="alert">No se pudo cargar el formulario, por favor comunícate con soporte.</div>
   {% endif %}
 
-  <div class="container">
-    <div class="row justify-content-center">
-      <div class="col-md-8">
-        <form method="post">
-          {% csrf_token %}
-          {% crispy form %}
-        </form>
-      </div>
-    </div>
-  </div>
+  <form method="post">
+    {% csrf_token %}
+    {% crispy form %}
+  </form>
 
   {% if mensaje %}
     <div class="alert alert-info" role="alert">Registro finalizado exitosamente.</div>

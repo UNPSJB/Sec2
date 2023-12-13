@@ -6,3 +6,24 @@
     margin-top: 5px;
     margin-bottom: 5px;
 }
+
+.table-transparent {
+    background-color: transparent !important;
+}
+
+.table>:not(caption)>*>* {
+    background-color: rgba(133, 131, 131, 0);
+}
+
+.table-sm>:not(caption)>*>* {
+    padding: 0;
+}
+
+.table td {
+    vertical-align: middle;
+}
+
+.container-sm{
+    padding-left: 3%;
+    padding-right: 3%;
+}

@@ -34,7 +34,7 @@
     <br />
     <h3>Clases Asociadas:</h3>
     {% if clases %}
-      <table class="table table-sm">
+      <table class="table table-sm table-hover">
         <thead>
           <tr>
             <th>Fecha</th>
@@ -50,7 +50,7 @@
               <td>{{ clase.hora_inicio }}</td>
               <td>{{ clase.hora_fin }}</td>
               <td>
-                <a href="{% url 'cursos:index' %}" class="btn btn-success">Marcar asistencia</a>
+                <a href="{% url 'cursos:index' %}" class="btn btn-success btn-detalle">Marcar asistencia</a>
               </td>
             </tr>
           {% endfor %}

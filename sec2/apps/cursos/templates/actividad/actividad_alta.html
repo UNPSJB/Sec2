@@ -1,35 +1,28 @@
-{% extends 'home_curso.html' %}
+{% extends 'alta.html' %}
 {% load crispy_forms_tags %}
 {% load static %}
 
-{% block extracss_intermedia %}
-  <link href="{% static 'css/actividad_alta.css' %}" rel="stylesheet" />
-{% endblock %}
-
-{% block dinamica %}
-  <div class="container border p-3 mb-3 col-md-7 offset-md-3">
-    <h2 class="titulo">{{ titulo }}</h2>
-    <form method="post">
-      {% csrf_token %}
-      <div class="form-group">
-        {{ form.nombre.label_tag }}
-        <br>
-        {{ form.nombre }}
-        <small class="error-text" style="color: red;">{{ form.nombre.errors.0 }}</small>
-        {% comment %} <small class="text-muted">{{ form.nombre.help_text }}</small> {% endcomment %}
+{% block formulario %}
+  <form method="post">
+    {% csrf_token %}
+    <div class="form-group">
+      {{ form.nombre.label_tag }}
+      <br />
+      {{ form.nombre }}
+      <small class="error-text" style="color: red;">{{ form.nombre.firt }}</small>
+      <small class="text-muted">{{ form.nombre.help_text }}</small>
+    </div>
+    <div class="form-group">{{ form.area.label_tag }}
+      {{ form.area }}</div>
+    <div class="row row-cols-1 row-cols-sm-1 row-cols-md-2">
+      <div class="col">
+        <a href="{% url 'cursos:index' %}" class="btn btn-secondary">Cancelar</a>
       </div>
-      <div class="form-group">{{ form.area.label_tag }}
-        {{ form.area }}</div>
-      <div class="row row-cols-1 row-cols-sm-1 row-cols-md-2">
-        <div class="col">
-          <a href="{% url 'cursos:index' %}" class="btn btn-secondary">Cancelar</a>
-        </div>
-        <div class="col">
-          <button type="submit" class="btn btn-primary">Guardar</button>
-        </div>
+      <div class="col">
+        <button type="submit" class="btn btn-primary">Guardar</button>
       </div>
-    </form>
-  </div>
+    </div>
+  </form>
 {% endblock %}
 
 {% block extrajs_intermedia %}

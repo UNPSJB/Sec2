@@ -16,13 +16,6 @@
     <!-- Icono de la pestaña del navegador desde archivos estáticos -->
     <link rel="icon" type="image/x-icon" href="{% static 'images/logo.png' %}" />
 
-    <!-- Título de la página, se puede sobrescribir en plantillas secundarias -->
-    <title>
-      {% block title %}
-        {{ title }}
-      {% endblock %}
-    </title>
-
     <!-- Contenido adicional de hojas de estilo que se puede sobrescribir en plantillas secundarias -->
     {% block extracss %}
 
