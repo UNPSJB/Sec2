@@ -91,6 +91,6 @@
     {% else %}
       <p>No hay dictados asociados.</p>
     {% endif %}
-    <a href="{% url 'cursos:curso_crear' %}" class="btn btn-primary"><i class="fa-solid fa-plus"></i> Nuevo</a>
+    <a href="{% url 'cursos:dictado_crear' curso.pk %}" class="btn btn-primary"><i class="fa-solid fa-plus"></i> Nuevo</a>
   </div>
 {% endblock %}
