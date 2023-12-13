@@ -57,9 +57,6 @@ class Curso(models.Model):
 
 #------------- DICTADO --------------------
 class Dictado(models.Model):
-    # las fechas se eliminaron ya que se modifico el modelo
-    # fecha_inicio = models.DateField()
-    # fecha_fin = models.DateField()
     cantidad_clase= models.PositiveIntegerField(help_text="Cantidad total de clase")
     minimo_alumnos= models.PositiveIntegerField(help_text="Minimo de alumnos")
     max_alumnos= models.PositiveIntegerField(help_text="Minimo de alumnos")
@@ -68,37 +65,43 @@ class Dictado(models.Model):
     #     validators=[text_validator],  # Añade tu validador personalizado si es necesario
     #     help_text="Solo se permiten letras y espacios."
     # )    
-    curso = models.ForeignKey(Curso, related_name="curso", on_delete=models.CASCADE, null=True, blank=True)
-    # Se elimina porque el precio es el mismo que el curso
-    # precio = models.DecimalField(help_text="costo", max_digits=10, decimal_places=2)    
-    def __str__(self):
-        return f"Fecha inicio: {self.fecha_inicio}, Fecha fin: {self.fecha_fin} Aula:{self.aula}"
+    # curso = models.ForeignKey(Curso, related_name="curso", on_delete=models.CASCADE, null=True, blank=True)
+    curso = models.ForeignKey(Curso, related_name="dictado_set", on_delete=models.CASCADE, null=True, blank=True)
 
-    def asignar_clase(self, dia, hora_inicio, hora_fin):
+    def __str__(self):
+        return f"HOLAAA!! SOY EL DICTADO : "
+
+    def asignar_clase(self, fecha, hora_inicio, hora_fin):
         clase = Clase()
         clase.hora_inicio = hora_inicio
         clase.hora_fin = hora_fin
-        clase.dia = dia
+        clase.fecha = fecha
         clase.dictado = self
         clase.save()
 
+#------------- AULA --------------------
 class Aula(models.Model):
-    #denominacion es el nombre del aula, ej: Aula 22, laboratorio1
-    denominacion=models.CharField(max_length=50)
-    tipo=models.CharField(max_length=50)
-    cupo=models.PositiveIntegerField(help_text="capacidad maxima del aula")
+    TIPO_CHOICES = [
+        ('normal', 'Normal'),
+        ('laboratorio', 'Laboratorio'),
+        ('conferencia', 'Conferencia'),
+        ('computacion', 'Computación'),
+    ]
+    denominacion = models.CharField(max_length=50, unique=True, help_text="Nombre o identificador del aula, ej: Aula 22, Laboratorio 1")
+    tipo = models.CharField(max_length=50, choices=TIPO_CHOICES, help_text="Tipo de aula")
+    cupo = models.PositiveIntegerField(help_text="Capacidad máxima del aula")
+
     def __str__(self):
         return self.denominacion
 
+#------------- CLASE --------------------
 class Clase(models.Model):
     dictado = models.ForeignKey(Dictado, related_name="clase", null=True, on_delete=models.CASCADE)
-    aula=models.ForeignKey(Aula, related_name="aula", on_delete=models.CASCADE, null=True)
 
-    # se incorporo la fecha, reemplazando los días
+    aula=models.ForeignKey(Aula, related_name="aula", on_delete=models.CASCADE, null=True)
     fecha = models.DateField()
     hora_inicio=models.TimeField() 
     hora_fin=models.TimeField() # SE calcula desde la hora inicio más el modulo del curso
-    dia = models.CharField(max_length=255)
 
 class Alumno(Rol):
     TIPO = 3
@@ -124,15 +127,13 @@ class Profesor(Rol):
     dictados = models.ManyToManyField(Dictado, through = "Titular", related_name="profesores", blank=True)
 
     def __str__(self):
-        return f"{self.persona.nombre}, {self.persona.apellido} - {self.persona.dni}"
-    
-    
+        return f"{self.persona.nombre} {self.persona.apellido}"
+
 Rol.register(Profesor)
 
 class Titular(models.Model):
     profesor = models.ForeignKey(Profesor, on_delete=models.CASCADE)
     dictado= models.ForeignKey(Dictado, on_delete=models.CASCADE)
-    
 
 class Asistencia_profesor(models.Model):
     fecha_asistencia_profesor = models.DateTimeField(auto_now_add=True)

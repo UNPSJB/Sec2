@@ -50,6 +50,7 @@ class ActividadFilterForm(FiltrosForm):
         widget=forms.Select(attrs={'class': 'form-control'})
     )
 
+## ------------ FORMULARIO DE AULA --------------
 class AulaForm(forms.ModelForm):
     class Meta:
         model = Aula
@@ -64,26 +65,19 @@ class AulaForm(forms.ModelForm):
         tipo = self.cleaned_data['tipo']
         tipo = tipo.lower()
         return tipo
-    
-    def clean(self):
-        pass
-
-    def is_valid(self) -> bool:
-        valid = super().is_valid()
-        return valid
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.helper = FormHelper()
         self.helper.layout = Layout(
-            HTML(
-                '<h2><center>Formulario de Aulas</center></h2>'),
+            HTML('<h2><center>Formulario de Aulas</center></h2>'),
             Fieldset(
                 "Datos",
                 'denominacion', 'tipo', 'cupo'
             ),
-            Submit('submit', 'Guardar', css_class='button white'),)
-
+            Submit('submit', 'Guardar', css_class='button white'),
+        )
+        self.helper.form_method = 'post'
 
 class CursoForm(forms.ModelForm):
     class Meta:
@@ -393,39 +387,39 @@ class DictadoFilterForm(FiltrosForm):
     fecha_inicio  = forms.DateField(required=False)
     fecha_fin =forms.DateField(required=False)
 
-
+## ------------ FORMULARIO DE CLASE --------------
 class ClaseForm(forms.ModelForm):
     class Meta:
         model = Clase
-        fields = ['dia','hora_inicio','hora_fin']
-
+        fields = '__all__'
+        exclude=['dictado']
         widgets ={   
-            'hora_inicio': forms.DateInput(attrs={'type':'time'}),
-            'hora_fin': forms.DateInput(attrs={'type':'time'}),
-                }
+            'hora_inicio': forms.TimeInput(attrs={'type':'time'}),
+            'hora_fin': forms.TimeInput(attrs={'type':'time'}),
+            'fecha': forms.DateInput(attrs={'type': 'date'}),
+        }
 
     def save(self, dictado, commit=False):
-        hora_inicio= self.cleaned_data["hora_inicio"]
-        hora_fin= self.cleaned_data["hora_fin"]
-        dia = self.cleaned_data["dia"]
-        # dictado = self.cleaned_data["dictado"]
-        dictado.asignar_clase(dia, hora_inicio, hora_fin)
+        hora_inicio = self.cleaned_data["hora_inicio"]
+        hora_fin = self.cleaned_data["hora_fin"]
+        fecha = self.cleaned_data["fecha"]
+        dictado.asignar_clase(fecha, hora_inicio, hora_fin)
+        return super().save(commit=commit)
 
     def __init__(self, *args, **kwargs):
-            #curso = kwargs.pop('curso')
-            super().__init__(*args, **kwargs)
-            self.helper = FormHelper()
-            self.helper.layout = Layout(
-                HTML(
-                    '<h2><center>Formulario de Clase</center></h2>'),
-                Fieldset(
-                    "Datos",
-                    'dia',
-                    'hora_inicio',
-                    'hora_fin',
-                ),
-                Submit('submit', 'Guardar', css_class='button white'),)
-
+        super().__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.layout = Layout(
+            HTML('<h2 class= "titulo"> {{ titulo }} </h2>'),
+            Fieldset(
+                "Datos",
+                'fecha',
+                'aula',
+                'hora_inicio',
+                'hora_fin',
+            ),
+            Submit('submit', 'Guardar', css_class='button white'),
+        )
 
 class ClaseFilterForm (FiltrosForm):
     dia = forms.DateField(required=False)

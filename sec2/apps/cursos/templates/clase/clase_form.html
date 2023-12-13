@@ -1,8 +1,8 @@
-{% extends "home_curso.html" %}
+{% extends "base.html" %}
 {% load crispy_forms_tags %}
 {% load static %}
 
-{% block dinamica %}
+{% block container %}
     {%if form.errors%}
     <div class="alert alert-danger" role="alert">
       No se pudo cargar el formulario comunicarse con soporte

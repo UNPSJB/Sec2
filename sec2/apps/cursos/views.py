@@ -145,6 +145,49 @@ class CursoCreateView(CreateView):
         messages.warning(self.request, '<i class="fa-solid fa-triangle-exclamation fa-flip"></i> Por favor, corrija los errores a continuación.')
         return super().form_invalid(form)
 
+##--------------- CURSO DETALLE --------------------------------
+class CursoDetailView(DetailView):
+    model = Curso
+    template_name = 'curso/curso_detalle.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['titulo'] = f"Curso: {self.object.nombre}"
+
+        # Obtener todos los dictados asociados al curso
+        dictados = self.object.dictado_set.all()
+
+        # Crear una lista para almacenar información de cada dictado, incluyendo el nombre del profesor
+        dictados_info = []
+
+        for dictado in dictados:
+            # Obtener el titular asociado al dictado
+            titular = self.get_titular(dictado)
+
+            # Crear un diccionario con la información del dictado y el nombre del profesor
+            dictado_info = {
+                'dictado': dictado,
+                'nombre_profesor': (
+                    f"{titular.profesor.persona.nombre} "
+                    f"{titular.profesor.persona.apellido}"
+                ) if titular else "Sin titular"
+            }
+
+            # Agregar el diccionario a la lista
+            dictados_info.append(dictado_info)
+
+        # Agregar la lista de dictados con información al contexto
+        context['dictados_info'] = dictados_info
+
+        return context
+    
+    def get_titular(self, dictado):
+        try:
+            titular = Titular.objects.get(dictado=dictado)
+            return titular
+        except Titular.DoesNotExist:
+            return None
+
 ##--------------- CURSO LIST --------------------------------
 class CursoListView(ListFilterView):
     model = Curso
@@ -201,16 +244,18 @@ class CursoUpdateView(UpdateView):
         return super().form_invalid(form)
 
 
-####################### SECCION DE ______ #######################
+####################### SECCION DE AULA #######################
+class AulaCreateView(CreateView):   
+    model = Aula
+    form_class = AulaForm
+    template_name = 'aula/aula_form.html'  
+    success_url = reverse_lazy('cursos:aulas')
 
 class AulaListView(ListView):
     model = Aula
     paginate_by = 100
 
-class AulaCreateView(CreateView):   
-    model = Aula
-    form_class = AulaForm
-    success_url = reverse_lazy('cursos:aulas')
+
     
 class AulaDetailView(DetailView):
     model = Aula
@@ -273,7 +318,6 @@ class DictadoCreateView(CreateView):
     model = Dictado
     form_class = FormularioDictado
     template_name = 'dictado/dictado_form.html'
-    # success_url = reverse_lazy('cursos:dictados_listado')
 
     def get_initial(self,*args, **kwargs):
         curso= Curso.objects.get(pk=self.kwargs.get("pk"))
@@ -302,15 +346,36 @@ class DictadoCreateView(CreateView):
         return reverse('cursos:dictados_listado', kwargs={'pk': pk_curso})
 
 ##--------------- DICTADO DETALLE --------------------------------
-class DictadoDetailView (DeleteView):
+class DictadoDetailView(DetailView):
     model = Dictado
+    template_name = 'dictado/dictado_detail.html'
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['titulo'] = "Dictado" 
+
+        # Obtener el nombre del profesor asociado al dictado
+        titular = self.get_titular(context['object'])
+        context['nombre_profesor'] = (
+            f"{titular.profesor.persona.nombre}, "
+            f"{titular.profesor.persona.apellido}"
+        ) if titular else "Sin titular"
+
+        # Obtener todas las clases asociadas al dictado
+        clases = Clase.objects.filter(dictado=context['object'])
+        context['clases'] = clases
+
+        context['titulo'] = "Dictado"
         return context
 
+    def get_titular(self, dictado):
+        try:
+            titular = dictado.titular_set.get()  # Acceder al titular asociado al dictado
+            return titular
+        except Titular.DoesNotExist:
+            return None
+
 ##--------------- DICTADO LIST VIEW --------------------------------
-class DictadoListView(ListFilterView):
+class DictadoListView(ListView):
     model = Dictado
     paginate_by = 100
     filter_class = DictadoFilterForm
@@ -318,13 +383,26 @@ class DictadoListView(ListFilterView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        curso = Curso.objects.get(id = self.kwargs.get('pk'))
+        curso = Curso.objects.get(id=self.kwargs.get('pk'))
         context['titulo'] = f"Listado de dictado para {curso.nombre}"
         context["curso"] = self.kwargs['pk']
         return context
-    
+
     def get_queryset(self):
-        return super().get_queryset().filter(curso__pk=self.kwargs['pk'])
+        dictados = super().get_queryset().filter(curso__pk=self.kwargs['pk'])
+
+        # Agregar información del titular para cada dictado
+        for dictado in dictados:
+            titular = self.get_titular(dictado)
+            dictado.titular = titular
+        return dictados
+
+    def get_titular(self, dictado):
+        try:
+            titular = Titular.objects.get(dictado=dictado)
+            return titular.profesor
+        except Titular.DoesNotExist:
+            return None
 
 
 ####################### SECCION DE CLASE #######################
@@ -333,6 +411,7 @@ class ClaseCreateView(CreateView):
     model = Clase
     form_class = ClaseForm
     template_name = 'clase/clase_form.html'
+    success_url = None  # Asigna un valor predeterminado a success_url
 
     def get_initial(self,*args, **kwargs):
         dictado= Dictado.objects.get(pk=self.kwargs.get("pk"))
@@ -353,15 +432,31 @@ class ClaseCreateView(CreateView):
             return super().get(request, *args, **kwargs)
         else:
             return render(request, 'clase/falta_aula.html', {'titulo': 'Te falta menos calle'})
-        
-    def post(self, *args, **kwargs):
-        form = ClaseForm(self.request.POST)
-        dictado = Dictado.objects.get(pk=self.kwargs.get("pk"))
+
+    def post(self, request, *args, **kwargs):
+        form = ClaseForm(request.POST)
+        dictado_id = kwargs.get("pk")
+        dictado = Dictado.objects.get(pk=dictado_id)
+
         if form.is_valid():
             form.save(dictado)
-        return redirect(self.success_url)
+
+            # Redirige a la vista DictadoDetailView con el pk del dictado
+            return redirect('cursos:dictado', pk=dictado_id)
+        else:
+            context = {'form': form, 'dictado_id': dictado_id, 'titulo': f"Alta de clase para el dictado {dictado.cantidad_clase}"}
+            return render(request, self.template_name, context)
 
 
+    def get_success_url(self):
+        # La redirección se maneja en el método post, por lo que este método puede retornar cualquier cosa (por ejemplo, None)
+        return None
+    
+    def form_valid(self, form):
+        dictado_id = self.kwargs.get('pk')
+        dictado = Dictado.objects.get(pk=dictado_id)
+        form.save(dictado)
+        return super().form_valid(form)
 
 
 class AlumnosListView(ListFilterView):
@@ -503,12 +598,3 @@ def registrarAlumnoADictado(request, pk, apk):
     dictado = alumno.agregateDictado(pk)
     return redirect('cursos:alumnos_dictado', dictado.pk)
 
-class CursoDetailView (DeleteView):
-    model = Curso
-    template_name = 'curso/curso_detalle.html'
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['titulo'] = "Detalle de Curso" 
-        context['dictados'] = Curso.obtenerDictados     
-        return context

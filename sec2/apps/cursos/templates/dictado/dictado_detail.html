@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+{% load static %}
+
+{% block container %}
+  <br />
+  <h1 class="titulo">Dictado {{ dictado.curso.nombre }}</h1>
+  <br /><br />
+  <div class="container-sm">
+    <p>Cantidad de clases: {{ dictado.cantidad_clase }}</p>
+    <p>Profesor: {{ nombre_profesor }}</p>
+    <p>Min Alumnos: {{ dictado.minimo_alumnos }}</p>
+    <p>Max Alumnos: {{ dictado.max_alumnos }}</p>
+  </div>
+
+  <div class="container-sm">
+    <td>
+      <a href="{% url 'cursos:clase_crear' dictado.pk %}" class="btn btn-primary">Generar clase</a>
+    </td>
+  </div>
+
+  <div class="container-sm">
+    <br>
+    <h3>Clases Asociadas:</h3>
+    {% if clases %}
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Fecha</th>
+            <th>Hora de inicio</th>
+            <th>Hora de fin</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for clase in clases %}
+            <tr>
+              <td>{{ clase.fecha }}</td>
+              <td>{{ clase.hora_inicio }}</td>
+              <td>{{ clase.hora_fin }}</td>
+              <td> 
+                <a href="{% url 'cursos:index' %}" class="btn btn-success">Marcar asistencia</a>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    {% else %}
+      <p>No hay clases asociadas.</p>
+    {% endif %}
+  </div>
+{% endblock %}
