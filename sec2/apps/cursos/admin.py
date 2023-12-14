@@ -10,7 +10,7 @@ class ActividadAdmin(admin.ModelAdmin):
 admin.site.register(Actividad, ActividadAdmin)
 
 class CursoAdmin(admin.ModelAdmin):
-    list_display = ('actividad', 'costo','nombre','modulos','certificado_medico','periodo_pago','descuento')
+    list_display = ('actividad', 'costo','nombre','certificado_medico','periodo_pago','descuento')
     #list_filter = ('actividad')
     #ordering = ('actividad')
 

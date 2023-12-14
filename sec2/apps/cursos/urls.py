@@ -1,43 +1,21 @@
 from django.urls import path
-from .views import (index, 
-                    CursoCreateView,
-                    CursoListView,
-                    CursoUpdateView, 
-                    curso_eliminar,
-                    ActividadCreateView, 
-                    ActividadDetailView, 
-                    ActividadListView, 
-                    ActividadUpdateView, 
-                    AulaCreateView,
-                    AulaDetailView,
-                    AulaUpdateView,
-                    aula_eliminar,
-                    ProfesorCreateView,
-                    ProfesorListView,
-                    ProfesorUpdateView,
-                    DictadoCreateView,
-                    DictadoListView,
-                    AlumnosListView,
-                    registrarAsistenciaAlumno,
-                    AlumnosDelDictadoListView,
-                    ProfesorDelDictadoListView,
-                    registrarAsistenciaProfesor,
-                    agregarAlumnoCursoListView,
-                    registrarAlumnoADictado,
-                    CursoDetailView,
-                    DictadoDetailView,
-                    ClaseCreateView, 
-                    ClaseListView,
-                    AlumnoCreateView,
-                    PagoAlumnoCreateView,
-                    AulaListView,
-                    actividad_eliminar
-                    )
+# from views import index, actividad_eliminar, curso_eliminar, registrarAsistenciaProfesor, registrarAlumnoADictado, registrarAsistenciaAlumno, aula_eliminar
+from .views.actividad_views import *
+from .views.curso_views import *
+from .views.dictado_views import *
+from .views.clase_views import *
+from .views.profesor_views import *
+from .views.alumno_views import *
+from .views.aula_views import *
+from .views.pago_views import *
+from .views.views import *
 
 app_name="cursos"
 
 urlpatterns = [
     path('',index, name="index"),
+
+
     # TODO:------------------------  ACTIVIDADES  ----------------------------
     path('actividades/actividad/crear', ActividadCreateView.as_view(), name="actividad_crear"),
     path('actividades/actividad/<int:pk>', ActividadDetailView.as_view(), name="actividad_detalles"),

@@ -33,8 +33,6 @@ class Curso(models.Model):
         validators=[text_and_numeric_validator],  # Añade tu validador personalizado si es necesario
         help_text="Solo se permiten letras y espacios."
     )
-    # 1 modulo es igual a un tiempo que equivale la duración de cada clase
-    modulos= models.PositiveIntegerField(help_text="cantidad de horas del curso")
     # se le dejara a los cursos de gimnasio obligatorio certificado medico
     certificado_medico = models.BooleanField()
     periodo_pago=models.PositiveSmallIntegerField(choices=PERIODO_PAGO)
@@ -60,12 +58,13 @@ class Dictado(models.Model):
     cantidad_clase= models.PositiveIntegerField(help_text="Cantidad total de clase")
     minimo_alumnos= models.PositiveIntegerField(help_text="Minimo de alumnos")
     max_alumnos= models.PositiveIntegerField(help_text="Minimo de alumnos")
-    # nombre = models.CharField(
-    #     max_length=50,
-    #     validators=[text_validator],  # Añade tu validador personalizado si es necesario
-    #     help_text="Solo se permiten letras y espacios."
-    # )    
-    # curso = models.ForeignKey(Curso, related_name="curso", on_delete=models.CASCADE, null=True, blank=True)
+    # 1 modulo es igual a un tiempo que equivale la duración de cada clase
+    modulos= models.PositiveIntegerField(help_text="cantidad de horas del curso")
+    nombre = models.CharField(
+        max_length=50,
+        validators=[text_validator],  # Añade tu validador personalizado si es necesario
+        help_text="Solo se permiten letras y espacios."
+    )    
     curso = models.ForeignKey(Curso, related_name="dictado_set", on_delete=models.CASCADE, null=True, blank=True)
 
     def __str__(self):
