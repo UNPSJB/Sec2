@@ -9,7 +9,7 @@ from django.shortcuts import redirect
 ## ------------ CREACION DE ACTIVIDAD -------------------
 class ActividadCreateView(CreateView):
     model = Actividad
-    form_class = ActividadForm
+    form_class = ActividadCreateForm
     template_name = 'actividad/actividad_alta.html'
     success_url = reverse_lazy('cursos:actividad_listado')
 
@@ -67,6 +67,7 @@ class ActividadUpdateView(UpdateView):
         return context
 
     def form_valid(self, form):
+        form.instance.area = self.get_object().area
         actividad = form.save()
         messages.success(self.request, '<i class="fa-solid fa-square-check fa-beat-fade"></i> Actividad modificado con éxito')
         return redirect('cursos:actividad_listado')

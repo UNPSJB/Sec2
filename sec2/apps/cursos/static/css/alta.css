@@ -63,3 +63,15 @@ select {
     font-size: 14px;
     /* Tamaño de fuente para mensajes de error */
 }
+
+/* Tu archivo de estilos CSS */
+.disabled-field {
+    background-color: #f2f2f2;
+    /* Cambia el color de fondo a un tono gris claro */
+    color: #555;
+    /* Cambia el color del texto a un tono gris oscuro */
+    border: 1px solid #ddd;
+    /* Añade un borde gris claro */
+    pointer-events: none;
+    /* Deshabilita las interacciones del puntero para que no se pueda hacer clic */
+}
