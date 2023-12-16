@@ -28,12 +28,15 @@ class Actividad(models.Model):
 
 #------------- CURSO --------------------
 class Curso(models.Model):
+    DURACION = [
+        (0, "Todo el año"),
+        (1, "3 meses"),
+        (2, "6 meses"),
+        (3, "Indefinido"),
+    ]
     actividad = models.ForeignKey(Actividad,related_name="cursos", on_delete=models.CASCADE)
-    costo = models.DecimalField(
-        help_text="costo total del curso sin puntos",
-        max_digits=10,
-        decimal_places=0
-    )
+    duracion = models.PositiveSmallIntegerField(choices=DURACION)
+    capacidad_maxima= models.PositiveIntegerField(help_text="Máximo de inscriptos")
     nombre = models.CharField(
         max_length=50,
         validators=[text_validator],  # Añade tu validador personalizado si es necesario
@@ -44,16 +47,7 @@ class Curso(models.Model):
         validators=[text_validator],  # Añade tu validador personalizado si es necesario
         help_text="Descripción del curso"
     )
-    # se le dejara a los cursos de gimnasio obligatorio certificado medico
-    certificado_medico = models.BooleanField()
-    periodo_pago=models.PositiveSmallIntegerField(choices=PERIODO_PAGO)
-    descuento = models.PositiveIntegerField(
-        help_text="porcentaje de descuento",
-        validators=[
-            MinValueValidator(0, message="El descuento no puede ser menor que 0."),
-            MaxValueValidator(100, message="El descuento no puede ser mayor que 100."),
-        ]
-    )
+
     def __str__(self):
         return f"{self.nombre} {self.actividad} Precio:{self.costo}"
     
@@ -80,7 +74,23 @@ class Dictado(models.Model):
         max_length=50,
         validators=[text_validator],  # Añade tu validador personalizado si es necesario
         help_text="Solo se permiten letras y espacios."
-    )    
+    )
+    descuento = models.PositiveIntegerField(
+        help_text="porcentaje de descuento",
+        validators=[
+            MinValueValidator(0, message="El descuento no puede ser menor que 0."),
+            MaxValueValidator(100, message="El descuento no puede ser mayor que 100."),
+        ]
+    )
+    # se le dejara a los cursos de gimnasio obligatorio certificado medico
+    certificado_medico = models.BooleanField()
+    periodo_pago=models.PositiveSmallIntegerField(choices=PERIODO_PAGO)
+
+    costo = models.DecimalField(
+        help_text="costo total del curso sin puntos",
+        max_digits=10,
+        decimal_places=0
+    )
     curso = models.ForeignKey(Curso, related_name="dictado_set", on_delete=models.CASCADE, null=True, blank=True)
 
     def __str__(self):

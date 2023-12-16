@@ -24,9 +24,19 @@ def validate_positive_decimal(value):
     if value < 0:
         raise ValidationError(f'{XMARK_ICON} El sueldo no puede ser un valor negativo.')
 
-celular_validator = RegexValidator(
-        regex=r'^\d{3}-\d{8}$',
-        message=f'{XMARK_ICON} Número no válido',
-        code='invalid_celular_argentino'
-    )
+def telefono_argentino_validator(value):
+    """
+    Valida números de teléfono con características argentinas.
+    Acepta formatos: +549XXXXXXXXX, 0XX-XXXXXXXX, 15XXXXXXXXX.
+    """
+    if not value:
+        return  # Permite valores vacíos, ya que eso debería ser manejado por otro validador si es necesario.
 
+    # Acepta los formatos +549XXXXXXXXX, 0XX-XXXXXXXX, 15XXXXXXXXX.
+    pattern = r'^(\+?549\d{9}|0\d{2}-\d{8}|15\d{8})$'
+    if not RegexValidator(pattern)(value):
+        raise ValidationError('Número de teléfono no válido para Argentina. Utilice el formato +549XXXXXXXXX, 0XX-XXXXXXXX o 15XXXXXXXXX.')
+
+# Define una función para validar si el valor es un número
+def is_numeric(value):
+    return value.isnumeric()

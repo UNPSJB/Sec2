@@ -35,7 +35,6 @@ class FormularioProfesor(forms.ModelForm):
             }
 
     def clean_dni(self):
-        print("ESTOY EN EL CLEAN_DNI")
         self.persona = Persona.objects.filter(dni=self.cleaned_data['dni']).first()
         if self.persona is not None and self.persona.es_profesor:
             raise ValidationError("Ya existe un Profesor activo con ese DNI")

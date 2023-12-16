@@ -5,25 +5,22 @@
 
 {% block tabla_listado %}
   <table class="table table-sm table-hover">
-
     <thead>
       <tr>
         <th>#</th>
-        <th scope="col">Curso</th>
+        <th scope="col">Nombre</th>
         <th scope="col">Actividad</th>
-        <th scope="col">Costo</th>
-        <th scope="col">Pago</th>
-        <th scope="col"></th>
+        <th scope="col">Duración</th>
       </tr>
     </thead>
 
     <tbody>
       {% for curso in object_list %}
-      <tr class="bg-transition fila-personalizada">
-        <td>{{ forloop.counter }}</td>
+        <tr class="bg-transition fila-personalizada">
+          <td>{{ forloop.counter }}</td>
           <td>{{ curso.nombre }}</td>
           <td>{{ curso.actividad.nombre }}</td>
-          <td>${{ curso.costo }}</td>
+          <td>{{ curso.get_duracion_display }}</td>
           <td>{{ curso.get_periodo_pago_display }}</td>
           <td>
             <a href="{% url 'cursos:curso_detalle' curso.pk %}" class="btn btn-primary btn-detalle"><i class="fa-regular fa-eye"></i> Detalle</a>

@@ -5,9 +5,6 @@ from django.utils import timezone
 from utils.constants import *
 from utils.regularexpressions import *
 
-# Define una función para validar si el valor es un número
-def is_numeric(value):
-    return value.isnumeric()
 
 class Persona(models.Model):
     dni = models.CharField(
@@ -48,9 +45,9 @@ class Persona(models.Model):
     )
 
     celular = models.CharField(
-        max_length=12,  # Máximo 12 caracteres para ###-########
-        validators=[celular_validator],
-        help_text='Formato ###-########.'
+        max_length=13,  # Máximo 12 caracteres para ###-########
+        validators=[numeric_validator],
+        help_text='549XXXXXXXXX, 0XX-XXXXXXXX o 15XXXXXXXXX.'
     )
     
     direccion = models.CharField(max_length=50, validators=[text_and_numeric_validator], help_text='Calle y numero')

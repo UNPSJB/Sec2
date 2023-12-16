@@ -36,8 +36,13 @@ class ActividadForm(forms.ModelForm):
 class ActividadCreateForm(ActividadForm):
     class Meta:
         model = Actividad
-        fields = '__all__'  # Incluir todos los campos, incluido 'area'
+        fields = '__all__'
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['area'].widget.attrs['disabled'] = False
+        self.fields['area'].widget.attrs['class'] = ''
+        self.fields['area'].required = True
 
 ## ------------ FILTRO PARA ACTIVIDAD --------------
 class ActividadFilterForm(FiltrosForm):

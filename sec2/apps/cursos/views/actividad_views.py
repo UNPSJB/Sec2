@@ -15,7 +15,7 @@ class ActividadCreateView(CreateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['titulo'] ="Formulario Alta de Actividad"
+        context['titulo'] = "Formulario Alta de Actividad"
         return context
 
     def form_valid(self, form):
@@ -43,11 +43,7 @@ class ActividadDetailView(DetailView):
         cursos_info = [
             {
                 'pk' : curso.id,
-                'nombre': curso.nombre,
-                'costo': curso.costo,
-                'certificado_medico': curso.certificado_medico,
-                'periodo_pago': curso.periodo_pago,
-                'descuento': curso.descuento,
+                'nombre': curso.nombre
             }
             for curso in cursos_relacionados
         ]

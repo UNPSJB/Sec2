@@ -7,9 +7,11 @@
   <table class="table table-sm table-hover">
     <thead>
       <tr>
+        <th>#</th>
         <th scope="col">Dni</th>
         <th scope="col">Apellido</th>
         <th scope="col">Nombre</th>
+        <th scope="col">Capacitaciones</th>
         <th scope="col"></th>
       </tr>
     </thead>
@@ -17,9 +19,11 @@
     <tbody>
       {% for profesor in object_list %}
         <tr>
+          <td>{{ forloop.counter }}</td>
           <td>{{ profesor.persona.dni }}</td>
           <td>{{ profesor.persona.apellido }}</td>
           <td>{{ profesor.persona.nombre }}</td>
+          <td>{{ profesor.capacitaciones }}</td>
           <td>
             <a href="{% url 'cursos:profesor_modificar' profesor.pk %}" class="btn btn-primary btn-detalle"><i class="fa-regular fa-eye"></i> Detalle</a>
           </td>

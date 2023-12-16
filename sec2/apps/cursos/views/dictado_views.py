@@ -5,6 +5,10 @@ from utils.constants import *
 from django.shortcuts import render
 from django.urls import reverse
 from ..forms.dictado_forms import *
+from django.urls import reverse_lazy
+from django.contrib import messages
+from django.shortcuts import redirect
+
 
 ####################### SECCION DE DICTADO #######################
 ##--------------- CREACION DE DICTADO --------------------------------
@@ -12,6 +16,7 @@ class DictadoCreateView(CreateView):
     model = Dictado
     form_class = FormularioDictado
     template_name = 'dictado/dictado_form.html'
+    success_url = reverse_lazy('cursos:dictado_listado')
 
     def get_initial(self,*args, **kwargs):
         curso= Curso.objects.get(pk=self.kwargs.get("pk"))
@@ -27,12 +32,15 @@ class DictadoCreateView(CreateView):
         return context
 
     def get(self, request, *args, **kwargs):
-        # Verificar si hay alguna actividad antes de renderizar el formulario
         if Profesor.objects.exists():
             return super().get(request, *args, **kwargs)
         else:
-            return render(request, 'dictado/falta_profesor.html', {'titulo': 'Te falta menos calle'})
-
+            messages.warning(
+                self.request, 
+                '<i class="fa-solid fa-triangle-exclamation fa-flip"></i> Tienes que dar de alta a un profesor para poder crear un Dictado!'
+            )
+            return redirect('cursos:profesor_crear')
+        
     def get_success_url(self):
         # Obtiene el pk del curso desde los kwargs de la vista
         pk_curso = self.kwargs.get('pk', None)

@@ -25,16 +25,23 @@ class CursoForm(forms.ModelForm):
 
 class CursoFilterForm(FiltrosForm):
     nombre = forms.CharField(required=False)
-    # actividad = forms.ChoiceField(required=False)
-    periodo_pago = forms.ChoiceField(
-        label='Periodo de pago',
-        choices=[('', '---------')] + list(PERIODO_PAGO),
-        required=False,
-        widget=forms.Select(attrs={'class': 'form-control'})
-    )
     actividad = forms.ModelChoiceField(
         label='Actividad',
         queryset=Actividad.objects.all(),
         required=False,
         widget=forms.Select(attrs={'class': 'form-control'})
     )
+    duracion = forms.ChoiceField(
+        label='Duración',
+        choices=[('', '---------')] + list(Curso.DURACION),
+        required=False,
+        widget=forms.Select(attrs={'class': 'form-control'})
+    )
+    
+    def clean_duracion(self):
+        duracion = self.cleaned_data['duracion']
+        try:
+            return int(duracion)
+        except (ValueError, TypeError):
+            # Si no se puede convertir a un número, devuelve None
+            return None

@@ -17,16 +17,17 @@
       </div>
       <div class="col-md-3">
         <div class="form-group">
-          <label for="{{ form.periodo_pago.id_for_label }}">Período de pago:</label>
+          <label for="{{ form.duracion.id_for_label }}">Duración:</label>
           <br />
-          {{ form.periodo_pago }}
+          {{ form.duracion }}
         </div>
       </div>
       <div class="col-md-3">
         <div class="form-group">
-          <label for="{{ form.costo.id_for_label }}">Costo:</label>
+          <label for="{{ form.capacidad_maxima.id_for_label }}">Capacidad:</label>
           <br />
-          {{ form.costo }}
+          {{ form.capacidad_maxima }}
+          <small class="help-text">{{ form.capacidad_maxima.help_text }}</small>
         </div>
       </div>
     </div>
@@ -51,36 +52,6 @@
         </div>
       </div>
     </div>
-
-    <div class="row">
-      <div class="col">
-        <div class="form-group">
-          <label for="{{ form.descuento.id_for_label }}">Descuento:</label>
-          <br />
-          {{ form.descuento }}
-          <br />
-          {% if form.descuento.errors %}
-            <small class="error-text">
-              {% for error in form.descuento.errors %}
-                <i class="fas fa-times"></i> {{ error }}
-                {% if not loop.last %}
-                  <br />
-                {% endif %}
-              {% endfor %}
-            </small>
-          {% endif %}
-          <small class="help-text">{{ form.descuento.help_text }}</small>
-        </div>
-      </div>
-      <div class="col">
-        <div class="form-group">
-          <label for="{{ form.certificado_medico.id_for_label }}">Requiere certificado:</label>
-          <br />
-          {{ form.certificado_medico }}
-        </div>
-      </div>
-    </div>
-
     <div class="row row-cols-1 row-cols-sm-1 row-cols-md-2">
       <div class="col">
         <a href="{% url 'cursos:index' %}" class="btn btn-secondary">Cancelar</a>

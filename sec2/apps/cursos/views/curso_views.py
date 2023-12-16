@@ -106,13 +106,13 @@ class CursoListView(ListFilterView):
         if form.is_valid():
             nombre = form.cleaned_data.get('nombre')
             actividad = form.cleaned_data.get('actividad')
-            periodo_pago = form.cleaned_data.get('periodo_pago')
+            duracion = form.cleaned_data.get('duracion')  # Añade el campo duracion
             if nombre:
                 queryset = queryset.filter(nombre__icontains=nombre)
             if actividad:
                 queryset = queryset.filter(actividad=actividad)
-            if periodo_pago:
-                queryset = queryset.filter(periodo_pago=periodo_pago)
+            if duracion is not None:
+                queryset = queryset.filter(duracion=duracion)
         return queryset
 
     def get_success_url(self):

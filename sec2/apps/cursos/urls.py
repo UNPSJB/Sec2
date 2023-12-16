@@ -28,7 +28,6 @@ urlpatterns = [
     path('cursos', CursoListView.as_view(), name="curso_listado"),
     path('curso/<int:pk>',CursoDetailView.as_view(), name="curso_detalle"),
     path('<int:pk>/editar', CursoUpdateView.as_view(), name="curso_editar"),
-    #! FALTA CHECKEAR
     path('<int:pk>/eliminar', curso_eliminar, name="curso_eliminar"),
 
     # TODO:------------------------  DICTADOS  ----------------------------------
@@ -40,7 +39,7 @@ urlpatterns = [
 
     path('dictado/<int:pk>/verclases', ClaseListView.as_view(), name="ver_clases"),#se accede desde el dictado
 
-    # * ------------------------  PROFESORES  ----------------------------
+    # TODO: ------------------------  PROFESORES  ----------------------------
     path('profesores/crear', ProfesorCreateView.as_view(), name="profesor_crear"),
     path('profesores', ProfesorListView.as_view(), name="profesores"),
     path('profesores/<int:pk>/editar', ProfesorUpdateView.as_view(), name="profesor_modificar"),

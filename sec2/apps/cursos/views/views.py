@@ -1,3 +1,4 @@
+from audioop import reverse
 from django.template import loader
 from django.http import HttpResponse
 from django.shortcuts import redirect
@@ -30,7 +31,8 @@ def registrarAlumnoADictado(request, pk, apk):
 def curso_eliminar(request, pk):
     a = Curso.objects.get(pk=pk)
     a.delete()
-    return redirect('cursos:cursos')
+    messages.success(request, f'<i class="fa-solid fa-square-check fa-beat-fade"></i>   El curso "{a.nombre}" se ha eliminado con éxito.')
+    return redirect('cursos:curso_listado') 
 
 def aula_eliminar(request, pk):
     a = Aula.objects.get(pk=pk)
