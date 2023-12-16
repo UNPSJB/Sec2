@@ -25,15 +25,16 @@ class CursoCreateView(CreateView):
         return context
     
     def get(self, request, *args, **kwargs):
-        # Verificar si hay alguna actividad antes de renderizar el formulario
         tiene_actividad = Actividad.objects.exists()
-        
+
         if tiene_actividad:
-            # return render(request, 'curso/curso_form.html', {'titulo': 'te falta calle'})
             return super().get(request, *args, **kwargs)
         else:
-            # Renderizar un mensaje indicando que falta crear una actividad
-            return render(request, 'curso/falta_actividad.html', {'titulo': 'Te falta menos calle'})
+            messages.warning(
+                self.request, 
+                '<i class="fa-solid fa-triangle-exclamation fa-flip"></i> Completa el siguiente formulario para poder crear un Curso!'
+            )
+            return redirect('cursos:actividad_crear')
 
     def form_valid(self, form):
         messages.success(self.request, f'{ICON_CHECK} Alta de curso exitosa!')

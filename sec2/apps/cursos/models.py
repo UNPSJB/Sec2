@@ -15,8 +15,13 @@ class Actividad(models.Model):
         validators=[text_validator],  # Añade tu validador personalizado si es necesario
         help_text="Solo se permiten letras y espacios."
     )
+    descripcion = models.CharField(
+        max_length=100,
+        validators=[text_validator],  # Añade tu validador personalizado si es necesario
+        help_text="Descripción del la actividad"
+    )
     area = models.PositiveSmallIntegerField(choices=AREAS)
-    
+
     def __str__(self):
         return self.nombre
 
@@ -30,7 +35,7 @@ class Curso(models.Model):
     )
     nombre = models.CharField(
         max_length=50,
-        validators=[text_and_numeric_validator],  # Añade tu validador personalizado si es necesario
+        validators=[text_validator],  # Añade tu validador personalizado si es necesario
         help_text="Solo se permiten letras y espacios."
     )
     # se le dejara a los cursos de gimnasio obligatorio certificado medico

@@ -9,10 +9,10 @@ numeric_validator = RegexValidator(
     )
 
 text_validator = RegexValidator(
-        regex=r'^[A-Za-záéíóúÁÉÍÓÚñÑ\s]+$',
-        message=f'{XMARK_ICON} Debe contener letras y/o espacios.',
-        code='invalid_text'
-    )
+    regex=r'^[A-Za-záéíóúÁÉÍÓÚñÑ\s.]+$',
+    message=f'{XMARK_ICON} Debe contener letras, espacios',
+    code='invalid_text'
+)
 
 text_and_numeric_validator = RegexValidator(
         regex=r'^[A-Za-z0-9\s]+$',

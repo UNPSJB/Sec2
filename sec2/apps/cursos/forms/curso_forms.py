@@ -11,7 +11,6 @@ class CursoForm(forms.ModelForm):
 
     def clean_nombre(self):
         nombre = self.cleaned_data['nombre']
-        nombre = nombre.lower()
         return nombre
 
     def clean(self):

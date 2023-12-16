@@ -7,7 +7,7 @@ from django import forms
 class ActividadForm(forms.ModelForm):
     class Meta:
         model = Actividad
-        fields = ['nombre', 'area']
+        fields = '__all__'
 
     def clean_nombre(self):
         nombre = self.cleaned_data['nombre']

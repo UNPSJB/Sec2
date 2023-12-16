@@ -1,9 +1,9 @@
-from ..models import Clase
-from ..forms.clase_forms import *
 from django.views.generic.edit import CreateView
-from django.shortcuts import render
-from django.shortcuts import redirect
+from django.shortcuts import render, redirect
 from sec2.utils import ListFilterView
+
+from ..models import Dictado, Aula, Clase
+from ..forms.clase_forms import *
 
 ##--------------- CREACION DE CLASE --------------------------------
 class ClaseCreateView(CreateView):
@@ -26,6 +26,7 @@ class ClaseCreateView(CreateView):
         return context
 
     def get(self, request, *args, **kwargs):
+        
         # Verificar si hay alguna actividad antes de renderizar el formulario
         if Aula.objects.exists():
             return super().get(request, *args, **kwargs)

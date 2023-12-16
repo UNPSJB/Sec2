@@ -31,6 +31,29 @@ class ActividadDetailView(DetailView):
     model = Actividad
     template_name = 'actividad/actividad_detalle.html'
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['titulo'] = 'Detalle de Actividad'
+        context['tituloListado'] = 'Cursos relacionados'
+        
+        # Obtener todos los cursos relacionados con la actividad actual
+        cursos_relacionados = self.object.cursos.all()
+        
+        # Puedes agregar más información sobre los cursos según tus necesidades
+        cursos_info = [
+            {
+                'nombre': curso.nombre,
+                'costo': curso.costo,
+                'certificado_medico': curso.certificado_medico,
+                'periodo_pago': curso.periodo_pago,
+                'descuento': curso.descuento,
+            }
+            for curso in cursos_relacionados
+        ]
+
+        context['cursos_info'] = cursos_info
+        return context
+
 ## ------------ ACTIVIDAD UPDATE -------------------
 class ActividadUpdateView(UpdateView):
     model = Actividad
@@ -62,7 +85,18 @@ class ActividadListView(ListView):
     filter_class = ActividadFilterForm
     template_name = 'actividad/actividad_list.html'
 
+    def get_queryset(self):
+        queryset = Actividad.objects.all()
+        filtros = ActividadFilterForm(self.request.GET)
+        if filtros.is_valid():
+            if filtros.cleaned_data['nombre']:
+                queryset = queryset.filter(nombre__icontains=filtros.cleaned_data['nombre'])
+            if filtros.cleaned_data['area']:
+                queryset = queryset.filter(area=filtros.cleaned_data['area'])
+        return queryset
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        context['filtros'] = ActividadFilterForm(self.request.GET)
         context['titulo'] = "Listado de Actividades"
         return context

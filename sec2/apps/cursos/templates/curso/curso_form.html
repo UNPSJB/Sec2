@@ -26,23 +26,17 @@
           <label for="{{ form.nombre.id_for_label }}">Nombre del curso:</label>
           <br />
           {{ form.nombre }}
-          <small class="error-text" style="color: red;">{{ form.nombre.first }}</small>
+          <small class="error-text" style="color: red;">{{ form.nombre.error }}</small>
         </div>
       </div>
 
       <div class="col-md-6">
         <div class="form-group">
-          <label for="{{ form.modulos.id_for_label }}">Módulos:</label>
-          <br />
-          {{ form.modulos }}
-        </div>
-
-        <br />
-        <div class="form-group">
           <label for="{{ form.periodo_pago.id_for_label }}">Período de pago:</label>
           <br />
           {{ form.periodo_pago }}
         </div>
+
         <br />
         <div class="form-group">
           <label for="{{ form.descuento.id_for_label }}">Descuento:</label>
