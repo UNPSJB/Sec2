@@ -60,6 +60,12 @@
             <td>{{ forloop.counter }}</td>
             <td>{{ curso_info.nombre }}</td>
             <td>
+              {% if curso_info.pk %}
+                <a href="{% url 'cursos:curso' curso_info.pk %}" class="btn btn-primary btn-detalle"><i class="fa-regular fa-eye"></i> Detalle</a>
+              {% else %}
+                <!-- Manejo de la situación donde curso_info.pk es nulo o vacío -->
+                <span class="btn btn-secondary btn-detalle disabled"><i class="fa-regular fa-eye-slash"></i> Detalle no disponible</span>
+              {% endif %}
             </td>
           </tr>
         {% endfor %}

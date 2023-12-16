@@ -18,7 +18,7 @@ urlpatterns = [
 
     # TODO:------------------------  ACTIVIDADES  ----------------------------
     path('actividades/actividad/crear', ActividadCreateView.as_view(), name="actividad_crear"),
-    path('actividades/actividad/<int:pk>', ActividadDetailView.as_view(), name="actividad_detalles"),
+    path('actividades/actividad/<int:pk>', ActividadDetailView.as_view(), name="actividad_detalle"),
     path('actividades/actividad/<int:pk>/editar', ActividadUpdateView.as_view(), name="actividad_actualizar"),
     path('actividades/actividad/<int:pk>/eliminar', actividad_eliminar, name="actividad_eliminar"),
     path('actividades/listado', ActividadListView.as_view(), name="actividad_listado"),

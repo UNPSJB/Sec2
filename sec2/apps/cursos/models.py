@@ -2,6 +2,7 @@ from django.db import models
 from apps.personas.models import Rol
 from utils.constants import *
 from utils.regularexpressions import *
+from django.core.validators import MinValueValidator, MaxValueValidator
 
 # ---------------- ACTIVIDAD ---------------
 class Actividad(models.Model):
@@ -41,8 +42,13 @@ class Curso(models.Model):
     # se le dejara a los cursos de gimnasio obligatorio certificado medico
     certificado_medico = models.BooleanField()
     periodo_pago=models.PositiveSmallIntegerField(choices=PERIODO_PAGO)
-    descuento=models.PositiveIntegerField(help_text="porcentaje de descuento")
-
+    descuento = models.PositiveIntegerField(
+        help_text="porcentaje de descuento",
+        validators=[
+            MinValueValidator(0, message="El descuento no puede ser menor que 0."),
+            MaxValueValidator(100, message="El descuento no puede ser mayor que 100."),
+        ]
+    )
     def __str__(self):
         return f"{self.nombre} {self.actividad} Precio:{self.costo}"
     

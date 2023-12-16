@@ -1,96 +1,88 @@
-{% extends 'home_curso.html' %}
+{% extends 'detalle.html' %}
 
 {% load crispy_forms_tags %}
 {% load static %}
 
-{% block extracss_intermedia %}
-  <link href="{% static 'css/info_detalle.css' %}" rel="stylesheet" />
-  <link href="{% static 'css/listado.css' %}" rel="stylesheet" />
+{% block detalle_lado_izquierdo %}
+  <div class="col-md-3 d-flex align-items-center justify-content-center">
+    <img src="{% static 'images/curso.jpg' %}" alt="Imagen de perfil" class="img-thumbnail" />
+  </div>
 {% endblock %}
 
-{% block dinamica %}
-  <div class="container-sm">
-    <h2 class="titulo">{{ titulo }}</h2>
-    
-    <div class="perfil">
-      <img src="{% static 'images/curso.jpg' %}" alt="Imagen de perfil" class="img-thumbnail" />
-      <div >
-        <p>
-          <strong>Costo:</strong> ${{ curso.costo }}
-        </p>
-        <p>
-          <strong>Módulos:</strong> {{ curso.modulos }}
-        </p>
-        <p>
-          <strong>Período de Pago:</strong> {{ curso.get_periodo_pago_display }}
-        </p>
-        <p>
-          <strong>Actividad:</strong> {{ curso.actividad.get_area_display }}
-        </p>
-        {% if curso.certificado_medico %}
-          <p>
-            <strong>Requiere Certificado:</strong> Sí requiere
-          </p>
-        {% else %}
-          <p>
-            <strong>Requiere Certificado:</strong> No requiere
-          </p>
-        {% endif %}
-      </div>
-    </div>
-    
-    <br />
-    <div class="acciones">
-      <a href="{% url 'cursos:curso_editar' curso.pk %}" class="btn btn-primary">Editar</a>
-      <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#exampleModal_eliminar">Eliminar</button>
-      <div class="modal fade" id="exampleModal_eliminar" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-          <div class="modal-content">
-            <div class="modal-header">
-              <h1 class="modal-title fs-5" id="exampleModalLabel">ELIMINAR CURSO</h1>
-              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-              <h5>¿Estás seguro que deseas eliminar el curso?</h5>
-            </div>
-            <div class="modal-footer">
-              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
-              <a href="{% url 'cursos:curso_eliminar' curso.pk %}" class="btn btn-danger">Eliminar</a>
-            </div>
-          </div>
+{% block detalle_lado_derecho %}
+  <div>
+    <p>
+      <strong>Costo:</strong> ${{ curso.costo }}
+    </p>
+    <p>
+      <strong>Módulos:</strong> {{ curso.modulos }}
+    </p>
+    <p>
+      <strong>Período de Pago:</strong> {{ curso.get_periodo_pago_display }}
+    </p>
+    <p>
+      <strong>Actividad:</strong> {{ curso.actividad.get_area_display }}
+    </p>
+    {% if curso.certificado_medico %}
+      <p>
+        <strong>Requiere Certificado:</strong> Sí requiere
+      </p>
+    {% else %}
+      <p>
+        <strong>Requiere Certificado:</strong> No requiere
+      </p>
+    {% endif %}
+  </div>
+{% endblock %}
+
+{% block botones %}
+  <a href="{% url 'cursos:curso_editar' curso.pk %}" class="btn btn-primary">Editar</a>
+  <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#exampleModal_eliminar">Eliminar</button>
+  <div class="modal fade" id="exampleModal_eliminar" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h1 class="modal-title fs-5" id="exampleModalLabel">ELIMINAR CURSO</h1>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <h5>¿Estás seguro que deseas eliminar el curso?</h5>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+          <a href="{% url 'cursos:curso_eliminar' curso.pk %}" class="btn btn-danger">Eliminar</a>
         </div>
       </div>
     </div>
   </div>
+{% endblock %}
 
-  <div class="container-sm">
-    <h3>Dictados Asociados:</h3>
-    {% if dictados_info %}
+{% block listado_asociado %}
+  {% if dictados_info %}
     <table class="table table-sm table-hover">
       <thead>
+        <tr>
+          <th>N° Clases</th>
+          <th>Profesor/a</th>
+          <th>Cupo</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for dictado_info in dictados_info %}
           <tr>
-            <th>N° Clases</th>
-            <th>Profesor/a</th>
-            <th>Cupo</th>
-            <th></th>
+            <td>{{ dictado_info.dictado.cantidad_clase }}</td>
+            <td>{{ dictado_info.nombre_profesor }}</td>
+            <td>0/10</td>
+            <td>
+              <a href="{% url 'cursos:dictado' dictado_info.dictado.pk %}" class="btn btn-primary btn-detalle" onclick="window.open('{% url 'cursos:dictado' dictado_info.dictado.pk %}', 'NuevaVentana', 'width=800, height=600'); return false;"><i class="fa-regular fa-eye"></i> Detalle</a>
+            </td>
           </tr>
-        </thead>
-        <tbody>
-          {% for dictado_info in dictados_info %}
-            <tr>
-              <td>{{ dictado_info.dictado.cantidad_clase }}</td>
-              <td>{{ dictado_info.nombre_profesor }}</td>
-              <td>0/10</td>
-              <td>
-                <a href="{% url 'cursos:dictado' dictado_info.dictado.pk %}" class="btn btn-primary btn-detalle" onclick="window.open('{% url 'cursos:dictado' dictado_info.dictado.pk %}', 'NuevaVentana', 'width=800, height=600'); return false;"><i class="fa-regular fa-eye"></i> Detalle</a>
-              </td>
-            </tr>
-          {% endfor %}
-        </tbody>
-      </table>
-    {% else %}
-      <p>No hay dictados asociados.</p>
-    {% endif %}
-    <a href="{% url 'cursos:dictado_crear' curso.pk %}" class="btn btn-primary"><i class="fa-solid fa-plus"></i> Nuevo</a>
-  </div>
+        {% endfor %}
+      </tbody>
+    </table>
+  {% else %}
+    <p>No hay dictados asociados.</p>
+  {% endif %}
+  <a href="{% url 'cursos:dictado_crear' curso.pk %}" class="btn btn-primary"><i class="fa-solid fa-plus"></i> Nuevo</a>
 {% endblock %}

@@ -42,6 +42,7 @@ class ActividadDetailView(DetailView):
         # Puedes agregar más información sobre los cursos según tus necesidades
         cursos_info = [
             {
+                'pk' : curso.id,
                 'nombre': curso.nombre,
                 'costo': curso.costo,
                 'certificado_medico': curso.certificado_medico,
@@ -70,14 +71,13 @@ class ActividadUpdateView(UpdateView):
         form.instance.area = self.get_object().area
         actividad = form.save()
         messages.success(self.request, '<i class="fa-solid fa-square-check fa-beat-fade"></i> Actividad modificado con éxito')
-        return redirect('cursos:actividad_listado')
+        return redirect('cursos:actividad_detalle', pk=actividad.pk)
 
     def form_invalid(self, form):
         messages.warning(self.request, '<i class="fa-solid fa-triangle-exclamation fa-flip"></i> Por favor, corrija los errores a continuación.')
         for field, errors in form.errors.items():
             print(f"Campo: {field}, Errores: {', '.join(errors)}")
         return super().form_invalid(form)
-
 
 ## ------------ LISTADO DE ACTIVIDAD -------------------
 class ActividadListView(ListView):

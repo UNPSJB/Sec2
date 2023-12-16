@@ -7,6 +7,7 @@
   <table class="table table-sm table-hover">
     <thead>
       <tr>
+        <th>#</th>
         <th scope="col">Nombre</th>
         <th scope="col">Area</th>
         <th scope="col"></th>
@@ -15,10 +16,11 @@
     <tbody>
       {% for actividad in object_list %}
         <tr class="bg-transition fila-personalizada">
+          <td>{{ forloop.counter }}</td>
           <td>{{ actividad.nombre }}</td>
           <td>{{ actividad.get_area_display }}</td>
           <td>
-            <a href="{% url 'cursos:actividad_detalles' actividad.pk %}" class="btn btn-primary btn-detalle"><i class="fa-regular fa-eye"></i> Detalle</a>
+            <a href="{% url 'cursos:actividad_detalle' actividad.pk %}" class="btn btn-primary btn-detalle"><i class="fa-regular fa-eye"></i> Detalle</a>
           </td>
         </tr>
       {% endfor %}

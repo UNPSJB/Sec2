@@ -8,6 +8,7 @@
 
     <thead>
       <tr>
+        <th>#</th>
         <th scope="col">Nombre</th>
         <th scope="col">Actividad</th>
         <th scope="col">Costo</th>
@@ -20,6 +21,7 @@
     <tbody>
       {% for curso in object_list %}
         <tr>
+          <td>{{ forloop.counter }}</td>
           <td>{{ curso.nombre }}</td>
           <td>{{ curso.actividad.nombre }}</td>
           <td>{{ curso.costo }}</td>

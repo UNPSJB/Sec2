@@ -52,6 +52,7 @@ class CursoDetailView(DetailView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['titulo'] = f"Curso: {self.object.nombre}"
+        context['tituloListado'] = 'Dictados Asociados'
 
         # Obtener todos los dictados asociados al curso
         dictados = self.object.dictado_set.all()
