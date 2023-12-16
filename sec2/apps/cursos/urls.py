@@ -19,14 +19,14 @@ urlpatterns = [
     # TODO:------------------------  ACTIVIDADES  ----------------------------
     path('actividades/actividad/crear', ActividadCreateView.as_view(), name="actividad_crear"),
     path('actividades/actividad/<int:pk>', ActividadDetailView.as_view(), name="actividad_detalle"),
-    path('actividades/actividad/<int:pk>/editar', ActividadUpdateView.as_view(), name="actividad_actualizar"),
+    path('actividades/actividad/<int:pk>/editar', ActividadUpdateView.as_view(), name="actividad_editar"),
     path('actividades/actividad/<int:pk>/eliminar', actividad_eliminar, name="actividad_eliminar"),
     path('actividades/listado', ActividadListView.as_view(), name="actividad_listado"),
 
     # TODO:------------------------  CURSOS ----------------------------------
     path('curso/crear/', CursoCreateView.as_view(), name="curso_crear"),
     path('cursos', CursoListView.as_view(), name="curso_listado"),
-    path('curso/<int:pk>',CursoDetailView.as_view(), name="curso"),
+    path('curso/<int:pk>',CursoDetailView.as_view(), name="curso_detalle"),
     path('<int:pk>/editar', CursoUpdateView.as_view(), name="curso_editar"),
     #! FALTA CHECKEAR
     path('<int:pk>/eliminar', curso_eliminar, name="curso_eliminar"),

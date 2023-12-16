@@ -41,6 +41,16 @@
         </div>
       </div>
     </div>
+    <div class="row">
+      <div class="col">
+        <div class="form-group">
+          <label for="{{ form.descripcion.id_for_label }}">Descripción del curso:</label>
+          <br />
+          {{ form.descripcion }}
+          <small class="error-text" style="color: red;">{{ form.descripcion.error }}</small>
+        </div>
+      </div>
+    </div>
 
     <div class="row">
       <div class="col">
@@ -71,9 +81,13 @@
       </div>
     </div>
 
-    <br />
-    <a href="{% url 'cursos:curso_listado' %}" class="btn btn-secondary">Volver</a>
-    <button type="submit" name="crear_dictado" class="btn btn-secondary">Guardar y Crear Dictado</button>
-    <button type="submit" class="btn btn-primary">Guardar</button>
+    <div class="row row-cols-1 row-cols-sm-1 row-cols-md-2">
+      <div class="col">
+        <a href="{% url 'cursos:index' %}" class="btn btn-secondary">Cancelar</a>
+      </div>
+      <div class="col">
+        <button type="submit" class="btn btn-primary">Guardar</button>
+      </div>
+    </div>
   </form>
 {% endblock %}

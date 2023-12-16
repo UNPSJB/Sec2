@@ -1,5 +1,5 @@
 from django import forms
-from ..models import Curso
+from ..models import Curso, Actividad
 from utils.constants import *
 from sec2.utils import FiltrosForm
 
@@ -29,6 +29,12 @@ class CursoFilterForm(FiltrosForm):
     periodo_pago = forms.ChoiceField(
         label='Periodo de pago',
         choices=[('', '---------')] + list(PERIODO_PAGO),
+        required=False,
+        widget=forms.Select(attrs={'class': 'form-control'})
+    )
+    actividad = forms.ModelChoiceField(
+        label='Actividad',
+        queryset=Actividad.objects.all(),
         required=False,
         widget=forms.Select(attrs={'class': 'form-control'})
     )

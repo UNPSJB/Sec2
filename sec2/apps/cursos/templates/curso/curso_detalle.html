@@ -5,55 +5,77 @@
 
 {% block detalle_lado_izquierdo %}
   <div class="col-md-3 d-flex align-items-center justify-content-center">
-    <img src="{% static 'images/curso.jpg' %}" alt="Imagen de perfil" class="img-thumbnail" />
+    <img src="{% static 'images/curso.jpg' %}" style="width: 60%; height: auto;" alt="Imagen de perfil" class="img-thumbnail" />
   </div>
 {% endblock %}
 
 {% block detalle_lado_derecho %}
-  <div>
-    <p>
-      <strong>Costo:</strong> ${{ curso.costo }}
-    </p>
-    <p>
-      <strong>Módulos:</strong> {{ curso.modulos }}
-    </p>
-    <p>
-      <strong>Período de Pago:</strong> {{ curso.get_periodo_pago_display }}
-    </p>
-    <p>
-      <strong>Actividad:</strong> {{ curso.actividad.get_area_display }}
-    </p>
-    {% if curso.certificado_medico %}
-      <p>
-        <strong>Requiere Certificado:</strong> Sí requiere
-      </p>
-    {% else %}
-      <p>
-        <strong>Requiere Certificado:</strong> No requiere
-      </p>
-    {% endif %}
+  <div class="col-md-9">
+    <!-- Contenido nuevo -->
+    <div class="row">
+      <!-- Primera Fila: Actividad -->
+      <div class="col-md-12">
+        <div class="d-flex flex-column justify-content-between">
+          <p>
+            <strong>Descripción:</strong> {{ curso.descripcion }}
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <div class="row">
+      <!-- Segunda Fila: Descripción -->
+      <div class="col-md-12">
+        <p>
+          <strong>Actividad:</strong> {{ curso.actividad }} | {{ curso.actividad.get_area_display }}
+        </p>
+      </div>
+    </div>
+
+    <div class="row">
+      <!-- Tercera Fila: Costo, Período de Pago, Descuento -->
+      <div class="col-md-4">
+        <p>
+          <strong>Costo:</strong> ${{ curso.costo }}
+        </p>
+      </div>
+      <div class="col-md-4">
+        <p>
+          <strong>Período de Pago:</strong> {{ curso.get_periodo_pago_display }}
+        </p>
+      </div>
+      <div class="col-md-4">
+        <p>
+          <strong>Descuento para afiliados:</strong> {{ curso.descuento }} %
+        </p>
+      </div>
+    </div>
+
+    <div class="row">
+      <!-- Cuarta Fila: Certificado -->
+      <div class="col-md-12">
+        {% if curso.certificado_medico %}
+          <p>
+            <strong>Certificado:</strong> Sí requiere
+          </p>
+        {% else %}
+          <p>
+            <strong>Certificado:</strong> No requiere
+          </p>
+        {% endif %}
+      </div>
+    </div>
   </div>
 {% endblock %}
 
 {% block botones %}
-  <a href="{% url 'cursos:curso_editar' curso.pk %}" class="btn btn-primary">Editar</a>
-  <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#exampleModal_eliminar">Eliminar</button>
-  <div class="modal fade" id="exampleModal_eliminar" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h1 class="modal-title fs-5" id="exampleModalLabel">ELIMINAR CURSO</h1>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-        </div>
-        <div class="modal-body">
-          <h5>¿Estás seguro que deseas eliminar el curso?</h5>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
-          <a href="{% url 'cursos:curso_eliminar' curso.pk %}" class="btn btn-danger">Eliminar</a>
-        </div>
-      </div>
-    </div>
+  <div class="col d-flex justify-content-center">
+    <a href="{% url 'cursos:curso_editar' curso.pk %}" class="btn btn-primary btn-sm btn-detalle"><i class="fa-regular fa-pen-to-square"></i> Modificar</a>
+  </div>
+
+  <div class="col d-flex justify-content-end">
+    <button type="button" class="btn btn-danger btn-sm btn-detalle" data-bs-toggle="modal" data-bs-target="#exampleModal_eliminar"><i class="fa-regular fa-circle-down"></i> Dar de Baja</button>
+    {% include 'curso/modal_confirm_baja.html' %}
   </div>
 {% endblock %}
 

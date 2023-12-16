@@ -35,7 +35,7 @@
 
 {% block botones %}
   <div class="col d-flex justify-content-center">
-    <a href="{% url 'cursos:actividad_actualizar' object.pk %}" class="btn btn-primary btn-sm btn-detalle"><i class="fa-regular fa-pen-to-square"></i> Modificar</a>
+    <a href="{% url 'cursos:actividad_editar' object.pk %}" class="btn btn-primary btn-sm btn-detalle"><i class="fa-regular fa-pen-to-square"></i> Modificar</a>
   </div>
 
   <div class="col d-flex justify-content-end">
@@ -61,7 +61,7 @@
             <td>{{ curso_info.nombre }}</td>
             <td>
               {% if curso_info.pk %}
-                <a href="{% url 'cursos:curso' curso_info.pk %}" class="btn btn-primary btn-detalle"><i class="fa-regular fa-eye"></i> Detalle</a>
+                <a href="{% url 'cursos:curso_detalle' curso_info.pk %}" class="btn btn-primary btn-detalle"><i class="fa-regular fa-eye"></i> Detalle</a>
               {% else %}
                 <!-- Manejo de la situación donde curso_info.pk es nulo o vacío -->
                 <span class="btn btn-secondary btn-detalle disabled"><i class="fa-regular fa-eye-slash"></i> Detalle no disponible</span>

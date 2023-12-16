@@ -39,6 +39,11 @@ class Curso(models.Model):
         validators=[text_validator],  # Añade tu validador personalizado si es necesario
         help_text="Solo se permiten letras y espacios."
     )
+    descripcion = models.CharField(
+        max_length=255,
+        validators=[text_validator],  # Añade tu validador personalizado si es necesario
+        help_text="Descripción del curso"
+    )
     # se le dejara a los cursos de gimnasio obligatorio certificado medico
     certificado_medico = models.BooleanField()
     periodo_pago=models.PositiveSmallIntegerField(choices=PERIODO_PAGO)

@@ -125,17 +125,17 @@ class CursoUpdateView(UpdateView):
     model = Curso
     form_class = CursoForm
     template_name = 'curso/curso_form.html'
-    success_url = reverse_lazy('cursos:cursos')
+    success_url = reverse_lazy('cursos:curso')
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['titulo'] = "Modificar Curso"  # Agrega el título al contexto
+        context['titulo'] = "Modificar Curso"
         return context
     
     def form_valid(self, form):
         curso = form.save()
         messages.success(self.request, '<i class="fa-solid fa-square-check fa-beat-fade"></i> Curso modificado con éxito')
-        return redirect('cursos:curso')
+        return redirect('cursos:curso_detalle', pk=curso.pk)
 
     def form_invalid(self, form):
         messages.warning(self.request, '<i class="fa-solid fa-triangle-exclamation fa-flip"></i> Por favor, corrija los errores a continuación.')
