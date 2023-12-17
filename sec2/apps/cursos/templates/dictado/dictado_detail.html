@@ -2,58 +2,121 @@
 {% load crispy_forms_tags %}
 {% load static %}
 
-  <link href="{% static 'css/info_detalle.css' %}" rel="stylesheet" />
-  <link href="{% static 'css/listado.css' %}" rel="stylesheet" />
-
-
-  {% block detalle_lado_izquierdo %}
-    <p>
-      <strong>Cantidad de clases:</strong> {{ dictado.cantidad_clase }}
-    </p>
-    <p>
-      <strong>Profesor:</strong> {{ nombre_profesor }}
-    </p>
-    <p>
-      <strong>Min Alumnos:</strong> {{ dictado.minimo_alumnos }}
-    </p>
-    <p>
-      <strong>Max Alumnos:</strong> {{ dictado.max_alumnos }}
-    </p>
-    <br />
-    <div class="acciones">
-      <td>
-        <a href="{% url 'cursos:clase_crear' dictado.pk %}" class="btn btn-primary">Generar clase</a>
-      </td>
+{% block detalle %}
+  <div class="row">
+    <div class="col-md-6">
+      <p>
+        <strong>Nombre:</strong> {{ dictado.nombre }}
+      </p>
     </div>
-
-  <div class="container-sm">
-    <br />
-    <h3>Clases Asociadas:</h3>
-    {% if clases %}
-      <table class="table table-sm table-hover">
-        <thead>
-          <tr>
-            <th>Fecha</th>
-            <th>Hora de inicio</th>
-            <th>Hora de fin</th>
-            <th></th>
-          </tr>
-        </thead>
-        <tbody>
-          {% for clase in clases %}
-            <tr>
-              <td>{{ clase.fecha }}</td>
-              <td>{{ clase.hora_inicio }}</td>
-              <td>{{ clase.hora_fin }}</td>
-              <td>
-                <a href="{% url 'cursos:index' %}" class="btn btn-success btn-detalle">Marcar asistencia</a>
-              </td>
-            </tr>
-          {% endfor %}
-        </tbody>
-      </table>
-    {% else %}
-      <p>No hay clases asociadas.</p>
-    {% endif %}
+    <div class="col-md-6">
+      <p>
+        <strong>Titular:</strong> {{ nombre_profesor }}
+      </p>
+    </div>
   </div>
+
+  <div class="row">
+    <div class="col-md-6">
+      <p>
+        <strong>Costo:</strong> ${{ dictado.costo }} AR por {{ dictado.get_periodo_pago_display }}
+      </p>
+    </div>
+    <div class="col-md-6">
+      <strong>Método de pago:</strong> Por {{ dictado.get_periodo_pago_display }}
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col">
+      <p>
+        <strong>Descuento:</strong> Afiliados al sindicato reciben un descuento del {{ dictado.descuento }}% en cuota mensual
+      </p>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-md-6">
+      <p>
+        <strong>Cantidad de clases:</strong> {{ dictado.cantidad_clase }} aproximado
+      </p>
+    </div>
+    <div class="col-md-6">
+      <strong>Módulos por Clase:</strong>
+      {% if dictado.modulos == 1 %}
+        {{ dictado.modulos }} módulo ({{ dictado.modulos }} hora por clase)
+      {% else %}
+        {{ dictado.modulos }} módulos ({{ dictado.modulos }} horas por clase)
+      {% endif %}
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-md-6">
+      <p>
+        <strong>Capcidad minima:</strong> {{ dictado.minimo_alumnos }} participantes
+      </p>
+    </div>
+    <div class="col-md-6">
+      <strong>Limite de capacidad:</strong> {{ dictado.maximos_alumnos }} participantes
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col">
+      <p>
+        <strong>Certificado médico:</strong>
+        {% if dictado.certificado_medico == 1 %}
+          Se requiere certificado médico para participar, especialmente para actividades físicas intensas.
+        {% elif dictado.certificado_medico == 2 %}
+          No requiere
+        {% elif dictado.certificado_medico == 3 %}
+          Se recomienda certificado médico, pero no es obligatorio
+        {% endif %}
+      </p>
+    </div>
+  </div>
+{% endblock %}
+
+{% block botones %}
+<div class="col d-flex justify-content-center">
+  <a href="{% url 'cursos:dictado_editar' curso_pk=curso.pk dictado_pk=object.pk %}" class="btn btn-primary btn-sm btn-detalle"><i class="fa-regular fa-pen-to-square"></i> Modificar</a>
+</div>
+
+<div class="col d-flex justify-content-end">
+  <button type="button" class="btn btn-danger btn-sm btn-detalle" data-bs-toggle="modal" data-bs-target="#exampleModal_eliminar"><i class="fa-regular fa-circle-down"></i> Dar de Baja</button>
+  {% include 'dictado/modal_confirm_baja.html' %}
+</div>
+
+{% endblock %}
+
+{% block listado_asociado %}
+  <h3>Clases Asociadas:</h3>
+  {% if clases %}
+    <table class="table table-sm table-hover">
+      <thead>
+        <tr>
+          <th>Fecha</th>
+          <th>Hora de inicio</th>
+          <th>Hora de fin</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for clase in clases %}
+          <tr>
+            <td>{{ clase.fecha }}</td>
+            <td>{{ clase.hora_inicio }}</td>
+            <td>{{ clase.hora_fin }}</td>
+            <td>
+              <a href="{% url 'cursos:index' %}" class="btn btn-success btn-detalle">Marcar asistencia</a>
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  {% else %}
+    <p>No hay clases asociadas.</p>
+  {% endif %}
+  <a href="{% url 'cursos:clase_crear' dictado.pk %}" class="btn btn-primary">Generar clase</a>
 {% endblock %}

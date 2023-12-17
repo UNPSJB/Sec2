@@ -31,7 +31,8 @@ urlpatterns = [
 
     # DICTADOS
     path('cursos/curso/<int:pk>/dictados/dictado/crear', DictadoCreateView.as_view(), name="dictado_crear"),
-    path('cursos/curso/<int:curso_pk>/dictados/dictado/<int:dictado_pk>/', DictadoDetailView.as_view(), name="dictado_detalle"),
+    path('cursos/curso/<int:curso_pk>/dictados/dictado/<int:dictado_pk>', DictadoDetailView.as_view(), name="dictado_detalle"),
+    path('cursos/curso/<int:curso_pk>/dictados/dictado/<int:dictado_pk>/editar', DictadoUpdateView.as_view(), name="dictado_editar"),
     path('cursos/<int:pk>/dictados', DictadoListView.as_view(), name="dictado_listado"),
 
 

@@ -1,6 +1,7 @@
 from django import forms
+from django.shortcuts import get_object_or_404
 from apps.cursos.forms.titular_forms import *
-from ..models import Dictado, Profesor
+from ..models import Curso, Dictado, Profesor
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Fieldset, Submit
 from sec2.utils import FiltrosForm
@@ -23,8 +24,8 @@ class DictadoForm(forms.ModelForm):
         minimo_alumnos = cleaned_data.get('minimo_alumnos')
         maximos_alumnos = cleaned_data.get('maximos_alumnos')
         if minimo_alumnos is not None and maximos_alumnos is not None:
-            if minimo_alumnos >= maximos_alumnos:
-                raise forms.ValidationError('El número mínimo de inscriptos debe ser menor que el máximo.')
+            if minimo_alumnos > maximos_alumnos:
+                raise forms.ValidationError('La capacidad minima tiene que ser menor al maximo de inscriptos.')
         return cleaned_data
 
 

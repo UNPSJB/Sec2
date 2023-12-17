@@ -21,13 +21,13 @@ from .views import *
 
 urlpatterns = [
     
-    # TODO: ----------------- PRINCIPALES -----------------
+    #PRINCIPALES
     path('', login, name="login"),
     path('admin/', admin.site.urls),
     path('home/', home, name="home"),
     path("select2/", include("django_select2.urls")),
 
-    # TODO: ----------------- APLICACIONES -----------------
+    #APLICACIONES
     path('home/app_afiliados/',include('apps.afiliados.urls')),
     path('home/app_cursos/',include('apps.cursos.urls')),
     

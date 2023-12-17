@@ -26,7 +26,7 @@
         <div class="form-group">
           <label for="{{ form.capacidad_maxima.id_for_label }}">Capacidad:</label>
           <br />
-          {{ form.capacidad_maxima }}
+          <input type="number" name="capacidad_maxima" step="1" min="1" required class="form-control" value="{{ form.capacidad_maxima.value|default:'' }}" />
           <small class="help-text">{{ form.capacidad_maxima.help_text }}</small>
         </div>
       </div>

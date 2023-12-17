@@ -1,5 +1,6 @@
+from django.http import HttpResponseRedirect
 from django.views.generic import DetailView, ListView
-from django.views.generic.edit import CreateView
+from django.views.generic.edit import CreateView, UpdateView
 from ..models import Curso, Profesor, Dictado, Clase, Titular
 from utils.constants import *
 from django.shortcuts import render
@@ -20,41 +21,59 @@ class DictadoCreateView(CreateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['curso'] = Curso.objects.get(id=self.kwargs.get('pk'))
+        context['curso'] = get_object_or_404(Curso, id=self.kwargs.get('pk'))
         context['titulo'] = f"Dictado para el curso {context['curso'].nombre}"
-        context['profesor_form'] = ProfesorForm()  # Reemplaza ProfesorForm con el nombre real de tu formulario de profesor
+        context['profesor_form'] = ProfesorForm()
         return context
 
     def form_valid(self, form):
+
+        # Obtén el curso asociado al dictado
         curso = get_object_or_404(Curso, pk=self.kwargs.get('pk'))
+        
+        # Guarda el dictado en la base de datos sin commit
         dictado = form.save(commit=False)
-        dictado.curso = curso
         
-        if form.is_valid():
-            form_minimo_alumnos = form.cleaned_data.get('minimo_alumnos')
-            form_maximos_alumnos = form.cleaned_data.get('maximos_alumnos')
-            if form_minimo_alumnos >= form_maximos_alumnos:
-                messages.error(self.request, 'El número mínimo de inscriptos debe ser menor que el máximo.')
-                return self.form_invalid(form)
+        if  dictado.maximos_alumnos > curso.capacidad_maxima:
+            messages.error(self.request, 'Máximo de inscriptos supera la capacidad máxima del curso.')
+            context = self.get_context_data()
+            context['form'] = form
+            return self.render_to_response(context)
         
+        dictado.curso = curso  # Asigna el curso al dictado
+
+        # Obtén el curso asociado al dictado
+        curso = get_object_or_404(Curso, pk=self.kwargs.get('pk'))
+        
+        # Guarda el dictado en la base de datos sin commit
+        dictado = form.save(commit=False)
+        dictado.curso = curso  # Asigna el curso al dictado
+        
+        # Verifica la validez del formulario
+        if not form.is_valid():
+            return self.form_invalid(form)
+
+        # Guarda el dictado en la base de datos
         dictado.save()
 
-        # Crear la relación Titular
+        # Crea la relación Titular
         profesor_id = self.request.POST.get('profesor')
         profesor = get_object_or_404(Profesor, id=profesor_id)
         Titular.objects.create(profesor=profesor, dictado=dictado)
 
         messages.success(self.request, 'Dictado creado exitosamente. Recargue la página del detalle del curso')
 
-        context = self.get_context_data()
-        return self.render_to_response(context)
+        # Redirige a la vista de detalle del curso
+        return super().form_valid(form)
+
+    def get_success_url(self):
+        return reverse('cursos:dictado_detalle', args=[self.object.curso.pk, self.object.pk])
 
     def form_invalid(self, form):
         messages.warning(self.request, f'{ICON_TRIANGLE} {MSJ_CORRECTION}')
         context = self.get_context_data()
         context['form'] = form
-        return self.render_to_response(context) 
-
+        return self.render_to_response(context)
 ##--------------- DICTADO DETALLE --------------------------------
 class DictadoDetailView(DetailView):
     model = Dictado
@@ -69,7 +88,6 @@ class DictadoDetailView(DetailView):
         context = super().get_context_data(**kwargs)
         context['curso'] = Curso.objects.get(id=self.kwargs.get('curso_pk'))
         context['titulo'] = "Detalle del dictado"
-        
         # Obtener el nombre del profesor asociado al dictado
         titular = self.get_titular(context['object'])
         context['nombre_profesor'] = (
@@ -89,6 +107,63 @@ class DictadoDetailView(DetailView):
             return titular
         except Titular.DoesNotExist:
             return None
+
+##--------------- DICTADO UPDATE --------------------------------
+class DictadoUpdateView(UpdateView):
+    model = Dictado
+    form_class = DictadoForm
+    template_name = 'dictado/dictado_form.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['titulo'] = "Modificar Detalle"
+        return context
+    
+    def get_object(self, queryset=None):
+        curso_pk = self.kwargs.get('curso_pk')
+        dictado_pk = self.kwargs.get('dictado_pk')
+        return get_object_or_404(Dictado, curso__pk=curso_pk, pk=dictado_pk)
+
+    def get_form(self, form_class=None):
+        form = super().get_form(form_class)
+        dictado = self.get_object()
+        # Asegúrate de que el objeto Dictado tenga un Titular asociado
+        titular = self.get_titular(dictado)
+        if titular:
+            # Si hay un Titular asociado, establece el valor del profesor en el formulario
+            form.fields['profesor'].initial = titular.profesor.id
+        return form
+
+    def get_success_url(self):
+        curso_pk = self.kwargs.get('curso_pk')
+        dictado_pk = self.object.pk  # Accede al ID del dictado actualizado
+        return reverse_lazy('cursos:dictado_detalle', kwargs={'curso_pk': curso_pk, 'dictado_pk': dictado_pk})
+
+    def get_titular(self, dictado):
+        try:
+            # Intenta obtener el Titular asociado al Dictado
+            titular = Titular.objects.get(dictado=dictado)
+            return titular
+        except Titular.DoesNotExist:
+            # En caso de que no exista Titular, devuelve None
+            return None
+
+    def form_valid(self, form):
+        curso = get_object_or_404(Curso, pk=self.kwargs.get('curso_pk'))
+        dictado = form.save(commit=False)
+        dictado.curso = curso
+
+        # Obtén el profesor seleccionado en el formulario
+        profesor_id = self.request.POST.get('profesor')
+        profesor = get_object_or_404(Profesor, id=profesor_id)
+
+        # Actualiza o crea el titular asociado al dictado con el nuevo profesor
+        titular, created = Titular.objects.get_or_create(dictado=dictado, defaults={'profesor': profesor})
+        if not created:
+            titular.profesor = profesor
+            titular.save()
+        messages.success(self.request, 'Dictado modificado exitosamente.')
+        return super().form_valid(form)
 
 ##--------------- DICTADO LIST VIEW --------------------------------
 class DictadoListView(ListView):

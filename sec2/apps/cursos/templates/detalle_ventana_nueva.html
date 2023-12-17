@@ -4,8 +4,8 @@
 {% load static %}
 
 {% block extracss %}
-<link href="{% static 'css/detalle.css' %}" rel="stylesheet" />
-<link href="{% static 'css/listado.css' %}" rel="stylesheet" />
+  <link href="{% static 'css/detalle.css' %}" rel="stylesheet" />
+  <link href="{% static 'css/listado.css' %}" rel="stylesheet" />
 {% endblock %}
 
 {% block container %}
@@ -13,14 +13,15 @@
     <h2 class="titulo">{{ titulo }}</h2>
     <br />
     <div class="row">
-      {% block detalle_lado_izquierdo %}
+      {% block detalle %}
+        {% block detalle_lado_izquierdo %}
 
+        {% endblock %}
+
+        {% block detalle_lado_derecho %}
+
+        {% endblock %}
       {% endblock %}
-
-      {% block detalle_lado_derecho %}
-
-      {% endblock %}
-
       <br />
       <div class="row">
         {% block botones %}
@@ -33,6 +34,7 @@
   <div class="container-sm">
     <h3 class="subtitulo">{{ tituloListado }}</h3>
     {% block listado_asociado %}
+
     {% endblock %}
     {% include 'pagination.html' %}
   </div>

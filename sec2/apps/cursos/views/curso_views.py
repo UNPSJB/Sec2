@@ -96,7 +96,6 @@ class CursoDetailView(DetailView):
         return context
     
 
-        return context
     def get_titular(self, dictado):
         try:
             titular = Titular.objects.get(dictado=dictado)
@@ -158,6 +157,4 @@ class CursoUpdateView(UpdateView):
         for field, errors in form.errors.items():
             print(f"Campo: {field}, Errores: {', '.join(errors)}")
         return super().form_invalid(form)
-    
-
 
