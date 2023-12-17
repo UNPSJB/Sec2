@@ -7,6 +7,7 @@ from django.contrib import messages
 from django.views.generic import DetailView
 from sec2.utils import ListFilterView
 from django.shortcuts import redirect
+from django.core.paginator import Paginator, EmptyPage
 
 ##--------------- CREATE DE CURSOS--------------------------------
 class CursoCreateView(CreateView):
@@ -54,33 +55,46 @@ class CursoDetailView(DetailView):
         context['titulo'] = f"Curso: {self.object.nombre}"
         context['tituloListado'] = 'Dictados Asociados'
 
+        context['dictados_info_start'] = 1
+
         # Obtener todos los dictados asociados al curso
         dictados = self.object.dictado_set.all()
 
         # Crear una lista para almacenar información de cada dictado, incluyendo el nombre del profesor
         dictados_info = []
 
-        for dictado in dictados:
+        for i, dictado in enumerate(dictados, start=context['dictados_info_start']):
             # Obtener el titular asociado al dictado
             titular = self.get_titular(dictado)
 
             # Crear un diccionario con la información del dictado y el nombre del profesor
             dictado_info = {
+                'numero': i,
                 'dictado': dictado,
                 'nombre_profesor': (
-                    f"{titular.profesor.persona.nombre} "
-                    f"{titular.profesor.persona.apellido}"
+                    f"{titular.profesor.persona.apellido} "
+                    f"{titular.profesor.persona.nombre}"
                 ) if titular else "Sin titular"
             }
 
             # Agregar el diccionario a la lista
             dictados_info.append(dictado_info)
 
-        # Agregar la lista de dictados con información al contexto
-        context['dictados_info'] = dictados_info
+        # Paginación
+        elementos_por_pagina = 3
+        paginator = Paginator(dictados_info, elementos_por_pagina)
+        pagina = self.request.GET.get('pagina', 1)
+
+        try:
+            dictados_info_paginados = paginator.page(pagina)
+        except EmptyPage:
+            dictados_info_paginados = paginator.page(paginator.num_pages)
+
+        # Agregar la lista de dictados paginados con información al contexto
+        context['dictados_info'] = dictados_info_paginados
 
         return context
-    
+
     def get_titular(self, dictado):
         try:
             titular = Titular.objects.get(dictado=dictado)

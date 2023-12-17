@@ -63,18 +63,23 @@
     <table class="table table-sm table-hover">
       <thead>
         <tr>
-          <th>N° Clases</th>
-          <th>Profesor/a</th>
-          <th>Cupo</th>
+          <th>#</th>
+          <th>Dictado</th>
+          <th>Profesor</th>
+          <th>Inscriptos</th>
+          <th>Costo</th>
           <th></th>
         </tr>
       </thead>
       <tbody>
         {% for dictado_info in dictados_info %}
           <tr>
-            <td>{{ dictado_info.dictado.cantidad_clase }}</td>
+            <td>{{ dictado_info.numero }}</td>
+            <td>{{ dictado_info.dictado.nombre }}</td>
             <td>{{ dictado_info.nombre_profesor }}</td>
-            <td>0/10</td>
+            <td>0/{{ dictado_info.dictado.maximos_alumnos }}</td>
+            <td>${{ dictado_info.dictado.costo }} x {{ dictado_info.dictado.get_periodo_pago_display }}</td>
+
             <td>
               <a href="{% url 'cursos:dictado' dictado_info.dictado.pk %}" class="btn btn-primary btn-detalle" onclick="window.open('{% url 'cursos:dictado' dictado_info.dictado.pk %}', 'NuevaVentana', 'width=800, height=600'); return false;"><i class="fa-regular fa-eye"></i> Detalle</a>
             </td>

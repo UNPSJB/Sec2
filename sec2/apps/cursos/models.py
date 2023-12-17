@@ -88,11 +88,8 @@ class Dictado(models.Model):
     )
     cantidad_clase= models.PositiveIntegerField(help_text="Aproximado")
     minimo_alumnos= models.PositiveIntegerField(help_text="Para poder iniciar el dictado")
-
     # 1 modulo es igual a un tiempo que equivale la duración de cada clase
     modulos= models.PositiveIntegerField(help_text="Horas del curso")
-
-
     curso = models.ForeignKey(Curso, related_name="dictado_set", on_delete=models.CASCADE, null=True, blank=True)
 
     def __str__(self):

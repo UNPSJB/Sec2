@@ -33,7 +33,7 @@
   <div class="container-sm">
     <h3 class="subtitulo">{{ tituloListado }}</h3>
     {% block listado_asociado %}
-      
     {% endblock %}
+    {% include 'pagination.html' %}
   </div>
 {% endblock %}

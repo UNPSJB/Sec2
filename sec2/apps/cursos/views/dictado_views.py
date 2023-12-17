@@ -31,15 +31,22 @@ class DictadoCreateView(CreateView):
         curso = get_object_or_404(Curso, pk=self.kwargs.get('pk'))
         dictado = form.save(commit=False)
         dictado.curso = curso
+        
         if form.is_valid():
             form_minimo_alumnos = form.cleaned_data.get('minimo_alumnos')
             form_maximos_alumnos = form.cleaned_data.get('maximos_alumnos')
             if form_minimo_alumnos >= form_maximos_alumnos:
-                # Agregar mensaje flash de error
                 messages.error(self.request, 'El número mínimo de inscriptos debe ser menor que el máximo.')
                 return self.form_invalid(form)
+        
         dictado.save()
-        messages.success(self.request, 'Dictado creado exitosamente. Recargue la pagina del detalle del curso')
+
+        # Crear la relación Titular
+        profesor_id = self.request.POST.get('profesor')
+        profesor = get_object_or_404(Profesor, id=profesor_id)
+        Titular.objects.create(profesor=profesor, dictado=dictado)
+
+        messages.success(self.request, 'Dictado creado exitosamente. Recargue la página del detalle del curso')
 
         context = self.get_context_data()
         return self.render_to_response(context)
