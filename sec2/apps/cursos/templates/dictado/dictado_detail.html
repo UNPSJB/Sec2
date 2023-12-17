@@ -1,15 +1,12 @@
-{% extends 'base.html' %}
+{% extends 'detalle_ventana_nueva.html' %}
 {% load crispy_forms_tags %}
 {% load static %}
 
-{% block container %}
   <link href="{% static 'css/info_detalle.css' %}" rel="stylesheet" />
   <link href="{% static 'css/listado.css' %}" rel="stylesheet" />
 
-  <br />
-  <h1 class="titulo">Dictado {{ dictado.curso.nombre }}</h1>
 
-  <div class="container-sm">
+  {% block detalle_lado_izquierdo %}
     <p>
       <strong>Cantidad de clases:</strong> {{ dictado.cantidad_clase }}
     </p>
@@ -28,7 +25,6 @@
         <a href="{% url 'cursos:clase_crear' dictado.pk %}" class="btn btn-primary">Generar clase</a>
       </td>
     </div>
-  </div>
 
   <div class="container-sm">
     <br />

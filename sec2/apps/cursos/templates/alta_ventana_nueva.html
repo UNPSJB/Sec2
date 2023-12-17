@@ -3,16 +3,20 @@
 {% load crispy_forms_tags %}
 {% load static %}
 
-{% block extracss_intermedia %}
-  <link href="{% static 'css/alta.css' %}" rel="stylesheet" />
+{% block extracss %}
+  <link href="{% static 'css/alta_ventana_nueva.css' %}" rel="stylesheet" />
 {% endblock %}
 
-{% block dinamica %}
+{% block container %}
+{% include 'message_error.html' %}
+
   <div class="container">
     <div class="row justify-content-center">
       <div class="border p-3 mb-3 curso-form rounded-5">
         <h3 class="titulo">{{ titulo }}</h3>
+
         {% block formulario %}
+
         {% endblock %}
       </div>
     </div>

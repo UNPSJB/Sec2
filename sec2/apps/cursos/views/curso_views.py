@@ -94,7 +94,9 @@ class CursoDetailView(DetailView):
         context['dictados_info'] = dictados_info_paginados
 
         return context
+    
 
+        return context
     def get_titular(self, dictado):
         try:
             titular = Titular.objects.get(dictado=dictado)

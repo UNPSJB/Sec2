@@ -28,11 +28,11 @@ urlpatterns = [
     path("select2/", include("django_select2.urls")),
 
     # TODO: ----------------- APLICACIONES -----------------
-    path('home/afiliados/',include('apps.afiliados.urls')),
-    path('home/cursos/',include('apps.cursos.urls')),
+    path('home/app_afiliados/',include('apps.afiliados.urls')),
+    path('home/app_cursos/',include('apps.cursos.urls')),
     
     #! lo llama otra vez?
-    path('home/afiliados/', include('apps.personas.urls')),
+    path('home/app_afiliados/', include('apps.personas.urls')),
 
     # path('cursos/',include('apps.cursos.urls')),
     # path('alquileres/',include('apps.alquileres.urls')),
