@@ -5,47 +5,51 @@ from utils.constants import *
 from django.shortcuts import render
 from django.urls import reverse
 from ..forms.dictado_forms import *
+from ..forms.profesor_forms import ProfesorForm
 from django.urls import reverse_lazy
 from django.contrib import messages
 from django.shortcuts import redirect
+from django.shortcuts import get_object_or_404
 
 
 ####################### SECCION DE DICTADO #######################
 ##--------------- CREACION DE DICTADO --------------------------------
 class DictadoCreateView(CreateView):
     model = Dictado
-    form_class = FormularioDictado
+    form_class = DictadoForm
     template_name = 'dictado/dictado_form.html'
-    success_url = reverse_lazy('cursos:dictado_listado')
+    success_url = reverse_lazy('cursos:dictado_crear')
 
-    def get_initial(self,*args, **kwargs):
-        curso= Curso.objects.get(pk=self.kwargs.get("pk"))
-        return {'curso':curso}
-    
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        curso = Curso.objects.get(id = self.kwargs.get('pk'))
-        context['curso'] = curso
-        context['titulo'] = f"Alta de dictado para el curso {curso.nombre}"
-        tiene_profesor = Profesor.objects.exists()
-        context['tiene_profesor'] = tiene_profesor
+        context['curso'] = Curso.objects.get(id=self.kwargs.get('pk'))
+        context['titulo'] = f"Dictado para el curso {context['curso'].nombre}"
+        context['profesor_form'] = ProfesorForm()  # Reemplaza ProfesorForm con el nombre real de tu formulario de profesor
         return context
 
-    def get(self, request, *args, **kwargs):
-        if Profesor.objects.exists():
-            return super().get(request, *args, **kwargs)
-        else:
-            messages.warning(
-                self.request, 
-                '<i class="fa-solid fa-triangle-exclamation fa-flip"></i> Tienes que dar de alta a un profesor para poder crear un Dictado!'
-            )
-            return redirect('cursos:profesor_crear')
-        
-    def get_success_url(self):
-        # Obtiene el pk del curso desde los kwargs de la vista
-        pk_curso = self.kwargs.get('pk', None)
-        # Construye la URL inversa con el pk del curso
-        return reverse('cursos:dictados_listado', kwargs={'pk': pk_curso})
+    def form_valid(self, form):
+        curso = get_object_or_404(Curso, pk=self.kwargs.get('pk'))
+        dictado = form.save(commit=False)
+        dictado.curso = curso
+        if form.is_valid():
+            form_minimo_alumnos = form.cleaned_data.get('minimo_alumnos')
+            form_maximos_alumnos = form.cleaned_data.get('maximos_alumnos')
+            if form_minimo_alumnos >= form_maximos_alumnos:
+                # Agregar mensaje flash de error
+                messages.error(self.request, 'El número mínimo de inscriptos debe ser menor que el máximo.')
+                return self.form_invalid(form)
+        dictado.save()
+        messages.success(self.request, 'Dictado creado exitosamente. Recargue la pagina del detalle del curso')
+
+        context = self.get_context_data()
+        return self.render_to_response(context)
+
+    def form_invalid(self, form):
+        messages.warning(self.request, f'{ICON_TRIANGLE} {MSJ_CORRECTION}')
+        context = self.get_context_data()
+        context['form'] = form
+        return self.render_to_response(context) 
+
 
 ##--------------- DICTADO DETALLE --------------------------------
 class DictadoDetailView(DetailView):

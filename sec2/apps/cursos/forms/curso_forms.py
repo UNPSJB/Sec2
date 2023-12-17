@@ -33,7 +33,7 @@ class CursoFilterForm(FiltrosForm):
     )
     duracion = forms.ChoiceField(
         label='Duración',
-        choices=[('', '---------')] + list(Curso.DURACION),
+        choices=[('', '---------')] + list(DURACION),
         required=False,
         widget=forms.Select(attrs={'class': 'form-control'})
     )

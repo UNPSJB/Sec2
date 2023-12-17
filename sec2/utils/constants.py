@@ -266,3 +266,22 @@ PERIODO_PAGO=(
         (1, 'mes'),
         (2, 'clase'),
     )
+
+OPCIONES_CERTIFICADO = [
+        (1, 'Sí'),
+        (2, 'No'),
+        (3, 'Opcional'),
+]
+
+DURACION = [
+        (0, "Todo el año"),
+        (1, "3 meses"),
+        (2, "6 meses"),
+        (3, "Indefinido"),
+    ]
+
+AREAS = [
+        (0, "Capacitación"),
+        (1, "Cultura"),
+        (2, "Gimnasio"),
+]

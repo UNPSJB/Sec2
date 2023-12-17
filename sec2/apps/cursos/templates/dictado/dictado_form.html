@@ -1,18 +1,159 @@
 {% extends 'base.html' %}
+
 {% load crispy_forms_tags %}
 {% load static %}
 
-{% block extracss_intermedia %}
-  <link href="{% static 'css/alta.css' %}" rel="stylesheet" />
+{% block extracss %}
+  <link href="{% static 'css/alta_ventana_nueva.css' %}" rel="stylesheet" />
 {% endblock %}
 
-{% block dinamica %}
+{% block container %}
+  {% if form.errors %}
+    <div class="alert alert-danger">
+      <strong>Error:</strong> Por favor, corrija los errores en el formulario.<ul>
+        {% for error in form.non_field_errors %}
+          <li>{{ error }}</li>
+        {% endfor %}
+      </ul>
+    </div>
+  {% endif %}
+  {% if messages %}
+    <div class="alert alert-success">
+      <strong>Éxito:</strong>
+      {% for message in messages %}
+        {{ message }}
+      {% endfor %}
+    </div>
+    <script>
+      // Cerrar la ventana después de 2 segundos (ajusta el tiempo según sea necesario)
+      setTimeout(function () {
+        window.close()
+      }, 4000)
+    </script>
+  {% endif %}
   <div class="container">
     <div class="row justify-content-center">
       <div class="border p-3 mb-3 curso-form rounded-5">
         <h3 class="titulo">{{ titulo }}</h3>
+
+        <form method="post">
+          {% csrf_token %}
+
+          <div class="row">
+            <div class="col">
+              <div class="form-group">
+                {{ form.nombre.label_tag }}
+                <br />
+                {{ form.nombre }}
+                {% if form.nombre.errors %}
+                  <small class="error-text">
+                    {% for error in form.nombre.errors %}
+                      <i class="fas fa-times"></i> {{ error }}
+                      {% if not loop.last %}
+                        <br />
+                      {% endif %}
+                    {% endfor %}
+                  </small>
+                {% endif %}
+                <small class="text-muted">{{ form.nombre.help_text }}</small>
+              </div>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col">
+              <div class="form-group">
+                {{ form.profesor.label_tag }}
+                <br />
+                {{ form.profesor }}
+              </div>
+            </div>
+
+            <div class="col">
+              <div class="form-group">
+                <label for="{{ form.cantidad_clase.id_for_label }}">Total de clases</label>
+                <input type="number" name="cantidad_clase" step="1" min="1" required class="form-control" value="{{ form.cantidad_clase.value|default:'' }}" />
+                <small class="text-muted">{{ form.cantidad_clase.help_text }}</small>
+              </div>
+            </div>
+
+            <div class="col">
+              <div class="form-group">
+                {{ form.modulos.label_tag }}
+                <br />
+                <input type="number" name="modulos" min="1" required step="1" class="form-control" value="{{ form.modulos.value|default:'' }}" />
+                <small class="text-muted">{{ form.modulos.help_text }}</small>
+              </div>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col">
+              <div class="form-group">
+                <label for="{{ form.minimo_alumnos.id_for_label }}">Minimo de inscriptos</label>
+                <input type="number" id="id_minimo_alumnos" name="minimo_alumnos" step="1" min="1" required class="form-control" value="{{ form.minimo_alumnos.value|default:'' }}" />
+                <small class="text-muted">{{ form.minimo_alumnos.help_text }}</small>
+              </div>
+            </div>
+
+            <div class="col">
+              <div class="form-group">
+                <label for="{{ form.maximos_alumnos.id_for_label }}">Máximo de inscriptos:</label>
+                <br />
+                <input type="number" name="maximos_alumnos" step="1" min="0" max="100" required class="form-control" value="{{ form.maximos_alumnos.value|default:'' }}" />
+                <small class="text-muted">{{ form.maximos_alumnos.help_text }}</small>
+              </div>
+            </div>
+
+            <div class="col">
+              <div class="form-group">
+                {{ form.certificado_medico.label_tag }}
+                {{ form.certificado_medico }}
+                <small class="text-muted">{{ form.certificado_medico.help_text }}</small>
+              </div>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col">
+              <div class="form-group">
+                {{ form.costo.label_tag }}
+                <br />
+                <input type="number" name="costo" step="1" min="0" required class="form-control" value="{{ form.costo.value|default:'' }}" />
+                <small class="text-muted">{{ form.costo.help_text }}</small>
+              </div>
+            </div>
+
+            <div class="col">
+              <div class="form-group">
+                <label for="{{ form.periodo_pago.id_for_label }}">Pago:</label>
+                {{ form.periodo_pago }}
+                <small class="text-muted">{{ form.periodo_pago.help_text }}</small>
+              </div>
+            </div>
+
+            <div class="col">
+              <div class="form-group">
+                <label for="{{ form.descuento.id_for_label }}">Descuento en %:</label>
+                <br />
+                <input type="number" name="descuento" step="1" min="0" max="100" required class="form-control" value="{{ form.descuento.value|default:'' }}" />
+                <small class="text-muted">{{ form.descuento.help_text }}</small>
+              </div>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col">
+              <!-- Enlace para Cancelar con la función de cerrarVentana() -->
+              <a href="#" class="btn btn-secondary" onclick="cerrarVentana()">Cancelar</a>
+            </div>
+            <div class="col">
+              <!-- Botón para Guardar con la función de cerrarVentana() después de enviar el formulario -->
+              <button type="submit" class="btn btn-primary">Guardar</button>
+            </div>
+          </div>
+        </form>
       </div>
     </div>
   </div>
-
-  {% endblock %}
+{% endblock %}

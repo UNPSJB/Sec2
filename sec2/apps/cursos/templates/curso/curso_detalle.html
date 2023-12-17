@@ -85,5 +85,5 @@
   {% else %}
     <p>No hay dictados asociados.</p>
   {% endif %}
-  <a href="{% url 'cursos:dictado_crear' curso.pk %}" class="btn btn-primary btn-detalle" onclick="window.open('{% url 'cursos:dictado_crear' curso.pk %}', 'NuevaVentana', 'width=800, height=600'); return false;"><i class="fa-solid fa-plus"></i> Nuevo</a>
+  <a href="{% url 'cursos:dictado_crear' curso.pk %}" class="btn btn-primary btn-detalle" onclick="window.open('{% url 'cursos:dictado_crear' curso.pk %}', 'NuevaVentana', 'width=800, height=625'); return false;"><i class="fa-solid fa-plus"></i> Nuevo</a>
 {% endblock %}

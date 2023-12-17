@@ -49,7 +49,7 @@ class ActividadFilterForm(FiltrosForm):
     nombre = forms.CharField(required=False)
     area = forms.ChoiceField(
         label='Área',
-        choices=[('', '---------')] + list(Actividad.AREAS),
+        choices=[('', '---------')] + list(AREAS),
         required=False,
         widget=forms.Select(attrs={'class': 'form-control'})
     )

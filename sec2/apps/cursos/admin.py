@@ -18,19 +18,7 @@ admin.site.register(Curso, CursoAdmin)
 
 class DictadoAdmin(admin.ModelAdmin):
     # Asegúrate de que los campos mencionados en list_display sean atributos o métodos válidos
-    list_display = ('mostrar_fecha_inicio', 'mostrar_fecha_fin', 'mostrar_aula')
-
-    # Método para mostrar fecha de inicio formateada
-    def mostrar_fecha_inicio(self, obj):
-        return obj.fecha_inicio.strftime("%d-%m-%Y")
-
-    # Método para mostrar fecha de fin formateada
-    def mostrar_fecha_fin(self, obj):
-        return obj.fecha_fin.strftime("%d-%m-%Y")
-
-    # Método para mostrar el aula
-    def mostrar_aula(self, obj):
-        return obj.aula
+    list_display = ('nombre', 'costo')
 
     # Otros atributos o métodos de configuración del ModelAdmin
 

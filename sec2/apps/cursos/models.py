@@ -6,11 +6,6 @@ from django.core.validators import MinValueValidator, MaxValueValidator
 
 # ---------------- ACTIVIDAD ---------------
 class Actividad(models.Model):
-    AREAS = [
-        (0, "Capacitación"),
-        (1, "Cultura"),
-        (2, "Gimnasio"),
-    ]
     nombre = models.CharField(
         max_length=100,
         validators=[text_validator],  # Añade tu validador personalizado si es necesario
@@ -28,14 +23,10 @@ class Actividad(models.Model):
 
 #------------- CURSO --------------------
 class Curso(models.Model):
-    DURACION = [
-        (0, "Todo el año"),
-        (1, "3 meses"),
-        (2, "6 meses"),
-        (3, "Indefinido"),
-    ]
+
     actividad = models.ForeignKey(Actividad,related_name="cursos", on_delete=models.CASCADE)
     duracion = models.PositiveSmallIntegerField(choices=DURACION)
+    #capacidad maxima de participantes para el curso
     capacidad_maxima= models.PositiveIntegerField(help_text="Máximo de inscriptos")
     nombre = models.CharField(
         max_length=50,
@@ -49,7 +40,7 @@ class Curso(models.Model):
     )
 
     def __str__(self):
-        return f"{self.nombre} {self.actividad} Precio:{self.costo}"
+        return f"{self.nombre} {self.actividad}"
     
     def asignar_dictado(self, dictado):
         dictado.curso = self
@@ -65,32 +56,43 @@ class Curso(models.Model):
 
 #------------- DICTADO --------------------
 class Dictado(models.Model):
-    cantidad_clase= models.PositiveIntegerField(help_text="Cantidad total de clase")
-    minimo_alumnos= models.PositiveIntegerField(help_text="Minimo de alumnos")
-    max_alumnos= models.PositiveIntegerField(help_text="Minimo de alumnos")
-    # 1 modulo es igual a un tiempo que equivale la duración de cada clase
-    modulos= models.PositiveIntegerField(help_text="cantidad de horas del curso")
     nombre = models.CharField(
         max_length=50,
         validators=[text_validator],  # Añade tu validador personalizado si es necesario
         help_text="Solo se permiten letras y espacios."
     )
+
+    #maximo de alumnos que se permiten inscribir.
+    #Funciona de manera independiente al del curso, ya que cada profesor puede eleegir la cantidad
+    maximos_alumnos = models.PositiveIntegerField(
+        help_text="Máximo alumnos inscriptos",
+        validators=[
+            MinValueValidator(1, message="Valor mínimo permitido es 1."),
+            MaxValueValidator(100, message="Valor máximo es 100."),
+        ]
+    )
+
+    periodo_pago=models.PositiveSmallIntegerField(choices=PERIODO_PAGO)
+    costo = models.DecimalField(
+        help_text="Total del dictado",
+        max_digits=10,
+        decimal_places=0
+    )
+    certificado_medico=models.PositiveSmallIntegerField(choices=OPCIONES_CERTIFICADO)
     descuento = models.PositiveIntegerField(
-        help_text="porcentaje de descuento",
+        help_text="Descuento para afiliados",
         validators=[
             MinValueValidator(0, message="El descuento no puede ser menor que 0."),
             MaxValueValidator(100, message="El descuento no puede ser mayor que 100."),
         ]
     )
-    # se le dejara a los cursos de gimnasio obligatorio certificado medico
-    certificado_medico = models.BooleanField()
-    periodo_pago=models.PositiveSmallIntegerField(choices=PERIODO_PAGO)
+    cantidad_clase= models.PositiveIntegerField(help_text="Aproximado")
+    minimo_alumnos= models.PositiveIntegerField(help_text="Para poder iniciar el dictado")
 
-    costo = models.DecimalField(
-        help_text="costo total del curso sin puntos",
-        max_digits=10,
-        decimal_places=0
-    )
+    # 1 modulo es igual a un tiempo que equivale la duración de cada clase
+    modulos= models.PositiveIntegerField(help_text="Horas del curso")
+
+
     curso = models.ForeignKey(Curso, related_name="dictado_set", on_delete=models.CASCADE, null=True, blank=True)
 
     def __str__(self):
@@ -122,7 +124,6 @@ class Aula(models.Model):
 #------------- CLASE --------------------
 class Clase(models.Model):
     dictado = models.ForeignKey(Dictado, related_name="clase", null=True, on_delete=models.CASCADE)
-
     aula=models.ForeignKey(Aula, related_name="aula", on_delete=models.CASCADE, null=True)
     fecha = models.DateField()
     hora_inicio=models.TimeField() 
