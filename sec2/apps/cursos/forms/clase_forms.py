@@ -37,7 +37,6 @@ class ClaseForm(forms.ModelForm):
                 'hora_fin',
             ),
             Submit('submit', 'Guardar', css_class='button white'),
-            HTML('<a class="btn btn-secondary" href="{% url \'cursos:dictado\' dictado.pk %}">Cancelar</a>'),
         )
 
 class ClaseFilterForm (FiltrosForm):

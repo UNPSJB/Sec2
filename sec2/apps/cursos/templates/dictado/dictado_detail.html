@@ -92,7 +92,6 @@
 {% endblock %}
 
 {% block listado_asociado %}
-  <h3>Clases Asociadas:</h3>
   {% if clases %}
     <table class="table table-sm table-hover">
       <thead>
@@ -119,5 +118,5 @@
   {% else %}
     <p>No hay clases asociadas.</p>
   {% endif %}
-  <a href="{% url 'cursos:clase_crear' dictado.pk %}" class="btn btn-primary">Generar clase</a>
+  <a href="{% url 'cursos:clase_crear' curso_pk=curso.pk dictado_pk=object.pk %}" class="btn btn-primary btn-detalle"><i class="fa-solid fa-plus"></i> Nuevo</a>
 {% endblock %}

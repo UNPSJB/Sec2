@@ -121,10 +121,11 @@ class Aula(models.Model):
 #------------- CLASE --------------------
 class Clase(models.Model):
     dictado = models.ForeignKey(Dictado, related_name="clase", null=True, on_delete=models.CASCADE)
-    aula=models.ForeignKey(Aula, related_name="aula", on_delete=models.CASCADE, null=True)
     fecha = models.DateField()
-    hora_inicio=models.TimeField() 
-    hora_fin=models.TimeField() # SE calcula desde la hora inicio más el modulo del curso
+    hora_inicio=models.TimeField()
+    # la hora fin queda redundante si se tiene en cuenta al modulo
+    aula=models.ForeignKey(Aula, related_name="aula", on_delete=models.CASCADE, null=True)
+
 
 class Alumno(Rol):
     TIPO = 3
