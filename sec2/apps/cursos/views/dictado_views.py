@@ -83,11 +83,12 @@ class DictadoDetailView(DetailView):
         curso_pk = self.kwargs.get('curso_pk')
         dictado_pk = self.kwargs.get('dictado_pk')
         return Dictado.objects.get(curso__pk=curso_pk, pk=dictado_pk)
-    
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['curso'] = Curso.objects.get(id=self.kwargs.get('curso_pk'))
         context['titulo'] = "Detalle del dictado"
+        context['tituloListado'] = 'Clases Asociadas'
         # Obtener el nombre del profesor asociado al dictado
         titular = self.get_titular(context['object'])
         context['nombre_profesor'] = (
