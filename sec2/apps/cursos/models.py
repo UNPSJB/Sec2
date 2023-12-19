@@ -95,10 +95,9 @@ class Dictado(models.Model):
     def __str__(self):
         return f"HOLAAA!! SOY EL DICTADO : "
 
-    def asignar_clase(self, fecha, hora_inicio, hora_fin):
+    def asignar_clase(self, fecha, hora_inicio):
         clase = Clase()
         clase.hora_inicio = hora_inicio
-        clase.hora_fin = hora_fin
         clase.fecha = fecha
         clase.dictado = self
         clase.save()
@@ -120,11 +119,24 @@ class Aula(models.Model):
 
 #------------- CLASE --------------------
 class Clase(models.Model):
-    dictado = models.ForeignKey(Dictado, related_name="clase", null=True, on_delete=models.CASCADE)
+    nombre = models.CharField(
+        max_length=50,
+        validators=[text_validator],  
+        help_text="Solo se permiten letras y espacios."
+    )
+    dictado = models.ForeignKey(Dictado, related_name="clases", null=True, on_delete=models.CASCADE)
+    aula = models.ForeignKey(Aula, related_name="clases", on_delete=models.CASCADE, null=True)
     fecha = models.DateField()
-    hora_inicio=models.TimeField()
-    # la hora fin queda redundante si se tiene en cuenta al modulo
-    aula=models.ForeignKey(Aula, related_name="aula", on_delete=models.CASCADE, null=True)
+    hora_inicio = models.TimeField()
+    hora_fin = models.TimeField()
+    capacidad_maxima = models.PositiveIntegerField(help_text="Capacidad máxima de la clase")
+    inscritos = models.PositiveIntegerField(default=0, help_text="Número de alumnos inscritos")
+    asistencia = models.PositiveIntegerField(default=0, help_text="Número de alumnos que asistieron")
+    # Nuevos campos para días y horas
+    dias_semana=models.PositiveSmallIntegerField(choices=DIAS_SEMANA_CHOICES)
+
+    def __str__(self):
+        return self.nombre
 
 
 class Alumno(Rol):
@@ -158,6 +170,9 @@ Rol.register(Profesor)
 class Titular(models.Model):
     profesor = models.ForeignKey(Profesor, on_delete=models.CASCADE)
     dictado= models.ForeignKey(Dictado, on_delete=models.CASCADE)
+
+
+
 
 class Asistencia_profesor(models.Model):
     fecha_asistencia_profesor = models.DateTimeField(auto_now_add=True)

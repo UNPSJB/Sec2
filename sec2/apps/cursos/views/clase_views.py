@@ -15,8 +15,25 @@ class ClaseCreateView(CreateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['titulo'] = f"Nueva clase para el dictado"
+        context['titulo'] = "Alta de Clases"
         return context
+
+    def form_valid(self, form):
+        # Obtén el dictado relacionado con la clase
+        dictado_id = self.kwargs['dictado_pk']
+        dictado = get_object_or_404(Dictado, pk=dictado_id)
+
+        # Asigna el dictado a la clase antes de guardarla
+        form.instance.dictado = dictado
+
+        # Otros campos específicos de tu lógica
+        form.instance.dias_semana = form.cleaned_data['dias_semana']
+        form.instance.hora_inicio = form.cleaned_data['hora_inicio']
+        form.instance.hora_fin = form.cleaned_data['hora_fin']
+
+        # Lógica adicional según tus necesidades...
+
+        return super().form_valid(form)
 
 class ClaseListView(ListFilterView):
     model = Clase

@@ -1,25 +1,82 @@
-{% extends 'base.html' %}
+{% extends 'alta_ventana_nueva.html' %}
 {% load crispy_forms_tags %}
-{% load static %}
 
-{% block extracss %}
-  <link href="{% static 'css/alta.css' %}" rel="stylesheet" />
-{% endblock %}
-
-{% block container %}
-  {% if form.errors %}
-    <div class="alert alert-danger" role="alert">No se pudo cargar el formulario comunicarse con soporte</div>
-    <p>{{ form.errors }}</p>
-  {% endif %}
-  <div class="container">
-    <div class="row justify-content-center">
-      <div class="border p-3 mb-3 curso-form rounded-5">
-        {% crispy form %}
+{% block formulario %}
+  <form method="post" id="clase-form">
+    {% csrf_token %}
+    <div class="row">
+      <div class="col">
+        <div class="form-group">
+          {{ form.nombre.label_tag }}
+          <br />
+          {{ form.nombre }}
+          {% if form.nombre.errors %}
+            <small class="error-text">
+              {% for error in form.nombre.errors %}
+                <i class="fas fa-times"></i> {{ error }}
+                {% if not loop.last %}
+                  <br />
+                {% endif %}
+              {% endfor %}
+            </small>
+          {% endif %}
+          <small class="text-muted">{{ form.nombre.help_text }}</small>
+        </div>
       </div>
     </div>
-  </div>
-{% endblock %}
+    <!-- Nueva fila para campos de horario -->
+    <div class="row" id="horario-row-0">
+      <div class="col-md-4">
+        <div class="form-group">
+          {{ form.dias_semana.label_tag }}
+          {{ form.dias_semana }}
+          <small class="text-muted">{{ form.dias_semana.help_text }}</small>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="form-group">
+          {{ form.hora_inicio.label_tag }}
+          <br>
+          {{ form.hora_inicio }}
+          <small class="text-muted">{{ form.hora_inicio.help_text }}</small>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="form-group">
+          {{ form.aula.label_tag }}
+          {{ form.aula }}
+          <small class="text-muted">{{ form.aula.help_text }}</small>
+        </div>
+      </div>
+    </div>
 
-{% if mensaje %}
-  <div class="alert alert-info" role="alert">registro finalizado exitosamente</div>
-{% endif %}
+    <!-- Botón para agregar más horarios -->
+    <button type="button" id="agregar-horario">Agregar Horario</button>
+
+    <!-- Resto de tu formulario ... -->
+
+    <button type="submit">Guardar</button>
+  </form>
+
+  <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+  <script>
+    $(document).ready(function() {
+      var horarioIndex = 1;
+
+      $("#agregar-horario").click(function() {
+        var nuevaFila = $("#horario-row-0").clone();
+        nuevaFila.attr("id", "horario-row-" + horarioIndex);
+        nuevaFila.find("input, select").each(function() {
+          var nuevoID = $(this).attr("id").replace("-0-", "-" + horarioIndex + "-");
+          $(this).attr("id", nuevoID).val("");
+        });
+
+        // Agregar la nueva fila al formulario
+        nuevaFila.insertAfter("#horario-row-" + (horarioIndex - 1));
+
+        // Incrementar el índice
+        horarioIndex++;
+      });
+    });
+  </script>
+{% endblock %}

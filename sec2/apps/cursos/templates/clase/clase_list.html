@@ -30,7 +30,6 @@
                 <tr class="bg-transition">
                     <td>{{ obj.dia }}</td>
                     <td>{{ obj.hora_inicio }}</td>
-                    <td>{{ obj.hora_fin }}</td>
                     <td><a href="{% url 'cursos:curso_editar' obj.pk %}"class="btn btn-primary">Editar</a></td>
                     <td><a href="{% url 'cursos:curso_eliminar' obj.pk %}"class="btn btn-primary">Eliminar</a></td>
                     <td><a href="{% url 'cursos:dictados_listado' obj.pk %}"class="btn btn-primary">Ver Dictados</a></td>                

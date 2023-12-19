@@ -30,6 +30,7 @@ label {
 
 /* Estilo para los campos de entrada y selects */
 input[type="text"],
+input[type="time"],
 select {
     width: 100%;
     padding: 10px;
