@@ -115,28 +115,31 @@ class Aula(models.Model):
     cupo = models.PositiveIntegerField(help_text="Capacidad máxima del aula")
 
     def __str__(self):
-        return self.denominacion
+        return self.denominacionw
 
+class Horario(models.Model):
+    dia_semana = models.PositiveSmallIntegerField(choices=DIAS_SEMANA_CHOICES)
+    hora_inicio = models.TimeField()
+    aula = models.ForeignKey(Aula, related_name='horarios', on_delete=models.CASCADE)
+    asistencia = models.PositiveIntegerField(default=0, help_text="Número de alumnos que asistieron")
+
+    def __str__(self):
+        return f"{self.get_dia_semana_display()} - {self.hora_inicio} - {self.aula}"
+    
 #------------- CLASE --------------------
 class Clase(models.Model):
+    dictado = models.ForeignKey(Dictado, related_name="clases", null=True, on_delete=models.CASCADE)
     nombre = models.CharField(
-        max_length=50,
-        validators=[text_validator],  
+        max_length=50,  
+        validators=[text_validator],
         help_text="Solo se permiten letras y espacios."
     )
-    dictado = models.ForeignKey(Dictado, related_name="clases", null=True, on_delete=models.CASCADE)
-    aula = models.ForeignKey(Aula, related_name="clases", on_delete=models.CASCADE, null=True)
-    fecha = models.DateField()
-    hora_inicio = models.TimeField()
-    hora_fin = models.TimeField()
-    capacidad_maxima = models.PositiveIntegerField(help_text="Capacidad máxima de la clase")
     inscritos = models.PositiveIntegerField(default=0, help_text="Número de alumnos inscritos")
-    asistencia = models.PositiveIntegerField(default=0, help_text="Número de alumnos que asistieron")
-    # Nuevos campos para días y horas
-    dias_semana=models.PositiveSmallIntegerField(choices=DIAS_SEMANA_CHOICES)
+    horarios = models.ManyToManyField(Horario, related_name='clases')  # Agrega este campo
 
     def __str__(self):
         return self.nombre
+
 
 
 class Alumno(Rol):

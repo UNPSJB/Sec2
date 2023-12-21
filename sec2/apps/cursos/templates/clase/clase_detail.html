@@ -1,0 +1,45 @@
+{% extends 'detalle_ventana_nueva.html' %}
+{% load crispy_forms_tags %}
+
+{% block detalle %}
+  <div class="row">
+    <div class="col-md-6">
+      <p>
+        <strong>Nombre:</strong> {{ clase.nombre }}
+      </p>
+    </div>
+    <div class="col-md-6">
+      <p>
+        <strong>Inscriptos:</strong> {{ clase.inscritos }} de {{ dictado.maximos_alumnos }}
+      </p>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-md-6">
+      <p>
+        <strong>Fecha de inicio:</strong>
+      </p>
+    </div>
+  </div>
+{% endblock %}
+
+{% block listado_asociado %}
+{% if horario %}
+  <table class="table table-sm table-hover">
+    <thead>
+      <tr>
+        <th>#</th>
+      </tr>
+    </thead>
+
+    <tbody>
+      <tr>
+        <td>{{ forloop.counter }}</td>
+      </tr>
+    </tbody>
+  </table>
+  {% else %}
+    <p>No hay horarios asignados.</p>
+  {% endif %}
+{% endblock %}

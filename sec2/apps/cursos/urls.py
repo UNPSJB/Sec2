@@ -13,6 +13,7 @@ from .views.views import *
 app_name="cursos"
 
 urlpatterns = [
+    # PRINCIPAL
     path('',index, name="index"),
 
     # ACTIVIDADES
@@ -37,6 +38,12 @@ urlpatterns = [
 
     # CLASE
     path('cursos/curso/<int:curso_pk>/dictados/dictado/<int:dictado_pk>/clases/clase/crear', ClaseCreateView.as_view(), name="clase_crear"),
+    path('cursos/curso/<int:curso_pk>/dictados/dictado/<int:dictado_pk>/clases/clase/<int:clase_pk>', ClaseDetailView.as_view(), name="clase_detalle"),
+
+    # HORARIO
+
+
+
 
     path('dictado/<int:pk>/verclases', ClaseListView.as_view(), name="ver_clases"),#se accede desde el dictado
 
