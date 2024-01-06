@@ -11,6 +11,7 @@
         <th scope="col">Nombre</th>
         <th scope="col">Actividad</th>
         <th scope="col">Duración</th>
+        <th scope="col"></th>
       </tr>
     </thead>
 
@@ -21,7 +22,6 @@
           <td>{{ curso.nombre }}</td>
           <td>{{ curso.actividad.nombre }}</td>
           <td>{{ curso.get_duracion_display }}</td>
-          <td>{{ curso.get_periodo_pago_display }}</td>
           <td>
             <a href="{% url 'cursos:curso_detalle' curso.pk %}" class="btn btn-primary btn-detalle"><i class="fa-regular fa-eye"></i> Detalle</a>
           </td>

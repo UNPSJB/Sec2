@@ -21,6 +21,9 @@ class Actividad(models.Model):
     def __str__(self):
         return self.nombre
 
+# The line `#------------- CURSO --------------------` is a comment that serves as a visual separator
+# or marker in the code. It helps to distinguish different sections or blocks of code for better
+# readability and organization.
 #------------- CURSO --------------------
 class Curso(models.Model):
 
@@ -88,7 +91,7 @@ class Dictado(models.Model):
     )
     cantidad_clase= models.PositiveIntegerField(help_text="Aproximado")
     minimo_alumnos= models.PositiveIntegerField(help_text="Para poder iniciar el dictado")
-    # 1 modulo es igual a un tiempo que equivale la duración de cada clase
+    # 1 modulo equivale a la cantidad de horas
     modulos= models.PositiveIntegerField(help_text="Horas del curso")
     curso = models.ForeignKey(Curso, related_name="dictado_set", on_delete=models.CASCADE, null=True, blank=True)
 
@@ -117,12 +120,13 @@ class Aula(models.Model):
     def __str__(self):
         return self.denominacionw
 
+#------------- HORARIO --------------------
 class Horario(models.Model):
     dia_semana = models.PositiveSmallIntegerField(choices=DIAS_SEMANA_CHOICES)
     hora_inicio = models.TimeField()
     aula = models.ForeignKey(Aula, related_name='horarios', on_delete=models.CASCADE)
     asistencia = models.PositiveIntegerField(default=0, help_text="Número de alumnos que asistieron")
-
+    
     def __str__(self):
         return f"{self.get_dia_semana_display()} - {self.hora_inicio} - {self.aula}"
     

@@ -47,8 +47,20 @@ class ActividadDetailView(DetailView):
             }
             for curso in cursos_relacionados
         ]
+        
+        # Paginación
+        elementos_por_pagina = 3
+        paginator = Paginator(cursos_info, elementos_por_pagina)
+        pagina = self.request.GET.get('pagina', 1)
 
-        context['cursos_info'] = cursos_info
+        try:
+            cursos_info_paginados = paginator.page(pagina)
+        except EmptyPage:
+            cursos_info_paginados = paginator.page(paginator.num_pages)
+
+        # Agregar la lista de dictados paginados con información al contexto
+        context['cursos_info'] = cursos_info_paginados
+
         return context
 
 ## ------------ ACTIVIDAD UPDATE -------------------

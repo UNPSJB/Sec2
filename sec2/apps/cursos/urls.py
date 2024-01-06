@@ -3,6 +3,7 @@ from django.urls import path
 from .views.actividad_views import *
 from .views.curso_views import *
 from .views.dictado_views import *
+from .views.horario_views import *
 from .views.clase_views import *
 from .views.profesor_views import *
 from .views.alumno_views import *
@@ -30,22 +31,29 @@ urlpatterns = [
     path('cursos/curso/<int:pk>/eliminar', curso_eliminar, name="curso_eliminar"),
     path('cursos/listado', CursoListView.as_view(), name="curso_listado"),
 
-    # DICTADOS
+    # DICTADOS (accedido desde cursos)
     path('cursos/curso/<int:pk>/dictados/dictado/crear', DictadoCreateView.as_view(), name="dictado_crear"),
     path('cursos/curso/<int:curso_pk>/dictados/dictado/<int:dictado_pk>', DictadoDetailView.as_view(), name="dictado_detalle"),
     path('cursos/curso/<int:curso_pk>/dictados/dictado/<int:dictado_pk>/editar', DictadoUpdateView.as_view(), name="dictado_editar"),
-    path('cursos/<int:pk>/dictados', DictadoListView.as_view(), name="dictado_listado"),
+    
 
-    # CLASE
+    # CLASE (accedido desde dictaod)
     path('cursos/curso/<int:curso_pk>/dictados/dictado/<int:dictado_pk>/clases/clase/crear', ClaseCreateView.as_view(), name="clase_crear"),
     path('cursos/curso/<int:curso_pk>/dictados/dictado/<int:dictado_pk>/clases/clase/<int:clase_pk>', ClaseDetailView.as_view(), name="clase_detalle"),
 
-    # HORARIO
+    # HORARIO (accedido desde clase)
+    # path('cursos/curso/<int:curso_pk>/dictados/dictado/<int:dictado_pk>/clases/clase/<int:clase_pk>/horarios/horario/crear', HorarioCreateView.as_view(), name="clase_detalle"),
+    # path('cursos/curso/<int:curso_pk>/dictados/dictado/<int:dictado_pk>/clases/clase/<int:clase_pk>/horarios/horario/<int:horario_pk>', HorarioCreateView.as_view(), name="clase_detalle"),
 
 
 
 
+	# NO UTILIZADO POR EL MOMENTO
+	path('cursos/<int:pk>/dictados', DictadoListView.as_view(), name="dictado_listado"),
     path('dictado/<int:pk>/verclases', ClaseListView.as_view(), name="ver_clases"),#se accede desde el dictado
+
+
+
 
     # TODO: ------------------------  PROFESORES  ----------------------------
     path('profesores/crear', ProfesorCreateView.as_view(), name="profesor_crear"),

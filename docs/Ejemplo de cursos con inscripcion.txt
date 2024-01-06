@@ -1,0 +1,109 @@
+Actividad: "Festival Multicultural de Idiomas"
+
+Descripción: Un evento que ofrece una variedad de cursos de idiomas para promover la diversidad cultural y el aprendizaje de nuevas lenguas.
+
+Cursos:
+
+Curso 1: Inglés para Principiantes
+
+Descripción: Curso introductorio al idioma inglés.
+Duración: 4 meses.
+Límite de Capacidad: 20 participantes.
+Dictados:
+
+Dictado 1: Fundamentos del Inglés
+Instructor: Profesor John Smith.
+
+Límite de Capacidad: 20 participantes.
+
+Método de Pago: Por mes.
+
+Costo: $180 por mes.
+
+Cantidad de Clases: 16 clases.
+
+Módulos por Clase: 2 módulos (2 horas por clase).
+
+Clases:
+
+Clase 1: Saludos y Presentaciones
+
+Aula: Aula 1.
+Horario: Lunes y Miércoles, 18:00 - 20:00
+Inscritos: 18 / 20 (capacidad)
+Asistencia: 15 / 18 (registrada)
+Clase 2: Vocabulario Básico y Pronunciación
+
+Aula: Aula 1.
+Horario: Lunes y Miércoles, 18:00 - 20:00
+Inscritos: 15 / 20 (capacidad)
+Asistencia: 12 / 15 (registrada)
+Clase 3: Estructuras de Oraciones Simples
+
+Aula: Aula 1.
+Horario: Lunes y Miércoles, 18:00 - 20:00
+Inscritos: 20 / 20 (capacidad)
+Asistencia: 18 / 20 (registrada)
+...
+
+Clase 16: Conversación y Evaluación Final
+
+Aula: Aula 1.
+Horario: Lunes y Miércoles, 18:00 - 20:00
+Inscritos: 17 / 20 (capacidad)
+Asistencia: 16 / 17 (registrada)
+...
+
+Curso 2: Francés Intermedio
+
+Descripción: Curso para aquellos que ya tienen conocimientos básicos de francés.
+Duración: 6 meses.
+Límite de Capacidad: 18 participantes.
+Dictados:
+
+Dictado 1: Avanzando en Francés
+Instructora: Profesora Marie Leclerc.
+
+Límite de Capacidad: 18 participantes.
+
+Método de Pago: Por mes.
+
+Costo: $200 por mes.
+
+Certificado Médico: Se recomienda certificado médico, pero no es obligatorio.
+
+Descuento: Afiliados al sindicato reciben un descuento del 8% en la cuota mensual.
+
+Cantidad de Clases: 24 clases.
+
+Módulos por Clase: 2 módulos (2 horas por clase).
+
+Clases:
+
+Clase 1: Revisión de Conceptos Básicos
+
+Aula: Aula 2.
+Horario: Martes y Jueves, 19:00 - 21:00
+Inscritos: 16 / 18 (capacidad)
+Asistencia: 14 / 16 (registrada)
+Clase 2: Expresiones Idiomáticas y Cultura Francesa
+
+Aula: Aula 2.
+Horario: Martes y Jueves, 19:00 - 21:00
+Inscritos: 14 / 18 (capacidad)
+Asistencia: 12 / 14 (registrada)
+Clase 3: Gramática Avanzada y Conversación
+
+Aula: Aula 2.
+Horario: Martes y Jueves, 19:00 - 21:00
+Inscritos: 18 / 18 (capacidad)
+Asistencia: 16 / 18 (registrada)
+...
+
+Clase 24: Proyecto Final y Evaluación
+
+Aula: Aula 2.
+Horario: Martes y Jueves, 19:00 - 21:00
+Inscritos: 17 / 18 (capacidad)
+Asistencia: 15 / 17 (registrada)
+...

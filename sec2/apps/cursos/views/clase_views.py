@@ -9,41 +9,37 @@ from django.urls import reverse
 from django.shortcuts import get_object_or_404
 from django.urls import reverse_lazy
 
-##--------------- CREACION DE CLASE --------------------------------
+# --------------- CREACION DE CLASE --------------------------------
+
+
 class ClaseCreateView(CreateView):
     model = Clase
     form_class = ClaseForm
     template_name = 'clase/clase_form.html'
-    success_url = reverse_lazy('cursos:index')
 
-    #[FALTA] controlar que la cantidad de clases no supere la cantidad de clases maximas aproximadas
+    def get_success_url(self):
+        return reverse_lazy('cursos:dictado_detalle', kwargs={'curso_pk': self.kwargs['curso_pk'], 'dictado_pk': self.kwargs['dictado_pk']})
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['titulo'] = "Alta de Clases"
+        context['titulo'] = "Alta de Clase"
         return context
 
     def form_valid(self, form):
-        # Obtén el dictado relacionado con la clase
         dictado_id = self.kwargs['dictado_pk']
         dictado = get_object_or_404(Dictado, pk=dictado_id)
-
-        # Asigna el dictado a la clase antes de guardarla
         form.instance.dictado = dictado
-
-        # Guarda la clase para obtener el ID asignado
         response = super().form_valid(form)
-
-        # Asigna los horarios seleccionados a la clase
-        form.instance.horarios.set(form.cleaned_data['horarios'])
-
+        messages.success(self.request, 'Clase creada exitosamente.')
         return response
 
-##--------------- CLASE DETALLE --------------------------------
+# --------------- CLASE DETALLE --------------------------------
+
+
 class ClaseDetailView(DetailView):
     model = Clase
     template_name = 'clase/clase_detail.html'
-    
+
     def get_object(self, queryset=None):
         curso_pk = self.kwargs.get('curso_pk')
         dictado_pk = self.kwargs.get('dictado_pk')
@@ -52,15 +48,17 @@ class ClaseDetailView(DetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['dictado'] = get_object_or_404(Dictado, id=self.kwargs.get('dictado_pk'))
+        context['dictado'] = get_object_or_404(
+            Dictado, id=self.kwargs.get('dictado_pk'))
         context['clase'] = Clase.objects.get(id=self.kwargs.get('dictado_pk'))
-        context['titulo'] = "Detalle de la clase    "
+        context['titulo'] = "Detalle de clase"
         context['tituloListado'] = 'Horario Asociadas'
         # Obtener todas las clases asociadas al dictado
         # clases = Clase.objects.filter(dictado=context['object'])
         # context['dictado'] = clases
 
         return context
+
 
 class ClaseListView(ListFilterView):
     model = Clase

@@ -68,6 +68,7 @@
           <th>Profesor</th>
           <th>Inscriptos</th>
           <th>Costo</th>
+          <th></th>
         </tr>
       </thead>
       <tbody>
@@ -86,7 +87,7 @@
               onclick="window.open('{% url 'cursos:dictado_detalle' curso_pk=curso.pk dictado_pk=dictado_info.dictado.pk %}', 'NuevaVentana', 'width=800, height=625'); return false;"
               >
               <i class="fa-regular fa-eye"></i> Detalle</a>
-           </td>
+            </td>
           </tr>
         {% endfor %}
       </tbody>

@@ -8,7 +8,10 @@ from django.views.generic.edit import CreateView, UpdateView
 from utils.constants import *
 from sec2.utils import ListFilterView
 
-####################### SECCION DE PROFESOR #######################
+################ La clase `ProfesorCreateView` es una vista para crear un nuevo objeto `Profesor`
+# usando un formulario y redirige a la lista de profesores después de una creación
+# exitosa.
+######## SECCION DE PROFESOR #######################
 class ProfesorCreateView(CreateView):
     model = Profesor
     form_class = FormularioProfesor
@@ -64,5 +67,8 @@ class ProfesorDelDictadoListView(ListFilterView):
     # filter_class = ProfesorDelDictadoFilterForm
     
     def get_queryset(self):
+        # La línea `titular = super().get_queryset().filter(dictado__pk=self.kwargs['pk'])` filtra el
+        # conjunto de consultas del modelo `Titular` basándose en el valor `pk` (clave primaria)
+        # pasado la URL kwargs.
         titular = super().get_queryset().filter(dictado__pk=self.kwargs['pk'])
         return titular
