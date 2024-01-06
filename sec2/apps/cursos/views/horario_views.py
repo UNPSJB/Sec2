@@ -10,21 +10,21 @@ from django.urls import reverse
 from django.shortcuts import get_object_or_404
 from django.urls import reverse_lazy
 
+
 ##--------------- CREACION DE HORARIO --------------------------------
 class HorarioCreateView(CreateView):
-    model = Horario     
+    model = Horario
     form_class = HorarioForm
-    template_name = 'horario/horario_form.html'
-    success_url = reverse_lazy('cursos:index')
+    template_name = "horario/horario_form.html"
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['titulo'] = "Nuevo horario"
+        context["titulo"] = "Nuevo horario"
         return context
 
     def form_valid(self, form):
         # Obtiene la clase relacionado con el dictado
-        clase_id = self.kwargs['clase_pk']
+        clase_id = self.kwargs["clase_pk"]
         clase = get_object_or_404(Clase, pk=clase_id)
 
         # Asigna el dictado a la clase antes de guardarla
@@ -34,6 +34,6 @@ class HorarioCreateView(CreateView):
         response = super().form_valid(form)
 
         # Asigna los horarios seleccionados a la clase
-        form.instance.horarios.set(form.cleaned_data['horarios'])
+        form.instance.horarios.set(form.cleaned_data["horarios"])
 
         return response

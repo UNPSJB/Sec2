@@ -78,7 +78,6 @@ class AlumnoCreateView(CreateView):
 #         context['dictado'] = Alumno.objects.get(id = self.kwargs.get('pk'))
 #         return context
 
-class AlumnosDelDictadoListView(ListFilterView):
     model = Alumno
     paginate_by = 100
     # filter_class = AlumnosDelDictadoFilterForm

@@ -42,7 +42,7 @@ urlpatterns = [
     path('cursos/curso/<int:curso_pk>/dictados/dictado/<int:dictado_pk>/clases/clase/<int:clase_pk>', ClaseDetailView.as_view(), name="clase_detalle"),
 
     # HORARIO (accedido desde clase)
-    # path('cursos/curso/<int:curso_pk>/dictados/dictado/<int:dictado_pk>/clases/clase/<int:clase_pk>/horarios/horario/crear', HorarioCreateView.as_view(), name="clase_detalle"),
+    path('cursos/curso/<int:curso_pk>/dictados/dictado/<int:dictado_pk>/clases/clase/<int:clase_pk>/horarios/horario/crear', HorarioCreateView.as_view(), name="horario_crear"),
     # path('cursos/curso/<int:curso_pk>/dictados/dictado/<int:dictado_pk>/clases/clase/<int:clase_pk>/horarios/horario/<int:horario_pk>', HorarioCreateView.as_view(), name="clase_detalle"),
 
 

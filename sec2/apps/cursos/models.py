@@ -118,18 +118,18 @@ class Aula(models.Model):
     cupo = models.PositiveIntegerField(help_text="Capacidad máxima del aula")
 
     def __str__(self):
-        return self.denominacionw
+        return self.denominacion
 
 #------------- HORARIO --------------------
 class Horario(models.Model):
     dia_semana = models.PositiveSmallIntegerField(choices=DIAS_SEMANA_CHOICES)
-    hora_inicio = models.TimeField()
+    hora_inicio = models.TimeField(help_text="Ingrese la hora en formato de 24 horas (HH:MM)")
     aula = models.ForeignKey(Aula, related_name='horarios', on_delete=models.CASCADE)
     asistencia = models.PositiveIntegerField(default=0, help_text="Número de alumnos que asistieron")
-    
+
     def __str__(self):
         return f"{self.get_dia_semana_display()} - {self.hora_inicio} - {self.aula}"
-    
+
 #------------- CLASE --------------------
 class Clase(models.Model):
     dictado = models.ForeignKey(Dictado, related_name="clases", null=True, on_delete=models.CASCADE)

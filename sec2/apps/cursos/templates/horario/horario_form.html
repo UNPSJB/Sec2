@@ -2,43 +2,9 @@
 {% load crispy_forms_tags %}
 
 {% block formulario %}
-  <form method="post" id="clase-form">
+  <form method="post" enctype="multipart/form-data">
     {% csrf_token %}
-    <div class="row">
-      <div class="col">
-        <div class="form-group">
-        
-        </div>
-    </div>
-
-    <div class="row">
-      <div class="col">
-        <div class="form-group">
-          {{ form.horarios.label_tag }}
-          <br />
-          {{ form.horarios }}
-          {% if form.horarios.errors %}
-            <small class="error-text">
-              {% for error in form.horarios.errors %}
-                <i class="fas fa-times"></i> {{ error }}
-                {% if not loop.last %}
-                  <br />
-                {% endif %}
-              {% endfor %}
-            </small>
-          {% endif %}
-          <small class="text-muted">{{ form.horarios.help_text }}</small>
-        </div>
-      </div>
-    </div>
-
-    <div class="row row-cols-1 row-cols-sm-1 row-cols-md-2">
-      <div class="col">
-        <a href="{% url 'cursos:index' %}" class="btn btn-secondary">Cancelar</a>
-      </div>
-      <div class="col">
-        <button type="submit" class="btn btn-primary">Guardar</button>
-      </div>
-    </div>
+    {{ form|crispy }}
+    <button type="submit">Guardar</button>
   </form>
 {% endblock %}
