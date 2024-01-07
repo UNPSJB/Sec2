@@ -1,25 +1,24 @@
 from django import forms
 from ..models import Horario
-from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Layout, Fieldset, Submit, HTML
-from sec2.utils import FiltrosForm
 from utils.constants import *
 from django import forms
-from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Layout, Row, Column
 
-# ------------- FORMULARIO DE HORARIO --------------
 class HorarioForm(forms.ModelForm):
     class Meta:
         model = Horario
-        fields = "__all__"
-        exclude = ["asistencia"]
+        fields = ['dia_semana', 'hora_inicio', 'aula']
 
     def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+        super(HorarioForm, self).__init__(*args, **kwargs)
+        self.fields['hora_inicio'].widget = forms.TimeInput(attrs={'class': 'tu-clase-css'})
 
-        # Personalizar el widget de hora_inicio
-        self.fields["hora_inicio"].widget = forms.TimeInput(
-            attrs={"step": 900},  # 900 segundos = 15 minutos
-            format="%H:%M"  # Formato de la hora
-        )
+    def clean(self):
+        cleaned_data = super(HorarioForm, self).clean()
+        return cleaned_data
+
+    def save(self, commit=True):
+        instance = super(HorarioForm, self).save(commit=False)
+        if commit:
+            instance.save()
+        return instance
+

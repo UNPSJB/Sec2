@@ -45,15 +45,9 @@ urlpatterns = [
     path('cursos/curso/<int:curso_pk>/dictados/dictado/<int:dictado_pk>/clases/clase/<int:clase_pk>/horarios/horario/crear', HorarioCreateView.as_view(), name="horario_crear"),
     # path('cursos/curso/<int:curso_pk>/dictados/dictado/<int:dictado_pk>/clases/clase/<int:clase_pk>/horarios/horario/<int:horario_pk>', HorarioCreateView.as_view(), name="clase_detalle"),
 
-
-
-
 	# NO UTILIZADO POR EL MOMENTO
 	path('cursos/<int:pk>/dictados', DictadoListView.as_view(), name="dictado_listado"),
     path('dictado/<int:pk>/verclases', ClaseListView.as_view(), name="ver_clases"),#se accede desde el dictado
-
-
-
 
     # TODO: ------------------------  PROFESORES  ----------------------------
     path('profesores/crear', ProfesorCreateView.as_view(), name="profesor_crear"),
@@ -69,7 +63,7 @@ urlpatterns = [
     path('aulas/<int:pk>/eliminar', aula_eliminar, name="aula_eliminar"),
     
 
-    path('<int:pk>/dictado/alumnos',  AlumnosDelDictadoListView.as_view(), name="alumnos_dictado"),#se accede desde el curso
+    # path('<int:pk>/dictado/alumnos',  AlumnosDelDictadoListView.as_view(), name="alumnos_dictado"),#se accede desde el curso
     path('<int:pk>/dictado/<int:dpk>/alumnos',  agregarAlumnoCursoListView.as_view(), name="alumnos_dictado_curso"),#se accede desde dictado
     path('<int:pk>/dictado/inscribir/<int:apk>',  registrarAlumnoADictado, name="carga_alumno_dictado"),
     

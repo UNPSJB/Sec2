@@ -11,7 +11,6 @@ from django.urls import reverse_lazy
 
 # --------------- CREACION DE CLASE --------------------------------
 
-
 class ClaseCreateView(CreateView):
     model = Clase
     form_class = ClaseForm
@@ -60,13 +59,9 @@ class ClaseDetailView(DetailView):
         context["dictado"] = get_object_or_404(
             Dictado, id=self.kwargs.get("dictado_pk")
         )
-        context["clase"] = Clase.objects.get(id=self.kwargs.get("dictado_pk"))
+        context["clase"] = Clase.objects.get(id=self.kwargs.get("clase_pk"))
         context["titulo"] = "Detalle de clase"
         context["tituloListado"] = "Horario Asociadas"
-        # Obtener todas las clases asociadas al dictado
-        # clases = Clase.objects.filter(dictado=context['object'])
-        # context['dictado'] = clases
-
         return context
 
 

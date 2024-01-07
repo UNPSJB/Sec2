@@ -2,9 +2,28 @@
 {% load crispy_forms_tags %}
 
 {% block formulario %}
-  <form method="post" enctype="multipart/form-data">
-    {% csrf_token %}
-    {{ form|crispy }}
-    <button type="submit">Guardar</button>
-  </form>
+
+<form method="post">
+  {% csrf_token %}
+
+  <div>
+    <label for="{{ form.dia_semana.id_for_label }}">Día de la semana:</label>
+    {{ form.dia_semana }}
+  </div>
+
+  <div>
+    <label for="{{ form.hora_inicio.id_for_label }}">Hora de inicio:</label>
+    <input type="time" name="hora_inicio" required class="form-control" value="{{ form.hora_inicio }}" />
+  </div>
+
+  <div>
+    <label for="{{ form.aula.id_for_label }}">Aula:</label>
+    {{ form.aula }}
+  </div>
+
+
+
+  <button type="submit">Guardar</button>
+</form>
+
 {% endblock %}

@@ -25,10 +25,6 @@ def validate_positive_decimal(value):
         raise ValidationError(f'{XMARK_ICON} El sueldo no puede ser un valor negativo.')
 
 def telefono_argentino_validator(value):
-    """
-    Valida números de teléfono con características argentinas.
-    Acepta formatos: +549XXXXXXXXX, 0XX-XXXXXXXX, 15XXXXXXXXX.
-    """
     if not value:
         return  # Permite valores vacíos, ya que eso debería ser manejado por otro validador si es necesario.
 

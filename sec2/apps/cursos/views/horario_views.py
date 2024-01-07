@@ -26,13 +26,10 @@ class HorarioCreateView(CreateView):
         # Obtiene la clase relacionado con el dictado
         clase_id = self.kwargs["clase_pk"]
         clase = get_object_or_404(Clase, pk=clase_id)
-
         # Asigna el dictado a la clase antes de guardarla
         form.instance.clase = clase
-
         # Guarda la clase para obtener el ID asignado
         response = super().form_valid(form)
-
         # Asigna los horarios seleccionados a la clase
         form.instance.horarios.set(form.cleaned_data["horarios"])
 
