@@ -16,7 +16,16 @@ class HorarioCreateView(CreateView):
     model = Horario
     form_class = HorarioForm
     template_name = "horario/horario_form.html"
-    success_url = reverse_lazy('cursos:index')
+
+    def get_success_url(self):
+        return reverse_lazy(
+            "cursos:clase_detalle",
+            kwargs={
+                "curso_pk": self.kwargs["curso_pk"],
+                "dictado_pk": self.kwargs["dictado_pk"],
+                "clase_pk": self.kwargs["clase_pk"],
+            },
+        )
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -26,12 +35,10 @@ class HorarioCreateView(CreateView):
     def form_valid(self, form):
         # Obtiene la clase relacionada con el dictado
         clase_id = self.kwargs["clase_pk"]
-        print("asdsadsad.------------asdasdasd")
-        print(clase_id)
         clase = get_object_or_404(Clase, pk=clase_id)
         # Asigna el dictado a la clase antes de guardarla
         form.instance.clase = clase
         # Guarda la clase para obtener el ID asignado
         response = super().form_valid(form)
-        # No es necesario asignar los horarios aquí si ya lo hiciste en el formulario
+        messages.success(self.request, "Horario creado exitosamente.")
         return response

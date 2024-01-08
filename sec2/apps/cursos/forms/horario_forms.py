@@ -10,13 +10,3 @@ class HorarioForm(forms.ModelForm):
         widgets = {
             'hora_inicio': forms.TimeInput(format='%H:%M')
         }
-
-    def clean(self):
-        cleaned_data = super(HorarioForm, self).clean()
-        return cleaned_data
-
-    def save(self, commit=True):
-        instance = super(HorarioForm, self).save(commit=False)
-        if commit:
-            instance.save()
-        return instance

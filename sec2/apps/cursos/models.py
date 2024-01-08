@@ -109,26 +109,17 @@ class Dictado(models.Model):
 class Aula(models.Model):
     TIPO_CHOICES = [
         ('normal', 'Normal'),
-        ('laboratorio', 'Laboratorio'),
-        ('conferencia', 'Conferencia'),
         ('computacion', 'Computación'),
     ]
-    denominacion = models.CharField(max_length=50, unique=True, help_text="Nombre o identificador del aula, ej: Aula 22, Laboratorio 1")
     tipo = models.CharField(max_length=50, choices=TIPO_CHOICES, help_text="Tipo de aula")
+    numero = models.PositiveIntegerField(help_text="Numero de aula")
     cupo = models.PositiveIntegerField(help_text="Capacidad máxima del aula")
 
-    def __str__(self):
-        return self.denominacion
-
-#------------- HORARIO --------------------
-class Horario(models.Model):
-    dia_semana = models.PositiveSmallIntegerField(choices=DIAS_SEMANA_CHOICES)
-    hora_inicio = models.TimeField(help_text="Ingrese la hora en formato de 24 horas (HH:MM)")
-    aula = models.ForeignKey(Aula, related_name='horarios', on_delete=models.CASCADE)
-    asistencia = models.PositiveIntegerField(default=0, help_text="Número de alumnos que asistieron")
-
-    def __str__(self):
-        return f"{self.get_dia_semana_display()} - {self.hora_inicio} - {self.aula}"
+    def clean(self):
+        if self.numero <= 0:
+            raise ValidationError({'numero': 'El número de aula debe ser mayor que 0.'})
+        if self.cupo <= 0:
+            raise ValidationError({'cupo': 'La capacidad máxima del aula debe ser mayor que 0.'})
 
 #------------- CLASE --------------------
 class Clase(models.Model):
@@ -139,11 +130,25 @@ class Clase(models.Model):
         help_text="Solo se permiten letras y espacios."
     )
     inscritos = models.PositiveIntegerField(default=0, help_text="Número de alumnos inscritos")
-    horarios = models.ManyToManyField(Horario, related_name='clases')  # Agrega este campo
 
     def __str__(self):
         return self.nombre
 
+#------------- HORARIO --------------------
+class Horario(models.Model):
+    """
+    De la siguiente manera se esta dejando un horario flexible,
+    que permite agregar distintos horarios conforme pasa el tiempo
+    
+    """
+    dia_semana = models.PositiveSmallIntegerField(choices=DIAS_SEMANA_CHOICES)
+    hora_inicio = models.TimeField(help_text="Ingrese la hora en formato de 24 horas (HH:MM)")
+    aula = models.ForeignKey(Aula, related_name='horarios', on_delete=models.CASCADE)
+    asistencia = models.PositiveIntegerField(default=0, help_text="Número de alumnos que asistieron")
+    clase = models.ForeignKey(Clase, related_name="horarios", null=True, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return f"{self.get_dia_semana_display()} - {self.hora_inicio} - {self.aula}"
 
 
 class Alumno(Rol):

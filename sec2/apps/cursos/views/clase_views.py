@@ -3,7 +3,7 @@ from django.shortcuts import render, redirect
 from django.views.generic import DetailView
 from sec2.utils import ListFilterView
 from django.contrib import messages
-from ..models import Dictado, Aula, Clase
+from ..models import Dictado, Aula, Clase, Horario
 from ..forms.clase_forms import *
 from django.urls import reverse
 from django.shortcuts import get_object_or_404
@@ -40,8 +40,6 @@ class ClaseCreateView(CreateView):
 
 
 # --------------- CLASE DETALLE --------------------------------
-
-
 class ClaseDetailView(DetailView):
     model = Clase
     template_name = "clase/clase_detail.html"
@@ -61,7 +59,10 @@ class ClaseDetailView(DetailView):
         )
         context["clase"] = Clase.objects.get(id=self.kwargs.get("clase_pk"))
         context["titulo"] = "Detalle de clase"
-        context["tituloListado"] = "Horario Asociadas"
+        context["tituloListado"] = "Control de asistencia"
+        # Obtener todos horarios asociadas a la clase
+        horario = Horario.objects.filter(clase=context['object'])
+        context['horarios'] = horario
         return context
 
 

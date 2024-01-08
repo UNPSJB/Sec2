@@ -9,7 +9,6 @@
         {{ clase.nombre }}
       </p>
     </div>
-
     <div class="col-md-6">
       <p>
         <strong>Inscriptos:</strong> {{ clase.inscritos }} de {{ dictado.maximos_alumnos }}
@@ -22,32 +21,50 @@
       <p>
         <strong>Fecha de inicio:</strong>
         {% if object.horarios.all %}
-          [agregar la fecha de la primer clase]
+        <td> 07/01/2024 </td>
+        
         {% else %}
           A definir
         {% endif %}
       </p>
     </div>
   </div>
-{% endblock %}
 
-{% block listado_asociado %}
-  {% if horario %}
+  {% if horarios %}
     <table class="table table-sm table-hover">
       <thead>
         <tr>
-          <th>#</th>
+          <th>Día</th>
+          <th>Desde</th>
+          <th>Hasta</th>
+          <th>Aula</th>
+          <th></th>
         </tr>
       </thead>
 
       <tbody>
+        {% for horario in horarios %}
         <tr>
-          <td>{{ forloop.counter }}</td>
+            <td>{{ horario.get_dia_semana_display }}</td>
+            <td>{{ horario.hora_inicio }}</td>
+            <td>{{ horario.hora_inicio }} + {{ clase.dictado.modulos }} horas </td>
+            <td>{{ horario.aula }}</td>
+            <td>[icono de editar]</td>
         </tr>
+        {% endfor %}
       </tbody>
     </table>
-  {% else %}
-    <p>No hay horarios asignados.</p>
   {% endif %}
-  <a href="{% url 'cursos:horario_crear' curso_pk=clase.dictado.curso.pk dictado_pk=clase.dictado.pk clase_pk=clase.pk %}" class="btn btn-primary btn-detalle"><i class="fa-solid fa-plus"></i> Nuevo</a>
   {% endblock %}
+
+  {% block botones %}
+  <div class="col d-flex justify-content-center">
+    <a href="{% url 'cursos:horario_crear' curso_pk=clase.dictado.curso.pk dictado_pk=clase.dictado.pk clase_pk=clase.pk %}" class="btn btn-primary btn-detalle"><i class="fa-solid fa-plus"></i> Generar Horario</a>
+  </div>
+  {% endblock %}
+
+
+
+{% block listado_asociado %}
+  
+{% endblock %}

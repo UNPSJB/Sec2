@@ -21,7 +21,7 @@ class DictadoAdmin(admin.ModelAdmin):
 admin.site.register(Dictado, DictadoAdmin)
 
 class AulaAdmin(admin.ModelAdmin):
-    list_display = ('denominacion', 'tipo', 'cupo')
+    list_display = ('numero', 'tipo', 'cupo')
 admin.site.register(Aula, AulaAdmin)
 
 class HorarioAdmin(admin.ModelAdmin):

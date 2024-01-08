@@ -17,6 +17,10 @@ urlpatterns = [
     # PRINCIPAL
     path('',index, name="index"),
 
+    # AULAS
+    path('aulas/crear', AulaCreateView.as_view(), name="aula_crear"),
+    path('aulas/', AulaListView.as_view(), name="aula_listado"), #list
+
     # ACTIVIDADES
     path('actividades/actividad/crear', ActividadCreateView.as_view(), name="actividad_crear"),
     path('actividades/actividad/<int:pk>', ActividadDetailView.as_view(), name="actividad_detalle"),
@@ -55,9 +59,8 @@ urlpatterns = [
     path('profesores/<int:pk>/editar', ProfesorUpdateView.as_view(), name="profesor_modificar"),
     # path('profesores/<int:pk>/eliminar', actividad_eliminar, name="profesor_eliminar"),
     
-    # * ------------------------  AULAS  ----------------------------------
-    path('aulas', AulaListView.as_view(), name="aulas"), #list
-    path('aulas/crear', AulaCreateView.as_view(), name="aula_crear"), #listo
+    
+
     path('aulas/<int:pk>', AulaDetailView.as_view(), name="aula_detalles"),
     path('aulas/<int:pk>/editar', AulaUpdateView.as_view(), name="aula_editar"),
     path('aulas/<int:pk>/eliminar', aula_eliminar, name="aula_eliminar"),
