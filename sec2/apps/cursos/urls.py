@@ -19,7 +19,12 @@ urlpatterns = [
 
     # AULAS
     path('aulas/crear', AulaCreateView.as_view(), name="aula_crear"),
+    path('aulas/<int:pk>', AulaDetailView.as_view(), name="aula_detalle"),
+    path('aulas/<int:pk>/editar', AulaUpdateView.as_view(), name="aula_editar"),
+    path('aulas/<int:pk>/eliminar', aula_eliminar, name="aula_eliminar"),
     path('aulas/', AulaListView.as_view(), name="aula_listado"), #list
+    
+
 
     # ACTIVIDADES
     path('actividades/actividad/crear', ActividadCreateView.as_view(), name="actividad_crear"),
@@ -61,10 +66,6 @@ urlpatterns = [
     
     
 
-    path('aulas/<int:pk>', AulaDetailView.as_view(), name="aula_detalles"),
-    path('aulas/<int:pk>/editar', AulaUpdateView.as_view(), name="aula_editar"),
-    path('aulas/<int:pk>/eliminar', aula_eliminar, name="aula_eliminar"),
-    
 
     # path('<int:pk>/dictado/alumnos',  AlumnosDelDictadoListView.as_view(), name="alumnos_dictado"),#se accede desde el curso
     path('<int:pk>/dictado/<int:dpk>/alumnos',  agregarAlumnoCursoListView.as_view(), name="alumnos_dictado_curso"),#se accede desde dictado

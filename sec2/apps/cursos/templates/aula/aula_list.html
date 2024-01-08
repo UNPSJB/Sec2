@@ -7,21 +7,21 @@
   <table class="table table-sm table-hover">
     <thead>
       <tr>
-        <th scope="col">Denominación</th>
-        <th scope="col">Tipo</th>
-        <th scope="col">Cupo Máximo</th>
-        <th scope="col"></th>
+        <th>#</th>
+        <th>Nombre</th>
+        <th>Capacidad</th>
+        <th></th>
       </tr>
     </thead>
 
     <tbody>
       {% for obj in object_list %}
         <tr>
-          <td>{{ obj.nombre }}</td>
-          <td>{{ obj.tipo }}</td>
+          <td>{{ forloop.counter }}</td>
+          <td>{{ obj }}</td>
           <td>{{ obj.cupo }}</td>
           <td>
-            <a href="{% url 'cursos:aula_editar' obj.pk %}" class="btn btn-primary btn-detalle"><i class="fa-regular fa-eye"></i> Detalle</a>
+            <a href="{% url 'cursos:aula_detalle' pk=obj.pk %}" class="btn btn-primary btn-detalle"><i class="fa-regular fa-eye"></i> Detalle</a>
           </td>
         </tr>
       {% endfor %}
@@ -30,5 +30,5 @@
 {% endblock %}
 
 {% block botones %}
-  <a href="{% url 'cursos:aula_crear' %}" class="btn btn-primary"><i class="fa-solid fa-plus"></i> Nuevo</a>
+  <a href="{% url 'cursos:aula_crear' %}" class="btn btn-primary btn-detalle"><i class="fa-solid fa-plus"></i> Nuevo</a>
 {% endblock %}

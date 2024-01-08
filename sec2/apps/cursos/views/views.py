@@ -37,7 +37,8 @@ def curso_eliminar(request, pk):
 def aula_eliminar(request, pk):
     a = Aula.objects.get(pk=pk)
     a.delete()
-    return redirect('cursos:aulas') 
+    messages.success(request, f'<i class="fa-solid fa-square-check fa-beat-fade"></i>   "{ a }" se ha eliminado con éxito.')
+    return redirect('cursos:aula_listado') 
 
 ## ------------ ACTIVIDAD DELETE -------------------
 def actividad_eliminar(request, pk):

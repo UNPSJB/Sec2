@@ -1,3 +1,4 @@
+from django.shortcuts import redirect
 from django.views.generic.edit import CreateView, UpdateView
 from django.views.generic import DetailView, ListView
 from ..models import Aula
@@ -32,28 +33,56 @@ class AulaCreateView(CreateView):
     def form_invalid(self, form):
         form.errors.clear()
         return super().form_invalid(form)
-    
-## ------------ ACTIVIDAD DETALLE -------------------
 
+## ------------ ACTIVIDAD DETALLE -------------------
+class AulaDetailView(DetailView):
+    model = Aula
+    template_name = "aula/aula_detalle.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['titulo'] = 'Detalle de Aula'
+        return context
+
+## ------------ LISTADO -------------------
 class AulaListView(ListView):
     model = Aula
     paginate_by = 100  
     filter_class = AulaFilterForm
     template_name = 'aula/aula_list.html'
 
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        # Ordenar de forma descendente por tipo y luego por número
+        queryset = queryset.order_by('-tipo', 'numero')
+        return queryset
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         # Aquí creas una instancia del formulario y la agregas al contexto
         filter_form = AulaFilterForm(self.request.GET)
         context['filtros'] = filter_form
-        context['titulo'] = "Listado de Aulas"
+        context['titulo'] = "Aulas"
         return context
 
-class AulaDetailView(DetailView):
-    model = Aula
-
+## ------------ UPDATE -------------------
 class AulaUpdateView(UpdateView):
     model = Aula
     form_class = AulaForm
-    success_url = reverse_lazy('cursos:aula_listado')
+    template_name = 'aula/aula_alta.html'
     
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['titulo'] = "Modificar Aula"
+        return context
+
+    def form_valid(self, form):
+        aula = form.save()
+        messages.success(self.request, '<i class="fa-solid fa-square-check fa-beat-fade"></i> Aula modificado con éxito')
+        return redirect('cursos:aula_detalle', pk=aula.pk)
+
+    def form_invalid(self, form):
+        messages.warning(self.request, '<i class="fa-solid fa-triangle-exclamation fa-flip"></i> Por favor, corrija los errores a continuación.')
+        for field, errors in form.errors.items():
+            print(f"Campo: {field}, Errores: {', '.join(errors)}")
+        return super().form_invalid(form)

@@ -121,6 +121,10 @@ class Aula(models.Model):
         if self.cupo <= 0:
             raise ValidationError({'cupo': 'La capacidad máxima del aula debe ser mayor que 0.'})
 
+    def __str__(self):
+        if self.tipo == 'normal':
+            return 'Aula {}'.format(self.numero)
+        return 'Computación {}'.format(self.numero)
 #------------- CLASE --------------------
 class Clase(models.Model):
     dictado = models.ForeignKey(Dictado, related_name="clases", null=True, on_delete=models.CASCADE)
