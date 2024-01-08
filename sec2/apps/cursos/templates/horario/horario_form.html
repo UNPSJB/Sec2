@@ -1,29 +1,25 @@
 {% extends 'alta_ventana_nueva.html' %}
+
 {% load crispy_forms_tags %}
-
 {% block formulario %}
+  <form method="post">
+    {% csrf_token %}
 
-<form method="post">
-  {% csrf_token %}
+    <div>
+      <label for="{{ form.dia_semana.id_for_label }}">Día de la semana:</label>
+      {{ form.dia_semana }}
+    </div>
 
-  <div>
-    <label for="{{ form.dia_semana.id_for_label }}">Día de la semana:</label>
-    {{ form.dia_semana }}
-  </div>
+    <div>
+      <label for="{{ form.hora_inicio.id_for_label }}">Hora de inicio:</label>
+      <input type="time" id="id_hora_inicio" name="hora_inicio" required class="form-control" value="{{ form.hora_inicio.value|default:'' }}" />
+    </div>
 
-  <div>
-    <label for="{{ form.hora_inicio.id_for_label }}">Hora de inicio:</label>
-    <input type="time" name="hora_inicio" required class="form-control" value="{{ form.hora_inicio }}" />
-  </div>
+    <div>
+      <label for="{{ form.aula.id_for_label }}">Aula:</label>
+      {{ form.aula }}
+    </div>
 
-  <div>
-    <label for="{{ form.aula.id_for_label }}">Aula:</label>
-    {{ form.aula }}
-  </div>
-
-
-
-  <button type="submit">Guardar</button>
-</form>
-
+    <button type="submit">Guardar</button>
+  </form>
 {% endblock %}

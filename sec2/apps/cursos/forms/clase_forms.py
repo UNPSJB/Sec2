@@ -14,8 +14,7 @@ class ClaseForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
        
+
 class ClaseFilterForm (FiltrosForm):
     dia = forms.DateField(required=False)
     #actividad = forms.ChoiceField(required=False)
-
-

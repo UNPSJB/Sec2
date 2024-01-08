@@ -7,10 +7,9 @@ class HorarioForm(forms.ModelForm):
     class Meta:
         model = Horario
         fields = ['dia_semana', 'hora_inicio', 'aula']
-
-    def __init__(self, *args, **kwargs):
-        super(HorarioForm, self).__init__(*args, **kwargs)
-        self.fields['hora_inicio'].widget = forms.TimeInput(attrs={'class': 'tu-clase-css'})
+        widgets = {
+            'hora_inicio': forms.TimeInput(format='%H:%M')
+        }
 
     def clean(self):
         cleaned_data = super(HorarioForm, self).clean()
@@ -21,4 +20,3 @@ class HorarioForm(forms.ModelForm):
         if commit:
             instance.save()
         return instance
-
