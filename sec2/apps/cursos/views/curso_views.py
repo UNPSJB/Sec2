@@ -15,11 +15,10 @@ class CursoCreateView(CreateView):
     form_class = CursoForm
     template_name = 'curso/curso_form.html'
     success_url = reverse_lazy('cursos:curso_listado')
-    title = "Formulario Alta de Curso"  # Agrega un título
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['titulo'] = self.title  # Agrega el título al contexto
+        context['titulo'] = "Alta de Curso"
         # Verificar si hay alguna actividad
         tiene_actividad = Actividad.objects.exists()
         context['tiene_actividad'] = tiene_actividad
@@ -29,13 +28,25 @@ class CursoCreateView(CreateView):
         tiene_actividad = Actividad.objects.exists()
 
         if tiene_actividad:
-            return super().get(request, *args, **kwargs)
+            # Verificar el tipo de curso seleccionado
+            tipo_curso = self.request.GET.get('tipo', None)
+            if tipo_curso == 'sec':
+                # Mostrar formulario para Curso del SEC
+                self.template_name = 'curso/curso_alta_sec.html'
+            elif tipo_curso == 'convenio':
+                # Mostrar formulario para Convenio con el Gobierno
+                self.template_name = 'curso/curso_form_convenio.html'
+            else:
+                # Mostrar formulario de selección de tipo de curso
+                self.template_name = 'curso/seleccion_tipo_curso.html'
         else:
             messages.warning(
                 self.request, 
                 '<i class="fa-solid fa-triangle-exclamation fa-flip"></i> Completa el siguiente formulario para poder crear un Curso!'
             )
             return redirect('cursos:actividad_crear')
+
+        return super().get(request, *args, **kwargs)
 
     def form_valid(self, form):
         messages.success(self.request, f'{ICON_CHECK} Alta de curso exitosa!')

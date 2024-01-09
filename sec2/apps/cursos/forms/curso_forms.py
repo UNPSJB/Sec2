@@ -13,9 +13,6 @@ class CursoForm(forms.ModelForm):
         nombre = self.cleaned_data['nombre']
         return nombre
 
-    def clean(self):
-        pass
-
     def is_valid(self) -> bool:
         valid = super().is_valid()
         return valid

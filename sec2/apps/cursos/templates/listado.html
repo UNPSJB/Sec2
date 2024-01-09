@@ -17,21 +17,26 @@
 
     {% block tabla_listado %}
       {% endblock %}
+
     </div>
   </div>
-
 
   <div class="container ">
     <div class="row row-cols-1 row-cols-sm-2 row-cols-md-1">
       <div class="col" id="btn-new-afiliado">
         {% block botones %}
         {% endblock %}
+        ACA ME QUEDE. QUIERO QUE QUEDE EN LA MISMA FILA
+        {% include "pagination.html" %}
       </div>
     </div>
   </div>
+
 </div>
 
 {% block nav_lateral_filtro %}
+
     {% include 'nav_filtro.html' %}
+    
   {% endblock %}
 {% endblock %}

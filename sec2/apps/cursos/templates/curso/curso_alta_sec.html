@@ -10,9 +10,8 @@
     <div class="row">
       <div class="col-md-5">
         <div class="form-group">
-          <label for="{{ form.actividad.id_for_label }}">Actividad:</label>
-          <br />
-          {{ form.actividad }}
+          <label for="{{ form.area.id_for_label }}">Área:</label>
+          {{ form.area }}
         </div>
       </div>
       <div class="col-md-3">
@@ -24,9 +23,9 @@
       </div>
       <div class="col-md-3">
         <div class="form-group">
-          <label for="{{ form.capacidad_maxima.id_for_label }}">Capacidad:</label>
+          {{ form.cupo.label_tag }}
           <br />
-          <input type="number" name="capacidad_maxima" step="1" min="1" required class="form-control" value="{{ form.capacidad_maxima.value|default:'' }}" />
+          <input type="number" name="cupo" step="1" min="1" required class="form-control" value="{{ form.cupo.value|default:'' }}" />
           <small class="help-text">{{ form.capacidad_maxima.help_text }}</small>
         </div>
       </div>
@@ -35,8 +34,7 @@
     <div class="row">
       <div class="col">
         <div class="form-group">
-          <label for="{{ form.nombre.id_for_label }}">Nombre del curso:</label>
-          <br />
+          {{ form.nombre.label_tag }}
           {{ form.nombre }}
           <small class="error-text" style="color: red;">{{ form.nombre.error }}</small>
         </div>
@@ -46,13 +44,14 @@
     <div class="row">
       <div class="col">
         <div class="form-group">
-          <label for="{{ form.descripcion.id_for_label }}">Descripción del curso:</label>
+          <label for="{{ form.descripcion.id_for_label }}">Descripción:</label>
           <br />
           {{ form.descripcion }}
           <small class="error-text" style="color: red;">{{ form.descripcion.error }}</small>
         </div>
       </div>
     </div>
+
     <div class="row row-cols-1 row-cols-sm-1 row-cols-md-2">
       <div class="col">
         <a href="{% url 'cursos:index' %}" class="btn btn-secondary">Cancelar</a>

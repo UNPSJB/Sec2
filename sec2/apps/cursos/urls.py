@@ -24,8 +24,17 @@ urlpatterns = [
     path('aulas/<int:pk>/eliminar', aula_eliminar, name="aula_eliminar"),
     path('aulas/', AulaListView.as_view(), name="aula_listado"), #list
     
+    # CURSOS
+    path('cursos/curso/crear/', CursoCreateView.as_view(), name="curso_crear"),
+    path('cursos/listado', CursoListView.as_view(), name="curso_listado"),
 
 
+
+
+
+
+
+#------------------------ INCHEQUEADO ------------------------
     # ACTIVIDADES
     path('actividades/actividad/crear', ActividadCreateView.as_view(), name="actividad_crear"),
     path('actividades/actividad/<int:pk>', ActividadDetailView.as_view(), name="actividad_detalle"),

@@ -2,6 +2,7 @@ from django import forms
 from ..models import Actividad
 from sec2.utils import FiltrosForm
 from utils.constants import *
+from utils.choices import *
 from django import forms
 ##------------------ ACTIVIDAD --------------------
 class ActividadForm(forms.ModelForm):

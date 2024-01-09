@@ -280,11 +280,7 @@ DURACION = [
         (3, "Indefinido"),
     ]
 
-AREAS = [
-        (0, "Capacitación"),
-        (1, "Cultura"),
-        (2, "Gimnasio"),
-]
+
 
 DIAS_SEMANA_CHOICES = [
         (0, 'Lunes'),

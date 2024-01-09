@@ -1,3 +1,4 @@
+from urllib import request
 from django.shortcuts import redirect
 from django.views.generic.edit import CreateView, UpdateView
 from django.views.generic import DetailView, ListView
@@ -44,10 +45,13 @@ class AulaDetailView(DetailView):
         context['titulo'] = 'Detalle de Aula'
         return context
 
-## ------------ LISTADO -------------------
+
+from django.core.paginator import Paginator
+from django.shortcuts import render
+#--------------- LISTADO -----------------
 class AulaListView(ListView):
     model = Aula
-    paginate_by = 100
+    paginate_by = 5  # Define el número de elementos por página
     filter_class = AulaFilterForm
     template_name = 'aula/aula_list.html'
 
@@ -68,7 +72,6 @@ class AulaListView(ListView):
 
         # Ordenar de forma descendente por tipo y luego por número
         queryset = queryset.order_by('-tipo', 'numero')
-
         return queryset
 
     def get_context_data(self, **kwargs):
