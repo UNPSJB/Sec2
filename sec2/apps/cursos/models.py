@@ -1,6 +1,7 @@
 from django.db import models
 from apps.personas.models import Rol
 from utils.constants import *
+from utils.choices import *
 from utils.regularexpressions import *
 from django.core.validators import MinValueValidator, MaxValueValidator
 
@@ -107,18 +108,19 @@ class Dictado(models.Model):
 
 #------------- AULA --------------------
 class Aula(models.Model):
-    TIPO_CHOICES = [
-        ('normal', 'Normal'),
-        ('computacion', 'Computación'),
-    ]
-    tipo = models.CharField(max_length=50, choices=TIPO_CHOICES, help_text="Tipo de aula")
+    tipo = models.CharField(max_length=50, choices=TIPO_AULA, help_text="Tipo de aula")
     numero = models.PositiveIntegerField(help_text="Numero de aula")
-    cupo = models.PositiveIntegerField(help_text="Capacidad máxima del aula")
+    """
+    La capacidad es para saber la capacidad maxima que posee un aula.
+    En el caso de ser una sala de computación, la misma servira para saber la disponibilidad de computadoras
+    Un alumno solo podra utilizar una computadora
+    """
+    capacidad = models.PositiveIntegerField(help_text="Capacidad máxima del aula")
 
     def clean(self):
         if self.numero <= 0:
             raise ValidationError({'numero': 'El número de aula debe ser mayor que 0.'})
-        if self.cupo <= 0:
+        if self.capacidad <= 0:
             raise ValidationError({'cupo': 'La capacidad máxima del aula debe ser mayor que 0.'})
 
     def __str__(self):

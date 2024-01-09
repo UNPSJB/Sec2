@@ -19,7 +19,7 @@
         <tr>
           <td>{{ forloop.counter }}</td>
           <td>{{ obj }}</td>
-          <td>{{ obj.cupo }}</td>
+          <td>{{ obj.capacidad }}</td>
           <td>
             <a href="{% url 'cursos:aula_detalle' pk=obj.pk %}" class="btn btn-primary btn-detalle"><i class="fa-regular fa-eye"></i> Detalle</a>
           </td>

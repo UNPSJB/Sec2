@@ -4,6 +4,7 @@ from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Fieldset, Submit, HTML
 from sec2.utils import FiltrosForm
 from utils.constants import *
+from utils.choices import *
 from django.urls import reverse
 
 ## ------------ FORMULARIO DE AULA --------------
@@ -22,4 +23,6 @@ class AulaForm(forms.ModelForm):
 
 ## ------------ FILTRO PARA AULA --------------
 class AulaFilterForm(FiltrosForm):
-    cupo = forms.CharField(required=False)
+    TIPO_AULA = [('', '-----')] + TIPO_AULA
+    tipo = forms.ChoiceField(choices=TIPO_AULA, required=False, label='Tipo de aula')
+    capacidad = forms.IntegerField(required=False, label='Capacidad máxima')
