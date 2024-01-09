@@ -3,6 +3,10 @@
 
 {% load static %}
 
+{% block botones %}
+  <a href="{% url 'cursos:aula_crear' %}" class="btn btn-primary btn-detalle"><i class="fa-solid fa-plus"></i> Nuevo</a>
+{% endblock %}
+
 {% block tabla_listado %}
   <table class="table table-sm table-hover">
     <thead>
@@ -31,6 +35,4 @@
 
 {% endblock %}
 
-{% block botones %}
-  <a href="{% url 'cursos:aula_crear' %}" class="btn btn-primary btn-detalle"><i class="fa-solid fa-plus"></i> Nuevo</a>
-{% endblock %}
+
