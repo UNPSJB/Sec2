@@ -16,7 +16,7 @@ from django.shortcuts import get_object_or_404
 class DictadoCreateView(CreateView):
     model = Dictado
     form_class = DictadoForm
-    template_name = 'dictado/dictado_form.html'
+    template_name = 'dictado/dictado_alta.html'
     success_url = reverse_lazy('cursos:dictado_crear')
 
     def get_context_data(self, **kwargs):

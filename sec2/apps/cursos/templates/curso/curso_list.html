@@ -3,14 +3,19 @@
 
 {% load static %}
 
+{% block botones %}
+  <a href="{% url 'cursos:curso_crear' %}" class="btn btn-primary btn-detalle"><i class="fa-solid fa-plus"></i> Nuevo</a>
+{% endblock %}
+
 {% block tabla_listado %}
   <table class="table table-sm table-hover">
     <thead>
       <tr>
         <th>#</th>
         <th scope="col">Nombre</th>
-        <th scope="col">Actividad</th>
+        <th scope="col">Área</th>
         <th scope="col">Duración</th>
+        <th scope="col">Tipo</th>
         <th scope="col"></th>
       </tr>
     </thead>
@@ -20,8 +25,15 @@
         <tr class="bg-transition fila-personalizada">
           <td>{{ forloop.counter }}</td>
           <td>{{ curso.nombre }}</td>
-          <td>{{ curso.actividad.nombre }}</td>
+          <td>{{ curso.get_area_display }}</td>
           <td>{{ curso.get_duracion_display }}</td>
+          <td>
+            {% if curso.es_convenio %}
+              Conv. Provincial
+            {% else %}
+              Propio del Sec2
+            {% endif %}
+          </td>
           <td>
             <a href="{% url 'cursos:curso_detalle' curso.pk %}" class="btn btn-primary btn-detalle"><i class="fa-regular fa-eye"></i> Detalle</a>
           </td>
@@ -29,8 +41,4 @@
       {% endfor %}
     </tbody>
   </table>
-{% endblock %}
-
-{% block botones %}
-  <a href="{% url 'cursos:curso_crear' %}" class="btn btn-primary"><i class="fa-solid fa-plus"></i> Nuevo</a>
 {% endblock %}

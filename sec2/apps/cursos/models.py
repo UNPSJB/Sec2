@@ -24,10 +24,8 @@ class Actividad(models.Model):
 
 #------------- CURSO --------------------
 class Curso(models.Model):
-    area = models.PositiveSmallIntegerField(choices=AREAS)
+    area = models.PositiveSmallIntegerField(choices=AREAS, blank=True, null=True)
     duracion = models.PositiveSmallIntegerField(choices=DURACION)
-    #capacidad maxima de participantes para el curso
-    cupo= models.PositiveIntegerField(help_text="Máximo de inscriptos")
     nombre = models.CharField(
         max_length=50,
         validators=[text_validator],  # Añade tu validador personalizado si es necesario
@@ -38,9 +36,10 @@ class Curso(models.Model):
         validators=[text_validator],  # Añade tu validador personalizado si es necesario
         help_text="Descripción del curso"
     )
+    es_convenio = models.BooleanField(default=False)
 
     def __str__(self):
-        return f"{self.nombre} {self.actividad}"
+        return f"{self.nombre}"
     
     def asignar_dictado(self, dictado):
         dictado.curso = self
@@ -61,17 +60,13 @@ class Dictado(models.Model):
         validators=[text_validator],  # Añade tu validador personalizado si es necesario
         help_text="Solo se permiten letras y espacios."
     )
-
-    #maximo de alumnos que se permiten inscribir.
-    #Funciona de manera independiente al del curso, ya que cada profesor puede eleegir la cantidad
-    maximos_alumnos = models.PositiveIntegerField(
+    cupo = models.PositiveIntegerField(
         help_text="Máximo alumnos inscriptos",
         validators=[
             MinValueValidator(1, message="Valor mínimo permitido es 1."),
             MaxValueValidator(100, message="Valor máximo es 100."),
         ]
     )
-
     periodo_pago=models.PositiveSmallIntegerField(choices=PERIODO_PAGO)
     costo = models.DecimalField(
         help_text="Total del dictado",
@@ -80,7 +75,7 @@ class Dictado(models.Model):
     )
     certificado_medico=models.PositiveSmallIntegerField(choices=OPCIONES_CERTIFICADO)
     descuento = models.PositiveIntegerField(
-        help_text="Descuento para afiliados",
+        help_text="Exclusivo para afiliados",
         validators=[
             MinValueValidator(0, message="El descuento no puede ser menor que 0."),
             MaxValueValidator(100, message="El descuento no puede ser mayor que 100."),

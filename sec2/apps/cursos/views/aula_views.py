@@ -51,13 +51,20 @@ from django.shortcuts import render
 #--------------- LISTADO -----------------
 class AulaListView(ListView):
     model = Aula
-    paginate_by = 5  # Define el número de elementos por página
+    paginate_by = 11  # Define el número de elementos por página
     filter_class = AulaFilterForm
     template_name = 'aula/aula_list.html'
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        # Aquí creas una instancia del formulario y la agregas al contexto
+        filter_form = AulaFilterForm(self.request.GET)
+        context['filtros'] = filter_form
+        context['titulo'] = "Aulas"
+        return context
+    
     def get_queryset(self):
         queryset = super().get_queryset()
-
         # Obtener los filtros del formulario
         filter_form = AulaFilterForm(self.request.GET)
         if filter_form.is_valid():
@@ -73,14 +80,6 @@ class AulaListView(ListView):
         # Ordenar de forma descendente por tipo y luego por número
         queryset = queryset.order_by('-tipo', 'numero')
         return queryset
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        # Aquí creas una instancia del formulario y la agregas al contexto
-        filter_form = AulaFilterForm(self.request.GET)
-        context['filtros'] = filter_form
-        context['titulo'] = "Aulas"
-        return context
 
 ## ------------ UPDATE -------------------
 class AulaUpdateView(UpdateView):

@@ -13,47 +13,50 @@ from django.core.paginator import Paginator, EmptyPage
 class CursoCreateView(CreateView):
     model = Curso
     form_class = CursoForm
-    template_name = 'curso/curso_form.html'
+    template_name = 'curso/curso_alta_convenio.html'
     success_url = reverse_lazy('cursos:curso_listado')
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['titulo'] = "Alta de Curso"
-        # Verificar si hay alguna actividad
-        tiene_actividad = Actividad.objects.exists()
-        context['tiene_actividad'] = tiene_actividad
         return context
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        tipo_curso = self.request.GET.get('tipo', None)
+        kwargs['initial'] = {'tipo_curso': tipo_curso}
+        return kwargs
     
     def get(self, request, *args, **kwargs):
-        tiene_actividad = Actividad.objects.exists()
-
-        if tiene_actividad:
-            # Verificar el tipo de curso seleccionado
-            tipo_curso = self.request.GET.get('tipo', None)
-            if tipo_curso == 'sec':
-                # Mostrar formulario para Curso del SEC
-                self.template_name = 'curso/curso_alta_sec.html'
-            elif tipo_curso == 'convenio':
-                # Mostrar formulario para Convenio con el Gobierno
-                self.template_name = 'curso/curso_form_convenio.html'
-            else:
-                # Mostrar formulario de selección de tipo de curso
-                self.template_name = 'curso/seleccion_tipo_curso.html'
+        tipo_curso = self.request.GET.get('tipo', None)
+        if tipo_curso == 'sec':
+            self.template_name = 'curso/curso_alta_sec.html'
+        elif tipo_curso == 'convenio':
+            self.template_name = 'curso/curso_alta_convenio.html'
         else:
-            messages.warning(
-                self.request, 
-                '<i class="fa-solid fa-triangle-exclamation fa-flip"></i> Completa el siguiente formulario para poder crear un Curso!'
-            )
-            return redirect('cursos:actividad_crear')
+            self.template_name = 'curso/seleccion_tipo_curso.html'
 
         return super().get(request, *args, **kwargs)
 
     def form_valid(self, form):
+        tipo_curso = self.request.GET.get('tipo', None)
+
+        # Actualizar el valor de es_convenio en base al tipo de curso
+        if tipo_curso == 'convenio':
+            form.instance.es_convenio = True
+        else:
+            form.instance.es_convenio = False
+
+        # Guardar el formulario
+        result = super().form_valid(form)
+
+        # Mensaje de éxito
         messages.success(self.request, f'{ICON_CHECK} Alta de curso exitosa!')
-        return super().form_valid(form)
+        print()
+        return result
 
     def form_invalid(self, form):
-        messages.warning(self.request, '<i class="fa-solid fa-triangle-exclamation fa-flip"></i> Por favor, corrija los errores a continuación.')
+        messages.warning(self.request, 'Por favor, corrija los errores a continuación.')
         return super().form_invalid(form)
 
 ##--------------- CURSO DETALLE --------------------------------
@@ -63,7 +66,7 @@ class CursoDetailView(DetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['titulo'] = f"Curso: {self.object.nombre}"
+        context['titulo'] = f"Curso de {self.object.nombre}"
         context['tituloListado'] = 'Dictados Asociados'
 
         context['dictados_info_start'] = 1
@@ -117,28 +120,34 @@ class CursoDetailView(DetailView):
 ##--------------- CURSO LIST --------------------------------
 class CursoListView(ListFilterView):
     model = Curso
-    paginate_by = 100
+    paginate_by = 11
     filter_class = CursoFilterForm
     template_name = 'curso/curso_list.html'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['titulo'] = "Listado de Cursos"
+        # Aquí creas una instancia del formulario y la agregas al contexto
+        filter_form = CursoFilterForm(self.request.GET)
+        context['filtros'] = filter_form
+        context['titulo'] = "Cursos"
         return context
 
     def get_queryset(self):
         queryset = super().get_queryset()
-        form = CursoFilterForm(self.request.GET)
-        if form.is_valid():
-            nombre = form.cleaned_data.get('nombre')
-            actividad = form.cleaned_data.get('actividad')
-            duracion = form.cleaned_data.get('duracion')  # Añade el campo duracion
+        # Obtener los filtros del formulario
+        filter_form = CursoFilterForm(self.request.GET)
+        if filter_form.is_valid():
+            nombre = filter_form.cleaned_data.get('nombre')
+            area = filter_form.cleaned_data.get('area')
+            duracion = filter_form.cleaned_data.get('duracion') 
             if nombre:
                 queryset = queryset.filter(nombre__icontains=nombre)
-            if actividad:
-                queryset = queryset.filter(actividad=actividad)
+            if area:
+                queryset = queryset.filter(area=area)
             if duracion is not None:
                 queryset = queryset.filter(duracion=duracion)
+        
+        queryset = queryset.order_by('nombre')
         return queryset
 
     def get_success_url(self):
@@ -150,7 +159,7 @@ class CursoListView(ListFilterView):
 class CursoUpdateView(UpdateView):
     model = Curso
     form_class = CursoForm
-    template_name = 'curso/curso_form.html'
+    template_name = 'curso/curso_alta_sec.html'
     success_url = reverse_lazy('cursos:curso')
 
     def get_context_data(self, **kwargs):

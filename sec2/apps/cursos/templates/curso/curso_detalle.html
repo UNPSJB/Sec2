@@ -1,4 +1,4 @@
-{% extends 'detalle.html' %}
+{% extends 'detalle_listado.html' %}
 
 {% load crispy_forms_tags %}
 {% load static %}
@@ -27,17 +27,12 @@
       <!-- Segunda Fila: Descripción -->
       <div class="col-md-12">
         <p>
-          <strong>Actividad:</strong> {{ curso.actividad }} | {{ curso.actividad.get_area_display }}
+          <strong>Área:</strong> {{ curso.get_area_display }}
         </p>
       </div>
     </div>
 
     <div class="row">
-      <div class="col-md-6">
-        <p>
-          <strong>Limite de capacidad:</strong> {{ curso.capacidad_maxima }} participantes
-        </p>
-      </div>
       <div class="col-md-6">
         <p>
           <strong>Duración:</strong> {{ curso.get_duracion_display }}

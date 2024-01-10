@@ -26,13 +26,13 @@ urlpatterns = [
     
     # CURSOS
     path('cursos/curso/crear/', CursoCreateView.as_view(), name="curso_crear"),
+    path('cursos/curso/<int:pk>', CursoDetailView.as_view(), name="curso_detalle"),
+    path('cursos/curso/<int:pk>/editar', CursoUpdateView.as_view(), name="curso_editar"),
+    path('cursos/curso/<int:pk>/eliminar', curso_eliminar, name="curso_eliminar"),
     path('cursos/listado', CursoListView.as_view(), name="curso_listado"),
 
-
-
-
-
-
+    # DICTADOS (accedido desde cursos)
+    path('cursos/curso/<int:pk>/dictados/dictado/crear', DictadoCreateView.as_view(), name="dictado_crear"),
 
 #------------------------ INCHEQUEADO ------------------------
     # ACTIVIDADES
@@ -42,15 +42,7 @@ urlpatterns = [
     path('actividades/actividad/<int:pk>/eliminar', actividad_eliminar, name="actividad_eliminar"),
     path('actividades/listado', ActividadListView.as_view(), name="actividad_listado"),
 
-    # CURSOS
-    path('cursos/curso/crear/', CursoCreateView.as_view(), name="curso_crear"),
-    path('cursos/curso/<int:pk>', CursoDetailView.as_view(), name="curso_detalle"),
-    path('cursos/curso/<int:pk>/editar', CursoUpdateView.as_view(), name="curso_editar"),
-    path('cursos/curso/<int:pk>/eliminar', curso_eliminar, name="curso_eliminar"),
-    path('cursos/listado', CursoListView.as_view(), name="curso_listado"),
 
-    # DICTADOS (accedido desde cursos)
-    path('cursos/curso/<int:pk>/dictados/dictado/crear', DictadoCreateView.as_view(), name="dictado_crear"),
     path('cursos/curso/<int:curso_pk>/dictados/dictado/<int:dictado_pk>', DictadoDetailView.as_view(), name="dictado_detalle"),
     path('cursos/curso/<int:curso_pk>/dictados/dictado/<int:dictado_pk>/editar', DictadoUpdateView.as_view(), name="dictado_editar"),
     

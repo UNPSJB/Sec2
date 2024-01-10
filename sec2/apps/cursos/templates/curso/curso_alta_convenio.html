@@ -7,14 +7,11 @@
     {% csrf_token %}
     {{ form.non_field_errors }}
     <br />
+
+    <input type="hidden" name="{{ form.area.name }}" value="{{ form.area.initial }}">
+
     <div class="row">
-      <div class="col-md-6">
-        <div class="form-group">
-          <label for="{{ form.area.id_for_label }}">Área:</label>
-          {{ form.area }}
-        </div>
-      </div>
-      <div class="col-md-6">
+      <div class="col">
         <div class="form-group">
           <label for="{{ form.duracion.id_for_label }}">Duración:</label>
           <br />
