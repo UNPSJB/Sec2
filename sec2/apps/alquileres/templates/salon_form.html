@@ -1,0 +1,56 @@
+{% extends 'alta.html' %}
+{% load crispy_forms_tags %}
+{% load static %}
+
+{% block formulario %}
+  <form method="post">
+    {% csrf_token %}
+    {{ form.non_field_errors }}
+    <br />
+    <div class="row">
+      <div class="col-md-6">
+        <div class="form-group">
+          <label for="{{ form.nombre.id_for_label }}">Nombre:</label>
+          {{ form.nombre }}
+        </div>
+      </div>
+      <div class="col-md-6">
+        <div class="form-group">
+          <label for="{{ form.localidad.id_for_label }}">Localidad:</label>
+          <br />
+          {{ form.localidad }}
+        </div>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col">
+        <div class="form-group">
+          {{ form.nombre.label_tag }}
+          {{ form.nombre }}
+          <small class="error-text" style="color: red;">{{ form.nombre.error }}</small>
+        </div>
+      </div>
+    </div>
+    
+    <div class="row">
+      <div class="col">
+        <div class="form-group">
+          <label for="{{ form.direccion.id_for_label }}">direccion:</label>
+          <br />
+          {{ form.direccion }}
+          <small class="error-text" style="color: red;">{{ form.direccion.error }}</small>
+        </div>
+      </div>
+    </div>
+
+    <div class="row row-cols-1 row-cols-sm-1 row-cols-md-2">
+      <div class="col">
+        <a href="{% url 'cursos:index' %}" class="btn btn-secondary">Cancelar</a>
+      </div>
+      <div class="col">
+        <button type="submit" class="btn btn-primary">Guardar</button>
+      </div>
+    </div>
+  </form>
+{% endblock %}

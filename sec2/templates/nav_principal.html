@@ -15,6 +15,9 @@
     <li>
       <a href="#" id="mostrarMenuCurso"><i class="fa-solid fa-graduation-cap"></i> Gestión de Cursos</a>
     </li>
+    <li>
+      <a href="#" id="mostrarMenuSalones"><i class="fa-solid fa-graduation-cap"></i> Gestión de Alquiler de Salones</a>
+    </li>
   </ul>
 </div>
 
@@ -26,6 +29,11 @@
 <div id="menu_curso_principal" style="display: none;">
   <!-- Menú Cursos -->
   {% include 'nav_curso.html' %}
+</div>
+
+<div id="menu_curso_principal" style="display: none;">
+  <!-- Menú Alquiler  -->
+  {% include 'nav_alquiler.html' %}
 </div>
 
 {% block extrajs %}
