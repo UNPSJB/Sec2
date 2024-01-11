@@ -20,9 +20,15 @@ class CursoForm(forms.ModelForm):
             self.fields['area'].widget = forms.HiddenInput()
             self.fields['area'].required = False
         else:
-            # Configura las opciones del campo 'area' según el modelo
-            self.fields['area'].widget = forms.Select(choices=AREAS)
-            self.fields['area'].required = True
+            if tipo_curso == 'sec':
+                self.fields['area'].widget = forms.Select(choices=[(0, "Capacitación"), (1, "Cultura")])
+                self.fields['area'].required = True
+            else:
+                # En el caso de convenio, establece 'Capacitación' como el valor predeterminado
+                self.fields['area'].initial = 2
+                self.fields['area'].widget = forms.HiddenInput()
+                self.fields['area'].required = False
+                
 
 class CursoFilterForm(FiltrosForm):
     nombre = forms.CharField(required=False)

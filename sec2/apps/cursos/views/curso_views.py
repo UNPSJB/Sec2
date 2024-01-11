@@ -33,6 +33,8 @@ class CursoCreateView(CreateView):
             self.template_name = 'curso/curso_alta_sec.html'
         elif tipo_curso == 'convenio':
             self.template_name = 'curso/curso_alta_convenio.html'
+        elif tipo_curso == 'actividad':
+            self.template_name = 'curso/curso_alta_convenio.html'
         else:
             self.template_name = 'curso/seleccion_tipo_curso.html'
 

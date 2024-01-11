@@ -7,6 +7,7 @@ from django.core.validators import MinValueValidator, MaxValueValidator
 
 # ---------------- ACTIVIDAD ---------------
 class Actividad(models.Model):
+    area = models.PositiveSmallIntegerField(choices=AREAS, blank=True, null=True)
     nombre = models.CharField(
         max_length=100,
         validators=[text_validator],  # Añade tu validador personalizado si es necesario
