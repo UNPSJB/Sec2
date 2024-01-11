@@ -34,12 +34,6 @@ class DictadoCreateView(CreateView):
         # Guarda el dictado en la base de datos sin commit
         dictado = form.save(commit=False)
         
-        if  dictado.maximos_alumnos > curso.capacidad_maxima:
-            messages.error(self.request, 'Máximo de inscriptos supera la capacidad máxima del curso.')
-            context = self.get_context_data()
-            context['form'] = form
-            return self.render_to_response(context)
-        
         dictado.curso = curso  # Asigna el curso al dictado
 
         # Obtén el curso asociado al dictado
