@@ -11,6 +11,14 @@ $(document).ready(function () {
         $('#menu_curso_principal').show();
     });
 
+    $('#mostrarMenuSalon').click(function () {
+        $('#menu_principal').hide();
+        $('#menu_afiliado_principal').hide();
+        $('#menu_curso_principal').hide();
+        $('#menu_salon_principal').show();
+    });
+
+
     // Agrega una función para mostrar/ocultar el menú de afiliados
     $('#mostrarMenuGestionAfiliados').click(function () {
         $('#menu_afiliado_principal').show();
