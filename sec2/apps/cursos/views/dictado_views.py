@@ -22,7 +22,7 @@ class DictadoCreateView(CreateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['curso'] = get_object_or_404(Curso, id=self.kwargs.get('pk'))
-        context['titulo'] = f"Dictado para el curso {context['curso'].nombre}"
+        context['titulo'] = f"Dictado para {context['curso'].nombre}"
         context['profesor_form'] = ProfesorForm()
         return context
 

@@ -1,8 +1,8 @@
- {% extends 'detalle_ventana_nueva.html' %}
+{% extends 'detalle_listado.html' %}
 {% load crispy_forms_tags %}
 {% load static %}
 
-{% block detalle %}
+{% block detalle_lado_izquierdo %}
   <div class="row">
     <div class="col-md-6">
       <p>
@@ -53,34 +53,30 @@
 
   <div class="row">
     <div class="col-md-6">
-      <p>
-        <strong>Capcidad minima:</strong> {{ dictado.minimo_alumnos }} participantes
-      </p>
-    </div>
-    <div class="col-md-6">
-      <strong>Limite de capacidad:</strong> {{ dictado.maximos_alumnos }} participantes
+      <strong>Total de cupos:</strong> {{ dictado.cupo }} participantes
     </div>
   </div>
+{% endblock %}
 
-  <div class="row">
-    <div class="col">
-      <p>
-        <strong>Certificado médico:</strong>
-        {% if dictado.certificado_medico == 1 %}
-          Se requiere certificado médico para participar, especialmente para actividades físicas intensas.
-        {% elif dictado.certificado_medico == 2 %}
-          No requiere
-        {% elif dictado.certificado_medico == 3 %}
-          Se recomienda certificado médico, pero no es obligatorio
-        {% endif %}
-      </p>
-    </div>
-  </div>
+{% block horarios %}
+  {% for horario in horarios %}
+    <tr>
+      <td>{{ horario.get_dia_semana_display }}</td>
+      <td>{{ horario.hora_inicio }}</td>
+      <td>{{ horario.hora_inicio }} + {{ clase.dictado.modulos }} horas</td>
+      <td>{{ horario.aula }}</td>
+      <td>[icono de editar]</td>
+    </tr>
+  {% endfor %}
 {% endblock %}
 
 {% block botones %}
   <div class="col d-flex justify-content-center">
     <a href="{% url 'cursos:dictado_editar' curso_pk=curso.pk dictado_pk=object.pk %}" class="btn btn-primary btn-sm btn-detalle"><i class="fa-regular fa-pen-to-square"></i> Modificar</a>
+  </div>
+
+  <div class="col d-flex justify-content-center">
+    <a href="{% url 'cursos:horario_crear' curso_pk=dictado.curso.pk dictado_pk=dictado.pk %}" class="btn btn-primary btn-detalle"><i class="fa-solid fa-plus"></i> Generar Horario</a>
   </div>
 
   <div class="col d-flex justify-content-end">
@@ -107,14 +103,8 @@
             <td>{{ clase.nombre }}</td>
             <td>{{ clase.inscritos }} / {{ dictado.maximos_alumnos }}</td>
             <td>
-              <a 
-              href="{% url 'cursos:clase_detalle' curso_pk=curso.pk dictado_pk=dictado.pk clase_pk=clase.pk %}" 
-              class="btn btn-primary btn-detalle"
-              >
-              <i class="fa-regular fa-eye"></i> Detalle</a>
-           </td>
-
-            
+              {% comment %} <a href="{% url 'cursos:clase_detalle' curso_pk = curso.pk dictado_pk = dictado.pk clase_pk = clase.pk %}" class="btn btn-primary btn-detalle"><i class="fa-regular fa-eye"></i> Detalle</a> {% endcomment %}
+            </td>
           </tr>
         {% endfor %}
       </tbody>
@@ -122,5 +112,5 @@
   {% else %}
     <p>No hay clases asociadas.</p>
   {% endif %}
-  <a href="{% url 'cursos:clase_crear' curso_pk=curso.pk dictado_pk=object.pk %}" class="btn btn-primary btn-detalle"><i class="fa-solid fa-plus"></i> Nuevo</a>
+  {% comment %} <a href="{% url 'cursos:clase_crear' curso_pk = curso.pk dictado_pk = object.pk %}" class="btn btn-primary btn-detalle"><i class="fa-solid fa-plus"></i> Nuevo</a> {% endcomment %}
 {% endblock %}

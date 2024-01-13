@@ -5,7 +5,6 @@ from utils.choices import *
 from utils.regularexpressions import *
 from django.core.validators import MinValueValidator, MaxValueValidator
 
-# ---------------- ACTIVIDAD ---------------
 class Actividad(models.Model):
     area = models.PositiveSmallIntegerField(choices=AREAS, blank=True, null=True)
     nombre = models.CharField(
@@ -38,7 +37,8 @@ class Curso(models.Model):
         help_text="Descripción del curso"
     )
     es_convenio = models.BooleanField(default=False)
-
+    requiere_certificado_medico = models.BooleanField(default=False)
+    
     def __str__(self):
         return f"{self.nombre}"
     
@@ -74,7 +74,6 @@ class Dictado(models.Model):
         max_digits=10,
         decimal_places=0
     )
-    certificado_medico=models.PositiveSmallIntegerField(choices=OPCIONES_CERTIFICADO)
     descuento = models.PositiveIntegerField(
         help_text="Exclusivo para afiliados",
         validators=[
@@ -83,8 +82,8 @@ class Dictado(models.Model):
         ]
     )
     cantidad_clase= models.PositiveIntegerField(help_text="Aproximado")
-    minimo_alumnos= models.PositiveIntegerField(help_text="Para poder iniciar el dictado")
     # 1 modulo equivale a la cantidad de horas
+    asistencia_obligatoria = models.BooleanField(default=False)
     modulos= models.PositiveIntegerField(help_text="Horas del curso")
     curso = models.ForeignKey(Curso, related_name="dictado_set", on_delete=models.CASCADE, null=True, blank=True)
 
@@ -143,7 +142,7 @@ class Horario(models.Model):
     hora_inicio = models.TimeField(help_text="Ingrese la hora en formato de 24 horas (HH:MM)")
     aula = models.ForeignKey(Aula, related_name='horarios', on_delete=models.CASCADE)
     asistencia = models.PositiveIntegerField(default=0, help_text="Número de alumnos que asistieron")
-    clase = models.ForeignKey(Clase, related_name="horarios", null=True, on_delete=models.CASCADE)
+    dictado = models.ForeignKey(Dictado, related_name="dictados", null=True, on_delete=models.CASCADE)
 
     def __str__(self):
         return f"{self.get_dia_semana_display()} - {self.hora_inicio} - {self.aula}"

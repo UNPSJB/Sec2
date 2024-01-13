@@ -59,7 +59,7 @@
 
   {% block botones %}
   <div class="col d-flex justify-content-center">
-    <a href="{% url 'cursos:horario_crear' curso_pk=clase.dictado.curso.pk dictado_pk=clase.dictado.pk clase_pk=clase.pk %}" class="btn btn-primary btn-detalle"><i class="fa-solid fa-plus"></i> Generar Horario</a>
+    {% comment %} <a href="{% url 'cursos:horario_crear' curso_pk=clase.dictado.curso.pk dictado_pk=clase.dictado.pk clase_pk=clase.pk %}" class="btn btn-primary btn-detalle"><i class="fa-solid fa-plus"></i> Generar Horario</a> {% endcomment %}
   </div>
   {% endblock %}
 

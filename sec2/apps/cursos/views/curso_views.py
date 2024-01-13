@@ -34,7 +34,7 @@ class CursoCreateView(CreateView):
         elif tipo_curso == 'convenio':
             self.template_name = 'curso/curso_alta_convenio.html'
         elif tipo_curso == 'actividad':
-            self.template_name = 'curso/curso_alta_convenio.html'
+            self.template_name = 'curso/curso_alta_gimnasio.html'
         else:
             self.template_name = 'curso/seleccion_tipo_curso.html'
 
@@ -139,8 +139,8 @@ class CursoListView(ListFilterView):
         # Obtener los filtros del formulario
         filter_form = CursoFilterForm(self.request.GET)
         if filter_form.is_valid():
-            nombre = filter_form.cleaned_data.get('nombre')
             area = filter_form.cleaned_data.get('area')
+            nombre = filter_form.cleaned_data.get('nombre')
             duracion = filter_form.cleaned_data.get('duracion') 
             if nombre:
                 queryset = queryset.filter(nombre__icontains=nombre)
@@ -149,7 +149,7 @@ class CursoListView(ListFilterView):
             if duracion is not None:
                 queryset = queryset.filter(duracion=duracion)
         
-        queryset = queryset.order_by('nombre')
+        queryset = queryset.order_by('area', 'nombre')
         return queryset
 
     def get_success_url(self):
@@ -161,14 +161,27 @@ class CursoListView(ListFilterView):
 class CursoUpdateView(UpdateView):
     model = Curso
     form_class = CursoForm
-    template_name = 'curso/curso_alta_sec.html'
     success_url = reverse_lazy('cursos:curso')
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['titulo'] = "Modificar Curso"
         return context
-    
+
+    def get(self, request, *args, **kwargs):
+        self.object = self.get_object() 
+        requiere_certificado_medico = self.object.requiere_certificado_medico
+        
+        if requiere_certificado_medico:
+            self.template_name = 'curso/curso_alta_gimnasio.html'
+        else:
+            es_convenio = self.object.es_convenio
+            if es_convenio:
+                self.template_name = 'curso/curso_alta_convenio.html'
+            else:
+                self.template_name = 'curso/curso_alta_sec.html'
+        return super().get(request, *args, **kwargs)
+        
     def form_valid(self, form):
         curso = form.save()
         messages.success(self.request, '<i class="fa-solid fa-square-check fa-beat-fade"></i> Curso modificado con éxito')
@@ -179,4 +192,3 @@ class CursoUpdateView(UpdateView):
         for field, errors in form.errors.items():
             print(f"Campo: {field}, Errores: {', '.join(errors)}")
         return super().form_invalid(form)
-

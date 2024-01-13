@@ -22,6 +22,27 @@
       {% endblock %}
 
       <br />
+
+      <table class="table table-sm table-hover">
+        <thead>
+          <tr>
+            <th>Día</th>
+            <th>Desde</th>
+            <th>Hasta</th>
+            <th>Aula</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          {% block horarios %}
+
+          {% endblock %}
+        </tbody>
+      </table>
+
+      <br />
+      <br />
+
       <div class="row">
         {% block botones %}
 
@@ -33,6 +54,7 @@
   <div class="container-sm">
     <h3 class="subtitulo">{{ tituloListado }}</h3>
     {% block listado_asociado %}
+
     {% endblock %}
     {% include 'pagination.html' %}
   </div>
