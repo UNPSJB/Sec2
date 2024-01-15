@@ -11,20 +11,33 @@ class CursoForm(forms.ModelForm):
         fields = ('duracion', 'nombre', 'descripcion', 'es_convenio', 'area','requiere_certificado_medico')
 
     def __init__(self, *args, **kwargs):
+        print("----------8-------------")
         super(CursoForm, self).__init__(*args, **kwargs)
         tipo_curso = kwargs.get('initial', {}).get('tipo_curso')
         # Configuración predeterminada
+        print("ESTOY EN EL INIT")
+        print(tipo_curso)
+
         if tipo_curso == 'convenio':
+            print("----------9-------------")
             self.fields['area'].initial = 0
             self.fields['area'].widget = forms.HiddenInput()
             self.fields['area'].required = False
         else:
             if tipo_curso == 'sec':
+                print("----------10-------------")
                 self.fields['area'].widget = forms.Select(choices=[(0, "Capacitación"), (1, "Cultura")])
                 self.fields['area'].required = True
             else:
-                self.fields['area'].widget = forms.Select(choices=AREAS)
-                self.fields['area'].required = True
+                if tipo_curso == 'actividad':
+                    print("----------11-------------")
+                    self.fields['area'].initial = 2
+                    self.fields['area'].widget = forms.HiddenInput()
+                    self.fields['area'].required = False
+                else:
+                    print("----------12-------------")
+                    self.fields['area'].widget = forms.Select(choices=AREAS)
+                    self.fields['area'].required = True
                 
 
 class CursoFilterForm(FiltrosForm):

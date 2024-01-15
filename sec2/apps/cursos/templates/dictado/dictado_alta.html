@@ -15,10 +15,8 @@
         </div>
       </div>
       <div class="col">
-        <div class="form-group">
-          {{ form.periodo_pago.label_tag }}
-          {{ form.periodo_pago }}
-        </div>
+        <div class="form-group">{{ form.periodo_pago.label_tag }}
+          {{ form.periodo_pago }}</div>
       </div>
     </div>
 
@@ -63,6 +61,7 @@
           <input type="number" name="costo" step="1" min="1" required class="form-control" value="{{ form.costo.value|default:'' }}" />
         </div>
       </div>
+
       <div class="col">
         <div class="form-group">
           {{ form.descuento.label_tag }}
@@ -73,15 +72,16 @@
       </div>
     </div>
 
-    <div class="row">
-      <div class="col">
-        <div class="form-group">
-          {{ form.asistencia_obligatoria }}
-          <label for="{{ form.asistencia_obligatoria.id_for_label }}">Control de asistencia</label>
+    <h1> {{ form.cursos }}</h1>
+
+      <div class="row">
+        <div class="col">
+          <div class="form-group">
+            {{ form.asistencia_obligatoria }}
+            <label for="{{ form.asistencia_obligatoria.id_for_label }}">Control de asistencia</label>
+          </div>
         </div>
       </div>
-    </div>
-
 
     <div class="row row-cols-1 row-cols-sm-1 row-cols-md-2">
       <div class="col">

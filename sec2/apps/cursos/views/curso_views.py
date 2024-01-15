@@ -48,7 +48,6 @@ class CursoCreateView(CreateView):
             form.instance.es_convenio = True
         else:
             form.instance.es_convenio = False
-
         # Guardar el formulario
         result = super().form_valid(form)
 
@@ -59,8 +58,11 @@ class CursoCreateView(CreateView):
 
     def form_invalid(self, form):
         messages.warning(self.request, 'Por favor, corrija los errores a continuación.')
-        return super().form_invalid(form)
 
+        # Imprimir los errores en la consola
+        print("Errores del formulario:", form.errors)
+
+        return super().form_invalid(form)
 ##--------------- CURSO DETALLE --------------------------------
 class CursoDetailView(DetailView):
     model = Curso
@@ -166,23 +168,38 @@ class CursoUpdateView(UpdateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['titulo'] = "Modificar Curso"
+        tipo_curso = self.get_object().get_tipo_curso()  # Obtén el tipo de curso
+        context['tipo_curso'] = tipo_curso
         return context
 
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        tipo_curso = self.get_object().get_tipo_curso()  # Obtén el tipo de curso
+        kwargs['initial'] = {'tipo_curso': tipo_curso}
+        return kwargs
+
     def get(self, request, *args, **kwargs):
-        self.object = self.get_object() 
+        print("----------2-------------")
+        self.object = self.get_object()
         requiere_certificado_medico = self.object.requiere_certificado_medico
         
         if requiere_certificado_medico:
+            print("----------3-------------")
             self.template_name = 'curso/curso_alta_gimnasio.html'
         else:
             es_convenio = self.object.es_convenio
+            print("----------4-------------")
             if es_convenio:
+                print("----------5-------------")
                 self.template_name = 'curso/curso_alta_convenio.html'
             else:
+                print("----------6-------------")
                 self.template_name = 'curso/curso_alta_sec.html'
         return super().get(request, *args, **kwargs)
         
     def form_valid(self, form):
+        print("----------7-------------")
+
         curso = form.save()
         messages.success(self.request, '<i class="fa-solid fa-square-check fa-beat-fade"></i> Curso modificado con éxito')
         return redirect('cursos:curso_detalle', pk=curso.pk)

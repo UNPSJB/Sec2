@@ -42,6 +42,17 @@ class Curso(models.Model):
     def __str__(self):
         return f"{self.nombre}"
     
+    def get_tipo_curso(self):
+        if self.es_convenio:
+            print("SOY CONVENIO")
+            return 'convenio'
+        elif self.requiere_certificado_medico:
+            print("SOY ACTIVIDAD")
+            return 'actividad'
+        else:
+            print("SOY SEC")
+            return 'sec'
+        
     def asignar_dictado(self, dictado):
         dictado.curso = self
         return dictado
@@ -118,6 +129,18 @@ class Aula(models.Model):
         if self.tipo == 'normal':
             return 'Aula {}'.format(self.numero)
         return 'Computación {}'.format(self.numero)
+
+#------------- HORARIO --------------------
+class Horario(models.Model):
+    dia_semana = models.PositiveSmallIntegerField(choices=DIAS_SEMANA_CHOICES)
+    hora_inicio = models.TimeField(help_text="Ingrese la hora en formato de 24 horas (HH:MM)")
+    aula = models.ForeignKey(Aula, related_name='horarios', on_delete=models.CASCADE)
+    asistencia = models.PositiveIntegerField(default=0, help_text="Número de alumnos que asistieron")
+    dictado = models.ForeignKey(Dictado, related_name="dictados", null=True, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return f"{self.get_dia_semana_display()} - {self.hora_inicio} - {self.aula}"
+
 #------------- CLASE --------------------
 class Clase(models.Model):
     dictado = models.ForeignKey(Dictado, related_name="clases", null=True, on_delete=models.CASCADE)
@@ -130,22 +153,6 @@ class Clase(models.Model):
 
     def __str__(self):
         return self.nombre
-
-#------------- HORARIO --------------------
-class Horario(models.Model):
-    """
-    De la siguiente manera se esta dejando un horario flexible,
-    que permite agregar distintos horarios conforme pasa el tiempo
-    
-    """
-    dia_semana = models.PositiveSmallIntegerField(choices=DIAS_SEMANA_CHOICES)
-    hora_inicio = models.TimeField(help_text="Ingrese la hora en formato de 24 horas (HH:MM)")
-    aula = models.ForeignKey(Aula, related_name='horarios', on_delete=models.CASCADE)
-    asistencia = models.PositiveIntegerField(default=0, help_text="Número de alumnos que asistieron")
-    dictado = models.ForeignKey(Dictado, related_name="dictados", null=True, on_delete=models.CASCADE)
-
-    def __str__(self):
-        return f"{self.get_dia_semana_display()} - {self.hora_inicio} - {self.aula}"
 
 
 class Alumno(Rol):

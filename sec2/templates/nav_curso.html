@@ -29,7 +29,7 @@
   </ul>
 </div>
 <hr />
-<div class="menu">
+{% comment %} <div class="menu">
   <!-- Botón desplegable para Actividades -->
   <button class="submenu-toggle" data-submenu="actividades">Actividades <i class="fa-solid fa-caret-down"></i></button>
   <ul class="submenu" id="actividades-submenu">
@@ -40,8 +40,7 @@
       <a href="{% url 'cursos:actividad_listado' %}"><i class="fa-solid fa-list item-subMenu"></i> Lista de actividades</a>
     </li>
   </ul>
-</div>
-<hr />
+</div> {% endcomment %}
 
 <div class="menu">
   <!-- Botón desplegable para Profesor -->
@@ -69,11 +68,7 @@
   </ul>
 </div>
 
-<hr>
-<hr>
-<hr>
-<hr>
-<hr><hr>
+<hr>  
 <div class="menu">
   <!-- Botón desplegable para Aulas -->
   <button class="submenu-toggle" data-submenu="aulas">Aulas<i class="fa-solid fa-caret-down"></i></button>

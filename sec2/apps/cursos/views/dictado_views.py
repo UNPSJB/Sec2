@@ -1,7 +1,7 @@
 from django.http import HttpResponseRedirect
 from django.views.generic import DetailView, ListView
 from django.views.generic.edit import CreateView, UpdateView
-from ..models import Curso, Profesor, Dictado, Clase, Titular
+from ..models import Curso, Horario, Profesor, Dictado, Clase, Titular
 from utils.constants import *
 from django.shortcuts import render
 from django.urls import reverse
@@ -94,6 +94,8 @@ class DictadoDetailView(DetailView):
         clases = Clase.objects.filter(dictado=context['object'])
         context['clases'] = clases
 
+        horario = Horario.objects.filter(dictado=context['object'])
+        context['horarios'] = horario
         return context
 
     def get_titular(self, dictado):
@@ -107,7 +109,7 @@ class DictadoDetailView(DetailView):
 class DictadoUpdateView(UpdateView):
     model = Dictado
     form_class = DictadoForm
-    template_name = 'dictado/dictado_form.html'
+    template_name = 'dictado/dictado_alta.html'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)

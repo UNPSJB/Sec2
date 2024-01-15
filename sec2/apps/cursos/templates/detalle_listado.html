@@ -20,29 +20,11 @@
       {% block detalle_lado_derecho %}
 
       {% endblock %}
-
-      <br />
-
-      <table class="table table-sm table-hover">
-        <thead>
-          <tr>
-            <th>Día</th>
-            <th>Desde</th>
-            <th>Hasta</th>
-            <th>Aula</th>
-            <th></th>
-          </tr>
-        </thead>
-        <tbody>
-          {% block horarios %}
-
-          {% endblock %}
-        </tbody>
-      </table>
-
+      
+      {% block horarios %}
+      {% endblock %}
       <br />
       <br />
-
       <div class="row">
         {% block botones %}
 

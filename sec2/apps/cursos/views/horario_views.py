@@ -19,14 +19,25 @@ class HorarioCreateView(CreateView):
 
     def get_success_url(self):
         return reverse_lazy(
-            "cursos:clase_detalle",
+            "cursos:dictado_detalle",
             kwargs={
                 "curso_pk": self.kwargs["curso_pk"],
                 "dictado_pk": self.kwargs["dictado_pk"],
-                "clase_pk": self.kwargs["clase_pk"],
             },
         )
 
+    def get_form(self, form_class=None):
+        form = super().get_form(form_class)
+        
+        # Obtiene el dictado relacionado con el horario
+        dictado_id = self.kwargs["dictado_pk"]
+        dictado = get_object_or_404(Dictado, pk=dictado_id)
+
+        # Filtra las aulas que tienen capacidad suficiente para el dictado
+        form.fields["aula"].queryset = Aula.objects.filter(capacidad__gte=dictado.cupo)
+
+        return form
+    
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["titulo"] = "Nuevo horario"
@@ -34,10 +45,10 @@ class HorarioCreateView(CreateView):
 
     def form_valid(self, form):
         # Obtiene la clase relacionada con el dictado
-        clase_id = self.kwargs["clase_pk"]
-        clase = get_object_or_404(Clase, pk=clase_id)
+        dictado_id = self.kwargs["dictado_pk"]
+        dictado = get_object_or_404(Dictado, pk=dictado_id)
         # Asigna el dictado a la clase antes de guardarla
-        form.instance.clase = clase
+        form.instance.dictado = dictado
         # Guarda la clase para obtener el ID asignado
         response = super().form_valid(form)
         messages.success(self.request, "Horario creado exitosamente.")

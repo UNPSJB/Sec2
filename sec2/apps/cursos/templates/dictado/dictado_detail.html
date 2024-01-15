@@ -4,70 +4,115 @@
 
 {% block detalle_lado_izquierdo %}
   <div class="row">
-    <div class="col-md-6">
+    <div class="col-md-2">
       <p>
-        <strong>Nombre:</strong> {{ dictado.nombre }}
+        <strong>Nombre:</strong>
       </p>
     </div>
-    <div class="col-md-6">
+    <div class="col-md-3">
+      <p>{{ dictado.nombre }}</p>
+    </div>
+
+    <div class="col-md-3">
       <p>
-        <strong>Titular:</strong> {{ nombre_profesor }}
+        <strong>Descuento para afiliados:</strong>
+      </p>
+    </div>
+    <div class="col-md-3">
+      <p>{{ dictado.descuento }}% de descuento</p>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-md-2">
+      <p>
+        <strong>Titular:</strong>
+      </p>
+    </div>
+    <div class="col-md-3">
+      <p>{{ nombre_profesor }}</p>
+    </div>
+
+    <div class="col-md-3">
+      <p>
+        <strong>Cantidad de clases</strong>
+      </p>
+    </div>
+    <div class="col-md-3">
+      <p>{{ dictado.cantidad_clase }} aproximado</p>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-md-2">
+      <p>
+        <strong>Costo:</strong>
+      </p>
+    </div>
+    <div class="col-md-3">
+      <p>${{ dictado.costo }} AR por {{ dictado.get_periodo_pago_display }}</p>
+    </div>
+
+    <div class="col-md-3">
+      <p>
+        <strong>Módulos por Clase:</strong>
+      </p>
+    </div>
+    <div class="col-md-4">
+      <p>
+        {% if dictado.modulos == 1 %}
+          {{ dictado.modulos }} módulo ({{ dictado.modulos }} hora por clase)
+        {% else %}
+          {{ dictado.modulos }} módulos ({{ dictado.modulos }} horas por clase)
+        {% endif %}
       </p>
     </div>
   </div>
 
   <div class="row">
-    <div class="col-md-6">
+    <div class="col-md-2">
       <p>
-        <strong>Costo:</strong> ${{ dictado.costo }} AR por {{ dictado.get_periodo_pago_display }}
+        <strong>Pago:</strong>
       </p>
     </div>
-    <div class="col-md-6">
-      <strong>Método de pago:</strong> Por {{ dictado.get_periodo_pago_display }}
+    <div class="col-md-3">
+      <p>Por {{ dictado.get_periodo_pago_display }}</p>
     </div>
-  </div>
 
-  <div class="row">
-    <div class="col">
+    <div class="col-md-3">
       <p>
-        <strong>Descuento:</strong> Afiliados al sindicato reciben un descuento del {{ dictado.descuento }}% en cuota mensual
+        <strong>Total de cupos:</strong>
       </p>
     </div>
-  </div>
-
-  <div class="row">
-    <div class="col-md-6">
-      <p>
-        <strong>Cantidad de clases:</strong> {{ dictado.cantidad_clase }} aproximado
-      </p>
-    </div>
-    <div class="col-md-6">
-      <strong>Módulos por Clase:</strong>
-      {% if dictado.modulos == 1 %}
-        {{ dictado.modulos }} módulo ({{ dictado.modulos }} hora por clase)
-      {% else %}
-        {{ dictado.modulos }} módulos ({{ dictado.modulos }} horas por clase)
-      {% endif %}
-    </div>
-  </div>
-
-  <div class="row">
-    <div class="col-md-6">
-      <strong>Total de cupos:</strong> {{ dictado.cupo }} participantes
+    <div class="col-md-2">
+      <p>{{ dictado.cupo }} participantes</p>
     </div>
   </div>
 {% endblock %}
 
 {% block horarios %}
-  {% for horario in horarios %}
+<table class="table table-sm table-hover">
+  <thead>
+    <tr>
+      <th>Día</th>
+      <th>Desde</th>
+      <th>Duración</th>
+      <th>Aula</th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for horario in horarios %}
     <tr>
       <td>{{ horario.get_dia_semana_display }}</td>
       <td>{{ horario.hora_inicio }}</td>
-      <td>{{ horario.hora_inicio }} + {{ clase.dictado.modulos }} horas</td>
+      <td>{{ horario.dictado.modulos }} horas</td>
       <td>{{ horario.aula }}</td>
       <td>[icono de editar]</td>
     </tr>
-  {% endfor %}
+    {% endfor %}
+  </tbody>
+</table>
 {% endblock %}
 
 {% block botones %}
