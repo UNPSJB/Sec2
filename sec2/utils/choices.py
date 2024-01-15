@@ -7,5 +7,5 @@ TIPO_AULA = [
 AREAS = [
         (0, "Capacitación"),
         (1, "Cultura"),
-        (2, "Gimasio Saludable"), 
+        (2, "Gimnasio Saludable"), 
 ]

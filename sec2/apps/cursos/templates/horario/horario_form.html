@@ -1,25 +1,44 @@
-{% extends 'alta_ventana_nueva.html' %}
+{% extends 'alta.html' %}
 
 {% load crispy_forms_tags %}
 {% block formulario %}
   <form method="post">
     {% csrf_token %}
 
-    <div>
-      <label for="{{ form.dia_semana.id_for_label }}">Día de la semana:</label>
-      {{ form.dia_semana }}
+    <div class="row">
+      <div class="col">
+        <div class="form-group">
+          <label for="{{ form.dia_semana.id_for_label }}">Día de la semana:</label>
+          {{ form.dia_semana }}
+        </div>
+      </div>
     </div>
 
-    <div>
-      <label for="{{ form.hora_inicio.id_for_label }}">Hora de inicio:</label>
-      <input type="time" id="id_hora_inicio" name="hora_inicio" required class="form-control" value="{{ form.hora_inicio.value|default:'' }}" />
+    <div class="row">
+      <div class="col">
+        <div class="form-group">
+          <label for="{{ form.hora_inicio.id_for_label }}">Hora de inicio:</label>
+          <input type="time" id="id_hora_inicio" name="hora_inicio" required class="form-control" value="{{ form.hora_inicio.value|default:'' }}" />
+        </div>
+      </div>
     </div>
 
-    <div>
-      <label for="{{ form.aula.id_for_label }}">Aula:</label>
-      {{ form.aula }}
+    <div class="row">
+      <div class="col">
+        <div class="form-group">
+          <label for="{{ form.aula.id_for_label }}">Aula:</label>
+          {{ form.aula }}
+        </div>
+      </div>
     </div>
 
-    <button type="submit">Guardar</button>
+    <div class="row row-cols-1 row-cols-sm-1 row-cols-md-2">
+      <div class="col">
+        <a href="{% url 'cursos:index' %}" class="btn btn-secondary">Cancelar</a>
+      </div>
+      <div class="col">
+        <button type="submit" class="btn btn-primary">Guardar</button>
+      </div>
+    </div>
   </form>
 {% endblock %}

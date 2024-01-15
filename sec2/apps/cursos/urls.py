@@ -33,26 +33,29 @@ urlpatterns = [
 
     # DICTADOS (accedido desde cursos)
     path('cursos/curso/<int:pk>/dictados/dictado/crear', DictadoCreateView.as_view(), name="dictado_crear"),
-
-#------------------------ INCHEQUEADO ------------------------
-    # ACTIVIDADES
-    path('actividades/actividad/crear', ActividadCreateView.as_view(), name="actividad_crear"),
-    path('actividades/actividad/<int:pk>', ActividadDetailView.as_view(), name="actividad_detalle"),
-    path('actividades/actividad/<int:pk>/editar', ActividadUpdateView.as_view(), name="actividad_editar"),
-    path('actividades/actividad/<int:pk>/eliminar', actividad_eliminar, name="actividad_eliminar"),
-    path('actividades/listado', ActividadListView.as_view(), name="actividad_listado"),
-
-
     path('cursos/curso/<int:curso_pk>/dictados/dictado/<int:dictado_pk>', DictadoDetailView.as_view(), name="dictado_detalle"),
     path('cursos/curso/<int:curso_pk>/dictados/dictado/<int:dictado_pk>/editar', DictadoUpdateView.as_view(), name="dictado_editar"),
+
+    # HORARIO (accedido desde dictado)
+    path('curso/<int:curso_pk>/dictados/dictado/<int:dictado_pk>/horarios/horario/crear/', HorarioCreateView.as_view(), name='horario_crear'),
+
+
+#------------------------ INCHEQUEADO ------------------------
+    # # ACTIVIDADES
+    # path('actividades/actividad/crear', ActividadCreateView.as_view(), name="actividad_crear"),
+    # path('actividades/actividad/<int:pk>', ActividadDetailView.as_view(), name="actividad_detalle"),
+    # path('actividades/actividad/<int:pk>/editar', ActividadUpdateView.as_view(), name="actividad_editar"),
+    # path('actividades/actividad/<int:pk>/eliminar', actividad_eliminar, name="actividad_eliminar"),
+    # path('actividades/listado', ActividadListView.as_view(), name="actividad_listado"),
+
+
     
 
     # CLASE (accedido desde dictaod)
     path('cursos/curso/<int:curso_pk>/dictados/dictado/<int:dictado_pk>/clases/clase/crear', ClaseCreateView.as_view(), name="clase_crear"),
     path('cursos/curso/<int:curso_pk>/dictados/dictado/<int:dictado_pk>/clases/clase/<int:clase_pk>', ClaseDetailView.as_view(), name="clase_detalle"),
 
-    # HORARIO (accedido desde clase)
-    path('cursos/curso/<int:curso_pk>/dictados/dictado/<int:dictado_pk>/clases/clase/<int:clase_pk>/horarios/horario/crear', HorarioCreateView.as_view(), name="horario_crear"),
+    
     # path('cursos/curso/<int:curso_pk>/dictados/dictado/<int:dictado_pk>/clases/clase/<int:clase_pk>/horarios/horario/<int:horario_pk>', HorarioCreateView.as_view(), name="clase_detalle"),
 
 	# NO UTILIZADO POR EL MOMENTO

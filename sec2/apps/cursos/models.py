@@ -5,7 +5,6 @@ from utils.choices import *
 from utils.regularexpressions import *
 from django.core.validators import MinValueValidator, MaxValueValidator
 
-# ---------------- ACTIVIDAD ---------------
 class Actividad(models.Model):
     area = models.PositiveSmallIntegerField(choices=AREAS, blank=True, null=True)
     nombre = models.CharField(
@@ -38,10 +37,22 @@ class Curso(models.Model):
         help_text="Descripción del curso"
     )
     es_convenio = models.BooleanField(default=False)
-
+    requiere_certificado_medico = models.BooleanField(default=False)
+    
     def __str__(self):
         return f"{self.nombre}"
     
+    def get_tipo_curso(self):
+        if self.es_convenio:
+            print("SOY CONVENIO")
+            return 'convenio'
+        elif self.requiere_certificado_medico:
+            print("SOY ACTIVIDAD")
+            return 'actividad'
+        else:
+            print("SOY SEC")
+            return 'sec'
+        
     def asignar_dictado(self, dictado):
         dictado.curso = self
         return dictado
@@ -74,7 +85,6 @@ class Dictado(models.Model):
         max_digits=10,
         decimal_places=0
     )
-    certificado_medico=models.PositiveSmallIntegerField(choices=OPCIONES_CERTIFICADO)
     descuento = models.PositiveIntegerField(
         help_text="Exclusivo para afiliados",
         validators=[
@@ -83,8 +93,8 @@ class Dictado(models.Model):
         ]
     )
     cantidad_clase= models.PositiveIntegerField(help_text="Aproximado")
-    minimo_alumnos= models.PositiveIntegerField(help_text="Para poder iniciar el dictado")
     # 1 modulo equivale a la cantidad de horas
+    asistencia_obligatoria = models.BooleanField(default=False)
     modulos= models.PositiveIntegerField(help_text="Horas del curso")
     curso = models.ForeignKey(Curso, related_name="dictado_set", on_delete=models.CASCADE, null=True, blank=True)
 
@@ -119,6 +129,18 @@ class Aula(models.Model):
         if self.tipo == 'normal':
             return 'Aula {}'.format(self.numero)
         return 'Computación {}'.format(self.numero)
+
+#------------- HORARIO --------------------
+class Horario(models.Model):
+    dia_semana = models.PositiveSmallIntegerField(choices=DIAS_SEMANA_CHOICES)
+    hora_inicio = models.TimeField(help_text="Ingrese la hora en formato de 24 horas (HH:MM)")
+    aula = models.ForeignKey(Aula, related_name='horarios', on_delete=models.CASCADE)
+    asistencia = models.PositiveIntegerField(default=0, help_text="Número de alumnos que asistieron")
+    dictado = models.ForeignKey(Dictado, related_name="dictados", null=True, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return f"{self.get_dia_semana_display()} - {self.hora_inicio} - {self.aula}"
+
 #------------- CLASE --------------------
 class Clase(models.Model):
     dictado = models.ForeignKey(Dictado, related_name="clases", null=True, on_delete=models.CASCADE)
@@ -131,22 +153,6 @@ class Clase(models.Model):
 
     def __str__(self):
         return self.nombre
-
-#------------- HORARIO --------------------
-class Horario(models.Model):
-    """
-    De la siguiente manera se esta dejando un horario flexible,
-    que permite agregar distintos horarios conforme pasa el tiempo
-    
-    """
-    dia_semana = models.PositiveSmallIntegerField(choices=DIAS_SEMANA_CHOICES)
-    hora_inicio = models.TimeField(help_text="Ingrese la hora en formato de 24 horas (HH:MM)")
-    aula = models.ForeignKey(Aula, related_name='horarios', on_delete=models.CASCADE)
-    asistencia = models.PositiveIntegerField(default=0, help_text="Número de alumnos que asistieron")
-    clase = models.ForeignKey(Clase, related_name="horarios", null=True, on_delete=models.CASCADE)
-
-    def __str__(self):
-        return f"{self.get_dia_semana_display()} - {self.hora_inicio} - {self.aula}"
 
 
 class Alumno(Rol):

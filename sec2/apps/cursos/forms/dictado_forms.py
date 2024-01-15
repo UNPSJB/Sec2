@@ -18,6 +18,7 @@ class DictadoForm(forms.ModelForm):
     class Meta:
         model = Dictado
         fields = '__all__'
+        exclude = ['curso']
 
     def clean(self):
         cleaned_data = super().clean()

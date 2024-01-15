@@ -12,10 +12,10 @@
     <thead>
       <tr>
         <th>#</th>
-        <th scope="col">Nombre</th>
         <th scope="col">Área</th>
-        <th scope="col">Duración</th>
+        <th scope="col">Nombre</th>
         <th scope="col">Tipo</th>
+        <th scope="col">Duración</th>
         <th scope="col"></th>
       </tr>
     </thead>
@@ -24,19 +24,20 @@
       {% for curso in object_list %}
         <tr class="bg-transition fila-personalizada">
           <td>{{ forloop.counter }}</td>
-          <td>{{ curso.nombre }}</td>
           <td>{{ curso.get_area_display }}</td>
-          <td>{{ curso.get_duracion_display }}</td>
+          <td>{{ curso.nombre }}</td>
           <td>
             {% if curso.es_convenio %}
-              Conv. Provincial
+              Convenio
             {% else %}
-              Propio del Sec2
+              SEC
             {% endif %}
           </td>
+          <td>{{ curso.get_duracion_display }}</td>
           <td>
             <a href="{% url 'cursos:curso_detalle' curso.pk %}" class="btn btn-primary btn-detalle"><i class="fa-regular fa-eye"></i> Detalle</a>
           </td>
+          
         </tr>
       {% endfor %}
     </tbody>

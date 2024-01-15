@@ -1,86 +1,127 @@
- {% extends 'detalle_ventana_nueva.html' %}
+{% extends 'detalle_listado.html' %}
 {% load crispy_forms_tags %}
 {% load static %}
 
-{% block detalle %}
+{% block detalle_lado_izquierdo %}
   <div class="row">
-    <div class="col-md-6">
+    <div class="col-md-2">
       <p>
-        <strong>Nombre:</strong> {{ dictado.nombre }}
+        <strong>Nombre:</strong>
       </p>
     </div>
-    <div class="col-md-6">
+    <div class="col-md-3">
+      <p>{{ dictado.nombre }}</p>
+    </div>
+
+    <div class="col-md-3">
       <p>
-        <strong>Titular:</strong> {{ nombre_profesor }}
+        <strong>Descuento para afiliados:</strong>
       </p>
+    </div>
+    <div class="col-md-3">
+      <p>{{ dictado.descuento }}% de descuento</p>
     </div>
   </div>
 
   <div class="row">
-    <div class="col-md-6">
+    <div class="col-md-2">
       <p>
-        <strong>Costo:</strong> ${{ dictado.costo }} AR por {{ dictado.get_periodo_pago_display }}
+        <strong>Titular:</strong>
       </p>
     </div>
-    <div class="col-md-6">
-      <strong>Método de pago:</strong> Por {{ dictado.get_periodo_pago_display }}
+    <div class="col-md-3">
+      <p>{{ nombre_profesor }}</p>
+    </div>
+
+    <div class="col-md-3">
+      <p>
+        <strong>Cantidad de clases</strong>
+      </p>
+    </div>
+    <div class="col-md-3">
+      <p>{{ dictado.cantidad_clase }} aproximado</p>
     </div>
   </div>
 
   <div class="row">
-    <div class="col">
+    <div class="col-md-2">
       <p>
-        <strong>Descuento:</strong> Afiliados al sindicato reciben un descuento del {{ dictado.descuento }}% en cuota mensual
+        <strong>Costo:</strong>
       </p>
     </div>
-  </div>
+    <div class="col-md-3">
+      <p>${{ dictado.costo }} AR por {{ dictado.get_periodo_pago_display }}</p>
+    </div>
 
-  <div class="row">
-    <div class="col-md-6">
+    <div class="col-md-3">
       <p>
-        <strong>Cantidad de clases:</strong> {{ dictado.cantidad_clase }} aproximado
+        <strong>Módulos por Clase:</strong>
       </p>
     </div>
-    <div class="col-md-6">
-      <strong>Módulos por Clase:</strong>
-      {% if dictado.modulos == 1 %}
-        {{ dictado.modulos }} módulo ({{ dictado.modulos }} hora por clase)
-      {% else %}
-        {{ dictado.modulos }} módulos ({{ dictado.modulos }} horas por clase)
-      {% endif %}
-    </div>
-  </div>
-
-  <div class="row">
-    <div class="col-md-6">
+    <div class="col-md-4">
       <p>
-        <strong>Capcidad minima:</strong> {{ dictado.minimo_alumnos }} participantes
-      </p>
-    </div>
-    <div class="col-md-6">
-      <strong>Limite de capacidad:</strong> {{ dictado.maximos_alumnos }} participantes
-    </div>
-  </div>
-
-  <div class="row">
-    <div class="col">
-      <p>
-        <strong>Certificado médico:</strong>
-        {% if dictado.certificado_medico == 1 %}
-          Se requiere certificado médico para participar, especialmente para actividades físicas intensas.
-        {% elif dictado.certificado_medico == 2 %}
-          No requiere
-        {% elif dictado.certificado_medico == 3 %}
-          Se recomienda certificado médico, pero no es obligatorio
+        {% if dictado.modulos == 1 %}
+          {{ dictado.modulos }} módulo ({{ dictado.modulos }} hora por clase)
+        {% else %}
+          {{ dictado.modulos }} módulos ({{ dictado.modulos }} horas por clase)
         {% endif %}
       </p>
     </div>
   </div>
+
+  <div class="row">
+    <div class="col-md-2">
+      <p>
+        <strong>Pago:</strong>
+      </p>
+    </div>
+    <div class="col-md-3">
+      <p>Por {{ dictado.get_periodo_pago_display }}</p>
+    </div>
+
+    <div class="col-md-3">
+      <p>
+        <strong>Total de cupos:</strong>
+      </p>
+    </div>
+    <div class="col-md-2">
+      <p>{{ dictado.cupo }} participantes</p>
+    </div>
+  </div>
+{% endblock %}
+
+{% block horarios %}
+<table class="table table-sm table-hover">
+  <thead>
+    <tr>
+      <th>Día</th>
+      <th>Desde</th>
+      <th>Duración</th>
+      <th>Aula</th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for horario in horarios %}
+    <tr>
+      <td>{{ horario.get_dia_semana_display }}</td>
+      <td>{{ horario.hora_inicio }}</td>
+      <td>{{ horario.dictado.modulos }} horas</td>
+      <td>{{ horario.aula }}</td>
+      <td>[icono de editar]</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
 {% endblock %}
 
 {% block botones %}
   <div class="col d-flex justify-content-center">
     <a href="{% url 'cursos:dictado_editar' curso_pk=curso.pk dictado_pk=object.pk %}" class="btn btn-primary btn-sm btn-detalle"><i class="fa-regular fa-pen-to-square"></i> Modificar</a>
+  </div>
+
+  <div class="col d-flex justify-content-center">
+    <a href="{% url 'cursos:horario_crear' curso_pk=dictado.curso.pk dictado_pk=dictado.pk %}" class="btn btn-primary btn-detalle"><i class="fa-solid fa-plus"></i> Generar Horario</a>
   </div>
 
   <div class="col d-flex justify-content-end">
@@ -107,14 +148,8 @@
             <td>{{ clase.nombre }}</td>
             <td>{{ clase.inscritos }} / {{ dictado.maximos_alumnos }}</td>
             <td>
-              <a 
-              href="{% url 'cursos:clase_detalle' curso_pk=curso.pk dictado_pk=dictado.pk clase_pk=clase.pk %}" 
-              class="btn btn-primary btn-detalle"
-              >
-              <i class="fa-regular fa-eye"></i> Detalle</a>
-           </td>
-
-            
+              {% comment %} <a href="{% url 'cursos:clase_detalle' curso_pk = curso.pk dictado_pk = dictado.pk clase_pk = clase.pk %}" class="btn btn-primary btn-detalle"><i class="fa-regular fa-eye"></i> Detalle</a> {% endcomment %}
+            </td>
           </tr>
         {% endfor %}
       </tbody>
@@ -122,5 +157,5 @@
   {% else %}
     <p>No hay clases asociadas.</p>
   {% endif %}
-  <a href="{% url 'cursos:clase_crear' curso_pk=curso.pk dictado_pk=object.pk %}" class="btn btn-primary btn-detalle"><i class="fa-solid fa-plus"></i> Nuevo</a>
+  {% comment %} <a href="{% url 'cursos:clase_crear' curso_pk = curso.pk dictado_pk = object.pk %}" class="btn btn-primary btn-detalle"><i class="fa-solid fa-plus"></i> Nuevo</a> {% endcomment %}
 {% endblock %}

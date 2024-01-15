@@ -1,7 +1,7 @@
 from django.http import HttpResponseRedirect
 from django.views.generic import DetailView, ListView
 from django.views.generic.edit import CreateView, UpdateView
-from ..models import Curso, Profesor, Dictado, Clase, Titular
+from ..models import Curso, Horario, Profesor, Dictado, Clase, Titular
 from utils.constants import *
 from django.shortcuts import render
 from django.urls import reverse
@@ -22,7 +22,7 @@ class DictadoCreateView(CreateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['curso'] = get_object_or_404(Curso, id=self.kwargs.get('pk'))
-        context['titulo'] = f"Dictado para el curso {context['curso'].nombre}"
+        context['titulo'] = f"Dictado para {context['curso'].nombre}"
         context['profesor_form'] = ProfesorForm()
         return context
 
@@ -33,12 +33,6 @@ class DictadoCreateView(CreateView):
         
         # Guarda el dictado en la base de datos sin commit
         dictado = form.save(commit=False)
-        
-        if  dictado.maximos_alumnos > curso.capacidad_maxima:
-            messages.error(self.request, 'Máximo de inscriptos supera la capacidad máxima del curso.')
-            context = self.get_context_data()
-            context['form'] = form
-            return self.render_to_response(context)
         
         dictado.curso = curso  # Asigna el curso al dictado
 
@@ -100,6 +94,8 @@ class DictadoDetailView(DetailView):
         clases = Clase.objects.filter(dictado=context['object'])
         context['clases'] = clases
 
+        horario = Horario.objects.filter(dictado=context['object'])
+        context['horarios'] = horario
         return context
 
     def get_titular(self, dictado):
@@ -113,7 +109,7 @@ class DictadoDetailView(DetailView):
 class DictadoUpdateView(UpdateView):
     model = Dictado
     form_class = DictadoForm
-    template_name = 'dictado/dictado_form.html'
+    template_name = 'dictado/dictado_alta.html'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)

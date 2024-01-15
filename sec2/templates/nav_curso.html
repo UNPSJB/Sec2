@@ -29,7 +29,7 @@
   </ul>
 </div>
 <hr />
-<div class="menu">
+{% comment %} <div class="menu">
   <!-- Botón desplegable para Actividades -->
   <button class="submenu-toggle" data-submenu="actividades">Actividades <i class="fa-solid fa-caret-down"></i></button>
   <ul class="submenu" id="actividades-submenu">
@@ -40,8 +40,7 @@
       <a href="{% url 'cursos:actividad_listado' %}"><i class="fa-solid fa-list item-subMenu"></i> Lista de actividades</a>
     </li>
   </ul>
-</div>
-<hr />
+</div> {% endcomment %}
 
 <div class="menu">
   <!-- Botón desplegable para Profesor -->
@@ -57,6 +56,19 @@
 </div>
 <hr />
 
+
+
+<div class="menu">
+  <!-- Botón desplegable para Pago -->
+  <button class="submenu-toggle" data-submenu="pago">Pago <i class="fa-solid fa-caret-down"></i></button>
+  <ul class="submenu" id="pago-submenu">
+    <li>
+      <a href="{% url 'cursos:pago_alumno' %}"><i class="fa-solid fa-sack-dollar item-subMenu"></i> Pago de alumnos</a>
+    </li>
+  </ul>
+</div>
+
+<hr>  
 <div class="menu">
   <!-- Botón desplegable para Aulas -->
   <button class="submenu-toggle" data-submenu="aulas">Aulas<i class="fa-solid fa-caret-down"></i></button>
@@ -70,16 +82,6 @@
   </ul>
 </div>
 <hr />
-
-<div class="menu">
-  <!-- Botón desplegable para Pago -->
-  <button class="submenu-toggle" data-submenu="pago">Pago <i class="fa-solid fa-caret-down"></i></button>
-  <ul class="submenu" id="pago-submenu">
-    <li>
-      <a href="{% url 'cursos:pago_alumno' %}"><i class="fa-solid fa-sack-dollar item-subMenu"></i> Pago de alumnos</a>
-    </li>
-  </ul>
-</div>
 
 {% block extrajs %}
   <script src="{% static 'Libs/js/nav_curso.js' %}"></script>

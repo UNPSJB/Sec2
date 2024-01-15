@@ -8,7 +8,7 @@
     {{ form.non_field_errors }}
     <br />
 
-    <input type="hidden" name="{{ form.area.name }}" value="{{ form.area.initial }}">
+    <input type="hidden" name="{{ form.area.name }}" value="{{ form.area.initial }}" />
 
     <div class="row">
       <div class="col">
@@ -26,10 +26,11 @@
           {{ form.nombre.label_tag }}
           {{ form.nombre }}
           <small class="error-text" style="color: red;">{{ form.nombre.error }}</small>
+          <small class="form-text text-muted">{{ form.nombre.help_text }}</small>
         </div>
       </div>
     </div>
-    
+
     <div class="row">
       <div class="col">
         <div class="form-group">
@@ -37,6 +38,7 @@
           <br />
           {{ form.descripcion }}
           <small class="error-text" style="color: red;">{{ form.descripcion.error }}</small>
+          <small class="form-text text-muted">{{ form.descripcion.help_text }}</small>
         </div>
       </div>
     </div>

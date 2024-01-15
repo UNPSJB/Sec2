@@ -11,34 +11,76 @@
 
 {% block detalle_lado_derecho %}
   <div class="col-md-9">
-    <!-- Contenido nuevo -->
     <div class="row">
-      <!-- Primera Fila: Actividad -->
-      <div class="col-md-12">
-        <div class="d-flex flex-column justify-content-between">
+      <div class="col-md-3">
+        <p>
+          <strong>Nombre:</strong>
+        </p>
+      </div>
+      <div class="col-md-2">
+        <p>{{ curso.nombre }}</p>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-md-3">
+        <p>
+          <strong>Área:</strong>
+        </p>
+      </div>
+      <div class="col-md-3">
+        <p>
+          {{ curso.get_area_display }}
+          {% if curso.area != 2 %}
+            |{% if curso.es_convenio %}
+              Convenio
+            {% else %}
+              SEC
+            {% endif %}
+          {% endif %}
+        </p>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-md-3">
+        <p>
+          <strong>Descripción:</strong>
+        </p>
+      </div>
+      <div class="col-md-5">
+        <p>{{ curso.descripcion }}</p>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-md-3">
+        <p>
+          <strong>Duración:</strong>
+        </p>
+      </div>
+      <div class="col-md-2">
+        <p>{{ curso.get_duracion_display }}</p>
+      </div>
+    </div>
+
+    {% if curso.area == 2 %}
+      <div class="row">
+        <div class="col-md-3">
           <p>
-            <strong>Descripción:</strong> {{ curso.descripcion }}
-          </p>
+            <strong>Certificado Médico:</strong>
         </div>
+        {% if curso.certificado_medico %}
+          <div class="col-md-5">
+            Se requiere certificado médico para participar.<p>
+          </div>
+        {% else %}
+          <div class="col-md-5">
+            No requiere</p>
+          </div>
+        {% endif %}
       </div>
-    </div>
-
-    <div class="row">
-      <!-- Segunda Fila: Descripción -->
-      <div class="col-md-12">
-        <p>
-          <strong>Área:</strong> {{ curso.get_area_display }}
-        </p>
-      </div>
-    </div>
-
-    <div class="row">
-      <div class="col-md-6">
-        <p>
-          <strong>Duración:</strong> {{ curso.get_duracion_display }}
-        </p>
-      </div>
-    </div>
+    {% endif %}
   </div>
 {% endblock %}
 
@@ -46,6 +88,8 @@
   <div class="col d-flex justify-content-center">
     <a href="{% url 'cursos:curso_editar' curso.pk %}" class="btn btn-primary btn-sm btn-detalle"><i class="fa-regular fa-pen-to-square"></i> Modificar</a>
   </div>
+
+
 
   <div class="col d-flex justify-content-end">
     <button type="button" class="btn btn-danger btn-sm btn-detalle" data-bs-toggle="modal" data-bs-target="#exampleModal_eliminar"><i class="fa-regular fa-circle-down"></i> Dar de Baja</button>
@@ -59,9 +103,8 @@
       <thead>
         <tr>
           <th>#</th>
-          <th>Dictado</th>
+          <th>Nombre</th>
           <th>Profesor</th>
-          <th>Inscriptos</th>
           <th>Costo</th>
           <th></th>
         </tr>
@@ -72,16 +115,9 @@
             <td>{{ dictado_info.numero }}</td>
             <td>{{ dictado_info.dictado.nombre }}</td>
             <td>{{ dictado_info.nombre_profesor }}</td>
-            <td>0/{{ dictado_info.dictado.maximos_alumnos }}</td>
             <td>${{ dictado_info.dictado.costo }} x {{ dictado_info.dictado.get_periodo_pago_display }}</td>
-
             <td>
-              <a 
-              href="{% url 'cursos:dictado_detalle' curso_pk=curso.pk dictado_pk=dictado_info.dictado.pk %}" 
-              class="btn btn-primary btn-detalle"
-              onclick="window.open('{% url 'cursos:dictado_detalle' curso_pk=curso.pk dictado_pk=dictado_info.dictado.pk %}', 'NuevaVentana', 'width=800, height=625'); return false;"
-              >
-              <i class="fa-regular fa-eye"></i> Detalle</a>
+              <a href="{% url 'cursos:dictado_detalle' curso_pk=curso.pk dictado_pk=dictado_info.dictado.pk %}" class="btn btn-primary btn-detalle"><i class="fa-regular fa-eye"></i> Detalle</a>
             </td>
           </tr>
         {% endfor %}
@@ -90,5 +126,5 @@
   {% else %}
     <p>No hay dictados asociados.</p>
   {% endif %}
-  <a href="{% url 'cursos:dictado_crear' curso.pk %}" class="btn btn-primary btn-detalle" onclick="window.open('{% url 'cursos:dictado_crear' curso.pk %}', 'NuevaVentana', 'width=800, height=625'); return false;"><i class="fa-solid fa-plus"></i> Nuevo</a>
+  <a href="{% url 'cursos:dictado_crear' curso.pk %}" class="btn btn-primary btn-detalle"><i class="fa-solid fa-plus"></i> Nuevo</a>
 {% endblock %}

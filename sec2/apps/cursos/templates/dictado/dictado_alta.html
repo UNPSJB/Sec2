@@ -1,29 +1,22 @@
-{% extends 'alta_ventana_nueva.html' %}
+{% extends 'alta.html' %}
 
 {% load crispy_forms_tags %}
 
 {% block formulario %}
   <form method="post">
     {% csrf_token %}
-
     <div class="row">
       <div class="col">
         <div class="form-group">
           {{ form.nombre.label_tag }}
-          <br />
           {{ form.nombre }}
-          {% if form.nombre.errors %}
-            <small class="error-text">
-              {% for error in form.nombre.errors %}
-                <i class="fas fa-times"></i> {{ error }}
-                {% if not loop.last %}
-                  <br />
-                {% endif %}
-              {% endfor %}
-            </small>
-          {% endif %}
-          <small class="text-muted">{{ form.nombre.help_text }}</small>
+          <small class="error-text" style="color: red;">{{ form.nombre.error }}</small>
+          <small class="form-text text-muted">{{ form.nombre.help_text }}</small>
         </div>
+      </div>
+      <div class="col">
+        <div class="form-group">{{ form.periodo_pago.label_tag }}
+          {{ form.periodo_pago }}</div>
       </div>
     </div>
 
@@ -31,25 +24,26 @@
       <div class="col">
         <div class="form-group">
           {{ form.profesor.label_tag }}
-          <br />
           {{ form.profesor }}
+          <small class="error-text" style="color: red;">{{ form.profesor.error }}</small>
+          <small class="form-text text-muted">{{ form.profesor.help_text }}</small>
         </div>
       </div>
-
       <div class="col">
         <div class="form-group">
-          <label for="{{ form.cantidad_clase.id_for_label }}">Total de clases</label>
+          {{ form.cantidad_clase.label_tag }}
           <input type="number" name="cantidad_clase" step="1" min="1" required class="form-control" value="{{ form.cantidad_clase.value|default:'' }}" />
-          <small class="text-muted">{{ form.cantidad_clase.help_text }}</small>
+          <small class="error-text" style="color: red;">{{ form.cantidad_clase.error }}</small>
+          <small class="form-text text-muted">{{ form.cantidad_clase.help_text }}</small>
         </div>
       </div>
 
       <div class="col">
         <div class="form-group">
           {{ form.modulos.label_tag }}
-          <br />
-          <input type="number" name="modulos" min="1" required step="1" class="form-control" value="{{ form.modulos.value|default:'' }}" />
-          <small class="text-muted">{{ form.modulos.help_text }}</small>
+          <input type="number" name="modulos" step="1" min="1" required class="form-control" value="{{ form.modulos.value|default:'' }}" />
+          <small class="error-text" style="color: red;">{{ form.modulos.error }}</small>
+          <small class="form-text text-muted">{{ form.modulos.help_text }}</small>
         </div>
       </div>
     </div>
@@ -57,61 +51,42 @@
     <div class="row">
       <div class="col">
         <div class="form-group">
-          <label for="{{ form.minimo_alumnos.id_for_label }}">Minimo de inscriptos</label>
-          <input type="number" id="id_minimo_alumnos" name="minimo_alumnos" step="1" min="1" required class="form-control" value="{{ form.minimo_alumnos.value|default:'' }}" />
-          <small class="text-muted">{{ form.minimo_alumnos.help_text }}</small>
+          {{ form.cupo.label_tag }}
+          <input type="number" name="cupo" step="1" min="1" required class="form-control" value="{{ form.cupo.value|default:'' }}" />
         </div>
       </div>
-
-      <div class="col">
-        <div class="form-group">
-          <label for="{{ form.maximos_alumnos.id_for_label }}">Máximo de inscriptos:</label>
-          <br />
-          <input type="number" name="maximos_alumnos" step="1" min="0" max="100" required class="form-control" value="{{ form.maximos_alumnos.value|default:'' }}" />
-          <small class="text-muted">{{ form.maximos_alumnos.help_text }}</small>
-        </div>
-      </div>
-
-      <div class="col">
-        <div class="form-group">
-          {{ form.certificado_medico.label_tag }}
-          {{ form.certificado_medico }}
-          <small class="text-muted">{{ form.certificado_medico.help_text }}</small>
-        </div>
-      </div>
-    </div>
-
-    <div class="row">
       <div class="col">
         <div class="form-group">
           {{ form.costo.label_tag }}
-          <br />
-          <input type="number" name="costo" step="1" min="0" required class="form-control" value="{{ form.costo.value|default:'' }}" />
-          <small class="text-muted">{{ form.costo.help_text }}</small>
+          <input type="number" name="costo" step="1" min="1" required class="form-control" value="{{ form.costo.value|default:'' }}" />
         </div>
       </div>
 
       <div class="col">
         <div class="form-group">
-          <label for="{{ form.periodo_pago.id_for_label }}">Pago:</label>
-          {{ form.periodo_pago }}
-          <small class="text-muted">{{ form.periodo_pago.help_text }}</small>
-        </div>
-      </div>
-
-      <div class="col">
-        <div class="form-group">
-          <label for="{{ form.descuento.id_for_label }}">Descuento en %:</label>
-          <br />
-          <input type="number" name="descuento" step="1" min="0" max="100" required class="form-control" value="{{ form.descuento.value|default:'' }}" />
-          <small class="text-muted">{{ form.descuento.help_text }}</small>
+          {{ form.descuento.label_tag }}
+          <input type="number" name="descuento" step="1" min="1" required class="form-control" value="{{ form.descuento.value|default:'' }}" />
+          <small class="error-text" style="color: red;">{{ form.descuento.error }}</small>
+          <small class="form-text text-muted">{{ form.descuento.help_text }}</small>
         </div>
       </div>
     </div>
 
-    {% include 'message.html' %}
+    <h1> {{ form.cursos }}</h1>
 
-    <div class="row">
+      <div class="row">
+        <div class="col">
+          <div class="form-group">
+            {{ form.asistencia_obligatoria }}
+            <label for="{{ form.asistencia_obligatoria.id_for_label }}">Control de asistencia</label>
+          </div>
+        </div>
+      </div>
+
+    <div class="row row-cols-1 row-cols-sm-1 row-cols-md-2">
+      <div class="col">
+        <a href="{% url 'cursos:index' %}" class="btn btn-secondary">Cancelar</a>
+      </div>
       <div class="col">
         <button type="submit" class="btn btn-primary">Guardar</button>
       </div>
