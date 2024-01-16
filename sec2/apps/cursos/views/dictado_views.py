@@ -17,7 +17,7 @@ class DictadoCreateView(CreateView):
     model = Dictado
     form_class = DictadoForm
     template_name = 'dictado/dictado_alta.html'
-    success_url = reverse_lazy('cursos:dictado_crear')
+    success_url = reverse_lazy('cursos:curso_detalle')
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -55,13 +55,13 @@ class DictadoCreateView(CreateView):
         profesor = get_object_or_404(Profesor, id=profesor_id)
         Titular.objects.create(profesor=profesor, dictado=dictado)
 
-        messages.success(self.request, 'Dictado creado exitosamente. Recargue la página del detalle del curso')
+        messages.success(self.request, 'Dictado creado exitosamente')
 
         # Redirige a la vista de detalle del curso
         return super().form_valid(form)
 
     def get_success_url(self):
-        return reverse('cursos:dictado_detalle', args=[self.object.curso.pk, self.object.pk])
+        return reverse('cursos:curso_detalle', args=[self.object.curso.pk])
 
     def form_invalid(self, form):
         messages.warning(self.request, f'{ICON_TRIANGLE} {MSJ_CORRECTION}')

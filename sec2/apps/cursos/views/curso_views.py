@@ -45,7 +45,7 @@ class CursoCreateView(CreateView):
 
         # Actualizar el valor de es_convenio en base al tipo de curso
         if tipo_curso == 'convenio':
-            form.instance.es_convenio = True
+            form.instance.es_convenio = True    
         else:
             form.instance.es_convenio = False
         # Guardar el formulario
@@ -99,7 +99,7 @@ class CursoDetailView(DetailView):
             dictados_info.append(dictado_info)
 
         # Paginación
-        elementos_por_pagina = 3
+        elementos_por_pagina = 2
         paginator = Paginator(dictados_info, elementos_por_pagina)
         pagina = self.request.GET.get('pagina', 1)
 
