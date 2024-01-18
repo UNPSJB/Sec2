@@ -69,8 +69,8 @@ class Curso(models.Model):
 class Dictado(models.Model):
     nombre = models.CharField(
         max_length=50,
-        validators=[text_validator],  # Añade tu validador personalizado si es necesario
-        help_text="Solo se permiten letras y espacios."
+        # validators=[text_validator],  # Añade tu validador personalizado si es necesario
+        help_text="Nombre del dictado."
     )
     cupo = models.PositiveIntegerField(
         help_text="Máximo alumnos inscriptos",
@@ -99,7 +99,7 @@ class Dictado(models.Model):
     curso = models.ForeignKey(Curso, related_name="dictado_set", on_delete=models.CASCADE, null=True, blank=True)
 
     def __str__(self):
-        return f"HOLAAA!! SOY EL DICTADO : "
+        return f" Soy dictado {self.nombre}"
 
     def asignar_clase(self, fecha, hora_inicio):
         clase = Clase()
@@ -130,29 +130,36 @@ class Aula(models.Model):
             return 'Aula {}'.format(self.numero)
         return 'Computación {}'.format(self.numero)
 
+    def obtener_aulas_disponibles(self, capacidad_minima):
+        # Obtener todas las aulas que no están asignadas a ninguna clase y cumplen con la capacidad mínima
+        aulas_disponibles = Aula.objects.filter(clases__isnull=True, capacidad__gte=capacidad_minima)
+        return aulas_disponibles
+    
 #------------- HORARIO --------------------
 class Horario(models.Model):
     dia_semana = models.PositiveSmallIntegerField(choices=DIAS_SEMANA_CHOICES)
     hora_inicio = models.TimeField(help_text="Ingrese la hora en formato de 24 horas (HH:MM)")
-    aula = models.ForeignKey(Aula, related_name='horarios', on_delete=models.CASCADE)
     asistencia = models.PositiveIntegerField(default=0, help_text="Número de alumnos que asistieron")
     dictado = models.ForeignKey(Dictado, related_name="dictados", null=True, on_delete=models.CASCADE)
 
     def __str__(self):
-        return f"{self.get_dia_semana_display()} - {self.hora_inicio} - {self.aula}"
+        return f"{self.get_dia_semana_display()} - {self.hora_inicio} "
 
 #------------- CLASE --------------------
 class Clase(models.Model):
     dictado = models.ForeignKey(Dictado, related_name="clases", null=True, on_delete=models.CASCADE)
-    nombre = models.CharField(
-        max_length=50,  
-        validators=[text_validator],
-        help_text="Solo se permiten letras y espacios."
-    )
+    # nombre = models.CharField(
+    #     max_length=50,  
+    #     validators=[text_validator],
+    #     help_text="Solo se permiten letras y espacios."
+    # )
+    fecha = models.DateTimeField(help_text="Seleccione solo el día habilitado")
+    # aula = models.ForeignKey(Aula, related_name='clases', on_delete=models.CASCADE)
     inscritos = models.PositiveIntegerField(default=0, help_text="Número de alumnos inscritos")
 
     def __str__(self):
-        return self.nombre
+        return "soy clase"
+
 
 
 class Alumno(Rol):

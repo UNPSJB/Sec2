@@ -6,7 +6,7 @@ from django import forms
 class HorarioForm(forms.ModelForm):
     class Meta:
         model = Horario
-        fields = ['dia_semana', 'hora_inicio', 'aula']
+        fields = ['dia_semana', 'hora_inicio']
         widgets = {
             'hora_inicio': forms.TimeInput(format='%H:%M')
         }

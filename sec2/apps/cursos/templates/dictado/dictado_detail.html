@@ -97,7 +97,6 @@
       <th>Día</th>
       <th>Desde</th>
       <th>Duración</th>
-      <th>Aula</th>
       <th></th>
     </tr>
   </thead>
@@ -107,7 +106,6 @@
       <td>{{ horario.get_dia_semana_display }}</td>
       <td>{{ horario.hora_inicio }}</td>
       <td>{{ horario.dictado.modulos }} horas</td>
-      <td>{{ horario.aula }}</td>
       <td>[icono de editar]</td>
     </tr>
     {% endfor %}
@@ -157,5 +155,5 @@
   {% else %}
     <p>No hay clases asociadas.</p>
   {% endif %}
-  {% comment %} <a href="{% url 'cursos:clase_crear' curso_pk = curso.pk dictado_pk = object.pk %}" class="btn btn-primary btn-detalle"><i class="fa-solid fa-plus"></i> Nuevo</a> {% endcomment %}
-{% endblock %}
+  <a href="{% url 'cursos:clase_crear' curso_pk=curso.pk dictado_pk=dictado.pk %}" class="btn btn-primary btn-detalle"><i class="fa-solid fa-plus"></i> Nueva Clase</a>
+  {% endblock %}

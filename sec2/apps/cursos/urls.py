@@ -39,6 +39,10 @@ urlpatterns = [
     # HORARIO (accedido desde dictado)
     path('curso/<int:curso_pk>/dictados/dictado/<int:dictado_pk>/horarios/horario/crear/', HorarioCreateView.as_view(), name='horario_crear'),
 
+    # CLASE (accedido desde dictaod)
+    path('cursos/curso/<int:curso_pk>/dictados/dictado/<int:dictado_pk>/clases/clase/crear', ClaseCreateView.as_view(), name="clase_crear"),
+
+
 
 #------------------------ INCHEQUEADO ------------------------
     # # ACTIVIDADES
@@ -48,11 +52,6 @@ urlpatterns = [
     # path('actividades/actividad/<int:pk>/eliminar', actividad_eliminar, name="actividad_eliminar"),
     # path('actividades/listado', ActividadListView.as_view(), name="actividad_listado"),
 
-
-    
-
-    # CLASE (accedido desde dictaod)
-    path('cursos/curso/<int:curso_pk>/dictados/dictado/<int:dictado_pk>/clases/clase/crear', ClaseCreateView.as_view(), name="clase_crear"),
     path('cursos/curso/<int:curso_pk>/dictados/dictado/<int:dictado_pk>/clases/clase/<int:clase_pk>', ClaseDetailView.as_view(), name="clase_detalle"),
 
     

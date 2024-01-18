@@ -28,14 +28,9 @@ class HorarioCreateView(CreateView):
 
     def get_form(self, form_class=None):
         form = super().get_form(form_class)
-        
         # Obtiene el dictado relacionado con el horario
         dictado_id = self.kwargs["dictado_pk"]
         dictado = get_object_or_404(Dictado, pk=dictado_id)
-
-        # Filtra las aulas que tienen capacidad suficiente para el dictado
-        form.fields["aula"].queryset = Aula.objects.filter(capacidad__gte=dictado.cupo)
-
         return form
     
     def get_context_data(self, **kwargs):
@@ -51,5 +46,5 @@ class HorarioCreateView(CreateView):
         form.instance.dictado = dictado
         # Guarda la clase para obtener el ID asignado
         response = super().form_valid(form)
-        messages.success(self.request, "Horario creado exitosamente.")
+        messages.success(self.request, f'{ICON_CHECK} Modificación exitosa!')
         return response

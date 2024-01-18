@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Actividad, Curso, Dictado, Aula, Alumno, Profesor, Asistencia_alumno, Asistencia_profesor, Horario
+from .models import Actividad, Clase, Curso, Dictado, Aula, Alumno, Profesor, Asistencia_alumno, Asistencia_profesor, Horario
 
 # Register your models here.
 class ActividadAdmin(admin.ModelAdmin):
@@ -27,6 +27,11 @@ admin.site.register(Aula, AulaAdmin)
 class HorarioAdmin(admin.ModelAdmin):
     list_display = ('hora_inicio',)
 admin.site.register(Horario, HorarioAdmin)
+
+class ClaseAdmin(admin.ModelAdmin):
+    list_display = ('fecha','inscritos')
+admin.site.register(Clase, ClaseAdmin)
+
 
 admin.site.register(Alumno)
 admin.site.register(Profesor)

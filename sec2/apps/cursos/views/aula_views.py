@@ -28,7 +28,7 @@ class AulaCreateView(CreateView):
             messages.warning(self.request, f'{ICON_TRIANGLE} Ya existe un aula con el mismo tipo y número.')
             return self.form_invalid(form)
 
-        messages.Warning(self.request, f'{ICON_CHECK} Alta de aula exitosa!')
+        messages.success(self.request, f'{ICON_CHECK} Alta de aula exitosa!') 
         return super().form_valid(form)
 
     def form_invalid(self, form):

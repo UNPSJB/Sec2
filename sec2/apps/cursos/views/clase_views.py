@@ -10,11 +10,11 @@ from django.shortcuts import get_object_or_404
 from django.urls import reverse_lazy
 
 # --------------- CREACION DE CLASE --------------------------------
-
 class ClaseCreateView(CreateView):
     model = Clase
     form_class = ClaseForm
-    template_name = "clase/clase_form.html"
+    template_name = 'clase/clase_form.html'
+    success_url = reverse_lazy('cursos:aula_listado')
 
     def get_success_url(self):
         return reverse_lazy(
@@ -24,10 +24,29 @@ class ClaseCreateView(CreateView):
                 "dictado_pk": self.kwargs["dictado_pk"],
             },
         )
+    
+    def get_form(self, form_class=None):
+        form = super().get_form(form_class)
+        # Obtiene el dictado relacionado con el horario
+        dictado_id = self.kwargs.get("dictado_pk")
+        dictado = get_object_or_404(Dictado, pk=dictado_id)
+        # Filtra las aulas que tienen capacidad suficiente para el dictado
+        # form.fields["aula"].queryset = Aula.objects.filter(capacidad__gte=dictado.cupo)
+        # Obtener todos los horarios asociados al dictado
+        horarios_dictado = Horario.objects.filter(dictado=dictado)
+        # Pasar los horarios al formulario como contexto
+        form.horarios_dictado = horarios_dictado
+        return form
 
     def get_context_data(self, **kwargs):
+        dictado_id = self.kwargs.get("dictado_pk")
+        dictado = get_object_or_404(Dictado, id=dictado_id)
+        # Obtener todos los horarios asociados al dictado
+        # horarios_dictado = Horario.objects.filter(dictado=dictado)
         context = super().get_context_data(**kwargs)
         context["titulo"] = "Alta de Clase"
+        # context["aulas_disponibles"] = Aula().obtener_aulas_disponibles(dictado.cupo)
+        # context["horarios_dictado"] = horarios_dictado
         return context
 
     def form_valid(self, form):
