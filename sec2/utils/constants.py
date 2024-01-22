@@ -273,20 +273,3 @@ OPCIONES_CERTIFICADO = [
         (3, 'Opcional'),
 ]
 
-DURACION = [
-        (0, "Todo el año"),
-        (1, "3 meses"),
-        (2, "6 meses"),
-        (3, "Indefinido"),
-    ]
-
-
-
-DIAS_SEMANA_CHOICES = [
-        (0, 'Lunes'),
-        (1, 'Martes'),
-        (2, 'Miércoles'),
-        (3, 'Jueves'),
-        (4, 'Viernes'),
-        (5, 'Sábado'),
-    ]

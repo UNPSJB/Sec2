@@ -1,0 +1,18 @@
+{% extends 'alta.html' %}
+
+{% load crispy_forms_tags %}
+
+{% block formulario %}
+  <form method="post">
+    {% csrf_token %}
+
+    <label for="aula_seleccionada">Seleccione un aula:</label>
+    <br>
+    <select name="aula_seleccionada" id="aula_seleccionada">
+      {% for aula in aulas_disponibles %}
+        <option value="{{ aula.id }}">{{ aula }}</option>
+      {% endfor %}
+    </select>
+    <button type="submit">Asignar Aula</button>
+  </form>
+{% endblock %}

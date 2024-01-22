@@ -1,5 +1,5 @@
 from django import forms
-from ..models import Horario
+from ..models import Horario, Aula
 from utils.constants import *
 from django import forms
 

@@ -3,22 +3,10 @@
 {% load static %}
 
 {% block formulario %}
-  <form method="post">
+  <form method="post" autocomplete="off">
     {% csrf_token %}
-    {{ form.non_field_errors }}
-    <br />
 
     <input type="hidden" name="{{ form.area.name }}" value="{{ form.area.initial }}" />
-
-    <div class="row">
-      <div class="col">
-        <div class="form-group">
-          <label for="{{ form.duracion.id_for_label }}">Duración:</label>
-          <br />
-          {{ form.duracion }}
-        </div>
-      </div>
-    </div>
 
     <div class="row">
       <div class="col">
@@ -27,6 +15,17 @@
           {{ form.nombre }}
           <small class="error-text" style="color: red;">{{ form.nombre.error }}</small>
           <small class="form-text text-muted">{{ form.nombre.help_text }}</small>
+        </div>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col">
+        <div class="form-group">
+          {{ form.modulos_totales.label_tag }}
+          <input type="number" name="modulos_totales" step="1" min="1" required class="form-control" value="{{ form.modulos_totales.value|default:'' }}" />
+          <small class="error-text" style="color: red;">{{ form.modulos_totales.error }}</small>
+          <small class="form-text text-muted">{{ form.modulos_totales.help_text }}</small>
         </div>
       </div>
     </div>

@@ -4,11 +4,6 @@
 
 {% block detalle_lado_izquierdo %}
   <div class="row">
-    <div class="col-md-2">
-      <p>
-        <strong>Nombre:</strong>
-      </p>
-    </div>
     <div class="col-md-3">
       <p>{{ dictado.nombre }}</p>
     </div>
@@ -60,10 +55,10 @@
     </div>
     <div class="col-md-4">
       <p>
-        {% if dictado.modulos == 1 %}
-          {{ dictado.modulos }} módulo ({{ dictado.modulos }} hora por clase)
+        {% if dictado.modulos_por_clase == 1 %}
+          {{ dictado.modulos_por_clase }} módulo ({{ dictado.modulos_por_clase }} hora por clase)
         {% else %}
-          {{ dictado.modulos }} módulos ({{ dictado.modulos }} horas por clase)
+          {{ dictado.modulos_por_clase }} módulos ({{ dictado.modulos_por_clase }} horas por clase)
         {% endif %}
       </p>
     </div>
@@ -88,6 +83,20 @@
       <p>{{ dictado.cupo }} participantes</p>
     </div>
   </div>
+
+  <div class="row">
+
+    <div class="col-md-2">
+      <p>
+        <strong>Inicio:</strong>
+      </p>
+    </div>
+    <div class="col-md-2">
+      <p>{{ dictado.fecha }} </p>
+    </div>
+
+
+  </div>
 {% endblock %}
 
 {% block horarios %}
@@ -96,7 +105,8 @@
     <tr>
       <th>Día</th>
       <th>Desde</th>
-      <th>Duración</th>
+      <th>Hasta</th>
+      <th>Aula</th>
       <th></th>
     </tr>
   </thead>
@@ -104,9 +114,12 @@
     {% for horario in horarios %}
     <tr>
       <td>{{ horario.get_dia_semana_display }}</td>
-      <td>{{ horario.hora_inicio }}</td>
-      <td>{{ horario.dictado.modulos }} horas</td>
-      <td>[icono de editar]</td>
+      <td>{{ horario.hora_inicio }} hrs.</td>
+      <td>{{ horario.calcular_hora_fin }} hrs.</td>
+      <td>{{ horario.aula }}</td>  {# Accede al objeto de aula asociado al horario #}
+      <td>
+        <a href="{% url 'cursos:asignar_aula' horario.id %}" class="btn btn-primary btn-sm btn-detalle"><i class="fa-solid fa-door-open"></i>Asignar Aula</a>
+      </td>
     </tr>
     {% endfor %}
   </tbody>
@@ -115,8 +128,13 @@
 
 {% block botones %}
   <div class="col d-flex justify-content-center">
-    <a href="{% url 'cursos:dictado_editar' curso_pk=curso.pk dictado_pk=object.pk %}" class="btn btn-primary btn-sm btn-detalle"><i class="fa-regular fa-pen-to-square"></i> Modificar</a>
+    <a href="{% url 'cursos:dictado_editar' curso_pk=curso.pk dictado_pk=dictado.pk %}" class="btn btn-primary btn-sm btn-detalle"><i class="fa-regular fa-pen-to-square"></i> Modificar</a>
   </div>
+  <div class="col d-flex justify-content-center">
+    {% comment %} <a href="{% url 'cursos:generar_clases' dictado_id=dictado.pk %}" class="btn btn-primary btn-detalle"><i class="fa-solid fa-plus"></i> Generar Clases</a> {% endcomment %}
+  </div>
+
+
 
   <div class="col d-flex justify-content-center">
     <a href="{% url 'cursos:horario_crear' curso_pk=dictado.curso.pk dictado_pk=dictado.pk %}" class="btn btn-primary btn-detalle"><i class="fa-solid fa-plus"></i> Generar Horario</a>
@@ -134,7 +152,7 @@
       <thead>
         <tr>
           <th>#</th>
-          <th>Nombre</th>
+          <th>fecha</th>
           <th>Inscriptos</th>
           <th></th>
         </tr>
@@ -143,8 +161,8 @@
         {% for clase in clases %}
           <tr>
             <td>{{ forloop.counter }}</td>
-            <td>{{ clase.nombre }}</td>
-            <td>{{ clase.inscritos }} / {{ dictado.maximos_alumnos }}</td>
+            <td>{{ clase.fecha }}</td>
+            <td>{{ clase.horario.hora_inicio }} / {{ dictado.maximos_alumnos }}</td>
             <td>
               {% comment %} <a href="{% url 'cursos:clase_detalle' curso_pk = curso.pk dictado_pk = dictado.pk clase_pk = clase.pk %}" class="btn btn-primary btn-detalle"><i class="fa-regular fa-eye"></i> Detalle</a> {% endcomment %}
             </td>
@@ -155,5 +173,7 @@
   {% else %}
     <p>No hay clases asociadas.</p>
   {% endif %}
-  <a href="{% url 'cursos:clase_crear' curso_pk=curso.pk dictado_pk=dictado.pk %}" class="btn btn-primary btn-detalle"><i class="fa-solid fa-plus"></i> Nueva Clase</a>
+  {% comment %} <a href="{% url 'cursos:clase_crear' curso_pk=curso.pk dictado_pk=dictado.pk %}" class="btn btn-primary btn-detalle"><i class="fa-solid fa-plus"></i> Nueva Clase</a> {% endcomment %}
   {% endblock %}
+
+  

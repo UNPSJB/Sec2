@@ -1,24 +1,34 @@
-from ..models import Curso, Actividad, Titular
+from django.shortcuts import redirect
+from apps.cursos.models import Curso
 from ..forms.curso_forms import *
 from django.views.generic.edit import CreateView, UpdateView
-from django.urls import reverse_lazy
-from django.shortcuts import render
-from django.contrib import messages
 from django.views.generic import DetailView
+from django.urls import reverse_lazy
+from django.contrib import messages
 from sec2.utils import ListFilterView
-from django.shortcuts import redirect
-from django.core.paginator import Paginator, EmptyPage
+from django.urls import reverse_lazy
 
-##--------------- CREATE DE CURSOS--------------------------------
+#--------------- CREATE DE CURSOS--------------------------------
 class CursoCreateView(CreateView):
     model = Curso
     form_class = CursoForm
     template_name = 'curso/curso_alta_convenio.html'
-    success_url = reverse_lazy('cursos:curso_listado')
+    success_url = reverse_lazy('cursos:curso_listado')  # Replace with your desired URL
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['titulo'] = "Alta de Curso"
+        tipo_curso = self.request.GET.get('tipo', None)
+        
+        # Set the title based on the type of course
+        if tipo_curso == 'sec':
+            context['titulo'] = "Alta de Curso del SEC"
+        elif tipo_curso == 'convenio':
+            context['titulo'] = "Alta de Convenio"
+        elif tipo_curso == 'actividad':
+            context['titulo'] = "Alta de Gimnasia"
+        else:
+            context['titulo'] = "Tipo de Curso"  # Default title
+        
         return context
 
     def get_form_kwargs(self):
@@ -42,10 +52,9 @@ class CursoCreateView(CreateView):
 
     def form_valid(self, form):
         tipo_curso = self.request.GET.get('tipo', None)
-
         # Actualizar el valor de es_convenio en base al tipo de curso
         if tipo_curso == 'convenio':
-            form.instance.es_convenio = True    
+            form.instance.es_convenio = True
         else:
             form.instance.es_convenio = False
         # Guardar el formulario
@@ -53,73 +62,32 @@ class CursoCreateView(CreateView):
 
         # Mensaje de éxito
         messages.success(self.request, f'{ICON_CHECK} Alta de curso exitosa!')
-        print()
         return result
 
     def form_invalid(self, form):
         messages.warning(self.request, 'Por favor, corrija los errores a continuación.')
-
         # Imprimir los errores en la consola
         print("Errores del formulario:", form.errors)
-
         return super().form_invalid(form)
-##--------------- CURSO DETALLE --------------------------------
+    
+#--------------- CURSO DETALLE --------------------------------
 class CursoDetailView(DetailView):
     model = Curso
     template_name = 'curso/curso_detalle.html'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['titulo'] = f"Curso de {self.object.nombre}"
+        curso = self.object  # El objeto de curso obtenido de la vista
+        
+        context['titulo'] = f"Curso: {self.object.nombre}"
         context['tituloListado'] = 'Dictados Asociados'
-
-        context['dictados_info_start'] = 1
-
-        # Obtener todos los dictados asociados al curso
-        dictados = self.object.dictado_set.all()
-
-        # Crear una lista para almacenar información de cada dictado, incluyendo el nombre del profesor
-        dictados_info = []
-
-        for i, dictado in enumerate(dictados, start=context['dictados_info_start']):
-            # Obtener el titular asociado al dictado
-            titular = self.get_titular(dictado)
-
-            # Crear un diccionario con la información del dictado y el nombre del profesor
-            dictado_info = {
-                'numero': i,
-                'dictado': dictado,
-                'nombre_profesor': (
-                    f"{titular.profesor.persona.apellido} "
-                    f"{titular.profesor.persona.nombre}"
-                ) if titular else "Sin titular"
-            }
-
-            # Agregar el diccionario a la lista
-            dictados_info.append(dictado_info)
-
-        # Paginación
-        elementos_por_pagina = 2
-        paginator = Paginator(dictados_info, elementos_por_pagina)
-        pagina = self.request.GET.get('pagina', 1)
-
-        try:
-            dictados_info_paginados = paginator.page(pagina)
-        except EmptyPage:
-            dictados_info_paginados = paginator.page(paginator.num_pages)
-
-        # Agregar la lista de dictados paginados con información al contexto
-        context['dictados_info'] = dictados_info_paginados
-
+        
+        # Obtener todos los dictados asociados al curso junto con los horarios
+        dictados = curso.dictado_set.prefetch_related('horarios').all()
+        context['dictados'] = dictados
         return context
     
-
-    def get_titular(self, dictado):
-        try:
-            titular = Titular.objects.get(dictado=dictado)
-            return titular
-        except Titular.DoesNotExist:
-            return None
+    
 
 ##--------------- CURSO LIST --------------------------------
 class CursoListView(ListFilterView):

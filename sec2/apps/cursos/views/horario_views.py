@@ -1,17 +1,17 @@
+import datetime
 from django.views.generic.edit import CreateView
 from django.shortcuts import render, redirect
 from django.views.generic import DetailView
 from sec2.utils import ListFilterView
 from django.contrib import messages
-from ..models import Dictado, Aula, Clase, Horario
+from ..models import Dictado, Horario, Aula, Reserva
 from ..forms.clase_forms import *
 from ..forms.horario_forms import *
 from django.urls import reverse
 from django.shortcuts import get_object_or_404
 from django.urls import reverse_lazy
 
-
-##--------------- CREACION DE HORARIO --------------------------------
+#--------------- CREACION DE HORARIO --------------------------------
 class HorarioCreateView(CreateView):
     model = Horario
     form_class = HorarioForm
@@ -48,3 +48,43 @@ class HorarioCreateView(CreateView):
         response = super().form_valid(form)
         messages.success(self.request, f'{ICON_CHECK} Modificación exitosa!')
         return response
+
+#-------------- ASIGNAR UN AULA ----------------------------------
+from django.utils.datetime_safe import datetime
+from datetime import timedelta
+from django.http import HttpResponse
+
+def asignar_aula(request, horario_id):
+    titulo = 'Asignación de aula'
+    horario = get_object_or_404(Horario, id=horario_id)
+    modulo = horario.dictado.modulos_por_clase
+    tiempo_modulo = timedelta(hours=modulo)
+    hora_inicio_datetime = datetime.combine(datetime.today(), horario.hora_inicio)
+    suma_resultado = hora_inicio_datetime + tiempo_modulo
+    todos_los_horarios = Horario.objects.all()
+
+    aulas_disponibles = Aula.objects.filter(capacidad__gte=horario.dictado.cupo)
+    if not aulas_disponibles.exists():
+        return HttpResponse("No hay aulas disponibles con capacidad suficiente para el dictado.")
+    else:
+        for aula in aulas_disponibles:
+            print(aula)
+            print("RESERVAS")
+            print(aula.reservas.all())
+
+    if request.method == 'POST':
+        aula_seleccionada_id = request.POST.get('aula_seleccionada')
+        aula_seleccionada = get_object_or_404(Aula, pk=aula_seleccionada_id)
+
+        print("AULA SELECCIONADA")
+        print(aula_seleccionada)
+        # Asigna el aula al horario
+        horario.aula = aula_seleccionada
+        horario.save()
+        print("FECHA DE INICIO")
+        print(horario.dictado.fecha)
+        # Agrega el horario directamente al campo 'horarios' de la instancia de Reserva
+        reserva, created = Reserva.objects.get_or_create(fecha=horario.dictado.fecha)
+        reserva.horarios.add(horario)
+
+    return render(request, 'dictado/asignar_aula.html', {'horario': horario, 'aulas_disponibles': aulas_disponibles})

@@ -1,7 +1,7 @@
 from django.http import HttpResponseRedirect
 from django.views.generic import DetailView, ListView
 from django.views.generic.edit import CreateView, UpdateView
-from ..models import Curso, Horario, Profesor, Dictado, Clase, Titular
+from ..models import Curso, Dictado, Titular, Horario
 from utils.constants import *
 from django.shortcuts import render
 from django.urls import reverse
@@ -11,8 +11,10 @@ from django.urls import reverse_lazy
 from django.contrib import messages
 from django.shortcuts import redirect
 from django.shortcuts import get_object_or_404
+from datetime import timedelta
 
-##--------------- CREACION DE DICTADO --------------------------------
+
+#--------------- CREACION DE DICTADO --------------------------------
 class DictadoCreateView(CreateView):
     model = Dictado
     form_class = DictadoForm
@@ -27,22 +29,13 @@ class DictadoCreateView(CreateView):
         return context
 
     def form_valid(self, form):
-
         # Obtén el curso asociado al dictado
         curso = get_object_or_404(Curso, pk=self.kwargs.get('pk'))
-        
-        # Guarda el dictado en la base de datos sin commit
-        dictado = form.save(commit=False)
-        
-        dictado.curso = curso  # Asigna el curso al dictado
 
-        # Obtén el curso asociado al dictado
-        curso = get_object_or_404(Curso, pk=self.kwargs.get('pk'))
-        
         # Guarda el dictado en la base de datos sin commit
         dictado = form.save(commit=False)
         dictado.curso = curso  # Asigna el curso al dictado
-        
+
         # Verifica la validez del formulario
         if not form.is_valid():
             return self.form_invalid(form)
@@ -55,19 +48,37 @@ class DictadoCreateView(CreateView):
         profesor = get_object_or_404(Profesor, id=profesor_id)
         Titular.objects.create(profesor=profesor, dictado=dictado)
 
+        # Obtiene la fecha de inicio del dictado
+        fecha_inicio = dictado.fecha
+
+        # Crea el horario para el día de la semana de la fecha de inicio
+        dia_semana_inicio = fecha_inicio.weekday()  
+
+        # Crea la instancia de Horario
+        horario = Horario(
+            dia_semana=dia_semana_inicio,
+            hora_inicio=fecha_inicio.time(),  # Puedes ajustar según tus necesidades
+            dictado=dictado,
+        )
+
+        # Guarda el horario en la base de datos
+        horario.save()
+
         messages.success(self.request, 'Dictado creado exitosamente')
 
         # Redirige a la vista de detalle del curso
         return super().form_valid(form)
+    
 
     def get_success_url(self):
         return reverse('cursos:curso_detalle', args=[self.object.curso.pk])
 
     def form_invalid(self, form):
-        messages.warning(self.request, f'{ICON_TRIANGLE} {MSJ_CORRECTION}')
+        messages.warning(self.request, f'{ICON_TRIANGLE} {MSJ_CORRECTION} {form.errors}')
         context = self.get_context_data()
-        context['form'] = form
+        print("Errores del formulario:", form.errors)
         return self.render_to_response(context)
+
 ##--------------- DICTADO DETALLE --------------------------------
 class DictadoDetailView(DetailView):
     model = Dictado
@@ -80,22 +91,26 @@ class DictadoDetailView(DetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['curso'] = Curso.objects.get(id=self.kwargs.get('curso_pk'))
+        dictado = self.object  # El objeto de dictado obtenido de la vista
+
         context['titulo'] = "Detalle del dictado"
         context['tituloListado'] = 'Clases Asociadas'
+
+        # Obtener todas las clases asociadas al dictado a través de los horarios
+        # clases = Clase.objects.filter(horario__dictado=dictado)
+        # context['clases'] = clases
+
+        context['curso'] = Curso.objects.get(id=self.kwargs.get('curso_pk'))
+        # Obtener todos los horarios asociados al dictado
+        horarios = dictado.horarios.all()
+        context['horarios'] = horarios
+
         # Obtener el nombre del profesor asociado al dictado
         titular = self.get_titular(context['object'])
         context['nombre_profesor'] = (
             f"{titular.profesor.persona.nombre}, "
             f"{titular.profesor.persona.apellido}"
         ) if titular else "Sin titular"
-
-        # Obtener todas las clases asociadas al dictado
-        clases = Clase.objects.filter(dictado=context['object'])
-        context['clases'] = clases
-
-        horario = Horario.objects.filter(dictado=context['object'])
-        context['horarios'] = horario
         return context
 
     def get_titular(self, dictado):
@@ -104,6 +119,7 @@ class DictadoDetailView(DetailView):
             return titular
         except Titular.DoesNotExist:
             return None
+
 
 ##--------------- DICTADO UPDATE --------------------------------
 class DictadoUpdateView(UpdateView):
@@ -162,32 +178,32 @@ class DictadoUpdateView(UpdateView):
         messages.success(self.request, 'Dictado modificado exitosamente.')
         return super().form_valid(form)
 
-##--------------- DICTADO LIST VIEW --------------------------------
-class DictadoListView(ListView):
-    model = Dictado
-    paginate_by = 100
-    filter_class = DictadoFilterForm
-    template_name = 'dictado/dictado_list.html'
+# ##--------------- DICTADO LIST VIEW --------------------------------
+# class DictadoListView(ListView):
+#     model = Dictado
+#     paginate_by = 100
+#     filter_class = DictadoFilterForm
+#     template_name = 'dictado/dictado_list.html'
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        curso = Curso.objects.get(id=self.kwargs.get('pk'))
-        context['titulo'] = f"Listado de dictado para {curso.nombre}"
-        context["curso"] = self.kwargs['pk']
-        return context
+#     def get_context_data(self, **kwargs):
+#         context = super().get_context_data(**kwargs)
+#         curso = Curso.objects.get(id=self.kwargs.get('pk'))
+#         context['titulo'] = f"Listado de dictado para {curso.nombre}"
+#         context["curso"] = self.kwargs['pk']
+#         return context
 
-    def get_queryset(self):
-        dictados = super().get_queryset().filter(curso__pk=self.kwargs['pk'])
+#     def get_queryset(self):
+#         dictados = super().get_queryset().filter(curso__pk=self.kwargs['pk'])
 
-        # Agregar información del titular para cada dictado
-        for dictado in dictados:
-            titular = self.get_titular(dictado)
-            dictado.titular = titular
-        return dictados
+#         # Agregar información del titular para cada dictado
+#         for dictado in dictados:
+#             titular = self.get_titular(dictado)
+#             dictado.titular = titular
+#         return dictados
 
-    def get_titular(self, dictado):
-        try:
-            titular = Titular.objects.get(dictado=dictado)
-            return titular.profesor
-        except Titular.DoesNotExist:
-            return None
+#     def get_titular(self, dictado):
+#         try:
+#             titular = Titular.objects.get(dictado=dictado)
+#             return titular.profesor
+#         except Titular.DoesNotExist:
+#             return None

@@ -12,55 +12,58 @@
 {% block detalle_lado_derecho %}
   <div class="col-md-9">
     <div class="row">
-      <div class="col-md-3">
-        <p>
-          <strong>Nombre:</strong>
-        </p>
+      
+      <div class="col-md-2">
+        <p><strong>Nombre:</strong></p>
       </div>
+
       <div class="col-md-2">
         <p>{{ curso.nombre }}</p>
       </div>
-    </div>
-
-    <div class="row">
-      <div class="col-md-3">
-        <p>
-          <strong>Área:</strong>
-        </p>
+      
+      <div class="col-md-2">
+        <p><strong>Área:</strong></p>
       </div>
       <div class="col-md-3">
         <p>
           {{ curso.get_area_display }}
           {% if curso.area != 2 %}
-            |{% if curso.es_convenio %}
-              Convenio
-            {% else %}
-              SEC
-            {% endif %}
+          |{% if curso.es_convenio %}
+          Convenio
+          {% else %}
+          SEC
+          {% endif %}
           {% endif %}
         </p>
       </div>
     </div>
 
     <div class="row">
-      <div class="col-md-3">
+      <div class="col-md-2">
+        <p>
+          <strong>Total Modulos:</strong>
+        </p>
+      </div>
+      <div class="col-md-2">
+        <p>{{ curso.modulos_totales }} hrs.</p>
+      </div>
+      
+      <div class="col-md-2">
+        <p><strong>Costo Total:</strong></p>
+      </div>
+      <div class="col-md-2">
+        <p>${{ curso.costo }}</p>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-md-2">
         <p>
           <strong>Descripción:</strong>
         </p>
       </div>
       <div class="col-md-5">
         <p>{{ curso.descripcion }}</p>
-      </div>
-    </div>
-
-    <div class="row">
-      <div class="col-md-3">
-        <p>
-          <strong>Duración:</strong>
-        </p>
-      </div>
-      <div class="col-md-2">
-        <p>{{ curso.get_duracion_display }}</p>
       </div>
     </div>
 
@@ -89,8 +92,6 @@
     <a href="{% url 'cursos:curso_editar' curso.pk %}" class="btn btn-primary btn-sm btn-detalle"><i class="fa-regular fa-pen-to-square"></i> Modificar</a>
   </div>
 
-
-
   <div class="col d-flex justify-content-end">
     <button type="button" class="btn btn-danger btn-sm btn-detalle" data-bs-toggle="modal" data-bs-target="#exampleModal_eliminar"><i class="fa-regular fa-circle-down"></i> Dar de Baja</button>
     {% include 'curso/modal_confirm_baja.html' %}
@@ -98,34 +99,36 @@
 {% endblock %}
 
 {% block listado_asociado %}
-  {% if dictados_info %}
+  {% if dictados %}
     <table class="table table-sm table-hover">
       <thead>
         <tr>
           <th>#</th>
-          <th>Nombre</th>
-          <th>Profesor</th>
-          <th>Costo</th>
+          <th>Fecha Inicio</th>
+          <th>Cupo</th> 
+          <th>Desc</th>
+          <th>Duración</th>
           <th></th>
         </tr>
       </thead>
       <tbody>
-        {% for dictado_info in dictados_info %}
+        {% for dictado in dictados %}
           <tr>
-            <td>{{ dictado_info.numero }}</td>
-            <td>{{ dictado_info.dictado.nombre }}</td>
-            <td>{{ dictado_info.nombre_profesor }}</td>
-            <td>${{ dictado_info.dictado.costo }} x {{ dictado_info.dictado.get_periodo_pago_display }}</td>
+            <td>{{ forloop.counter }}</td>
+            <td>{{ dictado.fecha }}</td>
+            <td> 0/{{ dictado.cupo }}</td>
+            <td> {{ dictado.descuento }} %</td>
+            <td> {{ dictado.modulos_por_clase }} hrs </td>
             <td>
-              <a href="{% url 'cursos:dictado_detalle' curso_pk=curso.pk dictado_pk=dictado_info.dictado.pk %}" class="btn btn-primary btn-detalle"><i class="fa-regular fa-eye"></i> Detalle</a>
+              <a href="{% url 'cursos:dictado_detalle' curso_pk=curso.pk dictado_pk=dictado.pk %}" class="btn btn-primary btn-detalle btn-sm"><i class="fa-regular fa-eye"></i> Detalle</a>
             </td>
           </tr>
         {% endfor %}
       </tbody>
     </table>
-    {% include 'pagination.html' %}
   {% else %}
     <p>No hay dictados asociados.</p>
   {% endif %}
   <a href="{% url 'cursos:dictado_crear' curso.pk %}" class="btn btn-primary btn-detalle"><i class="fa-solid fa-plus"></i> Nuevo</a>
 {% endblock %}
+

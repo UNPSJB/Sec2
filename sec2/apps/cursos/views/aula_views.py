@@ -1,4 +1,3 @@
-from urllib import request
 from django.shortcuts import redirect
 from django.views.generic.edit import CreateView, UpdateView
 from django.views.generic import DetailView, ListView
@@ -7,12 +6,13 @@ from ..forms.aula_forms import *
 from django.urls import reverse_lazy
 from django.contrib import messages
 
+
 #---------------- CREACION DE AULA -----------------
 class AulaCreateView(CreateView):   
     model = Aula
     form_class = AulaForm
     template_name = 'aula/aula_alta.html'  
-    success_url = reverse_lazy('cursos:aula_listado')
+    success_url = reverse_lazy('cursos:aula_crear')
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -28,7 +28,7 @@ class AulaCreateView(CreateView):
             messages.warning(self.request, f'{ICON_TRIANGLE} Ya existe un aula con el mismo tipo y número.')
             return self.form_invalid(form)
 
-        messages.success(self.request, f'{ICON_CHECK} Alta de aula exitosa!') 
+        messages.success(self.request, f'{ICON_CHECK} Alta de aula exitosa!')
         return super().form_valid(form)
 
     def form_invalid(self, form):
@@ -45,13 +45,10 @@ class AulaDetailView(DetailView):
         context['titulo'] = 'Detalle de Aula'
         return context
 
-
-from django.core.paginator import Paginator
-from django.shortcuts import render
 #--------------- LISTADO -----------------
 class AulaListView(ListView):
     model = Aula
-    paginate_by = 11  # Define el número de elementos por página
+    paginate_by = 100  # Define el número de elementos por página
     filter_class = AulaFilterForm
     template_name = 'aula/aula_list.html'
 
@@ -102,3 +99,10 @@ class AulaUpdateView(UpdateView):
         for field, errors in form.errors.items():
             print(f"Campo: {field}, Errores: {', '.join(errors)}")
         return super().form_invalid(form)
+
+## ------------ ELIMINAR -------------------
+def aula_eliminar(request, pk):
+    a = Aula.objects.get(pk=pk)
+    a.delete()
+    messages.success(request, f'<i class="fa-solid fa-square-check fa-beat-fade"></i>   "{ a }" se ha eliminado con éxito.')
+    return redirect('cursos:aula_listado')

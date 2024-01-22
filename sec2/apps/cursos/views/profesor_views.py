@@ -8,7 +8,7 @@ from django.views.generic.edit import CreateView, UpdateView
 from utils.constants import *
 from sec2.utils import ListFilterView
 
-######## SECCION DE PROFESOR #######################
+# ######## SECCION DE PROFESOR #######################
 class ProfesorCreateView(CreateView):
     model = Profesor
     form_class = FormularioProfesor
@@ -39,29 +39,29 @@ class ProfesorListView(ListFilterView):
         context['titulo'] = "Listado de profesores"
         return context
 
-class ProfesorUpdateView(UpdateView):
-    model = Profesor
-    form_class = FormularioProfesorUpdateFrom
-    success_url = reverse_lazy('cursos:profesores')
+# class ProfesorUpdateView(UpdateView):
+#     model = Profesor
+#     form_class = FormularioProfesorUpdateFrom
+#     success_url = reverse_lazy('cursos:profesores')
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['titulo'] = "Modificar Profesor"
-        return context
+#     def get_context_data(self, **kwargs):
+#         context = super().get_context_data(**kwargs)
+#         context['titulo'] = "Modificar Profesor"
+#         return context
     
-    def form_valid(self, form):
-        messages.add_message(self.request, messages.SUCCESS, 'profesor modificada con éxito')
-        return super().form_valid(form)
+#     def form_valid(self, form):
+#         messages.add_message(self.request, messages.SUCCESS, 'profesor modificada con éxito')
+#         return super().form_valid(form)
 
-    def form_invalid(self, form):
-        messages.add_message(self.request, messages.ERROR, form.errors)
-        return super().form_invalid(form)
+#     def form_invalid(self, form):
+#         messages.add_message(self.request, messages.ERROR, form.errors)
+#         return super().form_invalid(form)
 
 
-class ProfesorDelDictadoListView(ListFilterView):
-    model = Titular
-    paginate_by = 100
+# class ProfesorDelDictadoListView(ListFilterView):
+#     model = Titular
+#     paginate_by = 100
     
-    def get_queryset(self):
-        titular = super().get_queryset().filter(dictado__pk=self.kwargs['pk'])
-        return titular
+#     def get_queryset(self):
+#         titular = super().get_queryset().filter(dictado__pk=self.kwargs['pk'])
+#         return titular

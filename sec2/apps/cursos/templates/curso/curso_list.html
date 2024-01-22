@@ -15,7 +15,7 @@
         <th scope="col">Área</th>
         <th scope="col">Nombre</th>
         <th scope="col">Tipo</th>
-        <th scope="col">Duración</th>
+        <th scope="col">Total Modulos</th>
         <th scope="col"></th>
       </tr>
     </thead>
@@ -33,11 +33,10 @@
               SEC
             {% endif %}
           </td>
-          <td>{{ curso.get_duracion_display }}</td>
+          <td>{{ curso.modulos_totales }} horas</td>
           <td>
-            <a href="{% url 'cursos:curso_detalle' curso.pk %}" class="btn btn-primary btn-detalle"><i class="fa-regular fa-eye"></i> Detalle</a>
+            <a href="{% url 'cursos:curso_detalle' curso.pk %}" class="btn btn-primary btn-detalle btn-sm"><i class="fa-regular fa-eye"></i> Detalle</a>
           </td>
-          
         </tr>
       {% endfor %}
     </tbody>
