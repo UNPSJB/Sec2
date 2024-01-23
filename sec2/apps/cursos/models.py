@@ -93,6 +93,9 @@ class Horario(models.Model):
     hora_inicio = models.TimeField(help_text="Ingrese la hora en formato de 24 horas (HH:MM)")
     hora_fin = models.TimeField(blank=True, null=True)
 
+
+    TIENE QUE TENER UNA FECHA DE INICIO PARA ESE HORARIO
+    
     def clean(self):
         if self.hora_inicio and self.dictado and self.dictado.modulos_por_clase:
             # Calcular la hora de fin al limpiar los datos del modelo
