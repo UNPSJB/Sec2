@@ -10,8 +10,6 @@ class Aula(models.Model):
     tipo = models.CharField(max_length=50, choices=TIPO_AULA, help_text="Tipo de aula")
     numero = models.PositiveIntegerField(help_text="Numero de aula")
     capacidad = models.PositiveIntegerField(help_text="Capacidad máxima del aula")
-    # reservas = models.ManyToManyField('Reserva', related_name='aulas', blank=True)  # Make it optional
-    # horarios = models.ManyToManyField('Horario', related_name='aulas')
 
     def clean(self):
         if self.numero <= 0:
@@ -23,13 +21,7 @@ class Aula(models.Model):
         if self.tipo == 'normal':
             return 'Aula {}'.format(self.numero)
         return 'Computación {}'.format(self.numero)
-
-# ------------- RESERVA --------------------
-class Reserva(models.Model):
-    fecha = models.DateTimeField()
-    horarios = models.ManyToManyField('Horario', related_name='aulas')
-    aula = models.ForeignKey(Aula, related_name="au_set", on_delete=models.CASCADE, null=True, blank=True)
-
+    
 #------------- CURSO --------------------
 class Curso(models.Model):
     area = models.PositiveSmallIntegerField(choices=AREAS, blank=True, null=True)
@@ -96,17 +88,33 @@ class Dictado(models.Model):
 from datetime import datetime, timedelta
 
 class Horario(models.Model):
+    dictado = models.ForeignKey(Dictado, related_name="horarios", null=True, on_delete=models.CASCADE)
     dia_semana = models.PositiveSmallIntegerField(choices=DIAS_SEMANA_CHOICES)
     hora_inicio = models.TimeField(help_text="Ingrese la hora en formato de 24 horas (HH:MM)")
-    dictado = models.ForeignKey(Dictado, related_name="horarios", null=True, on_delete=models.CASCADE)
-    aula = models.ForeignKey(Aula, related_name="horarios_rel", null=True, on_delete=models.SET_NULL)
+    hora_fin = models.TimeField(blank=True, null=True)
+
+    def clean(self):
+        if self.hora_inicio and self.dictado and self.dictado.modulos_por_clase:
+            # Calcular la hora de fin al limpiar los datos del modelo
+            hora_inicio_datetime = datetime.combine(datetime.today(), self.hora_inicio)
+            tiempo_modulo = timedelta(hours=self.dictado.modulos_por_clase)
+            hora_fin_datetime = hora_inicio_datetime + tiempo_modulo
+            self.hora_fin = hora_fin_datetime.time()
 
     def calcular_hora_fin(self):
-        # Calcular la hora de fin sumando los módulos por clase a la hora de inicio
-        hora_inicio_datetime = datetime.combine(datetime.today(), self.hora_inicio)
-        tiempo_modulo = timedelta(hours=self.dictado.modulos_por_clase)
-        hora_fin_datetime = hora_inicio_datetime + tiempo_modulo
-        return hora_fin_datetime.time()
+        # Calcular la hora de fin en cualquier otro lugar si es necesario
+        if self.hora_inicio and self.dictado and self.dictado.modulos_por_clase:
+            hora_inicio_datetime = datetime.combine(datetime.today(), self.hora_inicio)
+            tiempo_modulo = timedelta(hours=self.dictado.modulos_por_clase)
+            hora_fin_datetime = hora_inicio_datetime + tiempo_modulo
+            return hora_fin_datetime.time()
+
+# ------------- RESERVA --------------------
+class Reserva(models.Model):
+    fecha = models.DateField()
+    aula = models.ForeignKey(Aula, related_name="reservas", on_delete=models.CASCADE, null=True, blank=True)
+    horario = models.ForeignKey(Horario, related_name="reservass", on_delete=models.CASCADE, null=True, blank=True)
+
 
 #------------- CLASE --------------------
 # class Clase(models.Model):
