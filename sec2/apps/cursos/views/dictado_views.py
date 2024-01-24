@@ -61,9 +61,14 @@ class DictadoCreateView(CreateView):
             dictado=dictado,
         )
 
+        horario.clean()
         # Guarda el horario en la base de datos
         horario.save()
+        # Si la hora_fin está nula, asigna la hora de fin al horario usando el método clean
+        messages.success(self.request, 'Dictado creado exitosamente')
 
+        # Redirige a la vista de detalle del curso
+        return super().form_valid(form)
         messages.success(self.request, 'Dictado creado exitosamente')
 
         # Redirige a la vista de detalle del curso

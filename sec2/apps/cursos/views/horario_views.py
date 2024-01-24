@@ -42,12 +42,43 @@ class HorarioCreateView(CreateView):
         # Obtiene la clase relacionada con el dictado
         dictado_id = self.kwargs["dictado_pk"]
         dictado = get_object_or_404(Dictado, pk=dictado_id)
-        # Asigna el dictado a la clase antes de guardarla
-        form.instance.dictado = dictado
-        # Guarda la clase para obtener el ID asignado
-        response = super().form_valid(form)
-        messages.success(self.request, f'{ICON_CHECK} Modificación exitosa!')
-        return response
+
+        # Obtener la hora de inicio del formulario
+        hora_inicio_form = form.cleaned_data['hora_inicio']
+
+        # Obtener el día de la semana del formulario
+        dia_semana_form = form.cleaned_data['dia_semana']
+
+        print("DÍA DE LA SEMANA")
+        print(dia_semana_form)
+        # Obtener todos los horarios para el dictado y el mismo día de la semana
+        horarios_existente = Horario.objects.filter(dictado=dictado, dia_semana=dia_semana_form)
+        print("HORARIO EXISTENTE")
+        print(horarios_existente)
+        # Verificar si la hora de inicio está dentro del rango de algún horario existente
+        for horario in horarios_existente:
+            print("")
+            print("HORA DE INICIO")
+            print(horario.hora_inicio)
+            print("HORA INICIO FORM")
+            print(hora_inicio_form)
+            print("HORA FIN")
+            print(horario.hora_fin)
+            if horario.hora_inicio and horario.hora_fin:
+                if horario.hora_inicio <= hora_inicio_form <= horario.hora_fin:
+                    messages.warning(self.request, f'{ICON_TRIANGLE} Ya existe un horario el mismo día dentro del rango de horario.')
+                    return self.form_invalid(form)
+                    
+        messages.warning(self.request, f'{ICON_TRIANGLE} SOY EL ELSE.')
+        return self.form_invalid(form)
+
+
+        # # Asigna el dictado a la clase antes de guardarla
+        # form.instance.dictado = dictado
+        # # Guarda la clase para obtener el ID asignado
+        # response = super().form_valid(form)
+        # messages.success(self.request, f'{ICON_CHECK} Modificación exitosa!')
+        # return response
 
 #-------------- ASIGNAR UN AULA ----------------------------------
 from django.utils.datetime_safe import datetime
@@ -64,7 +95,7 @@ def asignar_aula(request, horario_id):
 
     # Calcular la hora de inicio y fin del horario
     hora_inicio = horario.hora_inicio
-    hora_fin = horario.calcular_hora_fin()
+    hora_fin = horario.hora_fin
 
     reservas = Reserva.objects.all()
 

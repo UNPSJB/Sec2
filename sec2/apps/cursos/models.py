@@ -94,7 +94,7 @@ class Horario(models.Model):
     hora_fin = models.TimeField(blank=True, null=True)
 
 
-    TIENE QUE TENER UNA FECHA DE INICIO PARA ESE HORARIO
+    # TIENE QUE TENER UNA FECHA DE INICIO PARA ESE HORARIO
     
     def clean(self):
         if self.hora_inicio and self.dictado and self.dictado.modulos_por_clase:

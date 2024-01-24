@@ -115,8 +115,8 @@
     <tr>
       <td>{{ horario.get_dia_semana_display }}</td>
       <td>{{ horario.hora_inicio }} hrs.</td>
-      <td>{{ horario.calcular_hora_fin }} hrs.</td>
-      <td>{{ horario.aula }}</td>  {# Accede al objeto de aula asociado al horario #}
+      <td>{{ horario.hora_fin }} hrs.</td>
+      <td>Sin asignar</td>  {# Accede al objeto de aula asociado al horario #}
       <td>
         <a href="{% url 'cursos:asignar_aula' horario.id %}" class="btn btn-primary btn-sm btn-detalle"><i class="fa-solid fa-door-open"></i>Reservar Aula</a>
       </td>
