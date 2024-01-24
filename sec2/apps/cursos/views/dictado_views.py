@@ -1,18 +1,13 @@
-from django.http import HttpResponseRedirect
-from django.views.generic import DetailView, ListView
+from django.views.generic import DetailView
 from django.views.generic.edit import CreateView, UpdateView
 from ..models import Curso, Dictado, Titular, Horario
 from utils.constants import *
-from django.shortcuts import render
 from django.urls import reverse
 from ..forms.dictado_forms import *
 from ..forms.profesor_forms import ProfesorForm
 from django.urls import reverse_lazy
 from django.contrib import messages
-from django.shortcuts import redirect
 from django.shortcuts import get_object_or_404
-from datetime import timedelta
-
 
 #--------------- CREACION DE DICTADO --------------------------------
 class DictadoCreateView(CreateView):
@@ -57,8 +52,9 @@ class DictadoCreateView(CreateView):
         # Crea la instancia de Horario
         horario = Horario(
             dia_semana=dia_semana_inicio,
-            hora_inicio=fecha_inicio.time(),  # Puedes ajustar según tus necesidades
+            hora_inicio=fecha_inicio.time(),  
             dictado=dictado,
+            es_primer_horario=True,  # Establece es_primer_horario en True
         )
 
         horario.clean()
@@ -69,11 +65,6 @@ class DictadoCreateView(CreateView):
 
         # Redirige a la vista de detalle del curso
         return super().form_valid(form)
-        messages.success(self.request, 'Dictado creado exitosamente')
-
-        # Redirige a la vista de detalle del curso
-        return super().form_valid(form)
-    
 
     def get_success_url(self):
         return reverse('cursos:curso_detalle', args=[self.object.curso.pk])

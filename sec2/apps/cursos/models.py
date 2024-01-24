@@ -92,7 +92,9 @@ class Horario(models.Model):
     dia_semana = models.PositiveSmallIntegerField(choices=DIAS_SEMANA_CHOICES)
     hora_inicio = models.TimeField(help_text="Ingrese la hora en formato de 24 horas (HH:MM)")
     hora_fin = models.TimeField(blank=True, null=True)
-
+    #Utilizado para controlar que no se creen horarios antes del primer dictado creado
+    es_primer_horario = models.BooleanField(default=False)  # Campo booleano con valor por defecto False
+ 
 
     # TIENE QUE TENER UNA FECHA DE INICIO PARA ESE HORARIO
     
@@ -104,11 +106,11 @@ class Horario(models.Model):
             hora_fin_datetime = hora_inicio_datetime + tiempo_modulo
             self.hora_fin = hora_fin_datetime.time()
 
-    def calcular_hora_fin(self):
+    def calcular_hora_fin(self, hora_inicio, modulos_por_clase):
         # Calcular la hora de fin en cualquier otro lugar si es necesario
-        if self.hora_inicio and self.dictado and self.dictado.modulos_por_clase:
-            hora_inicio_datetime = datetime.combine(datetime.today(), self.hora_inicio)
-            tiempo_modulo = timedelta(hours=self.dictado.modulos_por_clase)
+        if hora_inicio and modulos_por_clase:
+            hora_inicio_datetime = datetime.combine(datetime.today(), hora_inicio)
+            tiempo_modulo = timedelta(hours=modulos_por_clase)
             hora_fin_datetime = hora_inicio_datetime + tiempo_modulo
             return hora_fin_datetime.time()
 
