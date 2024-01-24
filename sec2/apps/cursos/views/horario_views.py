@@ -101,6 +101,19 @@ def asignar_aula(request, horario_id):
     cantidad_clases = modulos_totales / modulos_por_clase
 
 
+    """
+    FALTA HACER LA LOGICA AL MOMENTO DE GENERAR EL HORARIO
+
+    LOGICA HASTA AHORA
+    Una vez presionado el boton de "Asignar Aula" mostrar un mensaje informando de que si desea asignar aula
+    con un mensaje de advertencia informando que si desea asignar aulas ya no podrá generar más horarios.
+
+    En el Asignar Aula se tendra que obtener todos los horarios asociados al dictado. Junto con la cantidad de clases.
+    Se dividirá la cantidad de clases --> cantidad_clases / horarios asignados. De esta forma sé cuantas clases 
+    se les asigna a cada ditado.
+
+    """
+
     if request.method == 'POST':
         aula_seleccionada_id = request.POST.get('aula_seleccionada')
         aula_seleccionada = get_object_or_404(Aula, pk=aula_seleccionada_id)
