@@ -116,9 +116,15 @@
       <td>{{ horario.get_dia_semana_display }}</td>
       <td>{{ horario.hora_inicio }} hrs.</td>
       <td>{{ horario.hora_fin }} hrs.</td>
+      <td>{{ horario.pk }} hrs.</td>
       <td>Sin asignar</td>  {# Accede al objeto de aula asociado al horario #}
-      <td>
-        <a href="{% url 'cursos:asignar_aula' horario.id %}" class="btn btn-primary btn-sm btn-detalle"><i class="fa-solid fa-door-open"></i>Reservar Aula</a>
+      <td>      
+        
+        <button type="button" class="btn btn-primary btn-sm btn-detalle" data-bs-toggle="modal" data-bs-target="#exampleModal">
+          <i class="fa-solid fa-door-open"></i>Reservar Aula
+        </button>
+
+        {% include "dictado/modal_confirmar_reservaAula.html" %}
       </td>
     </tr>
     {% endfor %}
