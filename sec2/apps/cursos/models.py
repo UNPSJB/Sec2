@@ -120,13 +120,9 @@ class Reserva(models.Model):
     aula = models.ForeignKey(Aula, related_name="reservas", on_delete=models.CASCADE, null=True, blank=True)
     horario = models.ForeignKey(Horario, related_name="reservass", on_delete=models.CASCADE, null=True, blank=True)
 
-
 #------------- CLASE --------------------
-# class Clase(models.Model):
-    # fecha = models.DateTimeField(help_text="Seleccione solo el día habilitado")
-    # horario = models.ForeignKey(Horario, related_name="horario", null=True, on_delete=models.CASCADE)
-    # aula = models.ForeignKey(Aula, related_name='clases', on_delete=models.CASCADE)
-    # inscritos = models.PositiveIntegerField(default=0, help_text="Número de alumnos inscritos")
+class Clase(models.Model):
+    reserva = models.ForeignKey(Reserva, related_name="clases", on_delete=models.CASCADE, null=True, blank=True)
 
 
 # class Alumno(Rol):

@@ -4,7 +4,7 @@ from django.shortcuts import render, redirect
 from django.views.generic import DetailView
 from sec2.utils import ListFilterView
 from django.contrib import messages
-from ..models import Dictado, Aula, Horario
+from ..models import Clase, Dictado, Aula, Horario, Reserva
 from ..forms.clase_forms import *
 from django.urls import reverse
 from django.shortcuts import get_object_or_404
@@ -14,29 +14,19 @@ from django.http import HttpResponse
 from django.template import loader
 
 # --------------- CREACION DE CLASE --------------------------------
-# def generar_clases(request, dictado_id):
-#     dictado = get_object_or_404(Dictado, pk=dictado_id)
+def generar_clases(request, curso_pk, dictado_id):
+    # Obtén el objeto Dictado
+    dictado = get_object_or_404(Dictado, pk=dictado_id)
 
-#     # Lógica para calcular la cantidad total de clases y generarlas
-#     modulos_totales = dictado.curso.modulos_totales
-#     modulos_por_clase = dictado.modulos_por_clase
-#     cantidad_clases = modulos_totales // modulos_por_clase
+    # Obtén todas las reservas asociadas a ese dictado
+    reservas = Reserva.objects.filter(horario__dictado=dictado)
 
-#     # Lógica para generar las clases según el horario
-#     for i in range(cantidad_clases):
-#         # Calcula la fecha de la clase sumando i semanas a la fecha de inicio del dictado
-#         fecha_clase = dictado.fecha + timedelta(weeks=i)
-
-#         # Crea una instancia de Clase
-#         nueva_clase = Clase.objects.create(
-#             fecha=fecha_clase,
-#             horario=Horario.objects.filter(dictado=dictado).first(),  # Ajusta según tu lógica para obtener el horario correcto
-#         )
-
-#         # Puedes realizar otras operaciones o asignaciones aquí según sea necesario
+    # Crea una instancia de Clase por cada reserva
+    for reserva in reservas:
+        Clase.objects.create(reserva=reserva)
 
 #     messages.success(request, f'Se generaron {cantidad_clases} clases para el dictado {dictado}')
-#     return redirect('cursos:index')
+    return redirect('cursos:index')
 
 # class ClaseCreateView(CreateView):
 #     model = Clase

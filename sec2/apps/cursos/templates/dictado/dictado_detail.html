@@ -124,18 +124,19 @@
         {% endif %}
       </td>
       
-      <td>
-        {% if not horario.reserva %}
+      {% if not horario.reserva %}
+      <td>  
         {% if hay_reserva %}
-        <a href="{% url 'cursos:asignar_aula' horario.pk %}" class="btn btn-primary btn-sm btn-detalle">
-          <i class="fa-solid fa-door-open"></i>Reservar Aula</a>
+        <a href="{% url 'cursos:asignar_aula' curso_pk=horario.dictado.curso.pk dictado_pk=horario.dictado.pk horario_id=horario.pk %}" class="btn btn-primary btn-sm btn-detalle">
+          <i class="fa-solid fa-door-open"></i>Reservar Aula
+        </a>
         {% else %}
             <button type="button" class="btn btn-primary btn-sm btn-detalle" data-bs-toggle="modal" data-bs-target="#exampleModal{{ horario.pk }}">
-                <i class="fa-solid fa-door-open"></i>Reservar Aulaa
+                <i class="fa-solid fa-door-open"></i>Reservar Aula
             </button>
         {% endif %}
-    {% endif %}
       </td>
+    {% endif %}
     </tr>
 
     <!-- Modal -->
@@ -153,7 +154,9 @@
           </div>
           <div class="modal-footer">
             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-            <a href="{% url 'cursos:asignar_aula' horario.pk %}" class="btn btn-primary">Reservar Aula</a>
+            <a href="{% url 'cursos:asignar_aula' curso_pk=horario.dictado.curso.pk dictado_pk=horario.dictado.pk horario_id=horario.pk %}" class="btn btn-primary btn-sm btn-detalle">
+              <i class="fa-solid fa-door-open"></i>Reservar Aula
+            </a>
           </div>
         </div>
       </div>
@@ -170,15 +173,32 @@
   </div>
 
   <div class="col d-flex justify-content-center">
+    [BOTON DE INSCRIBIR ]
+    {% comment %} <a href="{% url 'cursos:dictado_editar' curso_pk=curso.pk dictado_pk=dictado.pk %}" class="btn btn-primary btn-sm btn-detalle"><i class="fa-regular fa-pen-to-square"></i> Modificar</a> {% endcomment %}
+  </div>
+
+  <div class="col d-flex justify-content-center">
     {% if todos_los_horarios_con_aula %}
-      <a href="#" class="btn btn-primary btn-detalle " ><i class="fa-solid fa-plus"></i> Generar Clases</a>
+    {% if not clases %}
+    <a href="{% url 'cursos:generar_clases' curso_pk=curso.pk dictado_id=dictado.pk %}" class="btn btn-primary btn-detalle">
+      <i class="fa-solid fa-plus"></i> Generar Clases
+    </a>
     {% else %}
-      <a href="#" class="btn btn-primary btn-detalle disabled" ><i class="fa-solid fa-plus"></i> Generar Clases</a>
+    <a href="#" class="btn btn-primary btn-detalle disabled">
+      <i class="fa-solid fa-plus"></i> Generar Clases
+    </a>
+    {% endif %}
+
+    {% else %}
+      <a href="#" class="btn btn-primary btn-detalle disabled">
+        <i class="fa-solid fa-plus"></i> Generar Clases
+      </a>
     {% endif %}
   </div>
   
   <div class="col d-flex justify-content-center">
   {% if not  hay_reserva %}
+
     <a href="{% url 'cursos:horario_crear' curso_pk=dictado.curso.pk dictado_pk=dictado.pk %}" class="btn btn-primary btn-detalle">
       <i class="fa-solid fa-plus"></i> Generar Horario
     </a>
@@ -205,8 +225,8 @@
       <thead>
         <tr>
           <th>#</th>
-          <th>fecha</th>
-          <th>Inscriptos</th>
+          <th>Fecha</th>
+          <th></th>
           <th></th>
         </tr>
       </thead>
@@ -214,9 +234,13 @@
         {% for clase in clases %}
           <tr>
             <td>{{ forloop.counter }}</td>
-            <td>{{ clase.fecha }}</td>
-            <td>{{ clase.horario.hora_inicio }} / {{ dictado.maximos_alumnos }}</td>
+            <td>{{ clase.reserva.horario.get_dia_semana_display }} {{ clase.reserva.fecha }}</td>
             <td>
+              Tomar asistencia
+              {% comment %} <a href="{% url 'cursos:clase_detalle' curso_pk = curso.pk dictado_pk = dictado.pk clase_pk = clase.pk %}" class="btn btn-primary btn-detalle"><i class="fa-regular fa-eye"></i> Detalle</a> {% endcomment %}
+            </td>
+            <td>
+              Detalle
               {% comment %} <a href="{% url 'cursos:clase_detalle' curso_pk = curso.pk dictado_pk = dictado.pk clase_pk = clase.pk %}" class="btn btn-primary btn-detalle"><i class="fa-regular fa-eye"></i> Detalle</a> {% endcomment %}
             </td>
           </tr>

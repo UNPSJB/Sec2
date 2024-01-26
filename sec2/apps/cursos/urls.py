@@ -36,18 +36,20 @@ urlpatterns = [
     path('cursos/curso/<int:curso_pk>/dictados/dictado/<int:dictado_pk>', DictadoDetailView.as_view(), name="dictado_detalle"),
     path('cursos/curso/<int:curso_pk>/dictados/dictado/<int:dictado_pk>/editar', DictadoUpdateView.as_view(), name="dictado_editar"),
 
-#     # HORARIO (accedido desde dictado)
+    # HORARIO (accedido desde dictado)
     path('curso/<int:curso_pk>/dictados/dictado/<int:dictado_pk>/horarios/horario/crear/', HorarioCreateView.as_view(), name='horario_crear'),
 
-#     # CLASE (accedido desde dictaod)
-    # path('generar_clases/<int:dictado_id>/', generar_clases, name='generar_clases'),
+    # ASIGNACIÓN DE AULA (accedido desde el horario)
+    path('curso/<int:curso_pk>/dictados/dictado/<int:dictado_pk>/horarios/horario/<int:horario_id>/vincularAula/', asignar_aula, name='asignar_aula'),
+
+    # CLASE (accedido desde dictaod)
+    path('cursos/curso/<int:curso_pk>/dictados/dictado/<int:dictado_id>/generarclaeses/', generar_clases, name="generar_clases"),
 
     # path('cursos/curso/<int:curso_pk>/dictados/dictado/<int:dictado_pk>/clases/clase/crear', ClaseCreateView.as_view(), name="clase_crear"),
 
     # PROFESOR
     path('profesores/crear', ProfesorCreateView.as_view(), name="profesor_crear"),
 
-    path('asignar_aula/<int:horario_id>/', asignar_aula, name='asignar_aula'),
 
 
 # #------------------------ INCHEQUEADO ------------------------

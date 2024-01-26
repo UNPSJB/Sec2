@@ -101,10 +101,9 @@ from django.http import HttpResponse
 from django.db.models import Q
 import math
 
-def asignar_aula(request, horario_id):
+def asignar_aula(request, curso_pk, dictado_pk, horario_id):
     # print("NUEVO HORARIO: ",horario_id)
     titulo = 'Asignación de aula'
-    context = {'titulo': titulo}
 
     # Obtener el horario y dictado asociado
     horario = get_object_or_404(Horario, id=horario_id)
@@ -232,7 +231,8 @@ def asignar_aula(request, horario_id):
         horario.save()
         # print("RESERVA CREADA")
         # print(reserva)
-        return render(request, 'dictado/asignar_aula.html')
+         # Redirigir a la vista dictado_detalle con los parámetros necesarios
+        return redirect('cursos:dictado_detalle', curso_pk=horario.dictado.curso.pk, dictado_pk=horario.dictado.pk)
     else:
 
 
@@ -243,7 +243,8 @@ def asignar_aula(request, horario_id):
             print("El horario ya tiene una reserva con aula asignada:", reserva_existente.aula)
             # Aquí puedes tomar la acción que consideres adecuada, por ejemplo, mostrar un mensaje al usuario.
             return HttpResponse("El horario ya tiene una reserva con aula asignada.")
-        return render(request, 'dictado/asignar_aula.html', {'aulas_disponibles': aulas_disponibles_en_rango})
+        
+        return render(request, 'dictado/asignar_aula.html', {'aulas_disponibles': aulas_disponibles_en_rango, 'titulo' : titulo})
     # return render(request, 'dictado/asignar_aula.html')
     # return render(request, 'dictado/asignar_aula.html', {'aulas_disponibles': aulas_disponibles_dia_hora})
 

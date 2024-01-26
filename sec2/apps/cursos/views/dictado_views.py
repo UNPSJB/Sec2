@@ -1,6 +1,6 @@
 from django.views.generic import DetailView
 from django.views.generic.edit import CreateView, UpdateView
-from ..models import Curso, Dictado, Titular, Horario, Reserva
+from ..models import Clase, Curso, Dictado, Titular, Horario, Reserva
 from utils.constants import *
 from django.urls import reverse
 from ..forms.dictado_forms import *
@@ -121,6 +121,9 @@ class DictadoDetailView(DetailView):
                 todos_los_horarios_con_aula = False
 
         context['todos_los_horarios_con_aula'] = todos_los_horarios_con_aula
+        # Obtener todas las clases asociadas al dictado a través de los horarios
+        clases = Clase.objects.filter(reserva__horario__dictado=dictado).order_by('reserva__fecha')
+        context['clases'] = clases
 
         return context
 
