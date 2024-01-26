@@ -16,5 +16,5 @@ DIAS_SEMANA_CHOICES = [
         (2, 'Miércoles'),
         (3, 'Jueves'),
         (4, 'Viernes'),
-        (5, 'Sábado'),
+        # (5, 'Sábado'),
     ]

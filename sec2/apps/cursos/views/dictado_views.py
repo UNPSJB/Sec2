@@ -1,6 +1,6 @@
 from django.views.generic import DetailView
 from django.views.generic.edit import CreateView, UpdateView
-from ..models import Curso, Dictado, Titular, Horario
+from ..models import Curso, Dictado, Titular, Horario, Reserva
 from utils.constants import *
 from django.urls import reverse
 from ..forms.dictado_forms import *
@@ -107,7 +107,25 @@ class DictadoDetailView(DetailView):
             f"{titular.profesor.persona.nombre}, "
             f"{titular.profesor.persona.apellido}"
         ) if titular else "Sin titular"
+
+        # Agregar el campo 'reserva' al contexto para cada horario
+        for horario in context['horarios']:
+            horario.reserva = self.get_reserva(horario)
+
+        # Verificar si hay alguna reserva asociada al dictado
+        hay_reserva = any(self.get_reserva(horario) for horario in context['horarios'])
+        context['hay_reserva'] = hay_reserva
         return context
+
+    def get_reserva(self, horario):
+        # Obtener todas las reservas asociadas al horario
+        reservas = Reserva.objects.filter(horario=horario)
+        
+        if reservas.exists():
+            return reservas.first()  # Puedes ajustar esto según tus necesidades
+        else:
+            return None
+        
 
     def get_titular(self, dictado):
         try:

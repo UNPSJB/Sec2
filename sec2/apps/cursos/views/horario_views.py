@@ -57,23 +57,32 @@ class HorarioCreateView(CreateView):
 
         # Obtén el primer horario del dictado con es_primer_horario=True
         primer_horario = Horario.objects.filter(dictado=dictado, es_primer_horario=True).first()
+        print("DIA DE LA SEMANA DE INICIO")
+        print(primer_horario.dictado.fecha.weekday())
+        print("DIA DE LA SEMANA INGRESADO")
+        print(dia_semana_form)
         if primer_horario is not None:
-            # Verifica si el nuevo horario se encuentra antes del primer horario
-            if form.instance.hora_inicio < primer_horario.hora_inicio:
-                messages.warning(self.request, f'{ICON_TRIANGLE} No se puede crear un horario antes del primer horario.')
+            # Si el día de la semana es mayor, lanza el error de que no se puede
+            #generar un horario antes que el de la fecha de inicio estipulada
+            if dia_semana_form < primer_horario.dictado.fecha.weekday():
+                messages.warning(self.request, f'{ICON_TRIANGLE} No se puede asignar un horario antes de la fecha de inicio estipulada')
                 return self.form_invalid(form)
-            
-       # Verificar si la hora de inicio está dentro del rango de algún horario existente
-        for horario in horarios_existente:
-            if horario.hora_inicio is not None and horario.hora_fin is not None:
-                # Permitir que la hora de inicio sea igual a la hora de fin
-                if horario.hora_inicio <= hora_inicio_form < horario.hora_fin:
-                    messages.warning(self.request, f'{ICON_TRIANGLE} Ya existe un horario el mismo día dentro del rango de horario.')
+            elif dia_semana_form == primer_horario.dictado.fecha.weekday():
+                # Verifica si el nuevo horario se encuentra antes del primer horario
+                if form.instance.hora_inicio < primer_horario.hora_inicio:
+                    messages.warning(self.request, f'{ICON_TRIANGLE} No se puede crear un horario antes del primer horario.')
                     return self.form_invalid(form)
-                # Verificar si la hora_fin_calculada está dentro del rango de algún horario existente
-                if horario.hora_inicio < hora_fin_calculada <= horario.hora_fin:
-                    messages.warning(self.request, f'{ICON_TRIANGLE} La hora de finalización del horario se superpone con otro horario existente.')
-                    return self.form_invalid(form)
+                # Verificar si la hora de inicio está dentro del rango de algún horario existente
+                for horario in horarios_existente:
+                    if horario.hora_inicio is not None and horario.hora_fin is not None:
+                        # Permitir que la hora de inicio sea igual a la hora de fin
+                        if horario.hora_inicio <= hora_inicio_form < horario.hora_fin:
+                            messages.warning(self.request, f'{ICON_TRIANGLE} Ya existe un horario el mismo día dentro del rango de horario.')
+                            return self.form_invalid(form)
+                        # Verificar si la hora_fin_calculada está dentro del rango de algún horario existente
+                        if horario.hora_inicio < hora_fin_calculada <= horario.hora_fin:
+                            messages.warning(self.request, f'{ICON_TRIANGLE} La hora de finalización del horario se superpone con otro horario existente.')
+                            return self.form_invalid(form)
 
         # Asignar el valor calculado a la hora_fin del formulario
         form.instance.hora_fin = hora_fin_calculada
@@ -93,13 +102,13 @@ from django.db.models import Q
 import math
 
 def asignar_aula(request, horario_id):
+    # print("NUEVO HORARIO: ",horario_id)
     titulo = 'Asignación de aula'
     context = {'titulo': titulo}
 
     # Obtener el horario y dictado asociado
     horario = get_object_or_404(Horario, id=horario_id)
-    print("ASDASDASDASD")
-    print(horario)
+    # print(horario)
     dictado = horario.dictado
     
     # Calcular la hora de inicio y fin del horario
@@ -113,23 +122,23 @@ def asignar_aula(request, horario_id):
         Q(fecha=dictado.fecha) &
         Q(horario__hora_inicio__lt=hora_fin, horario__hora_fin__gt=hora_inicio)
     )
-    print("Hora inicio: " + str(hora_inicio))
-    print("Hora fin: " + str(hora_fin)) 
-    print(reservas)
-    print(reservas_superpuestas)
+    # print("Hora inicio: " + str(hora_inicio))
+    # print("Hora fin: " + str(hora_fin)) 
+    # print(reservas)
+    # print(reservas_superpuestas)
 
     # Obtener todas las aulas
     todas_aulas = Aula.objects.all()
-    for aula in todas_aulas:
-        print(f"ID: {aula.id}, {aula}, Capacidad: {aula.capacidad}")
+    # for aula in todas_aulas:
+        # print(f"ID: {aula.id}, {aula}, Capacidad: {aula.capacidad}")
     
     # Obtener las aulas ocupadas en el horario actual
     aulas_ocupadas = reservas_superpuestas.values_list('aula', flat=True)
-    print(aulas_ocupadas)
+    # print(aulas_ocupadas)
 
     # Obtener las aulas que no están ocupadas
     aulas_libres = todas_aulas.exclude(id__in=aulas_ocupadas)
-    print(aulas_libres)
+    # print(aulas_libres)
 
     # Obtener las aulas disponibles que tienen capacidad para el cupo del dictado
     aulas_disponibles_con_capacidad = aulas_libres.filter(capacidad__gte=dictado.cupo)
@@ -141,24 +150,24 @@ def asignar_aula(request, horario_id):
     print(aulas_disponibles_con_capacidad)
 
     modulos_totales = horario.dictado.curso.modulos_totales
-    print("modulos_totales:", modulos_totales)
+    # print("modulos_totales:", modulos_totales)
 
     modulos_por_clase = horario.dictado.modulos_por_clase
-    print("modulos_por_clase:", modulos_por_clase)
+    # print("modulos_por_clase:", modulos_por_clase)
 
     cantidad_clases = modulos_totales / modulos_por_clase
-    print("cantidad_clases:", cantidad_clases)
+    # print("cantidad_clases:", cantidad_clases)
 
     horarios_relacionados = Horario.objects.filter(dictado=dictado)
-    print(f"Total de horarios relacionados con el dictado: {horarios_relacionados.count()}")
+    # print(f"Total de horarios relacionados con el dictado: {horarios_relacionados.count()}")
 
-    print("Horarios relacionados con el dictado:")
-    for horario_relacionado in horarios_relacionados:
-        print(f"Los: {horario_relacionado.get_dia_semana_display()} de {horario_relacionado.hora_inicio} a {horario_relacionado.hora_fin}")
+    # print("Horarios relacionados con el dictado:")
+    # for horario_relacionado in horarios_relacionados:
+    #     print(f"Los: {horario_relacionado.get_dia_semana_display()} de {horario_relacionado.hora_inicio} a {horario_relacionado.hora_fin}")
 
 
-    print("cantidad_clases:", cantidad_clases)
-    print("horario relacionados:", horarios_relacionados.count())
+    # print("cantidad_clases:", cantidad_clases)
+    # print("horario relacionados:", horarios_relacionados.count())
 
     # Calcular la cantidad de clases por dictado
     clases_por_dictado = cantidad_clases / horarios_relacionados.count()
@@ -166,7 +175,7 @@ def asignar_aula(request, horario_id):
     # Redondear hacia arriba usando math.ceil
     clases_por_dictado_redondeado = math.ceil(clases_por_dictado)
 
-    print("Cantidad de clases por horario (redondeado hacia arriba):", clases_por_dictado_redondeado)
+    # print("Cantidad de clases por horario (redondeado hacia arriba):", clases_por_dictado_redondeado)
 
     """
     LOGICA HASTA AHORA
@@ -179,44 +188,53 @@ def asignar_aula(request, horario_id):
 
     """
 
+    # Obtener la fecha de inicio y fin del rango de fechas
+    if horario.es_primer_horario: 
+        fecha_inicio = horario.dictado.fecha
+    else:
+        fecha_inicio = calcular_fecha_inicio(horario)
+            
+    clases_por_dictado_redondeado = clases_por_dictado_redondeado - 1
+    fecha_fin = fecha_inicio + timedelta(days=(7 * clases_por_dictado_redondeado ))
+    
+    print("FECHA DE INICIO->", fecha_inicio)
+    print("FECHA DE FIN---->:", fecha_fin)
+
+    # Filtrar las aulas disponibles en el rango de fecha y horario
+    aulas_disponibles_en_rango = aulas_disponibles_con_capacidad.exclude(
+        reservas__fecha__range=[fecha_inicio, fecha_fin],
+        reservas__horario__dia_semana=horario.dia_semana,
+        reservas__horario__hora_inicio__lt=horario.hora_fin,
+        reservas__horario__hora_fin__gt=horario.hora_inicio
+    )
+    print(aulas_disponibles_en_rango)
+    print("HORARIOOO")
+    print(horario)
+
     if request.method == 'POST':
         aula_seleccionada_id = request.POST.get('aula_seleccionada')
         aula_seleccionada = get_object_or_404(Aula, pk=aula_seleccionada_id)
 
-        print("AULA SELECCIONADA: ", aula_seleccionada)
-
+        fecha_actual = fecha_inicio
+        while fecha_actual <= fecha_fin:
+            reserva, created = Reserva.objects.get_or_create(fecha=fecha_actual, horario=horario, aula=aula_seleccionada)
+            fecha_actual += timedelta(days=7)  # Incrementar la fecha en una semana
+        
+        print("AULA SELECCIONADA-->: ", aula_seleccionada)
+        print("FECHA DE INICIO---->: ", fecha_inicio)
         # Crear el objeto Reserva
-        reserva, created = Reserva.objects.get_or_create(fecha=horario.dictado.fecha)
-        reserva.aula = aula_seleccionada
+        reserva.aula =  aula_seleccionada
         reserva.horario = horario
         reserva.save()
 
         # Actualizar el campo 'aula' en el objeto Horario
         horario.aula = aula_seleccionada
         horario.save()
-        print("RESERVA CREADA")
-        print(reserva)
+        # print("RESERVA CREADA")
+        # print(reserva)
         return render(request, 'dictado/asignar_aula.html')
     else:
-        # Obtener la fecha de inicio y fin del rango de fechas
-        fecha_inicio = horario.dictado.fecha
-        print(fecha_inicio)
-        
-        #[FALTA calcular la fecha de fin]
-        clases_por_dictado_redondeado = clases_por_dictado_redondeado - 1
-        fecha_fin = fecha_inicio + timedelta(days=(7 * clases_por_dictado_redondeado ))
-        print(fecha_fin)
-        
-        # Filtrar las aulas disponibles en el rango de fecha y horario
-        aulas_disponibles_en_rango = aulas_disponibles_con_capacidad.exclude(
-            reservas__fecha__range=[fecha_inicio, fecha_fin],
-            reservas__horario__dia_semana=horario.dia_semana,
-            reservas__horario__hora_inicio__lt=horario.hora_fin,
-            reservas__horario__hora_fin__gt=horario.hora_inicio
-        )
-        print(aulas_disponibles_en_rango)
-        print("HORARIOOO")
-        print(horario)
+
 
         # Verificar si ya existe una reserva para el horario actual
         reserva_existente = Reserva.objects.filter(horario=horario).first()
@@ -228,3 +246,24 @@ def asignar_aula(request, horario_id):
         return render(request, 'dictado/asignar_aula.html', {'aulas_disponibles': aulas_disponibles_en_rango})
     # return render(request, 'dictado/asignar_aula.html')
     # return render(request, 'dictado/asignar_aula.html', {'aulas_disponibles': aulas_disponibles_dia_hora})
+
+def calcular_fecha_inicio(horario):
+    fecha_actual = horario.dictado.fecha
+    dia_semana_horario = horario.dia_semana
+
+    while fecha_actual.weekday() != dia_semana_horario:
+        fecha_actual += timedelta(days=1)
+
+    print("Próxima fecha con el mismo día de la semana:", fecha_actual)
+    # return 'holaaa'
+    return fecha_actual
+
+    """
+    0: LUNES
+    1: MARTES
+    2. MIERCOLES
+    3: JUEVES
+    4: VIERNES
+    5: SABADO
+    6: DOMINGO
+    """

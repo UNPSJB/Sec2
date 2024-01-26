@@ -106,7 +106,7 @@
       <th>Día</th>
       <th>Desde</th>
       <th>Hasta</th>
-      <th>Aula</th>
+      <th>Lugar asignado</th>
       <th></th>
     </tr>
   </thead>
@@ -116,17 +116,44 @@
       <td>{{ horario.get_dia_semana_display }}</td>
       <td>{{ horario.hora_inicio }} hrs.</td>
       <td>{{ horario.hora_fin }} hrs.</td>
-      <td>{{ horario.pk }} hrs.</td>
-      <td>Sin asignar</td>  {# Accede al objeto de aula asociado al horario #}
-      <td>      
-        
-        <button type="button" class="btn btn-primary btn-sm btn-detalle" data-bs-toggle="modal" data-bs-target="#exampleModal">
-          <i class="fa-solid fa-door-open"></i>Reservar Aula
-        </button>
+      <td>
+        {% if horario.reserva %}
+        {{ horario.reserva.aula }}
+        {% else %}
+        Sin reserva
+        {% endif %}
+      </td>
+      
+      <td>
+        {% if horario.reserva %}
 
-        {% include "dictado/modal_confirmar_reservaAula.html" %}
+        {% else %}
+        <a href="{% url 'cursos:asignar_aula' horario.pk %}" class="btn btn-primary">Reservzzzar Aula</a>
+        {% endif %}
       </td>
     </tr>
+
+    <!-- Modal -->
+    {% if not horario.reserva %}
+    <div class="modal fade" id="exampleModal{{ horario.pk }}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h1 class="modal-title fs-5" id="exampleModalLabel">Reserva de aula</h1>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <p>¿Desea reservar aulas?</p>
+            <p>Una vez hecha una reserva no podrá generar más horarios.</p>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+            <a href="{% url 'cursos:asignar_aula' horario.pk %}" class="btn btn-primary">Reservar Aula</a>
+          </div>
+        </div>
+      </div>
+    </div>
+    {% endif %}
     {% endfor %}
   </tbody>
 </table>
@@ -142,9 +169,14 @@
 
 
 
-  <div class="col d-flex justify-content-center">
-    <a href="{% url 'cursos:horario_crear' curso_pk=dictado.curso.pk dictado_pk=dictado.pk %}" class="btn btn-primary btn-detalle"><i class="fa-solid fa-plus"></i> Generar Horario</a>
-  </div>
+<div class="col d-flex justify-content-center">
+  {% if not  hay_reserva %}
+    <a href="{% url 'cursos:horario_crear' curso_pk=dictado.curso.pk dictado_pk=dictado.pk %}" class="btn btn-primary btn-detalle">
+      <i class="fa-solid fa-plus"></i> Generar Horario
+    </a>
+  {% endif %}
+</div>
+
 
   <div class="col d-flex justify-content-end">
     <button type="button" class="btn btn-danger btn-sm btn-detalle" data-bs-toggle="modal" data-bs-target="#exampleModal_eliminar"><i class="fa-regular fa-circle-down"></i> Dar de Baja</button>
@@ -173,6 +205,7 @@
               {% comment %} <a href="{% url 'cursos:clase_detalle' curso_pk = curso.pk dictado_pk = dictado.pk clase_pk = clase.pk %}" class="btn btn-primary btn-detalle"><i class="fa-regular fa-eye"></i> Detalle</a> {% endcomment %}
             </td>
           </tr>
+          
         {% endfor %}
       </tbody>
     </table>
