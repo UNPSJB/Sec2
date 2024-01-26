@@ -108,13 +108,20 @@ class DictadoDetailView(DetailView):
             f"{titular.profesor.persona.apellido}"
         ) if titular else "Sin titular"
 
-        # Agregar el campo 'reserva' al contexto para cada horario
-        for horario in context['horarios']:
-            horario.reserva = self.get_reserva(horario)
-
         # Verificar si hay alguna reserva asociada al dictado
         hay_reserva = any(self.get_reserva(horario) for horario in context['horarios'])
         context['hay_reserva'] = hay_reserva
+
+        # Agregar el campo 'reserva' al contexto para cada horario y verificar asignación de aula
+        todos_los_horarios_con_aula = True  # Suponemos inicialmente que todos tienen aula
+        for horario in context['horarios']:
+            horario.reserva = self.get_reserva(horario)
+            # Verificar si el horario tiene asignado un aula
+            if horario.reserva is None:
+                todos_los_horarios_con_aula = False
+
+        context['todos_los_horarios_con_aula'] = todos_los_horarios_con_aula
+
         return context
 
     def get_reserva(self, horario):

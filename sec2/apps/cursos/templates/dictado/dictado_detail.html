@@ -125,11 +125,16 @@
       </td>
       
       <td>
-        {% if horario.reserva %}
-
+        {% if not horario.reserva %}
+        {% if hay_reserva %}
+        <a href="{% url 'cursos:asignar_aula' horario.pk %}" class="btn btn-primary btn-sm btn-detalle">
+          <i class="fa-solid fa-door-open"></i>Reservar Aula</a>
         {% else %}
-        <a href="{% url 'cursos:asignar_aula' horario.pk %}" class="btn btn-primary">Reservzzzar Aula</a>
+            <button type="button" class="btn btn-primary btn-sm btn-detalle" data-bs-toggle="modal" data-bs-target="#exampleModal{{ horario.pk }}">
+                <i class="fa-solid fa-door-open"></i>Reservar Aulaa
+            </button>
         {% endif %}
+    {% endif %}
       </td>
     </tr>
 
@@ -163,19 +168,29 @@
   <div class="col d-flex justify-content-center">
     <a href="{% url 'cursos:dictado_editar' curso_pk=curso.pk dictado_pk=dictado.pk %}" class="btn btn-primary btn-sm btn-detalle"><i class="fa-regular fa-pen-to-square"></i> Modificar</a>
   </div>
+
   <div class="col d-flex justify-content-center">
-    {% comment %} <a href="{% url 'cursos:generar_clases' dictado_id=dictado.pk %}" class="btn btn-primary btn-detalle"><i class="fa-solid fa-plus"></i> Generar Clases</a> {% endcomment %}
+    {% if todos_los_horarios_con_aula %}
+      <a href="#" class="btn btn-primary btn-detalle " ><i class="fa-solid fa-plus"></i> Generar Clases</a>
+    {% else %}
+      <a href="#" class="btn btn-primary btn-detalle disabled" ><i class="fa-solid fa-plus"></i> Generar Clases</a>
+    {% endif %}
   </div>
-
-
-
-<div class="col d-flex justify-content-center">
+  
+  <div class="col d-flex justify-content-center">
   {% if not  hay_reserva %}
     <a href="{% url 'cursos:horario_crear' curso_pk=dictado.curso.pk dictado_pk=dictado.pk %}" class="btn btn-primary btn-detalle">
       <i class="fa-solid fa-plus"></i> Generar Horario
     </a>
+  {% else %}
+  <a href="{% url 'cursos:horario_crear' curso_pk=dictado.curso.pk dictado_pk=dictado.pk %}" class="btn btn-primary btn-detalle disabled">
+    <i class="fa-solid fa-plus"></i> Generar Horario
+  </a>
   {% endif %}
+
 </div>
+
+
 
 
   <div class="col d-flex justify-content-end">
