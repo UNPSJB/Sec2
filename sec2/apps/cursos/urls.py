@@ -45,10 +45,19 @@ urlpatterns = [
     # CLASE (accedido desde dictaod)
     path('cursos/curso/<int:curso_pk>/dictados/dictado/<int:dictado_id>/generarclaeses/', generar_clases, name="generar_clases"),
 
-    # path('cursos/curso/<int:curso_pk>/dictados/dictado/<int:dictado_pk>/clases/clase/crear', ClaseCreateView.as_view(), name="clase_crear"),
-
     # PROFESOR
     path('profesores/crear', ProfesorCreateView.as_view(), name="profesor_crear"),
+
+    ## VERIFICAR Y BUSCAR PERSONA ANTES DE PROCEDER A LA INSCRIPCION
+    path('cursos/curso/<int:curso_pk>/dictados/dictado/<int:dictado_pk>/buscar', VerificarInscripcionView.as_view(), name="verificar_persona"),
+    path('buscar-persona/', BuscarPersonaView.as_view(), name='buscar_persona'),
+
+    # ALUMNO (accedido desde el dictado)
+    path('cursos/curso/<int:curso_pk>/dictados/dictado/<int:dictado_pk>/inscribir', AlumnoCreateView.as_view(), name="persona_inscribir"),
+
+    #ALMNOS POR CURSO
+    path('cursos/curso/<int:curso_pk>/dictados/dictado/<int:dictado_pk>/Alumnos', AlumnosEnDictadoList.as_view(), name="alumno_inscripto"),
+    # path('alumno/crear/', AlumnoCrearView.as_view(), name='alumno_crear'),
 
 
 
@@ -82,7 +91,6 @@ urlpatterns = [
     
     
 #     # * ------------------------  Alumno  ------------------------------------
-#     path('<int:pk>/inscripcion', AlumnoCreateView.as_view(), name="inscripcion"),#se accede desde el curso
    
     
 #     # * ------------------------  Asistencia  ------------------------------------

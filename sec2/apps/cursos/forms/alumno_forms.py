@@ -1,5 +1,8 @@
 from django import forms
-# from apps.cursos.models import Alumno
+from apps.cursos.models import Alumno
+from apps.personas.models import Persona
+from datetime import date
+
 # from apps.personas.forms import PersonaForm
 # from apps.personas.models import Persona
 # from crispy_forms.helper import FormHelper
@@ -7,17 +10,33 @@ from django import forms
 # from sec2.utils import FiltrosForm
 # from utils.constants import *
 
+########### Fuseion de Formulario de afiliado Utilizado para el AFILIADO CRATE VIEW ##############################################
+class AlumnoPersonaForm(forms.ModelForm):
+    class Meta:
+        model = Persona
+        fields = '__all__'
+        exclude=['persona', 'tipo']
+        widgets = {
+            'fecha_nacimiento': forms.DateInput(attrs={'type': 'date'}),
+        }
 
-# class AlumnoForm(forms.ModelForm):
-#     class Meta:
-#         model = Alumno
-#         fields = '__all__'
-#         exclude=['persona', 'tipo', 'dictado']
+    def clean_fecha_nacimiento(self):
+        fecha_nacimiento = self.cleaned_data.get('fecha_nacimiento')
+        edad = date.today().year - fecha_nacimiento.year
+        if edad < 18 or edad >= 100:
+            raise forms.ValidationError("Debes ser mayor de 18 años y menor de 100 años.")
+        return fecha_nacimiento
 
-# class FormularioAlumno (forms.ModelForm):
-#     class Meta:
-#         model = Persona
-#         fields = '__all__'
+class AlumnoForm(forms.ModelForm):
+    class Meta:
+        model = Alumno
+        fields = '__all__'
+        exclude=['persona', 'tipo', 'dictado']
+
+class FormularioAlumno (forms.ModelForm):
+    class Meta:
+        model = Persona 
+        fields = '__all__'
 #         help_texts = {
 #             'dni': 'Tu numero de documento sin puntos',
 #         }

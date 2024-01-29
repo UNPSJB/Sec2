@@ -33,6 +33,7 @@ class AfiliadoPersonaForm(forms.ModelForm):
         if fecha_ingreso_trabajo > timezone.now().date():
             raise forms.ValidationError('La fecha de ingreso al trabajo no puede ser en el futuro.')
         return fecha_ingreso_trabajo
+    
     class Meta:
         model = Persona
         fields = ['dni', 'cuil', 'nombre', 'apellido', 'fecha_nacimiento', 'celular', 'direccion', 'nacionalidad', 'mail', 'estado_civil']

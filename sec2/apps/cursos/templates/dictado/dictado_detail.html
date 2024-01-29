@@ -171,10 +171,17 @@
   <div class="col d-flex justify-content-center">
     <a href="{% url 'cursos:dictado_editar' curso_pk=curso.pk dictado_pk=dictado.pk %}" class="btn btn-primary btn-sm btn-detalle"><i class="fa-regular fa-pen-to-square"></i> Modificar</a>
   </div>
+  
+  <div class="col d-flex justify-content-center">
+    <a href="{% url 'cursos:verificar_persona' curso_pk=dictado.curso.pk dictado_pk=dictado.pk %}" class="btn btn-primary btn-sm btn-detalle">
+      <i class="fa-regular fa-pen-to-square"></i> Inscribir
+    </a>
+  </div>
 
   <div class="col d-flex justify-content-center">
-    [BOTON DE INSCRIBIR ]
-    {% comment %} <a href="{% url 'cursos:dictado_editar' curso_pk=curso.pk dictado_pk=dictado.pk %}" class="btn btn-primary btn-sm btn-detalle"><i class="fa-regular fa-pen-to-square"></i> Modificar</a> {% endcomment %}
+    <a href="{% url 'cursos:alumno_inscripto' curso_pk=dictado.curso.pk dictado_pk=dictado.pk %}" class="btn btn-info btn-sm btn-detalle">
+      Lista de alumnos
+    </a>
   </div>
 
   <div class="col d-flex justify-content-center">

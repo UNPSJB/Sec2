@@ -20,6 +20,18 @@ class FamiliaCreateView(CreateView):
         context['titulo'] = "Alta de Grupo Familiar"
         return context """
 
+
+class PersonaCreateView(CreateView):
+    model = Persona
+    form_class = PersonaForm #utiliza un formulario unificado
+    template_name = 'personas/persona_form.html'
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['titulo'] = "Formulario de Afiliación"
+        return context
+
+
 def FamiliaCreateView1(request, pk):
     persona = Persona.objects.get(pk=pk)
     if request.method == 'POST':

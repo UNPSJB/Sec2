@@ -94,10 +94,7 @@ class Horario(models.Model):
     hora_fin = models.TimeField(blank=True, null=True)
     #Utilizado para controlar que no se creen horarios antes del primer dictado creado
     es_primer_horario = models.BooleanField(default=False)  # Campo booleano con valor por defecto False
- 
 
-    # TIENE QUE TENER UNA FECHA DE INICIO PARA ESE HORARIO
-    
     def clean(self):
         if self.hora_inicio and self.dictado and self.dictado.modulos_por_clase:
             # Calcular la hora de fin al limpiar los datos del modelo
@@ -124,23 +121,22 @@ class Reserva(models.Model):
 class Clase(models.Model):
     reserva = models.ForeignKey(Reserva, related_name="clases", on_delete=models.CASCADE, null=True, blank=True)
 
+#------------- ALUMNO --------------------
+class Alumno(Rol):
+    TIPO = 3
+    dictados = models.ManyToManyField(Dictado, related_name="alumnos", blank=True)
 
-# class Alumno(Rol):
-#     TIPO = 3
-#     dictado = models.ForeignKey(Dictado, related_name="alumnos", on_delete=models.CASCADE, null=True)
-#     curso = models.ForeignKey(Curso, related_name="alumnos", null=False, on_delete=models.CASCADE)
+    def agregateDictado(self, pk):
+        dictado = Dictado.objects.get(pk=pk)
+        self.dictados.add(dictado)
+        return dictado
 
-#     def agregateDictado(self, pk):
-#         dictado = Dictado.objects.get(pk=pk)
-#         self.dictado=dictado
-#         self.save()
-#         return dictado
+    def esta_inscripto(self, dictado):
+        return dictado in self.dictados
     
-#     def esta_inscripto(self):
-#         return self.dictado is not None
+Rol.register(Alumno)
 
-# Rol.register(Alumno)
-
+#------------- PROFESOR --------------------
 class Profesor(Rol):
     TIPO = 2
     # capacitaciones = models.CharField(max_length=50)
@@ -152,6 +148,7 @@ class Profesor(Rol):
         return f"{self.persona.nombre} {self.persona.apellido}"
 Rol.register(Profesor)
 
+#------------- TITULAR --------------------
 class Titular(models.Model):
     profesor = models.ForeignKey(Profesor, on_delete=models.CASCADE)
     dictado= models.ForeignKey(Dictado, on_delete=models.CASCADE)

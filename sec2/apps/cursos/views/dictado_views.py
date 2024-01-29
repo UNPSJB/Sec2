@@ -1,13 +1,17 @@
+from django.views import View
 from django.views.generic import DetailView
 from django.views.generic.edit import CreateView, UpdateView
-from ..models import Clase, Curso, Dictado, Titular, Horario, Reserva
+from apps.personas.forms import PersonaForm
+
+from apps.personas.models import Persona
+from ..models import Alumno, Clase, Curso, Dictado, Titular, Horario, Reserva
 from utils.constants import *
 from django.urls import reverse
 from ..forms.dictado_forms import *
 from ..forms.profesor_forms import ProfesorForm
 from django.urls import reverse_lazy
 from django.contrib import messages
-from django.shortcuts import get_object_or_404
+from django.shortcuts import get_object_or_404, redirect
 
 #--------------- CREACION DE DICTADO --------------------------------
 class DictadoCreateView(CreateView):
@@ -83,6 +87,7 @@ class DictadoDetailView(DetailView):
     def get_object(self, queryset=None):
         curso_pk = self.kwargs.get('curso_pk')
         dictado_pk = self.kwargs.get('dictado_pk')
+        print(f'curso_pk: {curso_pk}, dictado_pk: {dictado_pk}')
         return Dictado.objects.get(curso__pk=curso_pk, pk=dictado_pk)
 
     def get_context_data(self, **kwargs):
@@ -231,3 +236,68 @@ class DictadoUpdateView(UpdateView):
 #             return titular.profesor
 #         except Titular.DoesNotExist:
 #             return None
+
+##--------------- DICTADO INSCRIPCIÓN --------------------------------
+from django.shortcuts import render
+from django.http import JsonResponse
+
+class BuscarPersonaView(View):
+    
+    def get(self, request, *args, **kwargs):
+        dni = request.GET.get('dni', '')
+        try:
+            persona = Persona.objects.get(dni=dni)
+            persona_data = {
+                'dni': persona.dni,
+                'cuil': persona.cuil,
+                'nombre': persona.nombre,
+                'apellido': persona.apellido,
+                'fecha_nacimiento': persona.fecha_nacimiento,
+                'celular': persona.celular,
+                'direccion': persona.direccion,
+                'nacionalidad': persona.nacionalidad,
+                'mail': persona.mail,
+                'estado_civil': persona.estado_civil,
+                'es_afiliado': persona.es_afiliado,
+                'es_alumno': persona.es_alumno,
+                'es_profesor': persona.es_profesor,
+                'es_encargado': persona.es_encargado,
+            }
+            return JsonResponse({'persona': persona_data})
+        except Persona.DoesNotExist:
+            return JsonResponse({'persona': None})
+
+
+class VerificarInscripcionView(View):
+    template_name = 'dictado/dictado_inscripcion.html'  # La plantilla que mostrará el formulario de inscripción
+
+    def get(self, request, *args, **kwargs):
+        context = {
+            'titulo': 'Incripción',
+            'curso_pk': kwargs.get('curso_pk'),
+            'dictado_pk': kwargs.get('dictado_pk'),
+        }
+        return render(request, self.template_name, context)
+
+    def post(self, request, *args, **kwargs):
+        dni = request.POST.get('dni')
+        nombre = request.POST.get('nombre')
+
+        # Verificar si existe una persona con el DNI proporcionado
+        persona_exists = Persona.objects.filter(dni=dni).exists()
+
+        # Obtener las claves primarias del curso y del dictado
+        curso_pk = kwargs.get('curso_pk')
+        dictado_pk = kwargs.get('dictado_pk')
+
+        # Agregar las variables de contexto para informar en el HTML
+        context = {
+            'persona_exists': persona_exists,
+            'curso_pk': curso_pk,
+            'dictado_pk': dictado_pk,
+        }
+
+        if persona_exists:
+            print("PERSONA EXISTE")
+
+        return render(request, self.template_name, context)

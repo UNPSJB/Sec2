@@ -1,0 +1,96 @@
+{% extends 'alta_ventana_nueva.html' %}
+{% load static %}
+
+{% block formulario %}
+  <form id="buscarPersonaForm">
+    <label for="dni">Ingrese DNI (8 dígitos):</label>
+    <input type="number" id="dni" name="dni" required minlength="8" maxlength="8" />
+      <button type="button" onclick="buscarPersona()">Buscar Persona</button>
+  </form>
+
+  <div id="resultadosPersona"></div>
+
+  <script>
+    // Variable para evitar múltiples búsquedas simultáneas
+    var busquedaRealizada = false
+  
+    // Función para realizar la búsqueda de persona por DNI
+    function buscarPersona() {
+      // Limpiar el contenido del div resultadosPersona
+      document.getElementById('resultadosPersona').innerHTML = '';
+  
+      // Verificar si ya se realizó una búsqueda
+      if (busquedaRealizada) {
+        console.log('Búsqueda ya realizada, evitando otra solicitud.')
+        return
+      }
+  
+      // Obtener el valor del DNI
+      var dni = document.getElementById('dni').value
+  
+      // Validar el formato del DNI
+      if (!dni) {
+        alert('Por favor, ingrese un número de DNI.')
+        return
+      }
+  
+      if (dni.length !== 8) {
+        alert('El DNI debe tener exactamente 8 dígitos.')
+        return
+      }
+  
+      // Marcar la búsqueda como realizada
+      busquedaRealizada = true
+  
+      // Realizar la llamada AJAX
+      var xhr = new XMLHttpRequest();
+      xhr.open("GET", "{% url 'cursos:buscar_persona' %}?dni=" + dni, true);
+      xhr.onreadystatechange = function () {
+        if (xhr.readyState == 4 && xhr.status == 200) {
+          // Procesar la respuesta
+          var respuesta = JSON.parse(xhr.responseText);
+          mostrarResultados(respuesta.persona);
+        }
+      };
+      xhr.send();
+    }
+  
+    // Función para mostrar los resultados en la página
+    function mostrarResultados(persona) {
+      var resultadosDiv = document.getElementById('resultadosPersona');
+  
+      if (persona) {
+        // Persona encontrada, mostrar detalles
+        resultadosDiv.innerHTML = `
+          <p>Persona encontrada:</p>
+          <p>DNI: ${persona.dni}</p>
+          <p>Nombre: ${persona.nombre} ${persona.apellido}</p>
+          <!-- Agregar más detalles según sea necesario -->
+        `;
+      } else {
+        // Persona no encontrada
+        // Si no la encuentra, dar la opción de darla de alta como alumno o afiliar
+        resultadosDiv.innerHTML = `
+        <p>La persona no está registrada en el sistema.</p>
+        <button onclick="altaAlumno({{ curso_pk }}, {{ dictado_pk }})">Dar de alta como alumno</button>
+        `;
+      }
+        // Restablecer la variable para permitir nuevas búsquedas
+        busquedaRealizada = false;
+    }
+
+    // Función para redirigir a la URL de inscripción de alumno
+    function altaAlumno(curso_pk, dictado_pk) {
+      // Redirigir a la URL de inscripción de alumno
+      window.location.href = `{% url 'cursos:persona_inscribir' curso_pk=0 dictado_pk=0 %}`.replace('0', curso_pk).replace('0', dictado_pk);
+    }
+
+    // Función para otra acción (por ejemplo, afiliación)
+    function afiliar() {
+      // Agrega la lógica necesaria para la afiliación aquí
+      // ...
+    }
+
+    </script>
+  
+{% endblock %}
