@@ -11,32 +11,40 @@ from django.shortcuts import redirect
 from utils.constants import *
 from django.contrib import messages
 
-# ######## SECCION DE PROFESOR #######################
+# ---------------- ALUMNO CREATE ----------------
 class AlumnoCreateView(CreateView):
-    model = Alumno
+    model = Persona
     form_class = AlumnoPersonaForm
     template_name = 'alumno/alumno_form.html'
 
     def get_success_url(self):
+        print("-----------1-----------")
         curso_pk = self.kwargs.get('curso_pk')
-        dictado_pk = self.object.pk  # Accede al ID del dictado actualizado
+        dictado_pk = self.kwargs.get('dictado_pk')
         return reverse_lazy('cursos:dictado_detalle', kwargs={'curso_pk': curso_pk, 'dictado_pk': dictado_pk})
-
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['titulo'] = 'Formulario de Alumno'
+        curso_pk = self.kwargs.get('curso_pk')
+        dictado_pk = self.kwargs.get('dictado_pk')
+        
+        # Print or log the values of curso_pk and dictado_pk for debugging
+        print(f"curso_pk: {curso_pk}, dictado_pk: {dictado_pk}")
+        
+        dictado = get_object_or_404(Dictado, curso__pk=curso_pk, pk=dictado_pk)
+        context['titulo'] = f'Formulario de Alumno - Dictado: {dictado} - Curso: {dictado.curso.nombre}'
         return context
 
     def form_valid(self, form):
         dni = form.cleaned_data["dni"]
-        existing_person = Persona.objects.filter(dni=dni).first()
-        if existing_person:
+        persona_existente = Persona.objects.filter(dni=dni).first()
+        
+        if persona_existente:
             messages.error(self.request, f'La persona ya está registrada en el sistema.')
             form = AlumnoPersonaForm(self.request.POST)
             return super().form_invalid(form)
         else:
-            # Se lo da de alta como alumno
+            # La instancia de Alumno no existe, crear una nueva instancia
             persona = Persona(
                 dni=dni,
                 cuil=form.cleaned_data["cuil"],
@@ -48,23 +56,32 @@ class AlumnoCreateView(CreateView):
                 estado_civil=form.cleaned_data["estado_civil"],
                 nacionalidad=form.cleaned_data["nacionalidad"],
                 direccion=form.cleaned_data["direccion"],
-                es_alumno = True
             )
             persona.save()
-            # Crear una instancia de Alumno
+
+            # Crear una nueva instancia de Alumno
             alumno = Alumno(
-            persona=persona,
+                persona=persona,
             )
             alumno.save()
 
             # Agregar el alumno a los dictados seleccionados en el formulario
-            dictados_seleccionados = form.cleaned_data.get("dictados", [])
-            alumno.dictados.set(dictados_seleccionados)
 
-            messages.success(self.request, f'Alumno inscrito al curso exitosamente!')
-            return super().form_valid(form)
+            curso_pk = self.kwargs.get('curso_pk')
+            dictado_pk = self.kwargs.get('dictado_pk')
     
+            dictado = get_object_or_404(Dictado, curso__pk=curso_pk, pk=dictado_pk)
+            
+            dictados_seleccionados = form.cleaned_data.get("dictados", [])
+
+            # Agregar el alumno a los dictados seleccionados
+            alumno.dictados.add(dictado)
+            messages.success(self.request, f'Alumno inscrito al curso exitosamente!')
+
+            return super().form_valid(form)
+        
     def form_invalid(self, form):
+        print("-----------6-----------")
         messages.warning(self.request, f'Corrige los errores en el formulario.')
         return super().form_invalid(form)
 
