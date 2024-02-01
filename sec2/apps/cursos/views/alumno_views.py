@@ -62,6 +62,7 @@ class AlumnoCreateView(CreateView):
             # Crear una nueva instancia de Alumno
             alumno = Alumno(
                 persona=persona,
+                tipo = Alumno.TIPO
             )
             
             alumno.register
