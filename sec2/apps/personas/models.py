@@ -152,11 +152,6 @@ class Rol(models.Model):
     def str(self):
         return f"{self.persona} es {self.get_tipo_display()}"
 
-    def save(self, *args, **kwargs):
-        if self.pk is None:
-            self.tipo = self.__class__.TIPO
-        super(Rol, self).save(*args, **kwargs)
-
     def related(self):
         return self.Rol != Rol and self or getattr(self, self.get_tipo_display())
 
