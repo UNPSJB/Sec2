@@ -63,8 +63,11 @@ class AlumnoCreateView(CreateView):
             alumno = Alumno(
                 persona=persona,
             )
+            
+            alumno.register
             alumno.save()
-
+            
+            
             # Agregar el alumno a los dictados seleccionados en el formulario
 
             curso_pk = self.kwargs.get('curso_pk')
