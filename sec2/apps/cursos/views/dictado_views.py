@@ -129,8 +129,24 @@ class DictadoDetailView(DetailView):
         # Obtener todas las clases asociadas al dictado a través de los horarios
         clases = Clase.objects.filter(reserva__horario__dictado=dictado).order_by('reserva__fecha')
         context['clases'] = clases
+        
+
+        alumnos_inscritos = Alumno.objects.filter(dictados=dictado)
+        context['alumnos_inscritos'] = alumnos_inscritos
+
+            # Create a list of dictionaries with student information
+        alumnos_info = []
+        for alumno in alumnos_inscritos:
+            alumno_info = {
+                'nombre': alumno.persona.nombre,
+                'apellido': alumno.persona.apellido,
+            }
+            alumnos_info.append(alumno_info)
+
+        context['alumnos_info'] = alumnos_info  # Add the list to the context
 
         return context
+
 
     def get_reserva(self, horario):
         # Obtener todas las reservas asociadas al horario
