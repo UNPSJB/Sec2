@@ -76,31 +76,27 @@ def generar_clases(request, curso_pk, dictado_id):
 #         return response
 
 
-# # --------------- CLASE DETALLE --------------------------------
-# class ClaseDetailView(DetailView):
-#     model = Clase
-#     template_name = "clase/clase_detail.html"
+# --------------- CLASE DETALLE --------------------------------
+class ClaseDetailView(DetailView):
+    model = Clase
+    template_name = "clase/clase_detail.html"
 
-#     def get_object(self, queryset=None):
-#         curso_pk = self.kwargs.get("curso_pk")
-#         dictado_pk = self.kwargs.get("dictado_pk")
-#         clase_pk = self.kwargs.get("clase_pk")
-#         return get_object_or_404(
-#             Clase, dictado__curso__pk=curso_pk, dictado__pk=dictado_pk, pk=clase_pk
-#         )
+    def get_object(self, queryset=None):
+        curso_pk = self.kwargs.get("curso_pk")
+        dictado_pk = self.kwargs.get("dictado_pk")
+        clase_pk = self.kwargs.get("clase_pk")
+        return get_object_or_404(
+            Clase, reserva__horario__dictado__curso__pk=curso_pk, reserva__horario__dictado__pk=dictado_pk, pk=clase_pk
+        )
 
-#     def get_context_data(self, **kwargs):
-#         context = super().get_context_data(**kwargs)
-#         context["dictado"] = get_object_or_404(
-#             Dictado, id=self.kwargs.get("dictado_pk")
-#         )
-#         context["clase"] = Clase.objects.get(id=self.kwargs.get("clase_pk"))
-#         context["titulo"] = "Detalle de clase"
-#         context["tituloListado"] = "Control de asistencia"
-#         # Obtener todos horarios asociadas a la clase
-#         horario = Horario.objects.filter(clase=context['object'])
-#         context['horarios'] = horario
-#         return context
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["dictado"] = get_object_or_404(
+            Dictado, id=self.kwargs.get("dictado_pk")
+        )
+        context["clase"] = Clase.objects.get(id=self.kwargs.get("clase_pk"))
+        context["titulo"] = "Detalle de clase"
+        return context
 
 
 # class ClaseListView(ListFilterView):

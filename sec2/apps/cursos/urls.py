@@ -44,6 +44,7 @@ urlpatterns = [
 
     # CLASE (accedido desde dictaod)
     path('cursos/curso/<int:curso_pk>/dictados/dictado/<int:dictado_id>/generarclaeses/', generar_clases, name="generar_clases"),
+    path('cursos/curso/<int:curso_pk>/dictados/dictado/<int:dictado_pk>/clases/clase/<int:clase_pk>', ClaseDetailView.as_view(), name="clase_detalle"),
 
     # PROFESOR
     path('profesores/crear', ProfesorCreateView.as_view(), name="profesor_crear"),
@@ -57,6 +58,9 @@ urlpatterns = [
 
     #ALMNOS POR CURSO
     path('cursos/curso/<int:curso_pk>/dictados/dictado/<int:dictado_pk>/Alumnos', AlumnosEnDictadoList.as_view(), name="alumno_inscripto"),
+   
+   
+    
     # path('alumno/crear/', AlumnoCrearView.as_view(), name='alumno_crear'),
 
 
@@ -69,7 +73,6 @@ urlpatterns = [
 #     # path('actividades/actividad/<int:pk>/eliminar', actividad_eliminar, name="actividad_eliminar"),
 #     # path('actividades/listado', ActividadListView.as_view(), name="actividad_listado"),
 
-#     path('cursos/curso/<int:curso_pk>/dictados/dictado/<int:dictado_pk>/clases/clase/<int:clase_pk>', ClaseDetailView.as_view(), name="clase_detalle"),
 
     
 #     # path('cursos/curso/<int:curso_pk>/dictados/dictado/<int:dictado_pk>/clases/clase/<int:clase_pk>/horarios/horario/<int:horario_pk>', HorarioCreateView.as_view(), name="clase_detalle"),

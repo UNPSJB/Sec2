@@ -197,24 +197,28 @@
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
+        {% if alumnos_inscritos %}
         <table class="table table-sm table-hover">
           <thead>
             <tr>
               <th>#</th>
-              <th>Nombre</th>
+              <th>Dni</th>
               <th>Apellido</th> 
-              <th>FechaNacimiento</th>
-              <th></th>
+              <th>Nombre</th>
             </tr>
           </thead>
           <tbody>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
+            {% for alumno in alumnos_inscritos %}
+            <td>{{ forloop.counter }}</td>
+            <td>{{ alumno.persona.dni}}</td>
+            <td>{{ alumno.persona.apellido}}</td>
+            <td>{{ alumno.persona.nombre}}</td>
+            {% endfor %}
           </tbody>
         </table>
+        {% else %}
+        <p>No hay alumnos inscriptos.</p>
+        {% endif %}
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
@@ -287,7 +291,7 @@
               {% comment %} <a href="{% url 'cursos:clase_detalle' curso_pk = curso.pk dictado_pk = dictado.pk clase_pk = clase.pk %}" class="btn btn-primary btn-detalle"><i class="fa-regular fa-eye"></i> Detalle</a> {% endcomment %}
             </td>
             <td>
-              Detalle
+              <a href="{% url 'cursos:clase_detalle' curso_pk=curso.pk dictado_pk=dictado.pk clase_pk=clase.pk %}" class="btn btn-primary btn-detalle btn-sm"><i class="fa-regular fa-eye"></i> Detalle</a>
               {% comment %} <a href="{% url 'cursos:clase_detalle' curso_pk = curso.pk dictado_pk = dictado.pk clase_pk = clase.pk %}" class="btn btn-primary btn-detalle"><i class="fa-regular fa-eye"></i> Detalle</a> {% endcomment %}
             </td>
           </tr>
