@@ -3,68 +3,68 @@
 
 {% block detalle %}
   <div class="row">
-    <div class="col-md-6">
+    <div class="col">
       <p>
-        <strong>Nombre:</strong>
-        {{ clase.nombre }}
+        <strong>Fecha:</strong>
+        {{ clase.reserva.fecha }}
       </p>
     </div>
-    <div class="col-md-6">
+    <div class="col">
       <p>
-        <strong>Inscriptos:</strong> {{ clase.inscritos }} de {{ dictado.maximos_alumnos }}
+        <strong>Hora Inicio:</strong>
+        {{ clase.reserva.horario.hora_inicio }}
+      </p>
+    </div>
+    <div class="col">
+      <p>
+        <strong>Hora fin:</strong>
+        {{ clase.reserva.horario.hora_fin }}
+      </p>
+    </div>
+    <div class="col">
+      <p>
+        <strong>Lugar:</strong>
+        {{ clase.reserva.aula }}
       </p>
     </div>
   </div>
 
+  
   <div class="row">
-    <div class="col-md-6">
-      <p>
-        <strong>Fecha de inicio:</strong>
-        {% if object.horarios.all %}
-        <td> 07/01/2024 </td>
-        
-        {% else %}
-          A definir
-        {% endif %}
-      </p>
+    <div class="col">
+      <h3>Alumnos Inscritos</h3>
+      <ul>
+        {% for alumno in alumnos_inscritos %}
+          <li>{{ alumno.nombre }}</li>
+        {% endfor %}
+      </ul>
+    </div>
+    <div class="col">
+      <h3>Alumnos que Asistieron</h3>
+      <form method="post" action="{% url 'cursos:marcar_asistencia' clase.id %}">
+        {% csrf_token %}
+        {% for alumno in alumnos_inscritos %}
+          <label>
+            {{ alumno.nombre }}
+            <input type="checkbox" name="alumnos_asistencia" value="{{ alumno.id }}"
+              {% if alumno in alumnos_asistieron %}checked{% endif %}>
+          </label><br>
+        {% endfor %}
+        <button type="submit">Guardar Asistencia</button>
+      </form>
     </div>
   </div>
-
-  {% if horarios %}
-    <table class="table table-sm table-hover">
-      <thead>
-        <tr>
-          <th>Día</th>
-          <th>Desde</th>
-          <th>Hasta</th>
-          <th>Aula</th>
-          <th></th>
-        </tr>
-      </thead>
-
-      <tbody>
-        {% for horario in horarios %}
-        <tr>
-            <td>{{ horario.get_dia_semana_display }}</td>
-            <td>{{ horario.hora_inicio }}</td>
-            <td>{{ horario.hora_inicio }} + {{ clase.dictado.modulos }} horas </td>
-            <td>{{ horario.aula }}</td>
-        </tr>
-        {% endfor %}
-      </tbody>
-    </table>
-  {% endif %}
-  {% endblock %}
 
   {% block botones %}
   <div class="col d-flex justify-content-center">
-    {% comment %} <a href="{% url 'cursos:aula_detalle'  pk=obj.pk %}" class="btn btn-primary btn-detalle"><i class="fa-regular fa-eye"></i> Detalle</a> {% endcomment %}
-    {% comment %} <a href="{% url 'cursos:horario_crear' curso_pk=clase.dictado.curso.pk dictado_pk=clase.dictado.pk clase_pk=clase.pk %}" class="btn btn-primary btn-detalle"><i class="fa-solid fa-plus"></i> Generar Horario</a> {% endcomment %}
+    <form method="post" action="{% url 'cursos:clase_detalle' curso_pk=dictado.curso.pk dictado_pk=dictado.pk clase_pk=clase.pk %}">
+      {% csrf_token %}
+      <button type="submit" class="btn btn-primary btn-detalle">Tomar Asistencia</button>
+    </form>
   </div>
   {% endblock %}
-
-
-
-{% block listado_asociado %}
   
+  {% endblock %}
+  {% block listado_asociado %}
+
 {% endblock %}

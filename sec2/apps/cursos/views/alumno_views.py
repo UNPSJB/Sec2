@@ -1,6 +1,8 @@
 # from ..models import Alumno
 from pyexpat.errors import messages
 
+from django.http import HttpResponse
+
 from ..forms.alumno_forms import *
 from ..forms.curso_forms import *
 from ..forms.dictado_forms import *
@@ -107,7 +109,9 @@ class AlumnosEnDictadoList(ListView):
         context['titulo'] = 'LISTA DE TODOS LOS ALUMNOS'
         return context
 
-
+def marcar_asistencia(request, clase_id):
+    # Tu lógica para marcar la asistencia aquí
+    return HttpResponse("Asistencia marcada correctamente.")
 #     model = Alumno
 #     paginate_by = 100
 #     # filter_class = AlumnosDelDictadoFilterForm

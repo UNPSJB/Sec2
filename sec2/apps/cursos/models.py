@@ -1,4 +1,5 @@
 from django.db import models
+from django.http import HttpResponse
 from apps.personas.models import Rol
 from utils.constants import *
 from utils.choices import *
@@ -117,10 +118,6 @@ class Reserva(models.Model):
     aula = models.ForeignKey(Aula, related_name="reservas", on_delete=models.CASCADE, null=True, blank=True)
     horario = models.ForeignKey(Horario, related_name="reservass", on_delete=models.CASCADE, null=True, blank=True)
 
-#------------- CLASE --------------------
-class Clase(models.Model):
-    reserva = models.ForeignKey(Reserva, related_name="clases", on_delete=models.CASCADE, null=True, blank=True)
-
 #------------- ALUMNO --------------------
 class Alumno(Rol):
     TIPO = 3
@@ -135,6 +132,27 @@ class Alumno(Rol):
         return dictado in self.dictados
     
 Rol.register(Alumno)
+
+#------------- CLASE --------------------
+from django.shortcuts import get_object_or_404
+    
+def marcar_asistencia(request, clase_id, alumno_id):
+    clase = get_object_or_404(Clase, pk=clase_id)
+    alumno = get_object_or_404(Alumno, pk=alumno_id)
+
+    if alumno in clase.reserva.aula.curso.alumnos.all():  # Verifica que el alumno esté inscrito en el curso
+        clase.asistencia.add(alumno)
+        # Puedes realizar otras acciones aquí, como guardar el registro en la base de datos
+        return HttpResponse("Asistencia marcada correctamente.")
+    else:
+        return HttpResponse("Error: El alumno no está inscrito en este curso.")
+    
+class Clase(models.Model):
+    reserva = models.ForeignKey(Reserva, related_name="clases", on_delete=models.CASCADE, null=True, blank=True)
+    asistencia = models.ManyToManyField(Alumno, related_name="clases_asistidas", blank=True)
+    asistencia_tomada = models.BooleanField(default=False)
+
+
 
 #------------- PROFESOR --------------------
 class Profesor(Rol):

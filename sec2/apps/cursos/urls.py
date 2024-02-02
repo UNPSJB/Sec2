@@ -60,7 +60,8 @@ urlpatterns = [
     path('cursos/curso/<int:curso_pk>/dictados/dictado/<int:dictado_pk>/Alumnos', AlumnosEnDictadoList.as_view(), name="alumno_inscripto"),
    
    
-    
+    path('marcar_asistencia/<int:clase_id>/', marcar_asistencia, name='marcar_asistencia'),
+
     # path('alumno/crear/', AlumnoCrearView.as_view(), name='alumno_crear'),
 
 
