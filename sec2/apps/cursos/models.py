@@ -6,6 +6,14 @@ from utils.choices import *
 from utils.regularexpressions import *
 from django.core.validators import MinValueValidator, MaxValueValidator
 
+# ------------- ACTIVIDAD --------------------
+class Actividad(models.Model):
+    nombre = models.CharField(
+        max_length=50,
+        validators=[text_validator],  # Añade tu validador personalizado si es necesario
+        help_text="Solo se permiten letras y espacios."
+    )
+
 # ------------- AULA --------------------
 class Aula(models.Model):
     tipo = models.CharField(max_length=50, choices=TIPO_AULA, help_text="Tipo de aula")

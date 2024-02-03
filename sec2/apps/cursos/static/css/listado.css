@@ -27,3 +27,12 @@
     padding-left: 3%;
     padding-right: 3%;
 }
+
+/* Estilo para los campos de entrada y selects */
+input[type="text"],
+select {
+    width: 100%;
+    padding: 5px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}

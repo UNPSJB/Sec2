@@ -1,56 +1,25 @@
 from django import forms
-# from ..models import Actividad
+from ..models import Actividad
 from sec2.utils import FiltrosForm
 from utils.constants import *
 from utils.choices import *
 from django import forms
-##------------------ ACTIVIDAD --------------------
-# class ActividadForm(forms.ModelForm):
-#     class Meta:
-#         model = Actividad
-#         fields = '__all__'  # Incluir todos los campos, incluido 'area'
+from django.contrib import messages
 
-#     def clean(self):
-#         pass
+#------------------ ACTIVIDAD --------------------
+class ActividadForm(forms.ModelForm):
+    class Meta:
+        model = Actividad
+        fields = '__all__'
+    
+    def clean_nombre(self):
+        nombre = self.cleaned_data['nombre']
+        nombre_lower = nombre.lower()  # Convertir a minúsculas
+        existe_actividad = Actividad.objects.filter(nombre__iexact=nombre_lower).exists()
+        if existe_actividad:
+            raise forms.ValidationError('El nombre de la actividad ya existe. Por favor, elige otro nombre.')
+        return nombre
 
-#     def save(self, commit=True):
-#         actividad = super(ActividadForm, self).save(commit=False)
-#         # Modifica el campo nombre para que la primera letra sea mayúscula y el resto en minúscula
-#         actividad.nombre = actividad.nombre
-#         if commit:
-#             actividad.save()
-#         return actividad
-
-#     def is_valid(self) -> bool:
-#         valid = super().is_valid()
-#         return valid
-
-#     def __init__(self, *args, **kwargs):
-#         super().__init__(*args, **kwargs)
-
-#         # Hacer el campo 'area' disabled y agregar una clase de estilo para resaltar que no es editable
-#         self.fields['area'].widget.attrs['disabled'] = True
-#         self.fields['area'].widget.attrs['class'] = 'disabled-field'
-#         # Marcar el campo 'area' como no obligatorio
-#         self.fields['area'].required = False
-# ## ------------ CREATE --------------
-# class ActividadCreateForm(ActividadForm):
-#     class Meta:
-#         model = Actividad
-#         fields = '__all__'
-
-#     def __init__(self, *args, **kwargs):
-#         super().__init__(*args, **kwargs)
-#         self.fields['area'].widget.attrs['disabled'] = False
-#         self.fields['area'].widget.attrs['class'] = ''
-#         self.fields['area'].required = True
-
-# ## ------------ FILTRO PARA ACTIVIDAD --------------
-# class ActividadFilterForm(FiltrosForm):
-#     nombre = forms.CharField(required=False)
-#     area = forms.ChoiceField(
-#         label='Área',
-#         choices=[('', '---------')] + list(AREAS),
-#         required=False,
-#         widget=forms.Select(attrs={'class': 'form-control'})
-#     )
+## ------------ FILTRO PARA ACTIVIDAD --------------
+class ActividadFilterForm(FiltrosForm):
+    nombre = forms.CharField(required=False)

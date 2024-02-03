@@ -3,33 +3,11 @@
 
 {% load static %}
 
-{% block detalle_lado_izquierdo %}
-  <!-- Columna izquierda para la imagen -->
-  <div class="col-md-3 d-flex align-items-center justify-content-center">
-    {% if object.area == 0 %}
-      <img src="{% static 'images/capacitacion.jpg' %}" style="width: 60%; height: auto;" class="img-fluid img-custom" alt="Capacitación" />
-    {% elif object.area == 1 %}
-      <img src="{% static 'images/cultura.jpeg' %}" style="width: 40%; height: auto;" class="img-fluid img-custom" alt="Cultura" />
-    {% else %}
-      <img src="{% static 'images/gimnasio.jpg' %}" style="width: 35%; height: auto;" class="img-fluid img-custom" alt="Gimnasio" />
-    {% endif %}
-  </div>
-{% endblock %}
-
 {% block detalle_lado_derecho %}
-  <!-- Columna derecha para la información -->
-  <div class="col-md-8">
-    <div class="d-flex flex-column justify-content-between">
-      <p>
-        <strong>Nombre:</strong> {{ object.nombre }}
-      </p>
-      <p>
-        <strong>Área:</strong> {{ object.get_area_display }}
-      </p>
-      <p>
-        <strong>Descripción:</strong> {{ object.descripcion }}
-      </p>
-    </div>
+  <div class="col">
+    <p>
+      <strong>Nombre:</strong> {{ object.nombre }}
+    </p>
   </div>
 {% endblock %}
 
@@ -42,37 +20,4 @@
     <button type="button" class="btn btn-danger btn-sm btn-detalle" data-bs-toggle="modal" data-bs-target="#exampleModal_dar_de_baja"><i class="fa-regular fa-circle-down"></i> Dar de Baja</button>
     {% include 'actividad/modal_confirm_baja.html' %}
   </div>
-{% endblock %}
-
-{% block listado_asociado %}
-  {% if cursos_info %}
-    <table class="table table-sm table-hover">
-      <thead>
-        <tr>
-          <th>#</th>
-          <th>Nombre</th>
-          <th></th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for curso_info in cursos_info %}
-          <tr>
-            <td>{{ forloop.counter }}</td>
-            <td>{{ curso_info.nombre }}</td>
-            <td>
-              {% if curso_info.pk %}
-                <a href="{% url 'cursos:curso_detalle' curso_info.pk %}" class="btn btn-primary btn-detalle"><i class="fa-regular fa-eye"></i> Detalle</a>
-              {% else %}
-                <!-- Manejo de la situación donde curso_info.pk es nulo o vacío -->
-                <span class="btn btn-secondary btn-detalle disabled"><i class="fa-regular fa-eye-slash"></i> Detalle no disponible</span>
-              {% endif %}
-            </td>
-          </tr>
-        {% endfor %}
-      </tbody>
-    </table>
-  {% else %}
-    <p>No hay cursos asociados.</p>
-  {% endif %}
-  <a href="{% url 'cursos:curso_crear' %}" class="btn btn-primary btn-detalle"><i class="fa-solid fa-plus"></i> Nuevo</a>
 {% endblock %}

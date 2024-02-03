@@ -29,18 +29,10 @@
   </ul>
 </div>
 <hr />
-{% comment %} <div class="menu">
-  <!-- Botón desplegable para Actividades -->
-  <button class="submenu-toggle" data-submenu="actividades">Actividades <i class="fa-solid fa-caret-down"></i></button>
-  <ul class="submenu" id="actividades-submenu">
-    <li>
-      <a href="{% url 'cursos:actividad_crear' %}"><i class="fa-solid fa-plus item-subMenu"></i> Alta de actividades</a>
-    </li>
-    <li>
-      <a href="{% url 'cursos:actividad_listado' %}"><i class="fa-solid fa-list item-subMenu"></i> Lista de actividades</a>
-    </li>
-  </ul>
-</div> {% endcomment %}
+
+<a class="enlace" href="{% url 'cursos:actividad' %}"> Actividad</a>
+
+<hr />
 
 <div class="menu">
   <!-- Botón desplegable para Profesor -->

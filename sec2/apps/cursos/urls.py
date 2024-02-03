@@ -17,6 +17,12 @@ urlpatterns = [
     # PRINCIPAL
     path('',index, name="index"),
 
+    # ACTIVIDADES
+    path('actividad/', ActividadCreateListView.as_view(), name="actividad"),
+    path('actividades/actividad/<int:pk>', ActividadDetailView.as_view(), name="actividad_detalle"),
+    path('actividades/actividad/<int:pk>/editar', ActividadUpdateView.as_view(), name="actividad_editar"),
+    path('actividades/actividad/<int:pk>/eliminar', actividad_eliminar, name="actividad_eliminar"),
+
     # AULAS
     path('aulas/crear', AulaCreateView.as_view(), name="aula_crear"),
     path('aulas/<int:pk>/', AulaDetailView.as_view(), name='aula_detalle'),
@@ -66,16 +72,11 @@ urlpatterns = [
 
 
 
-# #------------------------ INCHEQUEADO ------------------------
-#     # # ACTIVIDADES
-#     # path('actividades/actividad/crear', ActividadCreateView.as_view(), name="actividad_crear"),
-#     # path('actividades/actividad/<int:pk>', ActividadDetailView.as_view(), name="actividad_detalle"),
-#     # path('actividades/actividad/<int:pk>/editar', ActividadUpdateView.as_view(), name="actividad_editar"),
-#     # path('actividades/actividad/<int:pk>/eliminar', actividad_eliminar, name="actividad_eliminar"),
-#     # path('actividades/listado', ActividadListView.as_view(), name="actividad_listado"),
+
 
 
     
+# #------------------------ INCHEQUEADO ------------------------
 #     # path('cursos/curso/<int:curso_pk>/dictados/dictado/<int:dictado_pk>/clases/clase/<int:clase_pk>/horarios/horario/<int:horario_pk>', HorarioCreateView.as_view(), name="clase_detalle"),
 
 # 	# NO UTILIZADO POR EL MOMENTO

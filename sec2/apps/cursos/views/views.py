@@ -36,12 +36,3 @@ def index(request):
 
  
 
-# ## ------------ ACTIVIDAD DELETE -------------------
-# def actividad_eliminar(request, pk):
-#     actividad = get_object_or_404(Actividad, pk=pk)
-#     try:
-#         actividad.delete()
-#         messages.success(request, '<i class="fa-solid fa-square-check fa-beat-fade"></i> La actividad se eliminó correctamente.')
-#     except Exception as e:
-#         messages.error(request, 'Ocurrió un error al intentar eliminar la actividad.')
-#     return redirect('cursos:actividad_listado')

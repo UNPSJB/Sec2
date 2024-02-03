@@ -28,43 +28,47 @@
       </p>
     </div>
   </div>
-
-  
-  <div class="row">
-    <div class="col">
-      <h3>Alumnos Inscritos</h3>
-      <ul>
-        {% for alumno in alumnos_inscritos %}
-          <li>{{ alumno.nombre }}</li>
-        {% endfor %}
-      </ul>
-    </div>
-    <div class="col">
-      <h3>Alumnos que Asistieron</h3>
-      <form method="post" action="{% url 'cursos:marcar_asistencia' clase.id %}">
-        {% csrf_token %}
-        {% for alumno in alumnos_inscritos %}
-          <label>
-            {{ alumno.nombre }}
-            <input type="checkbox" name="alumnos_asistencia" value="{{ alumno.id }}"
-              {% if alumno in alumnos_asistieron %}checked{% endif %}>
-          </label><br>
-        {% endfor %}
-        <button type="submit">Guardar Asistencia</button>
-      </form>
-    </div>
-  </div>
-
-  {% block botones %}
-  <div class="col d-flex justify-content-center">
-    <form method="post" action="{% url 'cursos:clase_detalle' curso_pk=dictado.curso.pk dictado_pk=dictado.pk clase_pk=clase.pk %}">
-      {% csrf_token %}
-      <button type="submit" class="btn btn-primary btn-detalle">Tomar Asistencia</button>
-    </form>
-  </div>
   {% endblock %}
   
-  {% endblock %}
+  
   {% block listado_asociado %}
+  
+  <h3>Alumnos Inscritos</h3>
 
-{% endblock %}
+  {% if alumnos_inscritos %}
+  <form method="post" action="{% url 'cursos:marcar_asistencia' clase.id %}">
+    {% csrf_token %}
+  <table class="table table-sm table-hover">
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>Nombre</th>
+        <th>Apellido</th> 
+        <th>Asistencia</th> 
+      </tr>
+    </thead>
+    <tbody>
+      {% for alumno in alumnos_inscritos %}
+      <tr>
+        <td>{{ forloop.counter }}</td>
+        <td>{{ alumno.persona.nombre }}</td>
+        <td>{{ alumno.persona.apellido }}</td>
+        <td>
+          <input type="checkbox" name="alumnos_asistencia" value="{{ alumno.id }}"
+              {% if alumno in alumnos_asistieron %}checked{% endif %}>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  
+  <div class="text-center">
+    <button class="btn btn-success btn-detalle" type="submit">Guardar Asistencia</button>
+  </div>
+</form>
+  {% else %}
+  <p>No hay alumnos inscriptos.</p>
+  {% endif %}
+  
+  {% endblock %}
+  

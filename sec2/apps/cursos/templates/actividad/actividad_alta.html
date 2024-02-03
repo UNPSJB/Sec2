@@ -3,58 +3,23 @@
 {% load static %}
 
 {% block formulario %}
-  <form method="post">
+
+<form method="post" action="{% url 'cursos:actividad_editar' pk=object.pk %}"> {# Asegúrate de que la URL de actualización esté definida correctamente en tus urls.py #}
     {% csrf_token %}
-
-    <div class="form-group">
-      {{ form.nombre.label_tag }}
-      <br />
-      {{ form.nombre }}
-      {% if form.nombre.errors %}
-        <small class="error-text">
-          {% for error in form.nombre.errors %}
-            <i class="fas fa-times"></i> {{ error }}
-            {% if not loop.last %}
-              <br />
-            {% endif %}
-          {% endfor %}
-        </small>
-      {% endif %}
-      <small class="text-muted">{{ form.nombre.help_text }}</small>
-    </div>
-
-    <div class="form-group">{{ form.area.label_tag }}
-      {{ form.area }}</div>
-
-    <div class="form-group">
-      {{ form.descripcion.label_tag }}
-      <br />
-
-      {{ form.descripcion }}
-
-      {% if form.descripcion.errors %}
-        <small class="error-text">
-          {% for error in form.descripcion.errors %}
-            <i class="fas fa-times"></i> {{ error }}
-            {% if not loop.last %}
-              <br />
-            {% endif %}
-          {% endfor %}
-        </small>
-      {% endif %} <small class="text-muted">{{ form.descripcion.help_text }}</small>
-    </div>
-
-    <div class="row row-cols-1 row-cols-sm-1 row-cols-md-2">
-      <div class="col">
-        <a href="{% url 'cursos:index' %}" class="btn btn-secondary">Cancelar</a>
+    <div class="row">
+      <div class="col-md-1 align-self-center">
+          {{ form.nombre.label_tag }}
       </div>
+      
+      <div class="col-md-8 align-self-center">
+          {{ form.nombre }}
+          <small class="form-text text-muted">{{ form.nombre.help_text }}</small>
+      </div>
+      
       <div class="col">
-        <button type="submit" class="btn btn-primary">Guardar</button>
+          <button type="submit" class="btn btn-success btn-sm btn-detalle">Guardar</button>
       </div>
     </div>
   </form>
-{% endblock %}
-
-{% block extrajs_intermedia %}
 
 {% endblock %}
