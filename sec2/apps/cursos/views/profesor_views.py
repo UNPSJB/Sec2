@@ -8,7 +8,7 @@ from django.views.generic.edit import CreateView, UpdateView
 from utils.constants import *
 from sec2.utils import ListFilterView
 
-# ######## SECCION DE PROFESOR #######################
+## ------------------ CREATE DE PROFESOR ------------------
 class ProfesorCreateView(CreateView):
     model = Profesor
     form_class = FormularioProfesor

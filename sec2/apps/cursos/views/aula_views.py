@@ -1,4 +1,4 @@
-from django.shortcuts import redirect
+from django.shortcuts import get_object_or_404, redirect
 from django.views.generic.edit import CreateView, UpdateView
 from django.views.generic import DetailView, ListView
 from ..models import Aula
@@ -91,7 +91,10 @@ class AulaUpdateView(UpdateView):
 
 ## ------------ ELIMINAR -------------------
 def aula_eliminar(request, pk):
-    a = Aula.objects.get(pk=pk)
-    a.delete()
-    messages.success(request, f'{ICON_CHECK} El aula se eliminó correctamente!')
+    aula = get_object_or_404(Aula, pk=pk)
+    try:
+        aula.delete()
+        messages.success(request, f'{ICON_CHECK} El aula se eliminó correctamente!')
+    except Exception as e:
+        messages.error(request, 'Ocurrió un error al intentar eliminar el aula.')
     return redirect('cursos:gestion_aula')
