@@ -27,11 +27,11 @@ urlpatterns = [
     path('aulas/', AulaCreateListView.as_view(), name="gestion_aula"),
     path('aulas/aula/<int:pk>/', AulaDetailView.as_view(), name='aula_detalle'),
     path('aulas/aula/<int:pk>/editar', AulaUpdateView.as_view(), name="aula_editar"),
-
-
-    path('aulas/crear', AulaCreateView.as_view(), name="aula_crear"),
     path('aulas/<int:pk>/eliminar', aula_eliminar, name="aula_eliminar"),
-    path('aulas/', AulaListView.as_view(), name="aula_listado"),
+
+
+    # path('aulas/crear', AulaCreateView.as_view(), name="aula_crear"),
+    # path('aulas/', AulaListView.as_view(), name="aula_listado"),
     
     # CURSOS
     path('cursos/curso/crear/', CursoCreateView.as_view(), name="curso_crear"),

@@ -18,6 +18,18 @@ class AulaForm(forms.ModelForm):
         tipo = tipo.lower()
         return tipo
 
+
+    def clean(self):
+        cleaned_data = super().clean()
+        tipo = cleaned_data.get('tipo')
+        numero = cleaned_data.get('numero')
+
+        # Verificar si ya existe un aula con el mismo tipo y número
+        existing_aula = Aula.objects.filter(tipo=tipo, numero=numero).exclude(id=self.instance.id if self.instance else None).first()
+
+        if existing_aula:
+            raise forms.ValidationError("Ya existe un aula con el mismo tipo y número.")
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 

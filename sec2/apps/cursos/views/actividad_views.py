@@ -82,11 +82,11 @@ class ActividadUpdateView(UpdateView):
 
     def form_valid(self, form):
         actividad = form.save()
-        messages.success(self.request, '<i class="fa-solid fa-square-check fa-beat-fade"></i> Actividad modificado con éxito')
+        messages.success(self.request, f'{ICON_CHECK} Actividad modificada con éxito!')
         return redirect('cursos:actividad_detalle', pk=actividad.pk)
 
     def form_invalid(self, form):
-        messages.warning(self.request, '<i class="fa-solid fa-triangle-exclamation fa-flip"></i> Por favor, corrija los errores a continuación.')
+        messages.warning(self.request, f'{ICON_TRIANGLE} El nombre ya existe o posee caracteres no deseados.')
         for field, errors in form.errors.items():
             print(f"Campo: {field}, Errores: {', '.join(errors)}")
         return super().form_invalid(form)
@@ -96,7 +96,7 @@ def actividad_eliminar(request, pk):
     actividad = get_object_or_404(Actividad, pk=pk)
     try:
         actividad.delete()
-        messages.success(request, '<i class="fa-solid fa-square-check fa-beat-fade"></i> La actividad se eliminó correctamente.')
+        messages.success(request, f'{ICON_CHECK} La actividad se se eliminó correctamente!')
     except Exception as e:
         messages.error(request, 'Ocurrió un error al intentar eliminar la actividad.')
     return redirect('cursos:gestion_actividad')
