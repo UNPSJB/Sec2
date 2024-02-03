@@ -32,7 +32,7 @@
       {% for actividad in actividades %}
         <tr class="bg-transition fila-personalizada">
           <td>{{ forloop.counter }}</td>
-          <td>{{ actividad.nombre }}</td>
+          <td>{{ actividad }}</td>
           <td class="text-end"> 
             <a href="{% url 'cursos:actividad_detalle' actividad.pk %}" class="btn btn-primary btn-sm btn-detalle "><i class="fa-regular fa-eye"></i> Detalle</a>
             <a href="{% url 'cursos:actividad_editar' actividad.pk %}" class="btn btn-primary btn-sm btn-detalle"><i class="fa-regular fa-pen-to-square"></i> Modificar</a>

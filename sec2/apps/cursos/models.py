@@ -13,6 +13,9 @@ class Actividad(models.Model):
         validators=[text_validator],  # Añade tu validador personalizado si es necesario
         help_text="Solo se permiten letras y espacios."
     )
+    
+    def __str__(self):
+        return f"{self.nombre}"
 
 # ------------- AULA --------------------
 class Aula(models.Model):
@@ -33,7 +36,13 @@ class Aula(models.Model):
     
 #------------- CURSO --------------------
 class Curso(models.Model):
+    # ForeignKey
+    actividad = models.ForeignKey(Actividad, on_delete=models.SET_NULL, blank=True, null=True)
+
     area = models.PositiveSmallIntegerField(choices=AREAS, blank=True, null=True)
+    requiere_certificado_medico = models.BooleanField(default=False)
+    es_convenio = models.BooleanField(default=False)
+    modulos_totales= models.PositiveIntegerField(help_text="Horas totales del curso")    
     nombre = models.CharField(
         max_length=50,
         validators=[text_and_numeric_validator],  # Añade tu validador personalizado si es necesario
@@ -52,9 +61,6 @@ class Curso(models.Model):
         null=True,    # Also set null to True if you want to allow NULL values in the database
         default=0     # Set the default value to 0
     )
-    requiere_certificado_medico = models.BooleanField(default=False)
-    es_convenio = models.BooleanField(default=False)
-    modulos_totales= models.PositiveIntegerField(help_text="Horas totales del curso")    
     
     def __str__(self):
         return f"{self.nombre}"
@@ -72,7 +78,11 @@ class Curso(models.Model):
 
 #------------- DICTADO --------------------
 class Dictado(models.Model):
+    # ForeignKey
     curso = models.ForeignKey(Curso, related_name="dictado_set", on_delete=models.CASCADE, null=True, blank=True)
+    
+    modulos_por_clase= models.PositiveIntegerField(help_text="Horas por clase")
+    asistencia_obligatoria = models.BooleanField(default=False)
     periodo_pago=models.PositiveSmallIntegerField(choices=PERIODO_PAGO)
     fecha = models.DateTimeField(help_text="Seleccione la fecha de inicio")
     cupo = models.PositiveIntegerField(
@@ -82,7 +92,6 @@ class Dictado(models.Model):
             MaxValueValidator(100, message="Valor máximo es 100."),
         ]
     )
-
     descuento = models.PositiveIntegerField(
         help_text="Exclusivo para afiliados",
         validators=[
@@ -90,14 +99,14 @@ class Dictado(models.Model):
             MaxValueValidator(100, message="El descuento no puede ser mayor que 100."),
         ]
     )
-    modulos_por_clase= models.PositiveIntegerField(help_text="Horas por clase")
-    asistencia_obligatoria = models.BooleanField(default=False)
 
 #------------- HORARIO --------------------
 from datetime import datetime, timedelta
 
 class Horario(models.Model):
+    # ForeignKey
     dictado = models.ForeignKey(Dictado, related_name="horarios", null=True, on_delete=models.CASCADE)
+    
     dia_semana = models.PositiveSmallIntegerField(choices=DIAS_SEMANA_CHOICES)
     hora_inicio = models.TimeField(help_text="Ingrese la hora en formato de 24 horas (HH:MM)")
     hora_fin = models.TimeField(blank=True, null=True)
@@ -122,15 +131,18 @@ class Horario(models.Model):
 
 # ------------- RESERVA --------------------
 class Reserva(models.Model):
-    fecha = models.DateField()
-    aula = models.ForeignKey(Aula, related_name="reservas", on_delete=models.CASCADE, null=True, blank=True)
+    # ForeignKey
     horario = models.ForeignKey(Horario, related_name="reservass", on_delete=models.CASCADE, null=True, blank=True)
+    aula = models.ForeignKey(Aula, related_name="reservas", on_delete=models.CASCADE, null=True, blank=True)
+    
+    fecha = models.DateField()
 
 #------------- ALUMNO --------------------
 class Alumno(Rol):
-    TIPO = 3
+    # ForeignKey
     dictados = models.ManyToManyField(Dictado, related_name="alumnos", blank=True)
 
+    TIPO = 3
     def agregateDictado(self, pk):
         dictado = Dictado.objects.get(pk=pk)
         self.dictados.add(dictado)
@@ -164,11 +176,13 @@ class Clase(models.Model):
 
 #------------- PROFESOR --------------------
 class Profesor(Rol):
+    # ForeignKey
+    dictados = models.ManyToManyField(Dictado, through = "Titular", related_name="profesores", blank=True)
+
     TIPO = 2
     # capacitaciones = models.CharField(max_length=50)
     ejerce_desde = models.DateField()
     # actividades = models.ManyToManyField(Actividad, blank=True)
-    dictados = models.ManyToManyField(Dictado, through = "Titular", related_name="profesores", blank=True)
 
     def __str__(self):
         return f"{self.persona.nombre} {self.persona.apellido}"
@@ -176,6 +190,7 @@ Rol.register(Profesor)
 
 #------------- TITULAR --------------------
 class Titular(models.Model):
+    # ForeignKey
     profesor = models.ForeignKey(Profesor, on_delete=models.CASCADE)
     dictado= models.ForeignKey(Dictado, on_delete=models.CASCADE)
 
