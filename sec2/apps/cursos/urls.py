@@ -29,10 +29,12 @@ urlpatterns = [
     path('aulas/aula/<int:pk>/editar', AulaUpdateView.as_view(), name="aula_editar"),
     path('aulas/<int:pk>/eliminar', aula_eliminar, name="aula_eliminar"),
 
+    # PROFESOR
+    path('profesores', ProfesorListView.as_view(), name="profesor_listado"),
+    path('profesores/crear', ProfesorCreateView.as_view(), name="profesor_crear"),
 
-    # path('aulas/crear', AulaCreateView.as_view(), name="aula_crear"),
-    # path('aulas/', AulaListView.as_view(), name="aula_listado"),
-    
+
+
     # CURSOS
     path('cursos/curso/crear/', CursoCreateView.as_view(), name="curso_crear"),
     path('cursos/curso/<int:pk>', CursoDetailView.as_view(), name="curso_detalle"),
@@ -55,8 +57,7 @@ urlpatterns = [
     path('cursos/curso/<int:curso_pk>/dictados/dictado/<int:dictado_id>/generarclaeses/', generar_clases, name="generar_clases"),
     path('cursos/curso/<int:curso_pk>/dictados/dictado/<int:dictado_pk>/clases/clase/<int:clase_pk>', ClaseDetailView.as_view(), name="clase_detalle"),
 
-    # PROFESOR
-    path('profesores/crear', ProfesorCreateView.as_view(), name="profesor_crear"),
+
 
     ## VERIFICAR Y BUSCAR PERSONA ANTES DE PROCEDER A LA INSCRIPCION
     path('cursos/curso/<int:curso_pk>/dictados/dictado/<int:dictado_pk>/buscar', VerificarInscripcionView.as_view(), name="verificar_persona"),
@@ -86,7 +87,6 @@ urlpatterns = [
 # 	path('cursos/<int:pk>/dictados', DictadoListView.as_view(), name="dictado_listado"),
 #     path('dictado/<int:pk>/verclases', ClaseListView.as_view(), name="ver_clases"),#se accede desde el dictado
 
-#     path('profesores', ProfesorListView.as_view(), name="profesores"),
 #     path('profesores/<int:pk>/editar', ProfesorUpdateView.as_view(), name="profesor_modificar"),
 #     # path('profesores/<int:pk>/eliminar', actividad_eliminar, name="profesor_eliminar"),
     

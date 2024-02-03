@@ -9,7 +9,7 @@ from utils.regularexpressions import *
 class Persona(models.Model):
     dni = models.CharField(
         max_length=8,
-        help_text='DNI sin puntos. Ej: 12345678',
+        help_text='Sin puntos',
         validators=[
             RegexValidator(
                 regex=r'^\d{8}$',  # Expresión regular para 8 dígitos
@@ -21,7 +21,7 @@ class Persona(models.Model):
     )
     cuil = models.CharField(
         max_length=11,
-        help_text='Sin puntos y guiones. Ej: 01234567890',
+        help_text='Sin puntos y guiones',
         validators=[
             RegexValidator(
                 regex=r'^\d{11}$',  # Expresión regular para 11 dígitos
@@ -47,7 +47,7 @@ class Persona(models.Model):
     celular = models.CharField(
         max_length=13,  # Máximo 12 caracteres para ###-########
         validators=[numeric_validator],
-        help_text='549XXXXXXXXX, 0XX-XXXXXXXX o 15XXXXXXXXX.'
+        help_text='Ejemplo: 549XXXXXXXXX'
     )
     
     direccion = models.CharField(max_length=50, validators=[text_and_numeric_validator], help_text='Calle y numero')
@@ -73,23 +73,22 @@ class Persona(models.Model):
     def __str__(self):
         return f"{self.dni} {self.nombre} {self.apellido}"
 
-    #convierte una persona en profesor
     def convertir_en_profesor(self, profesor):
-        assert not self.es_profesor, "ya soy Profesor" 
+        assert not self.es_profesor, "Ya soy Profesor"
         profesor.persona = self
         profesor.save()
-        self.es_profesor=True
+        self.es_profesor = True
         self.save()
 
     def afiliar(self, afiliado, fecha):
-        assert not self.es_afiliado, "ya soy afiliado" 
+        assert not self.es_afiliado, "Ya soy afiliado"
         afiliado.desde = fecha
         afiliado.persona = self
         afiliado.estado = 1
         afiliado.save()
-        self.es_afiliado=True
+        self.es_afiliado = True
         self.save()
-        
+
     def desafiliar(self, afiliado, fecha):
         assert afiliado.persona == self, "Afiliado incorrecto"
         afiliado.hasta = fecha
@@ -97,17 +96,17 @@ class Persona(models.Model):
         afiliado.estado = 3
         self.es_afiliado = False
         self.save()
-        
+
     def inscribir(self, alumno, curso):
-        assert alumno.curso == curso, "Alumno ya inscripto"
+        assert alumno.curso == curso, "Alumno ya inscrito"
         alumno.persona = self
         alumno.save()
         curso.alumnos.add(alumno)
-        self.es_alumno=True
+        self.es_alumno = True
         self.save()
 
     def desinscribir(self, alumno, fecha):
-        assert alumno.persona == self, "alumno equivocado"
+        assert alumno.persona == self, "Alumno equivocado"
         alumno.hasta = fecha
         alumno.save()
         self.es_alumno = False
@@ -149,13 +148,14 @@ class Rol(models.Model):
     desde = models.DateTimeField(auto_now_add=True)
     hasta = models.DateTimeField(null=True, blank=True)
 
-    def str(self):
-        return f"{self.persona} es {self.get_tipo_display()}"
+    def __str__(self):
+        return f"{self.__class__.__name__} {self.id}"
 
     def save(self, *args, **kwargs):
         if self.pk is None:
             self.tipo = self.__class__.TIPO
-        super(Rol, self)
+        super(Rol, self).save(*args, **kwargs)  # Corrección: llamada al método save de la clase base
+
 
     def related(self):
         return self.Rol != Rol and self or getattr(self, self.get_tipo_display())

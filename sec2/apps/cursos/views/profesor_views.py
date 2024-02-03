@@ -1,4 +1,4 @@
-from ..models import Profesor, Titular
+from ..models import Actividad, Profesor, Titular
 from ..forms.profesor_forms import *
 
 from django.urls import reverse_lazy
@@ -13,11 +13,12 @@ class ProfesorCreateView(CreateView):
     model = Profesor
     form_class = FormularioProfesor
     template_name = 'profesor/profesor_form.html'  
-    success_url = reverse_lazy('cursos:profesores')
+    success_url = reverse_lazy('cursos:profesor_crear')
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['titulo'] ="Alta de Profesor"
+        context['actividades'] = Actividad.objects.all()  # Obtener todas las actividades
         return context
 
     def form_valid(self, form):
@@ -27,7 +28,7 @@ class ProfesorCreateView(CreateView):
     def form_invalid(self, form):
         messages.warning(self.request, f'{ICON_TRIANGLE} Por favor, corrija los errores a continuación.')
         return super().form_invalid(form)
-    
+
 class ProfesorListView(ListFilterView):
     model = Profesor
     paginate_by = 100  

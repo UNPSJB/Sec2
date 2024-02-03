@@ -178,16 +178,15 @@ class Clase(models.Model):
 class Profesor(Rol):
     # ForeignKey
     dictados = models.ManyToManyField(Dictado, through = "Titular", related_name="profesores", blank=True)
-
     TIPO = 2
-    # capacitaciones = models.CharField(max_length=50)
     ejerce_desde = models.DateField()
-    # actividades = models.ManyToManyField(Actividad, blank=True)
+    actividades = models.ManyToManyField(Actividad, blank=True)
 
     def __str__(self):
-        return f"{self.persona.nombre} {self.persona.apellido}"
-
-
+        if self.persona_id and hasattr(self, 'persona'):
+            return f"{self.persona.nombre} {self.persona.apellido}"
+        else:
+            return super().__str__()
 Rol.register(Profesor)
 
 #------------- TITULAR --------------------
