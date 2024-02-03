@@ -30,8 +30,11 @@
 </div>
 <hr />
 
-<a class="enlace" href="{% url 'cursos:actividad' %}"> Actividad</a>
-
+{% comment %} BOTON DE ACTIVIAD {% endcomment %}
+<a class="enlace" id="enlaceActividad" href="{% url 'cursos:gestion_actividad' %}"> Actividad</a>
+<hr />
+{% comment %} BOTON DE AULA {% endcomment %}
+<a class="enlace" id="enlaceAula" href="{% url 'cursos:gestion_aula' %}"> Aula</a>
 <hr />
 
 <div class="menu">
@@ -61,19 +64,7 @@
 </div>
 
 <hr>  
-<div class="menu">
-  <!-- Botón desplegable para Aulas -->
-  <button class="submenu-toggle" data-submenu="aulas">Aulas<i class="fa-solid fa-caret-down"></i></button>
-  <ul class="submenu" id="aulas-submenu">
-    <li>
-      <a href="{% url 'cursos:aula_crear' %}"><i class="fa-solid fa-plus item-subMenu"></i> Crear aula</a>
-    </li>
-    <li>
-      <a href="{% url 'cursos:aula_listado' %}"><i class="fa-solid fa-list item-subMenu"></i> Lista de aulas</a>
-    </li>
-  </ul>
-</div>
-<hr />
+
 
 {% block extrajs %}
   <script src="{% static 'Libs/js/nav_curso.js' %}"></script>

@@ -4,29 +4,30 @@
 
 {% block extracss_intermedia %}
   <link href="{% static 'css/listado.css' %}" rel="stylesheet" />
-  
 {% endblock %}
 
 {% block dinamica %}
-<br>
-<h3 class="titulo">{{ titulo }}</h3>
-    <div class="row justify-content-center">
-      <div class="border curso-form rounded-5" style="width: 80%">
-        {% block alta %}
-        {% endblock %}
-      </div>
-    </div>
+  <br />
+  <h3 class="titulo">{{ titulo }}</h3>
+  <div class="row justify-content-center">
+    <div class="border curso-form rounded-4" style="width: 80%;padding-left: 20px; padding-top: 20px;">
+      {% block alta %}
 
-  <br>
+      {% endblock %}
+    </div>
+  </div>
+
+  <br />
   <div class="container">
     <div class="row justify-content-center">
       <div style="width: 80%">
         {% block listado %}
+
         {% endblock %}
       </div>
     </div>
   </div>
 </div>
-  
-    {% include 'nav_filtro.html' %}
-  {% endblock %}
+
+  {% include 'nav_filtro.html'%}
+{% endblock %}

@@ -23,18 +23,18 @@ class ActividadCreateListView(CreateView, ListView):
         return context
 
     def get_success_url(self):
-        return reverse_lazy('cursos:actividad')
+        return reverse_lazy('cursos:gestion_actividad')
 
     def form_valid(self, form):
         response = super().form_valid(form)
         form.instance.nombre = form.cleaned_data['nombre'].title()
         form.save()
-        messages.success(self.request, 'Alta de actividad exitosa!')
+        messages.success(self.request, f'{ICON_CHECK} Alta de actividad exitosa!')
         return response
     
     def form_invalid(self, form):
         messages.warning(self.request, f'{ICON_TRIANGLE} El nombre ya existe o posee caracteres no deseados.')
-        return redirect('cursos:actividad')
+        return redirect('cursos:gestion_actividad')
 
     def get(self, request, *args, **kwargs):
         # Asegúrate de que el queryset esté disponible antes de llamar a super().get()
@@ -55,12 +55,7 @@ class ActividadCreateListView(CreateView, ListView):
             if nombre_filter:
                 # Coincidencia parcial insensible a mayúsculas y minúsculas para 'nombre'
                 queryset = queryset.filter(nombre__icontains=nombre_filter)
-
-            # Agrega más filtros según los campos de tu formulario
-
-        # Imprime el queryset para depurar
-        print("Queryset:", queryset)
-
+        queryset = queryset.order_by('nombre')
         return queryset    
 
 ## ------------ ACTIVIDAD DETALLE -------------------
@@ -78,7 +73,7 @@ class ActividadUpdateView(UpdateView):
     model = Actividad
     form_class = ActividadForm
     template_name = 'actividad/actividad_alta.html'
-    success_url = reverse_lazy('cursos:actividad')
+    success_url = reverse_lazy('cursos:gestion_actividad')
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -104,4 +99,4 @@ def actividad_eliminar(request, pk):
         messages.success(request, '<i class="fa-solid fa-square-check fa-beat-fade"></i> La actividad se eliminó correctamente.')
     except Exception as e:
         messages.error(request, 'Ocurrió un error al intentar eliminar la actividad.')
-    return redirect('cursos:actividad')
+    return redirect('cursos:gestion_actividad')

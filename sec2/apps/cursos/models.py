@@ -21,7 +21,7 @@ class Actividad(models.Model):
 class Aula(models.Model):
     tipo = models.CharField(max_length=50, choices=TIPO_AULA, help_text="Tipo de aula")
     numero = models.PositiveIntegerField(help_text="Numero de aula")
-    capacidad = models.PositiveIntegerField(help_text="Capacidad máxima del aula")
+    capacidad = models.PositiveIntegerField(help_text="Capacidad máxima")
 
     def clean(self):
         if self.numero <= 0:
