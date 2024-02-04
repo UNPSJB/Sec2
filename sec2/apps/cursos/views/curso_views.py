@@ -1,4 +1,5 @@
-from django.shortcuts import redirect
+from django.shortcuts import get_object_or_404, redirect
+from apps.cursos.forms.actividad_forms import ActividadForm
 from apps.cursos.models import Curso
 from ..forms.curso_forms import *
 from django.views.generic.edit import CreateView, UpdateView
@@ -12,14 +13,12 @@ from django.urls import reverse_lazy
 class CursoCreateView(CreateView):
     model = Curso
     form_class = CursoForm
-    template_name = 'curso/curso_alta_convenio.html'
-    success_url = reverse_lazy('cursos:curso_listado')  # Replace with your desired URL
+    success_url = reverse_lazy('cursos:curso_crear')
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         tipo_curso = self.request.GET.get('tipo', None)
-        
-        # Set the title based on the type of course
+
         if tipo_curso == 'sec':
             context['titulo'] = "Alta de Curso del SEC"
         elif tipo_curso == 'convenio':
@@ -60,14 +59,28 @@ class CursoCreateView(CreateView):
         # Guardar el formulario
         result = super().form_valid(form)
 
-        # Mensaje de éxito
+        form.instance.descripcion = form.cleaned_data['descripcion'].capitalize()
+        form.instance.nombre = form.cleaned_data['nombre'].title()
+        form.save()
         messages.success(self.request, f'{ICON_CHECK} Alta de curso exitosa!')
         return result
 
     def form_invalid(self, form):
-        messages.warning(self.request, 'Por favor, corrija los errores a continuación.')
+        messages.warning(self.request, f'{ICON_TRIANGLE} Por favor, corrija los errores a continuación.')
         # Imprimir los errores en la consola
         print("Errores del formulario:", form.errors)
+
+        # Cambiar el template según el tipo de curso
+        tipo_curso = self.request.GET.get('tipo', None)
+        if tipo_curso == 'sec':
+            self.template_name = 'curso/curso_alta_sec.html'
+        elif tipo_curso == 'convenio':
+            self.template_name = 'curso/curso_alta_convenio.html'
+        elif tipo_curso == 'actividad':
+            self.template_name = 'curso/curso_alta_gimnasio.html'
+        else:
+            self.template_name = 'curso/seleccion_tipo_curso.html'
+
         return super().form_invalid(form)
     
 #--------------- CURSO DETALLE --------------------------------
@@ -85,9 +98,11 @@ class CursoDetailView(DetailView):
         # Obtener todos los dictados asociados al curso junto con los horarios
         dictados = curso.dictado_set.prefetch_related('horarios').all()
         context['dictados'] = dictados
+        # Verificar si hay dictados asociados
+        tiene_dictados = dictados.exists()
+        context['tiene_dictados'] = tiene_dictados
+
         return context
-    
-    
 
 ##--------------- CURSO LIST --------------------------------
 class CursoListView(ListFilterView):
@@ -111,14 +126,16 @@ class CursoListView(ListFilterView):
         if filter_form.is_valid():
             area = filter_form.cleaned_data.get('area')
             nombre = filter_form.cleaned_data.get('nombre')
-            duracion = filter_form.cleaned_data.get('duracion') 
+            duracion = filter_form.cleaned_data.get('duracion')
+            actividad = filter_form.cleaned_data.get('actividades')
             if nombre:
                 queryset = queryset.filter(nombre__icontains=nombre)
             if area:
                 queryset = queryset.filter(area=area)
             if duracion is not None:
                 queryset = queryset.filter(duracion=duracion)
-        
+            if actividad:
+                queryset = queryset.filter(actividad=actividad)
         queryset = queryset.order_by('area', 'nombre')
         return queryset
 
@@ -135,9 +152,17 @@ class CursoUpdateView(UpdateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['titulo'] = "Modificar Curso"
         tipo_curso = self.get_object().get_tipo_curso()  # Obtén el tipo de curso
         context['tipo_curso'] = tipo_curso
+        
+        if tipo_curso == 'sec':
+            context['titulo'] = "Modificar Curso del Sec"
+        elif tipo_curso == 'convenio':
+            context['titulo'] = "Modificar Convenio"
+        elif tipo_curso == 'actividad':
+            context['titulo'] = "Modificar Curso3"
+        else:
+            context['titulo'] = "Modificar Curso5"
         return context
 
     def get_form_kwargs(self):
@@ -147,33 +172,47 @@ class CursoUpdateView(UpdateView):
         return kwargs
 
     def get(self, request, *args, **kwargs):
-        print("----------2-------------")
         self.object = self.get_object()
         requiere_certificado_medico = self.object.requiere_certificado_medico
         
         if requiere_certificado_medico:
-            print("----------3-------------")
             self.template_name = 'curso/curso_alta_gimnasio.html'
         else:
             es_convenio = self.object.es_convenio
-            print("----------4-------------")
             if es_convenio:
-                print("----------5-------------")
                 self.template_name = 'curso/curso_alta_convenio.html'
             else:
-                print("----------6-------------")
                 self.template_name = 'curso/curso_alta_sec.html'
         return super().get(request, *args, **kwargs)
         
     def form_valid(self, form):
         print("----------7-------------")
-
         curso = form.save()
-        messages.success(self.request, '<i class="fa-solid fa-square-check fa-beat-fade"></i> Curso modificado con éxito')
+        messages.success(self.request, f'{ICON_CHECK} Curso modificado con éxito')
         return redirect('cursos:curso_detalle', pk=curso.pk)
 
     def form_invalid(self, form):
-        messages.warning(self.request, '<i class="fa-solid fa-triangle-exclamation fa-flip"></i> Por favor, corrija los errores a continuación.')
-        for field, errors in form.errors.items():
-            print(f"Campo: {field}, Errores: {', '.join(errors)}")
+        messages.warning(self.request, f'{ICON_TRIANGLE} Por favor, corrija los errores a continuación.')
+        # Imprimir los errores en la consola
+        print("Errores del formulario:", form.errors)
+        tipo_curso = self.get_object().get_tipo_curso()  # Obtén el tipo de curso
+        if tipo_curso == 'sec':
+            self.template_name = 'curso/curso_alta_sec.html'
+        elif tipo_curso == 'convenio':
+            self.template_name = 'curso/curso_alta_convenio.html'
+        elif tipo_curso == 'actividad':
+            self.template_name = 'curso/curso_alta_gimnasio.html'
+        else:
+            self.template_name = 'curso/seleccion_tipo_curso.html'
+
         return super().form_invalid(form)
+
+##--------------- CURSO ELIMINAR --------------------------------
+def curso_eliminar(request, pk):
+    curso = get_object_or_404(Curso, pk=pk)
+    try:
+        curso.delete()
+        messages.success(request, f'{ICON_CHECK} El curso se eliminó correctamente!')
+    except Exception as e:
+        messages.error(request, 'Ocurrió un error al intentar eliminar el aula.')
+    return redirect('cursos:curso_listado') 

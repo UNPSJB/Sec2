@@ -4,7 +4,7 @@
 {% load static %}
 
 {% block botones %}
-  <a href="{% url 'cursos:curso_crear' %}" class="btn btn-primary btn-detalle"><i class="fa-solid fa-plus"></i> Nuevo</a>
+  <a href="{% url 'cursos:curso_crear' %}" class="btn btn-primary btn-sm btn-detalle"><i class="fa-solid fa-plus"></i> Nuevo</a>
 {% endblock %}
 
 {% block tabla_listado %}
@@ -12,11 +12,12 @@
     <thead>
       <tr>
         <th>#</th>
-        <th scope="col">Área</th>
-        <th scope="col">Nombre</th>
-        <th scope="col">Tipo</th>
-        <th scope="col">Total Modulos</th>
-        <th scope="col"></th>
+        <th>Act</th>
+        <th>Área</th>
+        <th>Nombre</th>
+        <th>Tipo</th>
+        <th>Modulos</th>
+        <th></th>
       </tr>
     </thead>
 
@@ -24,6 +25,7 @@
       {% for curso in object_list %}
         <tr class="bg-transition fila-personalizada">
           <td>{{ forloop.counter }}</td>
+          <td>{{ curso.actividad }}</td>
           <td>{{ curso.get_area_display }}</td>
           <td>{{ curso.nombre }}</td>
           <td>
@@ -34,7 +36,7 @@
             {% endif %}
           </td>
           <td>{{ curso.modulos_totales }} horas</td>
-          <td>
+          <td class="text-end">
             <a href="{% url 'cursos:curso_detalle' curso.pk %}" class="btn btn-primary btn-detalle btn-sm"><i class="fa-regular fa-eye"></i> Detalle</a>
           </td>
         </tr>

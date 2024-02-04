@@ -219,6 +219,8 @@ hr {
     border-radius: 0px;
     text-decoration: none; /* Quitar el subrayado del enlace */
     color: white; /* Color del texto */
+    display: block; width: 100%;
+
 }
 
 #enlaceActividad:hover,
@@ -229,6 +231,7 @@ hr {
 #enlaceActividad{
     background-color: #FF7043;
     border: 2px solid #FF7043;
+    
 }
 
 #enlaceAula{

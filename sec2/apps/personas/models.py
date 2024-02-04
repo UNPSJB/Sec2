@@ -71,8 +71,8 @@ class Persona(models.Model):
     objects = models.Manager()
 
     def __str__(self):
-        return f"{self.dni} {self.nombre} {self.apellido}"
-
+        return f"{self.apellido} {self.nombre}"
+    
     def convertir_en_profesor(self, profesor):
         assert not self.es_profesor, "Ya soy Profesor"
         profesor.persona = self

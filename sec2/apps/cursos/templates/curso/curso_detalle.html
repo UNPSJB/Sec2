@@ -3,99 +3,96 @@
 {% load crispy_forms_tags %}
 {% load static %}
 
-{% block detalle_lado_izquierdo %}
-  <div class="col-md-3 d-flex align-items-center justify-content-center">
-    <img src="{% static 'images/curso.jpg' %}" style="width: 60%; height: auto;" alt="Imagen de perfil" class="img-thumbnail" />
-  </div>
-{% endblock %}
-
-{% block detalle_lado_derecho %}
-  <div class="col-md-9">
-    <div class="row">
-      
-      <div class="col-md-2">
-        <p><strong>Nombre:</strong></p>
-      </div>
-
-      <div class="col-md-2">
-        <p>{{ curso.nombre }}</p>
-      </div>
-      
-      <div class="col-md-2">
-        <p><strong>Área:</strong></p>
-      </div>
-      <div class="col-md-3">
-        <p>
-          {{ curso.get_area_display }}
-          {% if curso.area != 2 %}
+{% block detalle %}
+  <div class="row">
+    <div class="col-md-2">
+      <p>
+        <strong>Nombre:</strong>
+      </p>
+    </div>
+    <div class="col-md-4">
+      <p>{{ curso.nombre }}</p>
+    </div>
+    <div class="col-md-2">
+      <p>
+        <strong>Área:</strong>
+      </p>
+    </div>
+    <div class="col-md-4">
+      <p>
+        {{ curso.get_area_display }}
+        {% if curso.area != 2 %}
           |{% if curso.es_convenio %}
-          Convenio
+            Convenio
           {% else %}
-          SEC
+            SEC
           {% endif %}
-          {% endif %}
-        </p>
-      </div>
-    </div>
-
-    <div class="row">
-      <div class="col-md-2">
-        <p>
-          <strong>Total Modulos:</strong>
-        </p>
-      </div>
-      <div class="col-md-2">
-        <p>{{ curso.modulos_totales }} hrs.</p>
-      </div>
-      
-      <div class="col-md-2">
-        <p><strong>Costo Total:</strong></p>
-      </div>
-      <div class="col-md-2">
-        <p>${{ curso.costo }}</p>
-      </div>
-    </div>
-
-    <div class="row">
-      <div class="col-md-2">
-        <p>
-          <strong>Descripción:</strong>
-        </p>
-      </div>
-      <div class="col-md-5">
-        <p>{{ curso.descripcion }}</p>
-      </div>
-    </div>
-
-    {% if curso.area == 2 %}
-      <div class="row">
-        <div class="col-md-3">
-          <p>
-            <strong>Certificado Médico:</strong>
-        </div>
-        {% if curso.certificado_medico %}
-          <div class="col-md-5">
-            Se requiere certificado médico para participar.<p>
-          </div>
-        {% else %}
-          <div class="col-md-5">
-            No requiere</p>
-          </div>
         {% endif %}
-      </div>
-    {% endif %}
+      </p>
+    </div>
   </div>
+
+  <div class="row">
+    <div class="col-md-2">
+      <p>
+        <strong>Total Modulos:</strong>
+      </p>
+    </div>
+    <div class="col-md-4">
+      <p>{{ curso.modulos_totales }} hrs.</p>
+    </div>
+    <div class="col-md-2">
+      <p>
+        <strong>Costo Total:</strong>
+      </p>
+    </div>
+    <div class="col-md-4">
+      <p>${{ curso.costo }}</p>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-md-2">
+      <p>
+        <strong>Descripción:</strong>
+      </p>
+    </div>
+    <div class="col-md-10">
+      <p>{{ curso.descripcion }}</p>
+    </div>
+  </div>
+
+  {% if curso.area == 2 %}
+    <div class="row">
+      <div class="col-md-2">
+        <p>
+          <strong>Certificado Médico:</strong>
+        </p>
+      </div>
+
+      {% if curso.requiere_certificado_medico %}
+        <div class="col-md-5">
+          <p>Se requiere certificado médico para participar.</p>
+        </div>
+      {% else %}
+        <div class="col-md-5">
+          <p>No requiere</p>
+        </div>
+      {% endif %}
+    </div>
+  {% endif %}
 {% endblock %}
 
 {% block botones %}
-  <div class="col d-flex justify-content-center">
-    <a href="{% url 'cursos:curso_editar' curso.pk %}" class="btn btn-primary btn-sm btn-detalle"><i class="fa-regular fa-pen-to-square"></i> Modificar</a>
-  </div>
-
-  <div class="col d-flex justify-content-end">
-    <button type="button" class="btn btn-danger btn-sm btn-detalle" data-bs-toggle="modal" data-bs-target="#exampleModal_eliminar"><i class="fa-regular fa-circle-down"></i> Dar de Baja</button>
-    {% include 'curso/modal_confirm_baja.html' %}
-  </div>
+<div class="col d-flex justify-content-center"> 
+  <a href="{% url 'cursos:curso_editar' curso.pk %}" class="btn btn-primary btn-sm btn-detalle {% if tiene_dictados %}disabled{% endif %}" role="button">
+    <i class="fa-regular fa-pen-to-square"></i> Modifica
+  </a>
+</div>
+<div class="col d-flex justify-content-end">
+  <button type="button" class="btn btn-danger btn-sm btn-detalle" data-bs-toggle="modal" data-bs-target="#exampleModal_eliminar"><i class="fa-regular fa-circle-down"></i> Dar de Baja</button>
+  {% include 'curso/modal_confirm_baja.html' %}
+</div>
 {% endblock %}
 
 {% block listado_asociado %}
@@ -105,7 +102,7 @@
         <tr>
           <th>#</th>
           <th>Fecha Inicio</th>
-          <th>Cupo</th> 
+          <th>Cupo</th>
           <th>Desc</th>
           <th>Duración</th>
           <th></th>
@@ -116,9 +113,9 @@
           <tr>
             <td>{{ forloop.counter }}</td>
             <td>{{ dictado.fecha }}</td>
-            <td> 0/{{ dictado.cupo }}</td>
-            <td> {{ dictado.descuento }} %</td>
-            <td> {{ dictado.modulos_por_clase }} hrs </td>
+            <td>0/{{ dictado.cupo }}</td>
+            <td>{{ dictado.descuento }} %</td>
+            <td>{{ dictado.modulos_por_clase }} hrs</td>
             <td>
               <a href="{% url 'cursos:dictado_detalle' curso_pk=curso.pk dictado_pk=dictado.pk %}" class="btn btn-primary btn-detalle btn-sm"><i class="fa-regular fa-eye"></i> Detalle</a>
             </td>
@@ -129,6 +126,11 @@
   {% else %}
     <p>No hay dictados asociados.</p>
   {% endif %}
-  <a href="{% url 'cursos:dictado_crear' curso.pk %}" class="btn btn-primary btn-detalle"><i class="fa-solid fa-plus"></i> Nuevo</a>
+  <!-- Agrega este bloque en tu plantilla -->
+  {% if tiene_dictados %}
+    <a href="{% url 'cursos:dictado_crear' pk=object.pk %}" class="btn btn-primary btn-sm btn-detalle"><i class="fa-regular fa-plus"></i> Nuevo Dictado</a>
+  {% else %}
+    <button type="button" class="btn btn-primary btn-sm btn-detalle" data-bs-toggle="modal" data-bs-target="#exampleModal"><i class="fa-regular fa-plus"></i> Nuevo Dictado</button>
+    {% include 'curso/modal_primer_dictado.html' %}
+  {% endif %}
 {% endblock %}
-

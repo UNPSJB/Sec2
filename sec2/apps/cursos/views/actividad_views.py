@@ -56,7 +56,7 @@ class ActividadCreateListView(CreateView, ListView):
                 # Coincidencia parcial insensible a mayúsculas y minúsculas para 'nombre'
                 queryset = queryset.filter(nombre__icontains=nombre_filter)
         queryset = queryset.order_by('nombre')
-        return queryset    
+        return queryset
 
 ## ------------ ACTIVIDAD DETALLE -------------------
 class ActividadDetailView(DetailView):

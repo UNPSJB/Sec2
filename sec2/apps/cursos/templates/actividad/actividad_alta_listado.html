@@ -10,9 +10,9 @@
         <div class="form-group">
           {{ form.nombre.label_tag }}
           {{ form.nombre }}
-          <small class="form-text text-muted">{{ form.nombre.help_text }}</small>
+          {% include "error_campo.html" with field=form.nombre %}
         </div>
-      </div>
+      </div>  
       <div class="col align-self-center">
         <button type="submit" class="btn btn-success btn-sm">Crear actividad</button>
       </div>

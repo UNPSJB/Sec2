@@ -64,10 +64,6 @@ class AfiliadoUpdateForm(forms.ModelForm):
         model = Afiliado
         fields = '__all__'
         exclude = ['tipo', 'hasta', 'estado', 'persona']
-        widgets = {
-            # 'fechaAfiliacion': forms.DateInput(attrs={'type': 'date'}),
-            # 'fechaIngresoTrabajo': forms.DateInput(attrs={'type': 'date'})
-        }
         labels = {
             'fechaIngresoTrabajo': "Fecha de ingreso al trabajo",
             'fechaAfiliacion': "Fecha de afiliación",

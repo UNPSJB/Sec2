@@ -70,9 +70,50 @@ class FormularioProfesor(forms.ModelForm):
         
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-
 FormularioProfesor.base_fields.update(ProfesorForm.base_fields)
 
+
+class ProfesorUpdateForm(forms.ModelForm):
+    class Meta:
+        model = Persona
+        fields = '__all__'
+        labels = {
+            'fechaIngresoTrabajo': "Fecha de ingreso al trabajo",
+            'fechaAfiliacion': "Fecha de afiliación",
+        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        persona_fields = ['dni', 'cuil', 'nombre', 'apellido', 'fecha_nacimiento', 'celular', 'direccion', 'nacionalidad', 'mail', 'estado_civil']
+        for field_name in persona_fields:
+            if field_name == 'dni':
+                self.fields[field_name].initial = getattr(self.instance.persona, field_name)
+            if field_name == 'cuil':
+                self.fields[field_name].initial = getattr(self.instance.persona, field_name)
+            if field_name == 'nacionalidad':
+                self.fields[field_name].initial = getattr(self.instance.persona, field_name)
+            if field_name == 'nombre':
+                self.fields[field_name].initial = getattr(self.instance.persona, field_name)
+            if field_name == 'apellido':
+                self.fields[field_name].initial = getattr(self.instance.persona, field_name)
+            if field_name == 'fecha_nacimiento':
+                self.fields[field_name].initial = getattr(self.instance.persona, field_name)
+            if field_name == 'celular':
+                self.fields[field_name].initial = getattr(self.instance.persona, field_name)
+
+            if field_name == 'direccion':
+                self.fields[field_name].initial = getattr(self.instance.persona, field_name)
+            if field_name == 'mail':
+                self.fields[field_name].initial = getattr(self.instance.persona, field_name)
+            if field_name == 'estado_civil':
+                self.fields[field_name].initial = getattr(self.instance.persona, field_name)
+
+
+## ------------ FILTRO DE PROFESOR --------------
 class ProfesorFilterForm(FiltrosForm):
     nombre = forms.CharField(required=False)
-    # Area = models.PositiveSmallIntegerField()
+    actividades = forms.ModelChoiceField(
+        queryset=Actividad.objects.all(),
+        required=False,
+        empty_label="--------------",  # Texto para la opción vacía
+    )

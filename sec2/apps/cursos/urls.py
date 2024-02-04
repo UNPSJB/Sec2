@@ -31,16 +31,17 @@ urlpatterns = [
 
     # PROFESOR
     path('profesores', ProfesorListView.as_view(), name="profesor_listado"),
-    path('profesores/crear', ProfesorCreateView.as_view(), name="profesor_crear"),
-
-
+    path('profesores/profesor/crear', ProfesorCreateView.as_view(), name="profesor_crear"),
+    path('profesores/profesor/<int:pk>', ProfesorDetailView.as_view(), name="profesor_detalle"),
+    path('profesores/profesor/<int:pk>/editar', ProfesorUpdateView.as_view(), name="profesor_editar"),
+    path('profesores/profesor/<int:pk>/eliminar', profesor_eliminar, name="profesor_eliminar"),
 
     # CURSOS
+    path('cursos/listado', CursoListView.as_view(), name="curso_listado"),
     path('cursos/curso/crear/', CursoCreateView.as_view(), name="curso_crear"),
     path('cursos/curso/<int:pk>', CursoDetailView.as_view(), name="curso_detalle"),
     path('cursos/curso/<int:pk>/editar', CursoUpdateView.as_view(), name="curso_editar"),
-#     path('cursos/curso/<int:pk>/eliminar', curso_eliminar, name="curso_eliminar"),
-    path('cursos/listado', CursoListView.as_view(), name="curso_listado"),
+    path('cursos/curso/<int:pk>/eliminar', curso_eliminar, name="curso_eliminar"),
 
     # DICTADOS (accedido desde cursos)
     path('cursos/curso/<int:pk>/dictados/dictado/crear', DictadoCreateView.as_view(), name="dictado_crear"),
@@ -87,8 +88,6 @@ urlpatterns = [
 # 	path('cursos/<int:pk>/dictados', DictadoListView.as_view(), name="dictado_listado"),
 #     path('dictado/<int:pk>/verclases', ClaseListView.as_view(), name="ver_clases"),#se accede desde el dictado
 
-#     path('profesores/<int:pk>/editar', ProfesorUpdateView.as_view(), name="profesor_modificar"),
-#     # path('profesores/<int:pk>/eliminar', actividad_eliminar, name="profesor_eliminar"),
     
     
 

@@ -11,25 +11,16 @@
 {% block dinamica %}
   <div class="container-sm">
     <h2 class="titulo">{{ titulo }}</h2>
-    <br />
+    {% block detalle %}
+
+    {% endblock %}
+    {% block horarios %}
+
+    {% endblock %}
     <div class="row">
-      {% block detalle_lado_izquierdo %}
+      {% block botones %}
 
       {% endblock %}
-
-      {% block detalle_lado_derecho %}
-
-      {% endblock %}
-      
-      {% block horarios %}
-      {% endblock %}
-      <br />
-      <br />
-      <div class="row">
-        {% block botones %}
-
-        {% endblock %}
-      </div>
     </div>
   </div>
 

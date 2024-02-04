@@ -1,5 +1,7 @@
+from django.shortcuts import get_object_or_404, redirect
 from ..models import Actividad, Profesor, Titular
 from ..forms.profesor_forms import *
+from django.views.generic import DetailView
 
 from django.urls import reverse_lazy
 from django.contrib import messages
@@ -29,40 +31,57 @@ class ProfesorCreateView(CreateView):
         messages.warning(self.request, f'{ICON_TRIANGLE} Por favor, corrija los errores a continuación.')
         return super().form_invalid(form)
 
+## ------------------ DETALLE DE PROFESOR ------------------
+class ProfesorDetailView(DetailView):
+    model = Profesor
+    template_name = 'profesor/profesor_detalle.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['titulo'] = "Profesor"
+        context['tituloListado'] = 'Dictados Asociados'
+        return context
+
+## ------------ PROFESOR UPDATE -------------------
+class ProfesorUpdateView(UpdateView):
+    model = Profesor
+    form_class = ProfesorUpdateForm
+    template_name = 'profesor/profesor_form.html'  
+    success_url = reverse_lazy('cursos:profesor_listado')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['titulo'] = "Modificar Profesor"
+        return context
+
+    def form_valid(self, form):
+        messages.add_message(self.request, messages.SUCCESS, 'Profesor modificada con éxito')
+        return super().form_valid(form)
+
+    def form_invalid(self, form):
+        messages.add_message(self.request, messages.ERROR, form.errors)
+        return super().form_invalid(form)
+
+## ------------------ LISTADO DE PROFESOR ------------------
 class ProfesorListView(ListFilterView):
     model = Profesor
-    paginate_by = 100  
-    template_name = 'profesor/profesor_list.html'  
+    paginate_by = 11
     filter_class = ProfesorFilterForm
+    template_name = 'profesor/profesor_list.html'  
     
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        filter_form = ProfesorFilterForm(self.request.GET)
+        context['filtros'] = filter_form
         context['titulo'] = "Listado de profesores"
         return context
 
-# class ProfesorUpdateView(UpdateView):
-#     model = Profesor
-#     form_class = FormularioProfesorUpdateFrom
-#     success_url = reverse_lazy('cursos:profesores')
-
-#     def get_context_data(self, **kwargs):
-#         context = super().get_context_data(**kwargs)
-#         context['titulo'] = "Modificar Profesor"
-#         return context
-    
-#     def form_valid(self, form):
-#         messages.add_message(self.request, messages.SUCCESS, 'profesor modificada con éxito')
-#         return super().form_valid(form)
-
-#     def form_invalid(self, form):
-#         messages.add_message(self.request, messages.ERROR, form.errors)
-#         return super().form_invalid(form)
-
-
-# class ProfesorDelDictadoListView(ListFilterView):
-#     model = Titular
-#     paginate_by = 100
-    
-#     def get_queryset(self):
-#         titular = super().get_queryset().filter(dictado__pk=self.kwargs['pk'])
-#         return titular
+## ------------ ELIMINAR -------------------
+def profesor_eliminar(request, pk):
+    # profesor = get_object_or_404(Profesor, pk=pk)
+    # try:
+    #     profesor.delete()
+    #     messages.success(request, f'{ICON_CHECK} El Profesor se eliminó correctamente!')
+    # except Exception as e:
+    #     messages.error(request, 'Ocurrió un error al intentar eliminar el aula.')
+    return redirect('afiliados:funcionalidad_pendiente')

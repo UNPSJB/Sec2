@@ -28,11 +28,7 @@ def index(request):
 #     dictado = alumno.agregateDictado(pk)
 #     return redirect('cursos:alumnos_dictado', dictado.pk)
 
-# def curso_eliminar(request, pk):
-#     a = Curso.objects.get(pk=pk)
-#     a.delete()
-#     messages.success(request, f'<i class="fa-solid fa-square-check fa-beat-fade"></i>   El curso "{a.nombre}" se ha eliminado con éxito.')
-#     return redirect('cursos:curso_listado') 
+
 
  
 

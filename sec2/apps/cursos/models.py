@@ -46,7 +46,7 @@ class Curso(models.Model):
     nombre = models.CharField(
         max_length=50,
         validators=[text_and_numeric_validator],  # Añade tu validador personalizado si es necesario
-        help_text="Solo se permiten letras y espacios."
+        help_text="Sin caracteres especiales."
     )
     descripcion = models.CharField(
         max_length=255,
@@ -184,7 +184,7 @@ class Profesor(Rol):
 
     def __str__(self):
         if self.persona_id and hasattr(self, 'persona'):
-            return f"{self.persona.nombre} {self.persona.apellido}"
+            return f"{self.persona.apellido} {self.persona.nombre}"
         else:
             return super().__str__()
 Rol.register(Profesor)

@@ -1,0 +1,77 @@
+{% extends 'detalle_listado.html' %}
+
+{% load crispy_forms_tags %}
+{% load static %}
+
+{% block detalle %}
+  <div class="row">
+    <div class="col-md-1">
+      <p>
+        <strong>Dni:</strong>
+      </p>
+    </div>
+    <div class="col-md-5">
+      <p>{{ profesor.persona.dni }}</p>
+    </div>
+
+    <div class="col-md-2">
+      <p>
+        <strong>Ejerce desde:</strong>
+      </p>
+    </div>
+    <div class="col">
+      <p>{{ profesor.ejerce_desde }}</p>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-md-1">
+      <p>
+        <strong>Nombre:</strong>
+      </p>
+    </div>
+    <div class="col">
+      <p>{{ profesor.persona.nombre }}</p>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-md-1">
+      <p>
+        <strong>Apellido:</strong>
+      </p>
+    </div>
+    <div class="col-md-5">
+      <p>{{ profesor.persona.apellido }}</p>
+    </div>
+
+    <div class="col-md-2">
+        <p>
+          <strong>Actividades:</strong>
+        </p>
+      </div>
+      <div class="col">
+        <p>{{ profesor.actividades }}</p>
+      </div>
+  </div>
+
+  <div class="row">
+   
+  </div>
+{% endblock %}
+
+{% block botones %}
+<div class="col d-flex justify-content-center">
+    <a href="{% url 'cursos:profesor_editar' profesor.pk %}" class="btn btn-primary btn-sm btn-detalle"><i class="fa-regular fa-pen-to-square"></i> Modificar</a>
+  </div>
+
+  <div class="col d-flex justify-content-end">
+    {% comment %} <button type="button" class="btn btn-danger btn-sm btn-detalle" data-bs-toggle="modal" data-bs-target="#exampleModal_eliminar"><i class="fa-regular fa-circle-down"></i> Dar de Baja</button> {% endcomment %}
+    {% comment %} {% include 'curso/modal_confirm_baja.html' %} {% endcomment %}
+  </div>
+{% endblock %}
+
+{% comment %} {{ object.get_actividad_display }}
+{% if mensaje %}
+  <div class="alert alert-info" role="alert">registro finalizado exitosamente</div>
+{% endif %} {% endcomment %}

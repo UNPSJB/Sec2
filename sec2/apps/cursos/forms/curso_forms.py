@@ -1,5 +1,5 @@
 from django import forms
-from ..models import Curso
+from ..models import Actividad, Curso
 from utils.constants import *
 from utils.choices import *
 from sec2.utils import FiltrosForm
@@ -11,11 +11,24 @@ class CursoForm(forms.ModelForm):
         fields = '__all__'
         exclude= ['es_convenio', ]
 
+    area = forms.ChoiceField(
+        choices=[('', '---------')] + AREAS,  # Agrega el valor por defecto a las opciones de AREAS
+        widget=forms.Select(attrs={'class': 'form-control'}),
+        required=True
+    )
+    def clean_nombre(self):
+        nombre = self.cleaned_data['nombre']
+        nombre_lower = nombre.lower()  # Convertir a minúsculas
+        existe_curso = Curso.objects.filter(nombre__iexact=nombre_lower).exists()
+        if existe_curso:
+            raise forms.ValidationError('El nombre del curso ya existe. Por favor, elige otro nombre.')
+        return nombre
+    
     def __init__(self, *args, **kwargs):
         super(CursoForm, self).__init__(*args, **kwargs)
+        self.fields['actividad'].label = 'Actividad'
+        self.fields['actividad'].queryset = Actividad.objects.all().order_by('nombre')
         tipo_curso = kwargs.get('initial', {}).get('tipo_curso')
-        # Configuración predeterminada
-
         if tipo_curso == 'convenio':
             self.fields['area'].initial = 0
             self.fields['area'].widget = forms.HiddenInput()
@@ -42,6 +55,13 @@ class CursoFilterForm(FiltrosForm):
         required=False,
         widget=forms.Select(attrs={'class': 'form-control'})
     )
+    actividad = forms.ModelChoiceField(
+        queryset=Actividad.objects.all(),
+        label='Actividad',
+        required=False,
+        widget=forms.Select(attrs={'class': 'form-control'})
+    )
+    
     # duracion = forms.ChoiceField(
     #     label='Duración',
     #     choices=[('', '---------')] + list(DURACION),

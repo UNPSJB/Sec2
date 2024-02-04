@@ -4,7 +4,7 @@ from django.views.generic.edit import CreateView, UpdateView
 from apps.personas.forms import PersonaForm
 
 from apps.personas.models import Persona
-from ..models import Alumno, Clase, Curso, Dictado, Titular, Horario, Reserva
+from ..models import Actividad, Alumno, Clase, Curso, Dictado, Titular, Horario, Reserva
 from utils.constants import *
 from django.urls import reverse
 from ..forms.dictado_forms import *
@@ -24,6 +24,11 @@ class DictadoCreateView(CreateView):
         context = super().get_context_data(**kwargs)
         context['curso'] = get_object_or_404(Curso, id=self.kwargs.get('pk'))
         context['titulo'] = f"Dictado para {context['curso'].nombre}"
+        # Filtrar a los profesores por la actividad del curso
+        actividad_curso = context['curso'].actividad
+        profesores_actividad = Actividad.objects.filter(nombre=actividad_curso)
+        context['profesores_actividad'] = profesores_actividad
+
         context['profesor_form'] = ProfesorForm()
         return context
 
