@@ -9,6 +9,7 @@ from django.views.generic.edit import CreateView, UpdateView
 
 from utils.constants import *
 from sec2.utils import ListFilterView
+from django.db import transaction
 
 ## ------------------ CREATE DE PROFESOR ------------------
 class ProfesorCreateView(CreateView):
@@ -24,8 +25,33 @@ class ProfesorCreateView(CreateView):
         return context
 
     def form_valid(self, form):
-        messages.success(self.request, f'{ICON_CHECK} Profesor dado de alta con exitoso!')
-        return super().form_valid(form)
+        with transaction.atomic():
+            persona = Persona(
+                dni=form.cleaned_data["dni"],
+                cuil=form.cleaned_data["cuil"],
+                nombre=form.cleaned_data["nombre"],
+                apellido=form.cleaned_data["apellido"],
+                fecha_nacimiento=form.cleaned_data["fecha_nacimiento"],
+                mail=form.cleaned_data["mail"],
+                celular=form.cleaned_data["celular"],
+                estado_civil=form.cleaned_data["estado_civil"],
+                nacionalidad=form.cleaned_data["nacionalidad"],
+                direccion=form.cleaned_data["direccion"],
+            )
+            persona.save()
+
+            # Guardar las actividades seleccionadas
+            actividades_seleccionadas = self.request.POST.getlist('actividades')
+
+            profesor = Profesor(persona=persona)
+            profesor.ejerce_desde = form.cleaned_data["ejerce_desde"]
+            profesor.save()
+            profesor.actividades.set(actividades_seleccionadas)
+
+        response = super().form_valid(form)
+        # Mostrar el mensaje de éxito
+        messages.success(self.request, f'{ICON_CHECK} Profesor dado de alta con éxito!')
+        return response
 
     def form_invalid(self, form):
         messages.warning(self.request, f'{ICON_TRIANGLE} Por favor, corrija los errores a continuación.')
