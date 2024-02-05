@@ -55,6 +55,7 @@ class ClaseDetailView(DetailView):
         context["dictado"] = dictado
         context["clase"] = clase
         context["titulo"] = "Detalle de clase"
+        context["tituloListado"] = "Asistencia"
         context["alumnos_inscritos"] = alumnos_inscritos
         context["alumnos_asistieron"] = alumnos_asistieron
         return context

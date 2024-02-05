@@ -74,41 +74,12 @@ urlpatterns = [
    
     path('marcar_asistencia/<int:clase_id>/', marcar_asistencia, name='marcar_asistencia'),
 
-    # path('alumno/crear/', AlumnoCrearView.as_view(), name='alumno_crear'),
-
-
-
-
-
-
-    
-# #------------------------ INCHEQUEADO ------------------------
-#     # path('cursos/curso/<int:curso_pk>/dictados/dictado/<int:dictado_pk>/clases/clase/<int:clase_pk>/horarios/horario/<int:horario_pk>', HorarioCreateView.as_view(), name="clase_detalle"),
-
-# 	# NO UTILIZADO POR EL MOMENTO
-# 	path('cursos/<int:pk>/dictados', DictadoListView.as_view(), name="dictado_listado"),
-#     path('dictado/<int:pk>/verclases', ClaseListView.as_view(), name="ver_clases"),#se accede desde el dictado
-
-    
-    
-
-
-#     # path('<int:pk>/dictado/alumnos',  AlumnosDelDictadoListView.as_view(), name="alumnos_dictado"),#se accede desde el curso
-#     path('<int:pk>/dictado/<int:dpk>/alumnos',  agregarAlumnoCursoListView.as_view(), name="alumnos_dictado_curso"),#se accede desde dictado
-#     path('<int:pk>/dictado/inscribir/<int:apk>',  registrarAlumnoADictado, name="carga_alumno_dictado"),
-    
-    
-#     # * ------------------------  Alumno  ------------------------------------
-   
-    
-#     # * ------------------------  Asistencia  ------------------------------------
-#     path('<int:pk>/dictado/profesor',  ProfesorDelDictadoListView.as_view(), name="profesor_dictado"),
-#     path('<int:pk>/dictado/profesor/<int:ppk>/presente',  registrarAsistenciaProfesor, name="asistencia_profesor"),
-#     path('<int:pk>/dictado/alumnos/<int:apk>/asistencia', registrarAsistenciaAlumno, name="asistencia_alumno"),
-    
-#     # path('<int:pk>/inscriptos', AlumnosListView.as_view(), name="ver_inscriptos"),
-# #    path('<int:dpk>/dictado/<int:pk>/asistencia', registrarAsistenciaAlumno, name="asistencia_alumno"),
-#    # path('<int:pk>/inscriptos', AlumnosListView.as_view(), name="ver_inscriptos"),
-#     # path('<int:pk>/inscriptos', alumno_inscribir, name="completar_inscripcion"),
-#     path('pagoalumno', PagoAlumnoCreateView.as_view(), name="pago_alumno"),    
+    # path('<int:pk>/dictado/profesor',  ProfesorDelDictadoListView.as_view(), name="profesor_dictado"),
+    # path('<int:pk>/dictado/profesor/<int:ppk>/presente',  registrarAsistenciaProfesor, name="asistencia_profesor"),
+    # path('<int:pk>/dictado/alumnos/<int:apk>/asistencia', registrarAsistenciaAlumno, name="asistencia_alumno"),
+    # path('<int:pk>/inscriptos', AlumnosListView.as_view(), name="ver_inscriptos"),
+    # path('<int:dpk>/dictado/<int:pk>/asistencia', registrarAsistenciaAlumno, name="asistencia_alumno"),
+    # path('<int:pk>/inscriptos', AlumnosListView.as_view(), name="ver_inscriptos"),
+    # path('<int:pk>/inscriptos', alumno_inscribir, name="completar_inscripcion"),
+    # path('pagoalumno', PagoAlumnoCreateView.as_view(), name="pago_alumno"),
 ]

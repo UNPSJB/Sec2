@@ -176,7 +176,7 @@ class Clase(models.Model):
     reserva = models.ForeignKey(Reserva, related_name="clases", on_delete=models.CASCADE, null=True, blank=True)
     asistencia = models.ManyToManyField(Alumno, related_name="clases_asistidas", blank=True)
     asistencia_tomada = models.BooleanField(default=False)
-
+    
 
 
 #------------- PROFESOR --------------------

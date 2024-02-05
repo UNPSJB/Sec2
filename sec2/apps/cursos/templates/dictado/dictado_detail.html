@@ -227,7 +227,7 @@
         <tr>
           <th>#</th>
           <th>Fecha</th>
-          <th></th>
+          <th class="text-center">Asistencia</th>
           <th></th>
         </tr>
       </thead>
@@ -236,11 +236,15 @@
           <tr>
             <td>{{ forloop.counter }}</td>
             <td>{{ clase.reserva.horario.get_dia_semana_display }} {{ clase.reserva.fecha }}</td>
-            <td>
-              Tomar asistencia
-              {% comment %} <a href="{% url 'cursos:clase_detalle' curso_pk = curso.pk dictado_pk = dictado.pk clase_pk = clase.pk %}" class="btn btn-primary btn-detalle"><i class="fa-regular fa-eye"></i> Detalle</a> {% endcomment %}
+            <td class="text-center">  
+              {% if clase.asistencia_tomada %}
+              <i class="fa-solid fa-check" style="color:green"></i>
+              {% else %}
+              <i class="fa-solid fa-xmark" style="color:red"></i>
+              {% endif %}
             </td>
-            <td>
+            {% comment %} <a href="{% url 'cursos:clase_detalle' curso_pk = curso.pk dictado_pk = dictado.pk clase_pk = clase.pk %}" class="btn btn-primary btn-detalle"><i class="fa-regular fa-eye"></i> Detalle</a> {% endcomment %}
+            <td class="text-end">
               <a href="{% url 'cursos:clase_detalle' curso_pk=curso.pk dictado_pk=dictado.pk clase_pk=clase.pk %}" class="btn btn-primary btn-detalle btn-sm"><i class="fa-regular fa-eye"></i> Detalle</a>
               {% comment %} <a href="{% url 'cursos:clase_detalle' curso_pk = curso.pk dictado_pk = dictado.pk clase_pk = clase.pk %}" class="btn btn-primary btn-detalle"><i class="fa-regular fa-eye"></i> Detalle</a> {% endcomment %}
             </td>

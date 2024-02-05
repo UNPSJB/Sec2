@@ -1,74 +1,72 @@
-{% extends 'detalle_ventana_nueva.html' %}
+{% extends 'detalle_listado.html' %}
 {% load crispy_forms_tags %}
 
 {% block detalle %}
   <div class="row">
+    
     <div class="col">
-      <p>
-        <strong>Fecha:</strong>
-        {{ clase.reserva.fecha }}
-      </p>
+      <p><strong>Fecha:</strong> {{ clase.reserva.fecha }}</p>
     </div>
+    
     <div class="col">
-      <p>
-        <strong>Hora Inicio:</strong>
-        {{ clase.reserva.horario.hora_inicio }}
-      </p>
+      <p><strong>Hora Inicio:</strong> {{ clase.reserva.horario.hora_inicio }} hrs.</p>
     </div>
+    
     <div class="col">
-      <p>
-        <strong>Hora fin:</strong>
-        {{ clase.reserva.horario.hora_fin }}
-      </p>
+      <p><strong>Hora fin:</strong> {{ clase.reserva.horario.hora_fin }} hrs.</p>
     </div>
+    
     <div class="col">
-      <p>
-        <strong>Lugar:</strong>
-        {{ clase.reserva.aula }}
-      </p>
+      <p><strong>Lugar:</strong> {{ clase.reserva.aula }}</p>
     </div>
   </div>
   {% endblock %}
   
   
   {% block listado_asociado %}
-  
-  <h3>Alumnos Inscritos</h3>
-
   {% if alumnos_inscritos %}
   <form method="post" action="{% url 'cursos:marcar_asistencia' clase.id %}">
     {% csrf_token %}
-  <table class="table table-sm table-hover">
-    <thead>
-      <tr>
-        <th>#</th>
-        <th>Nombre</th>
-        <th>Apellido</th> 
-        <th>Asistencia</th> 
-      </tr>
-    </thead>
-    <tbody>
-      {% for alumno in alumnos_inscritos %}
-      <tr>
-        <td>{{ forloop.counter }}</td>
-        <td>{{ alumno.persona.nombre }}</td>
-        <td>{{ alumno.persona.apellido }}</td>
-        <td>
-          <input type="checkbox" name="alumnos_asistencia" value="{{ alumno.id }}"
-              {% if alumno in alumnos_asistieron %}checked{% endif %}>
-        </td>
-      </tr>
-      {% endfor %}
-    </tbody>
-  </table>
-  
-  <div class="text-center">
-    <button class="btn btn-success btn-detalle" type="submit">Guardar Asistencia</button>
-  </div>
-</form>
+    <table class="table table-sm table-hover">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Dni</th> 
+          <th>Apellido</th> 
+          <th>Nombre</th>
+          <th class="text-center">Asistencia</th> 
+        </tr>
+      </thead>
+      <tbody>
+        {% for alumno in alumnos_inscritos %}
+        <tr>
+          <td>{{ forloop.counter }}</td>
+          <td>{{ alumno.persona.dni }}</td>
+          <td>{{ alumno.persona.apellido }}</td>
+          <td>{{ alumno.persona.nombre }}</td>
+          <td class="text-center">
+            {% if clase.asistencia_tomada %}
+            <input type="checkbox" name="alumnos_asistencia" value="{{ alumno.id }}" disabled
+            {% if alumno in alumnos_asistieron %}checked{% endif %}>
+            {% else %}
+            <input type="checkbox" name="alumnos_asistencia" value="{{ alumno.id }}"
+            {% if alumno in alumnos_asistieron %}checked{% endif %}>
+            {% endif %}
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% if not clase.asistencia_tomada %}
+    <div class="text-center">
+      <button class="btn btn-success btn-detalle" type="submit">Guardar Asistencia</button>
+    </div>
+  {% endif %}
+
+  </form>
   {% else %}
   <p>No hay alumnos inscriptos.</p>
   {% endif %}
-  
+
   {% endblock %}
   

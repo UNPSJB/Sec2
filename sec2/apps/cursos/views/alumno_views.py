@@ -5,6 +5,8 @@ import uuid
 
 from django.http import HttpResponse
 
+from apps.cursos.models import Clase
+
 from ..forms.alumno_forms import *
 from ..forms.curso_forms import *
 from ..forms.dictado_forms import *
@@ -192,25 +194,46 @@ class AlumnosEnDictadoList(ListView):
         return context
 
 def marcar_asistencia(request, clase_id):
-    # Tu lógica para marcar la asistencia aquí
-    return HttpResponse("Asistencia marcada correctamente.")
-#     model = Alumno
-#     paginate_by = 100
-#     # filter_class = AlumnosDelDictadoFilterForm
-    
-#     def get_context_data(self, **kwargs):
-#         context = super().get_context_data(**kwargs)
-#         dictado = Dictado.objects.get(id = self.kwargs.get('pk'))
-#         context['dictado'] = dictado
-#         return context
+    clase = get_object_or_404(Clase, pk=clase_id)
 
-#     def get_queryset(self):        
-#         return super().get_queryset().filter(curso_id=self.kwargs['pk'])
-    
-# class agregarAlumnoCursoListView(ListFilterView):
-#     model = Alumno
-#     paginate_by = 100
-#     # filter_class = AlumnosDelDictadoFilterForm
+    # Verificar si la clase actual es la primera clase del dictado
+    es_primera_clase = not Clase.objects.filter(
+        reserva__horario__dictado=clase.reserva.horario.dictado,
+        reserva__fecha__lt=clase.reserva.fecha
+    ).exists()
 
-#     def get_queryset(self):
-#         return super().get_queryset().filter(dictado__pk=self.kwargs['pk'])
+    if not es_primera_clase:
+        # La clase no es la primera, entonces verificamos la asistencia de la clase anterior
+        clase_anterior = Clase.objects.filter(
+            reserva__horario__dictado=clase.reserva.horario.dictado,
+            reserva__fecha__lt=clase.reserva.fecha
+        ).last()
+
+        if not clase_anterior or not clase_anterior.asistencia_tomada:
+            # La asistencia de la clase anterior no se ha tomado, mostrar un mensaje de error
+            messages.error(request, f'{ICON_ERROR} La asistencia de la clase anterior no se ha tomado.')
+            return redirect('cursos:clase_detalle', curso_pk=clase.reserva.horario.dictado.curso.pk, dictado_pk=clase.reserva.horario.dictado.pk, clase_pk=clase.pk)
+
+    if request.method == 'POST':
+        # Obtén la lista de IDs de alumnos que se les marcó la asistencia
+        alumnos_asistencia_ids = request.POST.getlist('alumnos_asistencia')
+
+        # Obtén los objetos Alumno correspondientes a los IDs seleccionados
+        alumnos_asistencia = Alumno.objects.filter(id__in=alumnos_asistencia_ids)
+
+        # Realiza las acciones necesarias con la lista de alumnos marcados
+        for alumno in alumnos_asistencia:
+            print(f'Alumno marcado como presente: {alumno.persona.nombre} {alumno.persona.apellido}')
+
+        # Establecer la asistencia de los alumnos en la clase
+        clase.asistencia.set(alumnos_asistencia)
+
+        # Actualizar el campo asistencia_tomada a True
+        clase.asistencia_tomada = True
+        clase.save()
+
+        messages.success(request, f'{ICON_CHECK} Asistencia tomada correctamente.')
+        return redirect('cursos:dictado_detalle', curso_pk=clase.reserva.horario.dictado.curso.pk, dictado_pk=clase.reserva.horario.dictado.pk)
+
+    messages.error(request, f'{ICON_ERROR} Ha ocurrido un error inesperado.')
+    return redirect('cursos:clase_detalle', curso_pk=clase.reserva.horario.dictado.curso.pk, dictado_pk=clase.reserva.horario.dictado.pk, clase_pk=clase.pk)
