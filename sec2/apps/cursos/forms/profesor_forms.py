@@ -58,15 +58,15 @@ class FormularioProfesor(forms.ModelForm):
         profesorForm = ProfesorForm(data=self.cleaned_data)
         return valid and personaForm.is_valid() and profesorForm.is_valid()
     
-    def save(self, commit=False):
-        print("ESTOY EN EL SAVE")
-        if self.persona is None:
-            personaForm = PersonaForm(data=self.cleaned_data)
-            self.persona = personaForm.save()
-        profesorForm = ProfesorForm(data=self.cleaned_data)
-        profesor = profesorForm.save(commit=False)
-        self.persona.convertir_en_profesor(profesor)
-        return profesor
+    # def save(self, commit=False):
+    #     print("ESTOY EN EL SAVE")
+    #     if self.persona is None:
+    #         personaForm = PersonaForm(data=self.cleaned_data)
+    #         # self.persona = personaForm.save()
+    #     profesorForm = ProfesorForm(data=self.cleaned_data)
+    #     profesor = profesorForm.save(commit=False)
+    #     self.persona.convertir_en_profesor(profesor)
+    #     return profesor
         
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
