@@ -10,10 +10,11 @@
   </form>
 
   <div id="resultadosPersona"></div>
-
   <script>
     // Variable para evitar múltiples búsquedas simultáneas
     var busquedaRealizada = false
+    var hayCupo = {{ hay_cupo|lower }};
+
   
     // Función para realizar la búsqueda de persona por DNI
     function buscarPersona() {
@@ -59,24 +60,64 @@
     // Función para mostrar los resultados en la página
     function mostrarResultados(persona) {
       var resultadosDiv = document.getElementById('resultadosPersona');
-
+      
       if (persona) {
-        // Persona encontrada, mostrar detalles
+
         resultadosDiv.innerHTML = `
-          <p>Persona encontrada:</p>
+          <h2>Información:</h2>
           <p>DNI: ${persona.dni}</p>
           <p>Nombre: ${persona.nombre} ${persona.apellido}</p>
-          <!-- Agregar más detalles según sea necesario -->
         `;
+        if (persona.es_afiliado) {
+          // Mostrar mensaje adicional si es alumno
+          resultadosDiv.innerHTML += `
+            <p>Es afiliado.[FALTA INSCRIBIRLO]</p>
+          `;
+        }
+        if (persona.es_alumno) {
+          // Mostrar mensaje adicional si es alumno
+          //si es alumno tengo que chequear si ya esta inscrito al curso
+          resultadosDiv.innerHTML += `
+            <p>Es alumno.</p>
+          `;
+        }
+        if (persona.es_profesor) {
+          // Mostrar mensaje adicional si es alumno
+          //si es alumno tengo que chequear que no sea el mismo profesor que dicta el curso
+          resultadosDiv.innerHTML += `
+            <p>Es profesor [FALTA INCCRIBIRO].</p>
+          `;
+        }
+    
+        if (persona.es_encargado) {
+          // Mostrar mensaje adicional si es alumno
+          resultadosDiv.innerHTML += `
+            <p>Es encargado [FALTA INSCRIBIRLO].</p>
+          `;
+        }
+
       } else {
         // Persona no encontrada
         // Si no la encuentra, dar la opción de darla de alta como alumno o afiliar
         resultadosDiv.innerHTML = `
         <p>La persona no está registrada en el sistema.</p>
-        <div class="text-center">
-        <button class="btn btn-secondary btn-sm btn-detalle" onclick="altaAlumno({{ curso_pk }}, {{ dictado_pk }})">Dar de alta como alumno</button>
-        </div>
         `;
+
+        if (hayCupo) {
+          // Mostrar el botón de dar de alta como alumno
+          resultadosDiv.innerHTML += `
+          <div class="text-center">
+            <button class="btn btn-secondary btn-sm btn-detalle" onclick="altaAlumno({{ curso_pk }}, {{ dictado_pk }})">Dar de alta como alumno</button>
+          </div>
+          `;
+        } else {
+          // Mostrar el mensaje de no hay cupo
+          resultadosDiv.innerHTML += `
+          <div class="text-center">
+            <button class="btn btn-warning btn-sm btn-detalle" onclick="altaListaDeEspera({{ curso_pk }}, {{ dictado_pk }})">Dar de alta y poner en lista de espera</button>
+          </div>
+          `;
+        }
       }
         // Restablecer la variable para permitir nuevas búsquedas
         busquedaRealizada = false;
@@ -85,7 +126,13 @@
     // Función para redirigir a la URL de inscripción de alumno
     function altaAlumno(curso_pk, dictado_pk) {
       // Redirigir a la URL de inscripción de alumno
-      window.location.href = `{% url 'cursos:persona_inscribir' curso_pk=0 dictado_pk=0 %}`.replace('0', curso_pk).replace('0', dictado_pk);
+      window.location.href = `{% url 'cursos:persona_inscribir' curso_pk=9999 dictado_pk=9999 %}`.replace('9999', curso_pk).replace('9999', dictado_pk);
+    }
+    
+    // Función para redirigir a la URL de inscripción de alumno
+    function altaListaDeEspera(curso_pk, dictado_pk) {
+      // Redirigir a la URL de inscripción de alumno
+      window.location.href = `{% url 'cursos:persona_poner_lista_espera' curso_pk=9999 dictado_pk=9999 %}`.replace('9999', curso_pk).replace('9999', dictado_pk);
     }
 
     // Función para otra acción (por ejemplo, afiliación)

@@ -59,7 +59,9 @@
 {% endblock %}
 
 {% block horarios %}
-<table class="table table-sm table-hover">
+<div class="d-flex justify-content-center">
+
+<table class="table table-sm table-hover" style="width: 40%;">
   <thead>
     <tr>
       <th>Día</th>
@@ -107,13 +109,12 @@
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
           <div class="modal-body">
-            <p>¿Desea reservar aulas?</p>
-            <p>Una vez hecha una reserva no podrá generar más horarios.</p>
+            <p>¿Desea reservar aulas? Una vez hecha una reserva no podrá generar más horarios.</p>
           </div>
           <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-            <a href="{% url 'cursos:asignar_aula' curso_pk=horario.dictado.curso.pk dictado_pk=horario.dictado.pk horario_id=horario.pk %}" class="btn btn-primary btn-sm btn-detalle">
-              <i class="fa-solid fa-door-open"></i>Reservar Aula
+            <button type="button" class="btn btn-secondary btn-sm " data-bs-dismiss="modal">Cancelar</button>
+            <a href="{% url 'cursos:asignar_aula' curso_pk=horario.dictado.curso.pk dictado_pk=horario.dictado.pk horario_id=horario.pk %}" class="btn btn-primary btn-sm">
+              <i class="fa-solid fa-door-open"></i> Reservar
             </a>
           </div>
         </div>
@@ -123,12 +124,13 @@
     {% endfor %}
   </tbody>
 </table>
+</div>
 {% endblock %}
 
 {% block botones %}
-  <div class="col d-flex justify-content-center">
+  {% comment %} <div class="col d-flex justify-content-center">
     <a href="{% url 'cursos:dictado_editar' curso_pk=curso.pk dictado_pk=dictado.pk %}" class="btn btn-primary btn-sm btn-detalle"><i class="fa-regular fa-pen-to-square"></i> Modificar</a>
-  </div>
+  </div> {% endcomment %}
   
   <div class="col d-flex justify-content-center">
     <button type="button" class="btn btn-info btn-sm btn-detalle" data-bs-toggle="modal" data-bs-target="#exampleModal">
@@ -146,7 +148,7 @@
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
-        <h1 class="modal-title fs-5" id="exampleModalLabel">Alumnos Inscriptos</h1>
+        <h2 class="modal-title fs-5" id="exampleModalLabel">Alumnos Inscriptos</h2>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
@@ -176,54 +178,46 @@
         {% endif %}
       </div>
       <div class="modal-footer">
+        <a href="{% url 'cursos:dictado_lista_espera' curso_pk=dictado.curso.pk dictado_pk=dictado.pk %}" 
+        class="btn btn-warning btn-sm " 
+        onclick="window.open(this.href, '_blank', 'width=600,height=400'); return false;">
+        <i class="fa-solid fa-list"></i>
+        Lista de espera
+        </a>
         <a href="{% url 'cursos:verificar_persona' curso_pk=dictado.curso.pk dictado_pk=dictado.pk %}" 
         class="btn btn-primary btn-sm " 
         onclick="window.open(this.href, '_blank', 'width=600,height=400'); return false;">
          <i class="fa-regular fa-pen-to-square"></i> Inscribir
         </a>
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-        <button type="button" class="btn btn-primary">Save changes</button>
+        <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Close</button>
       </div>
     </div>
   </div>
 </div>
-
-  <div class="col d-flex justify-content-center">
-    {% if todos_los_horarios_con_aula %}
-    {% if not clases %}
-    <a href="{% url 'cursos:generar_clases' curso_pk=curso.pk dictado_id=dictado.pk %}" class="btn btn-primary btn-detalle">
-      <i class="fa-solid fa-plus"></i> Generar Clases
-    </a>
-    {% else %}
-    <a href="#" class="btn btn-primary btn-detalle disabled">
-      <i class="fa-solid fa-plus"></i> Generar Clases
-    </a>
-    {% endif %}
-
-    {% else %}
-      <a href="#" class="btn btn-primary btn-detalle disabled">
-        <i class="fa-solid fa-plus"></i> Generar Clases
-      </a>
-    {% endif %}
-  </div>
   
-  <div class="col d-flex justify-content-center">
-  {% if not  hay_reserva %}
-
-    <a href="{% url 'cursos:horario_crear' curso_pk=dictado.curso.pk dictado_pk=dictado.pk %}" class="btn btn-primary btn-detalle">
-      <i class="fa-solid fa-plus"></i> Generar Horario
-    </a>
-  {% else %}
-  <a href="{% url 'cursos:horario_crear' curso_pk=dictado.curso.pk dictado_pk=dictado.pk %}" class="btn btn-primary btn-detalle disabled">
+{% if not  hay_reserva %}
+<div class="col d-flex justify-content-center">
+  <a href="{% url 'cursos:horario_crear' curso_pk=dictado.curso.pk dictado_pk=dictado.pk %}" class="btn btn-primary btn-detalle">
     <i class="fa-solid fa-plus"></i> Generar Horario
   </a>
-  {% endif %}
-
 </div>
-  <div class="col d-flex justify-content-end">
-    <button type="button" class="btn btn-danger btn-sm btn-detalle" data-bs-toggle="modal" data-bs-target="#exampleModal_eliminar"><i class="fa-regular fa-circle-down"></i> Dar de Baja</button>
-    {% include 'dictado/modal_confirm_baja.html' %}
-  </div>
+{% endif %}
+
+{% if todos_los_horarios_con_aula %}
+
+{% if not clases %}
+<div class="col d-flex justify-content-center">
+  <a href="{% url 'cursos:generar_clases' curso_pk=curso.pk dictado_id=dictado.pk %}" class="btn btn-primary btn-detalle">
+    <i class="fa-solid fa-plus"></i> Generar Clases
+  </a>
+</div>
+{% endif %}
+{% endif %}
+
+<div class="col d-flex justify-content-end">
+  <button type="button" class="btn btn-danger btn-sm btn-detalle" data-bs-toggle="modal" data-bs-target="#exampleModal_eliminar"><i class="fa-regular fa-circle-down"></i> Dar de Baja</button>
+  {% include 'dictado/modal_confirm_baja.html' %}
+</div>
 {% endblock %}
 
 {% block listado_asociado %}

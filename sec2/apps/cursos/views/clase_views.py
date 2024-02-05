@@ -25,8 +25,9 @@ def generar_clases(request, curso_pk, dictado_id):
     for reserva in reservas:
         Clase.objects.create(reserva=reserva)
 
-#     messages.success(request, f'Se generaron {cantidad_clases} clases para el dictado {dictado}')
-    return redirect('cursos:index')
+    messages.success(request, f'{ICON_CHECK}  Se generaron las clases para el dictado')
+    url_dictado_detalle = reverse('cursos:dictado_detalle', kwargs={'curso_pk': curso_pk, 'dictado_pk': dictado_id})
+    return redirect(url_dictado_detalle)
 
 # --------------- CLASE DETALLE --------------------------------
 class ClaseDetailView(DetailView):

@@ -10,6 +10,11 @@ from ..forms.horario_forms import *
 from django.urls import reverse
 from django.shortcuts import get_object_or_404
 from django.urls import reverse_lazy
+from django.utils.datetime_safe import datetime
+from datetime import timedelta
+from django.http import HttpResponse
+from django.db.models import Q
+import math
 
 #--------------- CREACION DE HORARIO --------------------------------
 class HorarioCreateView(CreateView):
@@ -95,21 +100,13 @@ class HorarioCreateView(CreateView):
         return response
 
 #-------------- ASIGNAR UN AULA ----------------------------------
-from django.utils.datetime_safe import datetime
-from datetime import timedelta
-from django.http import HttpResponse
-from django.db.models import Q
-import math
-
 def asignar_aula(request, curso_pk, dictado_pk, horario_id):
-    # print("NUEVO HORARIO: ",horario_id)
     titulo = 'Asignación de aula'
-
+    
     # Obtener el horario y dictado asociado
     horario = get_object_or_404(Horario, id=horario_id)
-    # print(horario)
     dictado = horario.dictado
-    
+
     # Calcular la hora de inicio y fin del horario
     hora_inicio = horario.hora_inicio
     hora_fin = horario.hora_fin
@@ -121,71 +118,38 @@ def asignar_aula(request, curso_pk, dictado_pk, horario_id):
         Q(fecha=dictado.fecha) &
         Q(horario__hora_inicio__lt=hora_fin, horario__hora_fin__gt=hora_inicio)
     )
-    # print("Hora inicio: " + str(hora_inicio))
-    # print("Hora fin: " + str(hora_fin)) 
-    # print(reservas)
-    # print(reservas_superpuestas)
 
-    # Obtener todas las aulas
-    todas_aulas = Aula.objects.all()
-    # for aula in todas_aulas:
-        # print(f"ID: {aula.id}, {aula}, Capacidad: {aula.capacidad}")
-    
+    # Obtener todas las aulas filtradas por tipo
+    necesita_equipamento_informatico = horario.dictado.curso.requiere_equipamiento_informatico
+
+    if necesita_equipamento_informatico:
+        print("REQUIRE EQUIPAMENTO INFORMATICO")
+        todas_aulas = Aula.objects.filter(tipo='computacion')
+    else:
+        print("NO REQUIRE EQUIPAMENTO INFORMATICO")
+        todas_aulas = Aula.objects.filter(tipo='normal')
+
     # Obtener las aulas ocupadas en el horario actual
     aulas_ocupadas = reservas_superpuestas.values_list('aula', flat=True)
-    # print(aulas_ocupadas)
 
     # Obtener las aulas que no están ocupadas
     aulas_libres = todas_aulas.exclude(id__in=aulas_ocupadas)
-    # print(aulas_libres)
 
     # Obtener las aulas disponibles que tienen capacidad para el cupo del dictado
     aulas_disponibles_con_capacidad = aulas_libres.filter(capacidad__gte=dictado.cupo)
 
-
     if not aulas_disponibles_con_capacidad.exists():
         return HttpResponse("No hay aulas disponibles.")
     
-    print(aulas_disponibles_con_capacidad)
-
     modulos_totales = horario.dictado.curso.modulos_totales
-    # print("modulos_totales:", modulos_totales)
-
     modulos_por_clase = horario.dictado.modulos_por_clase
-    # print("modulos_por_clase:", modulos_por_clase)
-
     cantidad_clases = modulos_totales / modulos_por_clase
-    # print("cantidad_clases:", cantidad_clases)
 
     horarios_relacionados = Horario.objects.filter(dictado=dictado)
-    # print(f"Total de horarios relacionados con el dictado: {horarios_relacionados.count()}")
 
-    # print("Horarios relacionados con el dictado:")
-    # for horario_relacionado in horarios_relacionados:
-    #     print(f"Los: {horario_relacionado.get_dia_semana_display()} de {horario_relacionado.hora_inicio} a {horario_relacionado.hora_fin}")
-
-
-    # print("cantidad_clases:", cantidad_clases)
-    # print("horario relacionados:", horarios_relacionados.count())
-
-    # Calcular la cantidad de clases por dictado
+    # Calcular la cantidad de clases por dictado y se redondea hacia arriba
     clases_por_dictado = cantidad_clases / horarios_relacionados.count()
-
-    # Redondear hacia arriba usando math.ceil
     clases_por_dictado_redondeado = math.ceil(clases_por_dictado)
-
-    # print("Cantidad de clases por horario (redondeado hacia arriba):", clases_por_dictado_redondeado)
-
-    """
-    LOGICA HASTA AHORA
-    Una vez presionado el boton de "Asignar Aula" mostrar un mensaje informando de que si desea asignar aula
-    con un mensaje de advertencia informando que si desea asignar aulas ya no podrá generar más horarios.
-
-    En el Asignar Aula se tendra que obtener todos los horarios asociados al dictado. Junto con la cantidad de clases.
-    Se dividirá la cantidad de clases --> cantidad_clases / horarios asignados. De esta forma sé cuantas clases 
-    se les asigna a cada ditado.
-
-    """
 
     # Obtener la fecha de inicio y fin del rango de fechas
     if horario.es_primer_horario: 
@@ -196,9 +160,6 @@ def asignar_aula(request, curso_pk, dictado_pk, horario_id):
     clases_por_dictado_redondeado = clases_por_dictado_redondeado - 1
     fecha_fin = fecha_inicio + timedelta(days=(7 * clases_por_dictado_redondeado ))
     
-    print("FECHA DE INICIO->", fecha_inicio)
-    print("FECHA DE FIN---->:", fecha_fin)
-
     # Filtrar las aulas disponibles en el rango de fecha y horario
     aulas_disponibles_en_rango = aulas_disponibles_con_capacidad.exclude(
         reservas__fecha__range=[fecha_inicio, fecha_fin],
@@ -206,9 +167,6 @@ def asignar_aula(request, curso_pk, dictado_pk, horario_id):
         reservas__horario__hora_inicio__lt=horario.hora_fin,
         reservas__horario__hora_fin__gt=horario.hora_inicio
     )
-    print(aulas_disponibles_en_rango)
-    print("HORARIOOO")
-    print(horario)
 
     if request.method == 'POST':
         aula_seleccionada_id = request.POST.get('aula_seleccionada')
@@ -218,9 +176,7 @@ def asignar_aula(request, curso_pk, dictado_pk, horario_id):
         while fecha_actual <= fecha_fin:
             reserva, created = Reserva.objects.get_or_create(fecha=fecha_actual, horario=horario, aula=aula_seleccionada)
             fecha_actual += timedelta(days=7)  # Incrementar la fecha en una semana
-        
-        print("AULA SELECCIONADA-->: ", aula_seleccionada)
-        print("FECHA DE INICIO---->: ", fecha_inicio)
+
         # Crear el objeto Reserva
         reserva.aula =  aula_seleccionada
         reserva.horario = horario
@@ -229,36 +185,25 @@ def asignar_aula(request, curso_pk, dictado_pk, horario_id):
         # Actualizar el campo 'aula' en el objeto Horario
         horario.aula = aula_seleccionada
         horario.save()
-        # print("RESERVA CREADA")
-        # print(reserva)
          # Redirigir a la vista dictado_detalle con los parámetros necesarios
         return redirect('cursos:dictado_detalle', curso_pk=horario.dictado.curso.pk, dictado_pk=horario.dictado.pk)
     else:
-
-
         # Verificar si ya existe una reserva para el horario actual
         reserva_existente = Reserva.objects.filter(horario=horario).first()
 
         if reserva_existente:
-            print("El horario ya tiene una reserva con aula asignada:", reserva_existente.aula)
-            # Aquí puedes tomar la acción que consideres adecuada, por ejemplo, mostrar un mensaje al usuario.
             return HttpResponse("El horario ya tiene una reserva con aula asignada.")
         
         return render(request, 'dictado/asignar_aula.html', {'aulas_disponibles': aulas_disponibles_en_rango, 'titulo' : titulo})
-    # return render(request, 'dictado/asignar_aula.html')
-    # return render(request, 'dictado/asignar_aula.html', {'aulas_disponibles': aulas_disponibles_dia_hora})
 
+#-------------- CALCULA LA FECHA DE INICIO ----------------------------------
 def calcular_fecha_inicio(horario):
     fecha_actual = horario.dictado.fecha
     dia_semana_horario = horario.dia_semana
 
     while fecha_actual.weekday() != dia_semana_horario:
         fecha_actual += timedelta(days=1)
-
-    print("Próxima fecha con el mismo día de la semana:", fecha_actual)
-    # return 'holaaa'
     return fecha_actual
-
     """
     0: LUNES
     1: MARTES

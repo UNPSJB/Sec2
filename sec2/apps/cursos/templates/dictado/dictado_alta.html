@@ -39,7 +39,7 @@
           <small class="form-text text-muted">{{ form.descuento.help_text }}</small>
         </div>
       </div>
-
+      
       <div class="col">
         <div class="form-group">
           {{ form.modulos_por_clase.label_tag }}
@@ -47,7 +47,10 @@
           <small class="form-text text-muted">{{ form.modulos_por_clase.help_text }}</small>
         </div>
       </div>
-
+      
+      
+      
+      {% if not tiene_fecha_cargada %}
       <div class="col">
         <div class="form-group">
           {{ form.fecha.label_tag }}
@@ -55,7 +58,8 @@
           <small class="form-text text-muted">{{ form.fecha.help_text }}</small>
         </div>
       </div>
-
+      {% endif %}
+      
       <script>
         // Obtener la fecha y hora actuales en formato ISO
         var currentDate = new Date().toISOString().slice(0, 16)
@@ -76,7 +80,7 @@
       </script>
     </div>
 
-    {% if not curso.es_convenio %}
+    {% if curso.es_convenio %}
     <div class="row mx-auto">
       <div class="col text-center">
         <div class="form-group">

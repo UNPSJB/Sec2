@@ -12,12 +12,15 @@
         <option value="{{ aula.id }}">{{ aula }}</option>
       {% endfor %}
     </select>
+
+    <br>
+    <br>
     <div class="row row-cols-1 row-cols-sm-1 row-cols-md-2">
       <div class="col">
-        <a href="{% url 'cursos:index' %}" class="btn btn-secondary">Cancelar</a>
+        <a href="{% url 'cursos:index' %}" class="btn btn-sm btn-secondary">Cancelar</a>
       </div>
       <div class="col">
-        <button type="submit" class="btn btn-success">Reservar Aula</button>
+        <button type="submit" class="btn btn-sm btn-success">Reservar Aula</button>
       </div>
     </div>
 

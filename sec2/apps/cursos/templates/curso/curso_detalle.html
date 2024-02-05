@@ -121,11 +121,14 @@
 {% endblock %}
 
 {% block botones %}
+
+{% if not tiene_dictados %}
 <div class="col d-flex justify-content-center"> 
-  <a href="{% url 'cursos:curso_editar' curso.pk %}" class="btn btn-primary btn-sm btn-detalle {% if tiene_dictados %}disabled{% endif %}" role="button">
+  <a href="{% url 'cursos:curso_editar' curso.pk %}" class="btn btn-primary btn-sm btn-detalle" role="button">
     <i class="fa-regular fa-pen-to-square"></i> Modifica
   </a>
 </div>
+{% endif %}
 <div class="col d-flex justify-content-end">
   <button type="button" class="btn btn-danger btn-sm btn-detalle" data-bs-toggle="modal" data-bs-target="#exampleModal_eliminar"><i class="fa-regular fa-circle-down"></i> Dar de Baja</button>
   {% include 'curso/modal_confirm_baja.html' %}

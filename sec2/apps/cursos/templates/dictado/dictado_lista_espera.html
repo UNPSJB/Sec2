@@ -1,0 +1,56 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% load static %}
+
+{% block extracss_intermedia %}
+  <link href="{% static 'css/listado.css' %}" rel="stylesheet" />
+{% endblock %}
+
+{% block container %}
+  <br />
+  <h3 class="titulo">{{ titulo }}</h3>
+  <div class="container">
+    {% include 'message.html' %}
+    <div class="row justify-content-center">
+      {% if alumnos_lista_espera %}
+        <table class="table table-sm table-hover">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Dni</th>
+              <th>Apellido</th>
+              <th>Nombre</th>
+              <th>Rol</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for alumno in alumnos_lista_espera %}
+              <tr class="bg-transition fila-personalizada">
+                <td>{{ forloop.counter }}</td>
+                <td>{{ alumno.persona.dni }}</td>
+                <td>{{ alumno.persona.apellido }}</td>
+                <td>{{ alumno.persona.nombre }}</td>
+                <td>Rol de la persona</td>
+                <td class="text-end">
+                  {% if hay_cupo %}
+                  <a href="{% url 'cursos:sacar_lista_espera_poner_en_dictado' curso_pk=dictado.curso.pk dictado_pk=dictado.pk alumno_pk=alumno.pk %}" class="btn btn-primary btn-sm btn-detalle"><i class="fa-solid fa-door-open"></i>Inscribir al curso</a>
+                  {% endif %}
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      {% else %}
+        <p>No hay alumnos inscriptos.</p>
+      {% endif %}
+    </div>
+    <button type="button" class="btn btn-sm btn-secondary" onclick="cerrarVentana()">Cerrar</button>
+  </div>
+  <script>
+    function cerrarVentana() {
+      window.close();
+    }
+  </script>
+{% endblock %}

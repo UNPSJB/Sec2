@@ -62,7 +62,11 @@ urlpatterns = [
     path('buscar-persona/', BuscarPersonaView.as_view(), name='buscar_persona'),
 
     # ALUMNO (accedido desde el dictado)
-    path('cursos/curso/<int:curso_pk>/dictados/dictado/<int:dictado_pk>/inscribir', AlumnoCreateView.as_view(), name="persona_inscribir"),
+    path('cursos/curso/<int:curso_pk>/dictados/dictado/<int:dictado_pk>/Alumnos/inscribir', AlumnoCreateView.as_view(), name="persona_inscribir"),
+    path('cursos/curso/<int:curso_pk>/dictados/dictado/<int:dictado_pk>/Alumnos/inscribirListaEspera', AlumnoListaEsperaCreateView.as_view(), name="persona_poner_lista_espera"),
+    path('cursos/curso/<int:curso_pk>/dictados/dictado/<int:dictado_pk>/Alumnos/listaEspera', listaEspera , name="dictado_lista_espera"),
+    path('cursos/curso/<int:curso_pk>/dictados/dictado/<int:dictado_pk>/Alumno/<int:alumno_pk>/sacarlistaEspera', sacarListaEspera , name="sacar_lista_espera_poner_en_dictado"),
+
 
     #ALMNOS POR CURSO
     path('cursos/curso/<int:curso_pk>/dictados/dictado/<int:dictado_pk>/Alumnos', AlumnosEnDictadoList.as_view(), name="alumno_inscripto"),

@@ -80,7 +80,7 @@ class AulaUpdateView(UpdateView):
 
     def form_valid(self, form):
         aula = form.save()
-        messages.success(self.request, '<i class="fa-solid fa-square-check fa-beat-fade"></i> Aula modificado con éxito')
+        messages.success(self.request, f'{ICON_CHECK} Aula modificado con éxito')
         return redirect('cursos:aula_detalle', pk=aula.pk)
 
     def form_invalid(self, form):

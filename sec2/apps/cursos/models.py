@@ -142,16 +142,20 @@ class Reserva(models.Model):
 class Alumno(Rol):
     # ForeignKey
     dictados = models.ManyToManyField(Dictado, related_name="alumnos", blank=True)
+    lista_espera = models.ManyToManyField('Dictado', related_name='alumnos_en_espera', blank=True)
 
     TIPO = 3
-    def agregateDictado(self, pk):
-        dictado = Dictado.objects.get(pk=pk)
-        self.dictados.add(dictado)
-        return dictado
-
-    def esta_inscripto(self, dictado):
-        return dictado in self.dictados
+    def agregar_dictado(self, dictado):
+        if dictado.cupo > dictado.alumnos.count():
+            self.dictados.add(dictado)
+            return True
+        else:
+            self.lista_espera.add(dictado)
+            return False
     
+    def esta_inscripto_o_en_espera(self, dictado):
+        return dictado in self.dictados.all() or dictado in self.lista_espera.all()
+
 Rol.register(Alumno)
 
 #------------- CLASE --------------------

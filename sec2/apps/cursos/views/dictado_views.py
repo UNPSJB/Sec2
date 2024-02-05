@@ -136,28 +136,30 @@ class DictadoDetailView(DetailView):
 
         alumnos_inscritos = Alumno.objects.filter(dictados=dictado)
         context['alumnos_inscritos'] = alumnos_inscritos
-
-        if dictado.periodo_pago == 2:
-            # PERIODO DE PAGO POR CLASE
-            cantidad_clase = Decimal(curso.modulos_totales) / Decimal(dictado.modulos_por_clase)
-            cantidad_clase = Decimal(math.ceil(cantidad_clase))
-            result = round(curso.costo / cantidad_clase, 2)
-            context['costo_parcial'] = f"${result} AR por {dictado.get_periodo_pago_display()}"
+        if curso.es_convenio:
+            context['costo_parcial'] = 'Gratuito'
         else:
-            # PERIODO DE PAGO POR MES
-            if clases.exists():
-                # Obtén las fechas de la primera y última clase
-                primera_fecha_clase = clases.first().reserva.fecha
-                ultima_fecha_clase = clases.last().reserva.fecha
-                # Calcula la diferencia de tiempo entre la primera y última fecha de clases
-                diferencia_tiempo = ultima_fecha_clase - primera_fecha_clase
-                # Calcula el número de meses
-                meses_transcurridos = round(diferencia_tiempo.days / 30)  # Suponiendo 30 días por mes para simplificar
-                # Realiza el cálculo del costo basado en el número de meses
-                result = round(curso.costo / meses_transcurridos, 2)
+            if dictado.periodo_pago == 2:
+                # PERIODO DE PAGO POR CLASE
+                cantidad_clase = Decimal(curso.modulos_totales) / Decimal(dictado.modulos_por_clase)
+                cantidad_clase = Decimal(math.ceil(cantidad_clase))
+                result = round(curso.costo / cantidad_clase, 2)
                 context['costo_parcial'] = f"${result} AR por {dictado.get_periodo_pago_display()}"
             else:
-                context['costo_parcial'] = 'Primero tiene generar las clases'
+                # PERIODO DE PAGO POR MES
+                if clases.exists():
+                    # Obtén las fechas de la primera y última clase
+                    primera_fecha_clase = clases.first().reserva.fecha
+                    ultima_fecha_clase = clases.last().reserva.fecha
+                    # Calcula la diferencia de tiempo entre la primera y última fecha de clases
+                    diferencia_tiempo = ultima_fecha_clase - primera_fecha_clase
+                    # Calcula el número de meses
+                    meses_transcurridos = round(diferencia_tiempo.days / 30)  # Suponiendo 30 días por mes para simplificar
+                    # Realiza el cálculo del costo basado en el número de meses
+                    result = round(curso.costo / meses_transcurridos, 2)
+                    context['costo_parcial'] = f"${result} AR por {dictado.get_periodo_pago_display()}"
+                else:
+                    context['costo_parcial'] = 'Primero tiene generar las clases'
         return context
 
     def get_reserva(self, horario):
@@ -177,7 +179,6 @@ class DictadoDetailView(DetailView):
         except Titular.DoesNotExist:
             return None
 
-
 ##--------------- DICTADO UPDATE --------------------------------
 class DictadoUpdateView(UpdateView):
     model = Dictado
@@ -188,6 +189,10 @@ class DictadoUpdateView(UpdateView):
         context = super().get_context_data(**kwargs)
         dictado = self.object
         context['titulo'] = "Modificar Detalle"
+        if dictado.fecha:
+            context['tiene_fecha_cargada'] = True
+        else:
+            context['tiene_fecha_cargada'] = False
         actividad_curso = dictado.curso.actividad
         context['profesores_capacitados'] = Profesor.objects.filter(actividades=actividad_curso)
         return context
@@ -205,6 +210,7 @@ class DictadoUpdateView(UpdateView):
         if titular:
             # Si hay un Titular asociado, establece el valor del profesor en el formulario
             form.fields['profesor'].initial = titular.profesor.id if titular.profesor else None
+            # Si estás en la vista de actualización, haz que la fecha no sea editable
         return form
 
     def get_success_url(self):
@@ -235,66 +241,43 @@ class DictadoUpdateView(UpdateView):
         if not created:
             titular.profesor = profesor
             titular.save()
-        messages.success(self.request, 'Dictado modificado exitosamente.')
+        messages.success(self.request, f'{ICON_CHECK} Dictado modificado exitosamente.')
         return super().form_valid(form)
-
-# ##--------------- DICTADO LIST VIEW --------------------------------
-# class DictadoListView(ListView):
-#     model = Dictado
-#     paginate_by = 100
-#     filter_class = DictadoFilterForm
-#     template_name = 'dictado/dictado_list.html'
-
-#     def get_context_data(self, **kwargs):
-#         context = super().get_context_data(**kwargs)
-#         curso = Curso.objects.get(id=self.kwargs.get('pk'))
-#         context['titulo'] = f"Listado de dictado para {curso.nombre}"
-#         context["curso"] = self.kwargs['pk']
-#         return context
-
-#     def get_queryset(self):
-#         dictados = super().get_queryset().filter(curso__pk=self.kwargs['pk'])
-
-#         # Agregar información del titular para cada dictado
-#         for dictado in dictados:
-#             titular = self.get_titular(dictado)
-#             dictado.titular = titular
-#         return dictados
-
-#     def get_titular(self, dictado):
-#         try:
-#             titular = Titular.objects.get(dictado=dictado)
-#             return titular.profesor
-#         except Titular.DoesNotExist:
-#             return None
 
 ##--------------- DICTADO INSCRIPCIÓN --------------------------------
 from django.shortcuts import render
-from django.http import Http404, JsonResponse
+from django.http import Http404, HttpResponse, JsonResponse
 
 class BuscarPersonaView(View):
     
     def get(self, request, *args, **kwargs):
         dni = request.GET.get('dni', '')
+        print("----------------------------------------------",dni)
         try:
-            persona = Persona.objects.get(dni=dni)
-            persona_data = {
-                'dni': persona.dni,
-                'cuil': persona.cuil,
-                'nombre': persona.nombre,
-                'apellido': persona.apellido,
-                'fecha_nacimiento': persona.fecha_nacimiento,
-                'celular': persona.celular,
-                'direccion': persona.direccion,
-                'nacionalidad': persona.nacionalidad,
-                'mail': persona.mail,
-                'estado_civil': persona.estado_civil,
-                'es_afiliado': persona.es_afiliado,
-                'es_alumno': persona.es_alumno,
-                'es_profesor': persona.es_profesor,
-                'es_encargado': persona.es_encargado,
-            }
-            return JsonResponse({'persona': persona_data})
+            # FILTRA EL PRIMERO QUE ENCUENTRA POR QUE LO GUARDA DOS VECES EN LA BASE
+            persona = Persona.objects.filter(dni=dni).first()
+            if persona is not None:
+                print("---------------SI EXISTE----------------------------:", persona)
+                persona_data = {
+                    'dni': persona.dni,
+                    'cuil': persona.cuil,
+                    'nombre': persona.nombre,
+                    'apellido': persona.apellido,
+                    'fecha_nacimiento': persona.fecha_nacimiento,
+                    'celular': persona.celular,
+                    'direccion': persona.direccion,
+                    'nacionalidad': persona.nacionalidad,
+                    'mail': persona.mail,
+                    'estado_civil': persona.estado_civil,
+                    'es_afiliado': persona.es_afiliado,
+                    'es_alumno': persona.es_alumno,
+                    'es_profesor': persona.es_profesor,
+                    'es_encargado': persona.es_encargado,
+                }
+                return JsonResponse({'persona': persona_data})
+            else:
+                print("--------------PERSONA NO EXISTE--------------------------------",dni)
+                return JsonResponse({'persona': None})
         except Persona.DoesNotExist:
             return JsonResponse({'persona': None})
 
@@ -303,10 +286,26 @@ class VerificarInscripcionView(View):
     template_name = 'dictado/dictado_inscripcion.html'  # La plantilla que mostrará el formulario de inscripción
 
     def get(self, request, *args, **kwargs):
+        curso_pk = kwargs.get('curso_pk')
+        dictado_pk = kwargs.get('dictado_pk')
+        # Obtener el objeto Dictado o devolver un error 404 si no existe
+        dictado = get_object_or_404(Dictado, curso__pk=curso_pk, pk=dictado_pk)
+        print("DICTADO: ", dictado.cupo)
+
+        # Obtener la cantidad de alumnos inscritos en el dictado
+        alumnos_inscritos = Alumno.objects.filter(dictados=dictado)
+        cantidad_alumnos_inscritos = alumnos_inscritos.count()
+        print("TOTAL INSCRIPTOS: ", cantidad_alumnos_inscritos)
+
+        # Verificar si hay cupo
+        hay_cupo = cantidad_alumnos_inscritos < dictado.cupo
+        print("HAY CUPO: ", hay_cupo)
+
         context = {
             'titulo': 'Incripción',
-            'curso_pk': kwargs.get('curso_pk'),
-            'dictado_pk': kwargs.get('dictado_pk'),
+            'curso_pk': curso_pk,
+            'dictado_pk': dictado_pk,
+            'hay_cupo': hay_cupo,
         }
         return render(request, self.template_name, context)
 
@@ -320,7 +319,6 @@ class VerificarInscripcionView(View):
         # Obtener las claves primarias del curso y del dictado
         curso_pk = kwargs.get('curso_pk')
         dictado_pk = kwargs.get('dictado_pk')
-
         # Agregar las variables de contexto para informar en el HTML
         context = {
             'persona_exists': persona_exists,
@@ -332,3 +330,42 @@ class VerificarInscripcionView(View):
             print("PERSONA EXISTE")
 
         return render(request, self.template_name, context)
+
+
+def listaEspera(request, curso_pk, dictado_pk ):
+    # Obtener el objeto Dictado
+    dictado = Dictado.objects.get(id=dictado_pk)
+
+    # Obtener todos los alumnos en lista de espera para el dictado
+    alumnos_lista_espera = Alumno.objects.filter(lista_espera=dictado)
+    print(alumnos_lista_espera)
+
+    alumnos_inscritos = Alumno.objects.filter(dictados=dictado)
+    cantidad_alumnos_inscritos = alumnos_inscritos.count()
+    print("TOTAL INSCRIPTOS: ", cantidad_alumnos_inscritos)
+    hay_cupo = cantidad_alumnos_inscritos < dictado.cupo
+    print("HAY CUPO: ", hay_cupo)
+
+
+    titulo = 'Lista de espera'
+    context = {
+        'dictado': dictado,
+        'alumnos_lista_espera': alumnos_lista_espera,
+        'titulo': titulo,
+        'hay_cupo': hay_cupo,
+    }
+    return render(request, 'dictado/dictado_lista_espera.html', context)
+
+
+def sacarListaEspera(request, curso_pk, dictado_pk, alumno_pk):
+    # Obtener el objeto Dictado
+    dictado = Dictado.objects.get(id=dictado_pk)
+
+    # Obtener el objeto Alumno en lista de espera
+    alumno = get_object_or_404(Alumno, pk=alumno_pk, lista_espera=dictado)
+
+    alumno.lista_espera.remove(dictado)
+    alumno.dictados.add(dictado)
+    messages.success(request, f'{ICON_CHECK} Alumno dado de alta correctamente en el dictado.')
+    
+    return redirect(reverse('cursos:dictado_lista_espera', kwargs={'curso_pk': curso_pk, 'dictado_pk': dictado_pk}))
