@@ -8,13 +8,6 @@ from sec2.utils import FiltrosForm
 from utils.constants import *
 
 class DictadoForm(forms.ModelForm):
-    profesor = forms.ModelChoiceField(
-        queryset=Profesor.objects.all(),
-        label='Profesor',
-        required=False,
-        widget=forms.Select(attrs={'class': 'form-control', 'required': 'required'}),
-    )
-
     fecha = forms.DateTimeField(
         label='Fecha de inicio',
         widget=forms.widgets.DateTimeInput(attrs={'type': 'datetime-local'}),
@@ -40,9 +33,16 @@ class DictadoForm(forms.ModelForm):
         # Verificar el rango de horas entre las 9 am y las 8 pm (20:00)
         if not (9 <= fecha.hour < 20):
             raise forms.ValidationError('La hora debe estar entre las 9 am y las 8 pm.')
-
         return fecha
-    
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # Asegúrate de que el campo 'profesor' está incluido en el formulario
+        self.fields['profesor'] = forms.ModelChoiceField(
+            queryset=Profesor.objects.all(),  # Ajusta el queryset según sea necesario
+            required=False,  # Puedes ajustar esto según tus necesidades
+            label='Profesor',  # Ajusta el label según sea necesario
+        )
 
 # class DictadoFilterForm(FiltrosForm):
 #     fecha_inicio  = forms.DateField(required=False)

@@ -2,101 +2,60 @@
 {% load crispy_forms_tags %}
 {% load static %}
 
-{% block detalle_lado_izquierdo %}
-  <div class="row">
-    <div class="col-md-3">
-      <p>{{ dictado.nombre }}</p>
-    </div>
+{% block detalle %}
+<div class="row">
 
-    <div class="col-md-3">
-      <p>
-        <strong>Descuento para afiliados:</strong>
-      </p>
-    </div>
-    <div class="col-md-3">
-      <p>{{ dictado.descuento }}% de descuento</p>
-    </div>
+  <div class="col-md-2">
+    <p><strong>Desc. afiliados:</strong></p>
   </div>
-
-  <div class="row">
-    <div class="col-md-2">
-      <p>
-        <strong>Titular:</strong>
-      </p>
-    </div>
-    <div class="col-md-3">
-      <p>{{ nombre_profesor }}</p>
-    </div>
-
-    <div class="col-md-3">
-      <p>
-        <strong>Cantidad de clases</strong>
-      </p>
-    </div>
-    <div class="col-md-3">
-      <p>{{ dictado.cantidad_clase }} aproximado</p>
-    </div>
+  <div class="col-md-3">
+    <p>{{ dictado.descuento }}% de descuento</p>
   </div>
-
-  <div class="row">
-    <div class="col-md-2">
-      <p>
-        <strong>Costo:</strong>
-      </p>
-    </div>
-    <div class="col-md-3">
-      <p>${{ dictado.costo }} AR por {{ dictado.get_periodo_pago_display }}</p>
-    </div>
-
-    <div class="col-md-3">
-      <p>
-        <strong>Módulos por Clase:</strong>
-      </p>
-    </div>
-    <div class="col-md-4">
-      <p>
-        {% if dictado.modulos_por_clase == 1 %}
-          {{ dictado.modulos_por_clase }} módulo ({{ dictado.modulos_por_clase }} hora por clase)
-        {% else %}
-          {{ dictado.modulos_por_clase }} módulos ({{ dictado.modulos_por_clase }} horas por clase)
-        {% endif %}
-      </p>
-    </div>
+  <div class="col-md-2">
+    <p><strong>Titular:</strong></p>
   </div>
-
-  <div class="row">
-    <div class="col-md-2">
-      <p>
-        <strong>Pago:</strong>
-      </p>
-    </div>
-    <div class="col-md-3">
-      <p>Por {{ dictado.get_periodo_pago_display }}</p>
-    </div>
-
-    <div class="col-md-3">
-      <p>
-        <strong>Total de cupos:</strong>
-      </p>
-    </div>
-    <div class="col-md-2">
-      <p>{{ dictado.cupo }} participantes</p>
-    </div>
+  <div class="col-md-3">
+    <p>{{ nombre_profesor }}</p>
   </div>
+</div>
 
-  <div class="row">
-
-    <div class="col-md-2">
-      <p>
-        <strong>Inicio:</strong>
-      </p>
-    </div>
-    <div class="col-md-2">
-      <p>{{ dictado.fecha }} </p>
-    </div>
-
-
+<div class="row">
+  <div class="col-md-2">
+    <p>
+      <strong>Valor:</strong>
+    </p>
   </div>
+  <div class="col-md-3">
+    <p>{{costo_parcial}} </p>
+  </div>
+  <div class="col-md-2">
+    <p><strong>Módulos por Clase:</strong></p>
+  </div>
+  <div class="col-md-4">
+    <p>
+      {% if dictado.modulos_por_clase == 1 %}
+      {{ dictado.modulos_por_clase }} módulo ({{ dictado.modulos_por_clase }} hora por clase)
+      {% else %}
+      {{ dictado.modulos_por_clase }} módulos ({{ dictado.modulos_por_clase }} horas por clase)
+      {% endif %}
+    </p>
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-md-2">
+    <p><strong>Total de cupos:</strong></p>
+  </div>
+  <div class="col-md-3">
+    <p>{{ dictado.cupo }} participantes</p>
+  </div>
+  <div class="col-md-2">
+    <p><strong>Inicio:</strong></p>
+  </div>
+  <div class="col-md-2">
+    <p>{{ dictado.fecha }} </p>
+  </div>
+</div>
 {% endblock %}
 
 {% block horarios %}
@@ -125,7 +84,7 @@
       </td>
       
       {% if not horario.reserva %}
-      <td>  
+      <td class="text-end">
         {% if hay_reserva %}
         <a href="{% url 'cursos:asignar_aula' curso_pk=horario.dictado.curso.pk dictado_pk=horario.dictado.pk horario_id=horario.pk %}" class="btn btn-primary btn-sm btn-detalle">
           <i class="fa-solid fa-door-open"></i>Reservar Aula
@@ -138,7 +97,6 @@
       </td>
     {% endif %}
     </tr>
-
     <!-- Modal -->
     {% if not horario.reserva %}
     <div class="modal fade" id="exampleModal{{ horario.pk }}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
@@ -173,14 +131,9 @@
   </div>
   
   <div class="col d-flex justify-content-center">
-    <a href="{% url 'cursos:verificar_persona' curso_pk=dictado.curso.pk dictado_pk=dictado.pk %}" class="btn btn-primary btn-sm btn-detalle">
-      <i class="fa-regular fa-pen-to-square"></i> Inscribir
-    </a>
-  </div>
-
-  <div class="col d-flex justify-content-center">
     <button type="button" class="btn btn-info btn-sm btn-detalle" data-bs-toggle="modal" data-bs-target="#exampleModal">
-      Lista de Alumnos
+      <i class="fa-solid fa-list"></i>
+      Alumnos
     </button>
   </div>
 
@@ -209,10 +162,12 @@
           </thead>
           <tbody>
             {% for alumno in alumnos_inscritos %}
+            <tr class="bg-transition fila-personalizada">
             <td>{{ forloop.counter }}</td>
             <td>{{ alumno.persona.dni}}</td>
             <td>{{ alumno.persona.apellido}}</td>
             <td>{{ alumno.persona.nombre}}</td>
+            </tr>
             {% endfor %}
           </tbody>
         </table>
@@ -221,6 +176,11 @@
         {% endif %}
       </div>
       <div class="modal-footer">
+        <a href="{% url 'cursos:verificar_persona' curso_pk=dictado.curso.pk dictado_pk=dictado.pk %}" 
+        class="btn btn-primary btn-sm " 
+        onclick="window.open(this.href, '_blank', 'width=600,height=400'); return false;">
+         <i class="fa-regular fa-pen-to-square"></i> Inscribir
+        </a>
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
         <button type="button" class="btn btn-primary">Save changes</button>
       </div>
@@ -298,7 +258,9 @@
   {% else %}
     <p>No hay clases asociadas.</p>
   {% endif %}
-  {% comment %} <a href="{% url 'cursos:clase_crear' curso_pk=curso.pk dictado_pk=dictado.pk %}" class="btn btn-primary btn-detalle"><i class="fa-solid fa-plus"></i> Nueva Clase</a> {% endcomment %}
+  
+
+
   {% endblock %}
 
   

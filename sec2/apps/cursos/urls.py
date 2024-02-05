@@ -1,5 +1,4 @@
 from django.urls import path
-# from views import index, actividad_eliminar, curso_eliminar, registrarAsistenciaProfesor, registrarAlumnoADictado, registrarAsistenciaAlumno, aula_eliminar
 from .views.actividad_views import *
 from .views.curso_views import *
 from .views.dictado_views import *
@@ -57,8 +56,6 @@ urlpatterns = [
     # CLASE (accedido desde dictaod)
     path('cursos/curso/<int:curso_pk>/dictados/dictado/<int:dictado_id>/generarclaeses/', generar_clases, name="generar_clases"),
     path('cursos/curso/<int:curso_pk>/dictados/dictado/<int:dictado_pk>/clases/clase/<int:clase_pk>', ClaseDetailView.as_view(), name="clase_detalle"),
-
-
 
     ## VERIFICAR Y BUSCAR PERSONA ANTES DE PROCEDER A LA INSCRIPCION
     path('cursos/curso/<int:curso_pk>/dictados/dictado/<int:dictado_pk>/buscar', VerificarInscripcionView.as_view(), name="verificar_persona"),

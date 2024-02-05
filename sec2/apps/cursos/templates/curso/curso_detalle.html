@@ -42,12 +42,14 @@
       <p>{{ curso.modulos_totales }} hrs.</p>
     </div>
     <div class="col-md-2">
-      <p>
-        <strong>Costo Total:</strong>
-      </p>
+      <p><strong>Costo Total:</strong></p>
     </div>
     <div class="col-md-4">
+      {% if not curso.es_convenio %}
       <p>${{ curso.costo }}</p>
+      {% else %}
+      <p>Gratuito</p>
+      {% endif %}
     </div>
   </div>
 
@@ -57,8 +59,16 @@
         <strong>Descripción:</strong>
       </p>
     </div>
-    <div class="col-md-10">
+    <div class="col-md-4">
       <p>{{ curso.descripcion }}</p>
+    </div>
+    <div class="col-md-2">
+      <p>
+        <strong>Actividad:</strong>
+      </p>
+    </div>
+    <div class="col-md-4">
+      <p>{{ curso.actividad }}</p>
     </div>
   </div>
 
@@ -81,6 +91,33 @@
       {% endif %}
     </div>
   {% endif %}
+
+  <div class="row">
+    
+    {% if curso.area != 2 %}  
+    <div class="col-md-2">
+      <p><strong>Equip. Informatico</strong></p>
+    </div>
+    <div class="col-md-4">
+      <p>
+        {% if curso.requiere_equipamiento_informatico %}
+        Si requiere
+        {% else %}
+        No requiere
+        {% endif %}
+      </p>
+    </div>
+    {% endif %}
+
+    {% if curso.es_convenio%}
+    <div class="col-md-2">
+      <p><strong>Asistencia:</strong></p>
+    </div>
+    <div class="col-md-4">
+      <p>80% de asistencia para aprobar</p>
+    </div>
+    {% endif %}
+  </div>
 {% endblock %}
 
 {% block botones %}
@@ -116,8 +153,9 @@
             <td>0/{{ dictado.cupo }}</td>
             <td>{{ dictado.descuento }} %</td>
             <td>{{ dictado.modulos_por_clase }} hrs</td>
-            <td>
+            <td class="text-end">
               <a href="{% url 'cursos:dictado_detalle' curso_pk=curso.pk dictado_pk=dictado.pk %}" class="btn btn-primary btn-detalle btn-sm"><i class="fa-regular fa-eye"></i> Detalle</a>
+
             </td>
           </tr>
         {% endfor %}

@@ -24,13 +24,10 @@ class DictadoCreateView(CreateView):
         context = super().get_context_data(**kwargs)
         context['curso'] = get_object_or_404(Curso, id=self.kwargs.get('pk'))
         context['titulo'] = f"Dictado para {context['curso'].nombre}"
-        # Filtrar a los profesores por la actividad del curso
         actividad_curso = context['curso'].actividad
-        profesores_actividad = Actividad.objects.filter(nombre=actividad_curso)
-        context['profesores_actividad'] = profesores_actividad
-
-        context['profesor_form'] = ProfesorForm()
+        context['profesores_capacitados'] = Profesor.objects.filter(actividades=actividad_curso)
         return context
+
 
     def form_valid(self, form):
         # Obtén el curso asociado al dictado
@@ -44,6 +41,8 @@ class DictadoCreateView(CreateView):
         if not form.is_valid():
             return self.form_invalid(form)
 
+        if curso.es_convenio:
+            dictado.asistencia_obligatoria = True
         # Guarda el dictado en la base de datos
         dictado.save()
 
@@ -70,8 +69,7 @@ class DictadoCreateView(CreateView):
         # Guarda el horario en la base de datos
         horario.save()
         # Si la hora_fin está nula, asigna la hora de fin al horario usando el método clean
-        messages.success(self.request, 'Dictado creado exitosamente')
-
+        messages.success(self.request, f'{ICON_CHECK} Dictado creado exitosamente')
         # Redirige a la vista de detalle del curso
         return super().form_valid(form)
 
@@ -79,12 +77,15 @@ class DictadoCreateView(CreateView):
         return reverse('cursos:curso_detalle', args=[self.object.curso.pk])
 
     def form_invalid(self, form):
-        messages.warning(self.request, f'{ICON_TRIANGLE} {MSJ_CORRECTION} {form.errors}')
+        messages.warning(self.request, f'{ICON_TRIANGLE} {MSJ_CORRECTION}')
         context = self.get_context_data()
         print("Errores del formulario:", form.errors)
         return self.render_to_response(context)
 
 ##--------------- DICTADO DETALLE --------------------------------
+from decimal import Decimal, getcontext
+import math
+
 class DictadoDetailView(DetailView):
     model = Dictado
     template_name = 'dictado/dictado_detail.html'
@@ -98,15 +99,13 @@ class DictadoDetailView(DetailView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         dictado = self.object  # El objeto de dictado obtenido de la vista
-
+        
         context['titulo'] = "Detalle del dictado"
         context['tituloListado'] = 'Clases Asociadas'
+        
+        curso = Curso.objects.get(id=self.kwargs.get('curso_pk'))
+        context['curso'] = curso
 
-        # Obtener todas las clases asociadas al dictado a través de los horarios
-        # clases = Clase.objects.filter(horario__dictado=dictado)
-        # context['clases'] = clases
-
-        context['curso'] = Curso.objects.get(id=self.kwargs.get('curso_pk'))
         # Obtener todos los horarios asociados al dictado
         horarios = dictado.horarios.all()
         context['horarios'] = horarios
@@ -137,6 +136,28 @@ class DictadoDetailView(DetailView):
 
         alumnos_inscritos = Alumno.objects.filter(dictados=dictado)
         context['alumnos_inscritos'] = alumnos_inscritos
+
+        if dictado.periodo_pago == 2:
+            # PERIODO DE PAGO POR CLASE
+            cantidad_clase = Decimal(curso.modulos_totales) / Decimal(dictado.modulos_por_clase)
+            cantidad_clase = Decimal(math.ceil(cantidad_clase))
+            result = round(curso.costo / cantidad_clase, 2)
+            context['costo_parcial'] = f"${result} AR por {dictado.get_periodo_pago_display()}"
+        else:
+            # PERIODO DE PAGO POR MES
+            if clases.exists():
+                # Obtén las fechas de la primera y última clase
+                primera_fecha_clase = clases.first().reserva.fecha
+                ultima_fecha_clase = clases.last().reserva.fecha
+                # Calcula la diferencia de tiempo entre la primera y última fecha de clases
+                diferencia_tiempo = ultima_fecha_clase - primera_fecha_clase
+                # Calcula el número de meses
+                meses_transcurridos = round(diferencia_tiempo.days / 30)  # Suponiendo 30 días por mes para simplificar
+                # Realiza el cálculo del costo basado en el número de meses
+                result = round(curso.costo / meses_transcurridos, 2)
+                context['costo_parcial'] = f"${result} AR por {dictado.get_periodo_pago_display()}"
+            else:
+                context['costo_parcial'] = 'Primero tiene generar las clases'
         return context
 
     def get_reserva(self, horario):
@@ -165,7 +186,10 @@ class DictadoUpdateView(UpdateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        dictado = self.object
         context['titulo'] = "Modificar Detalle"
+        actividad_curso = dictado.curso.actividad
+        context['profesores_capacitados'] = Profesor.objects.filter(actividades=actividad_curso)
         return context
     
     def get_object(self, queryset=None):
@@ -180,7 +204,7 @@ class DictadoUpdateView(UpdateView):
         titular = self.get_titular(dictado)
         if titular:
             # Si hay un Titular asociado, establece el valor del profesor en el formulario
-            form.fields['profesor'].initial = titular.profesor.id
+            form.fields['profesor'].initial = titular.profesor.id if titular.profesor else None
         return form
 
     def get_success_url(self):
@@ -246,7 +270,7 @@ class DictadoUpdateView(UpdateView):
 
 ##--------------- DICTADO INSCRIPCIÓN --------------------------------
 from django.shortcuts import render
-from django.http import JsonResponse
+from django.http import Http404, JsonResponse
 
 class BuscarPersonaView(View):
     

@@ -41,6 +41,7 @@ class Curso(models.Model):
 
     area = models.PositiveSmallIntegerField(choices=AREAS, blank=True, null=True)
     requiere_certificado_medico = models.BooleanField(default=False)
+    requiere_equipamiento_informatico = models.BooleanField(default=False)
     es_convenio = models.BooleanField(default=False)
     modulos_totales= models.PositiveIntegerField(help_text="Horas totales del curso")    
     nombre = models.CharField(

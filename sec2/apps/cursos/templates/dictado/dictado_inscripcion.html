@@ -4,8 +4,9 @@
 {% block formulario %}
   <form id="buscarPersonaForm">
     <label for="dni">Ingrese DNI (8 dígitos):</label>
-    <input type="number" id="dni" name="dni" required minlength="8" maxlength="8" />
-      <button type="button" onclick="buscarPersona()">Buscar Persona</button>
+    <br>
+    <input class="form-control" type="number" id="dni" name="dni" required minlength="8" maxlength="8" />
+      <button class="btn btn-info btn-sm btn-detalle"type="button" onclick="buscarPersona()"><i class="fa-solid fa-magnifying-glass"></i> Buscar</button>
   </form>
 
   <div id="resultadosPersona"></div>
@@ -58,7 +59,7 @@
     // Función para mostrar los resultados en la página
     function mostrarResultados(persona) {
       var resultadosDiv = document.getElementById('resultadosPersona');
-  
+
       if (persona) {
         // Persona encontrada, mostrar detalles
         resultadosDiv.innerHTML = `
@@ -72,7 +73,9 @@
         // Si no la encuentra, dar la opción de darla de alta como alumno o afiliar
         resultadosDiv.innerHTML = `
         <p>La persona no está registrada en el sistema.</p>
-        <button onclick="altaAlumno({{ curso_pk }}, {{ dictado_pk }})">Dar de alta como alumno</button>
+        <div class="text-center">
+        <button class="btn btn-secondary btn-sm btn-detalle" onclick="altaAlumno({{ curso_pk }}, {{ dictado_pk }})">Dar de alta como alumno</button>
+        </div>
         `;
       }
         // Restablecer la variable para permitir nuevas búsquedas

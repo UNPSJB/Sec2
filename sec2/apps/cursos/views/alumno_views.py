@@ -1,5 +1,7 @@
 # from ..models import Alumno
+from multiprocessing import context
 from pyexpat.errors import messages
+import uuid
 
 from django.http import HttpResponse
 
@@ -20,16 +22,16 @@ class AlumnoCreateView(CreateView):
     template_name = 'alumno/alumno_form.html'
 
     def get_success_url(self):
-        print("-----------1-----------")
         curso_pk = self.kwargs.get('curso_pk')
         dictado_pk = self.kwargs.get('dictado_pk')
-        return reverse_lazy('cursos:dictado_detalle', kwargs={'curso_pk': curso_pk, 'dictado_pk': dictado_pk})
+        return reverse_lazy('cursos:persona_inscribir', kwargs={'curso_pk': curso_pk, 'dictado_pk': dictado_pk})
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         curso_pk = self.kwargs.get('curso_pk')
         dictado_pk = self.kwargs.get('dictado_pk')
-        
+        context['unique_identifier'] = f'alumno_form_{uuid.uuid4().hex}'
+
         # Print or log the values of curso_pk and dictado_pk for debugging
         print(f"curso_pk: {curso_pk}, dictado_pk: {dictado_pk}")
         
@@ -82,12 +84,11 @@ class AlumnoCreateView(CreateView):
 
             # Agregar el alumno a los dictados seleccionados
             alumno.dictados.add(dictado)
-            messages.success(self.request, f'Alumno inscrito al curso exitosamente!')
-
+            messages.success(self.request, f'Alumno inscrito al curso exitosamente!. Cierre la ventana y recargue el detalle del dictado')
+            # Agregar el mensaje de éxito para mostrar en el template
             return super().form_valid(form)
         
     def form_invalid(self, form):
-        print("-----------6-----------")
         messages.warning(self.request, f'Corrige los errores en el formulario.')
         return super().form_invalid(form)
 

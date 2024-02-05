@@ -10,24 +10,13 @@
 {% block container %}
   <div class="container">
     <div class="row justify-content-center">
-      {% if messages %}
-          <div class="alert alert-danger">
-            <ul>
-              {% for message in messages %}
-                <li>{{ message }}</li>
-              {% endfor %}
-            </ul>
-          </div>
-        {% endif %}
-
-      <div class="border p-3 mb-3 curso-form rounded-5">
-        <h3 class="titulo">{{ titulo }}</h3>
-        {% block formulario %}
-
-        {% endblock %}
-      </div>
+      {% include 'message.html' %}
+      <h3 class="titulo">{{ titulo }}</h3>
+      {% block formulario %}
+      {% endblock %}
     </div>
   </div>
+  
 {% endblock %}
 
 {% block extrajs_intermedia %}
