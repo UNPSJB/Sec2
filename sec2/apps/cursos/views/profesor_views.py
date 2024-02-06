@@ -16,7 +16,7 @@ class ProfesorCreateView(CreateView):
     model = Profesor
     form_class = FormularioProfesor
     template_name = 'profesor/profesor_form.html'  
-    success_url = reverse_lazy('cursos:profesor_crear')
+    success_url = reverse_lazy('cursos:index')
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -43,15 +43,19 @@ class ProfesorCreateView(CreateView):
             # Guardar las actividades seleccionadas
             actividades_seleccionadas = self.request.POST.getlist('actividades')
 
-            profesor = Profesor(persona=persona)
+            profesor = Profesor(persona=persona,
+                                tipo = Profesor.TIPO)
+            
             profesor.ejerce_desde = form.cleaned_data["ejerce_desde"]
+            Profesor.register 
             profesor.save()
+            profesor.persona.es_profesor = True
             profesor.actividades.set(actividades_seleccionadas)
+            messages.success(self.request, f'{ICON_CHECK} Profesor dado de alta con éxito!')
 
-        response = super().form_valid(form)
         # Mostrar el mensaje de éxito
-        messages.success(self.request, f'{ICON_CHECK} Profesor dado de alta con éxito!')
-        return response
+        
+        return super().form_valid(form)
 
     def form_invalid(self, form):
         messages.warning(self.request, f'{ICON_TRIANGLE} Por favor, corrija los errores a continuación.')

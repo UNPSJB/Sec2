@@ -151,10 +151,10 @@ class Rol(models.Model):
     def __str__(self):
         return f"{self.__class__.__name__} {self.id}"
 
-    def save(self, *args, **kwargs):
-        if self.pk is None:
-            self.tipo = self.__class__.TIPO
-        super(Rol, self).save(*args, **kwargs)  # Corrección: llamada al método save de la clase base
+    # def save(self, *args, **kwargs):
+    #     if self.pk is None:
+    #         self.tipo = self.__class__.TIPO
+    #     super(Rol, self).save(*args, **kwargs)  # Corrección: llamada al método save de la clase base
 
 
     def related(self):
