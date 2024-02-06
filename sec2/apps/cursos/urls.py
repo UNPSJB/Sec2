@@ -67,12 +67,12 @@ urlpatterns = [
     path('cursos/curso/<int:curso_pk>/dictados/dictado/<int:dictado_pk>/Alumnos/listaEspera', listaEspera , name="dictado_lista_espera"),
     path('cursos/curso/<int:curso_pk>/dictados/dictado/<int:dictado_pk>/Alumno/<int:alumno_pk>/sacarlistaEspera', sacarListaEspera , name="sacar_lista_espera_poner_en_dictado"),
 
+    #CONTROL DE ASISTENCIA
+    path('marcar_asistencia/Alumno/<int:clase_id>/', marcar_asistencia, name='generar_asistencia'),
 
-    #ALMNOS POR CURSO
+        #ALUMNNOS POR CURSO
     path('cursos/curso/<int:curso_pk>/dictados/dictado/<int:dictado_pk>/Alumnos', AlumnosEnDictadoList.as_view(), name="alumno_inscripto"),
    
-   
-    path('marcar_asistencia/<int:clase_id>/', marcar_asistencia, name='marcar_asistencia'),
 
     # path('<int:pk>/dictado/profesor',  ProfesorDelDictadoListView.as_view(), name="profesor_dictado"),
     # path('<int:pk>/dictado/profesor/<int:ppk>/presente',  registrarAsistenciaProfesor, name="asistencia_profesor"),

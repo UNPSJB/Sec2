@@ -111,3 +111,4 @@ def profesor_eliminar(request, pk):
     # except Exception as e:
     #     messages.error(request, 'Ocurrió un error al intentar eliminar el aula.')
     return redirect('afiliados:funcionalidad_pendiente')
+

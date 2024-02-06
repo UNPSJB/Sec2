@@ -5,7 +5,7 @@ import uuid
 
 from django.http import HttpResponse
 
-from apps.cursos.models import Clase
+from apps.cursos.models import AsistenciaProfesor, Clase
 
 from ..forms.alumno_forms import *
 from ..forms.curso_forms import *
@@ -195,7 +195,7 @@ class AlumnosEnDictadoList(ListView):
 
 def marcar_asistencia(request, clase_id):
     clase = get_object_or_404(Clase, pk=clase_id)
-
+    
     # Verificar si la clase actual es la primera clase del dictado
     es_primera_clase = not Clase.objects.filter(
         reserva__horario__dictado=clase.reserva.horario.dictado,
@@ -227,6 +227,20 @@ def marcar_asistencia(request, clase_id):
 
         # Establecer la asistencia de los alumnos en la clase
         clase.asistencia.set(alumnos_asistencia)
+
+        # Obtener la lista de IDs de profesores que se les marcó la asistencia
+        profesor_asistencia_ids = request.POST.getlist('profesor__asistencia')
+
+        # Obtener los objetos Profesor correspondientes a los IDs seleccionados
+        profesor_asistencia = Profesor.objects.filter(id__in=profesor_asistencia_ids)
+
+        # Realizar las acciones necesarias con la lista de profesores marcados
+        for profesor in profesor_asistencia:
+            print(f'Profesor marcado como presente: {profesor.persona.nombre} {profesor.persona.apellido}')
+
+        # Crear instancias de AsistenciaProfesor para registrar la asistencia de los profesores
+        for profesor in profesor_asistencia:
+            AsistenciaProfesor.objects.create(profesor=profesor, clase=clase, asistio=True)
 
         # Actualizar el campo asistencia_tomada a True
         clase.asistencia_tomada = True

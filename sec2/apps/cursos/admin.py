@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Actividad, Alumno, Clase, Curso, Aula, Dictado, Horario, Reserva, Profesor
+from .models import Actividad, Alumno, AsistenciaProfesor, Clase, Curso, Aula, Dictado, Horario, Reserva, Profesor, Titular
 
 class AulaAdmin(admin.ModelAdmin):
     list_display = ('numero', 'tipo', 'capacidad')
@@ -31,6 +31,8 @@ admin.site.register(Actividad, ActividadAdmin)
 
 admin.site.register(Alumno)
 admin.site.register(Profesor)
+admin.site.register(AsistenciaProfesor)
+admin.site.register(Titular)
 
 # admin.site.register(Profesor)
 # admin.site.register(Asistencia_alumno)

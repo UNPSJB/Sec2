@@ -172,12 +172,6 @@ def marcar_asistencia(request, clase_id, alumno_id):
     else:
         return HttpResponse("Error: El alumno no está inscrito en este curso.")
     
-class Clase(models.Model):
-    reserva = models.ForeignKey(Reserva, related_name="clases", on_delete=models.CASCADE, null=True, blank=True)
-    asistencia = models.ManyToManyField(Alumno, related_name="clases_asistidas", blank=True)
-    asistencia_tomada = models.BooleanField(default=False)
-    
-
 
 #------------- PROFESOR --------------------
 class Profesor(Rol):
@@ -194,13 +188,25 @@ class Profesor(Rol):
             return super().__str__()
 Rol.register(Profesor)
 
+#------------- CLASE --------------------
+class Clase(models.Model):
+    reserva = models.ForeignKey(Reserva, related_name="clases", on_delete=models.CASCADE, null=True, blank=True)
+    asistencia = models.ManyToManyField(Alumno, related_name="clases_asistidas", blank=True)
+    asistencia_tomada = models.BooleanField(default=False)
+    asistencia_profesores = models.ManyToManyField(Profesor, through='AsistenciaProfesor', related_name='clases_asistidas', blank=True)
+
 #------------- TITULAR --------------------
 class Titular(models.Model):
     # ForeignKey
     profesor = models.ForeignKey(Profesor, on_delete=models.CASCADE)
     dictado= models.ForeignKey(Dictado, on_delete=models.CASCADE)
 
-
+#------------- ASISTENCIA PROFESOR --------------------
+class AsistenciaProfesor(models.Model):
+    # ForeignKey
+    profesor = models.ForeignKey(Profesor, on_delete=models.CASCADE)
+    clase = models.ForeignKey(Clase, on_delete=models.CASCADE)
+    asistio = models.BooleanField(default=False)
 
 
 # class Asistencia_profesor(models.Model):

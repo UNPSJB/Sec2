@@ -4,7 +4,7 @@ from django.shortcuts import render, redirect
 from django.views.generic import DetailView
 from sec2.utils import ListFilterView
 from django.contrib import messages
-from ..models import Clase, Dictado, Aula, Horario, Reserva
+from ..models import AsistenciaProfesor, Clase, Dictado, Aula, Horario, Profesor, Reserva, Titular
 from ..forms.clase_forms import *
 from django.urls import reverse
 from django.shortcuts import get_object_or_404
@@ -52,12 +52,26 @@ class ClaseDetailView(DetailView):
         
         alumnos_asistieron = clase.asistencia.all()
 
+        # Obtener los titulares asociados al dictado de la clase
+        titulares = Titular.objects.filter(dictado=dictado).select_related('profesor')
+
+        # Obtener los profesores de AsistenciaProfesor que son titulares y tienen la clase
+        profesores_asistieron = AsistenciaProfesor.objects.filter(clase=clase).values_list('profesor__id', flat=True)
+
+
+        print("profesores_asistieron")
+        print(profesores_asistieron)
+
         context["dictado"] = dictado
         context["clase"] = clase
         context["titulo"] = "Detalle de clase"
         context["tituloListado"] = "Asistencia"
+        context["tituloListado1"] = "Alumnos"
+        context["tituloListado2"] = "Profesor"
         context["alumnos_inscritos"] = alumnos_inscritos
         context["alumnos_asistieron"] = alumnos_asistieron
+        context["profesores_asistieron"] = profesores_asistieron
+        context["titulares"] = titulares
         return context
 
     def post(self, request, *args, **kwargs):
@@ -69,10 +83,3 @@ class ClaseDetailView(DetailView):
             clase.save()
             # Puedes realizar otras acciones aquí, como guardar el registro en la base de datos
         return HttpResponseRedirect(self.request.path_info)
-    
-    
-
-# class ClaseListView(ListFilterView):
-#     model = Clase
-#     paginate_by = 100
-#     filter_class = ClaseFilterForm

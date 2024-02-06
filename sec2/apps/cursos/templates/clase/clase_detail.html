@@ -20,13 +20,14 @@
       <p><strong>Lugar:</strong> {{ clase.reserva.aula }}</p>
     </div>
   </div>
+
   {% endblock %}
-  
-  
+
   {% block listado_asociado %}
   {% if alumnos_inscritos %}
-  <form method="post" action="{% url 'cursos:marcar_asistencia' clase.id %}">
+  <form method="post" action="{% url 'cursos:generar_asistencia' clase.id  %}">
     {% csrf_token %}
+    <h5 class="text-center"> {{tituloListado1}}</h5>
     <table class="table table-sm table-hover">
       <thead>
         <tr>
@@ -45,28 +46,64 @@
           <td>{{ alumno.persona.apellido }}</td>
           <td>{{ alumno.persona.nombre }}</td>
           <td class="text-center">
-            {% if clase.asistencia_tomada %}
-            <input type="checkbox" name="alumnos_asistencia" value="{{ alumno.id }}" disabled
+            <input 
+            type="checkbox"
+            name="alumnos_asistencia"
+            value="{{ alumno.id }}"
+            {% if clase.asistencia_tomada %}disabled{% endif %}
             {% if alumno in alumnos_asistieron %}checked{% endif %}>
-            {% else %}
-            <input type="checkbox" name="alumnos_asistencia" value="{{ alumno.id }}"
-            {% if alumno in alumnos_asistieron %}checked{% endif %}>
-            {% endif %}
           </td>
         </tr>
         {% endfor %}
       </tbody>
     </table>
+
+    <br>
+    
+    <h5 class="text-center"> {{tituloListado2}}</h5>
+    <table class="table table-sm table-hover">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Dni</th> 
+          <th>Apellido</th> 
+          <th>Nombre</th>
+          <th class="text-center">Asistencia</th> 
+        </tr>
+      </thead>
+      <tbody>
+        {% for titular in titulares %}
+        <tr>
+          <td>{{ forloop.counter }}</td>
+          <td>{{ titular.profesor.persona.dni }}</td>
+          <td>{{ titular.profesor.persona.apellido }}</td>
+          <td>{{ titular.profesor.persona.nombre }}</td>
+          <td class="text-center">
+            <input 
+            type="checkbox"
+            name="profesor__asistencia"
+            value="{{ titular.profesor.id }}" 
+            {% if clase.asistencia_tomada %}disabled{% endif %}
+            {% if titular.profesor.id in profesores_asistieron %}checked{% endif %}>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+
     {% if not clase.asistencia_tomada %}
     <div class="text-center">
-      <button class="btn btn-success btn-detalle" type="submit">Guardar Asistencia</button>
+      <button class="btn btn-success btn-detalle" type="submit">Generar Asistencia</button>
     </div>
-  {% endif %}
-
+    {% endif %}
+  
+  
   </form>
   {% else %}
   <p>No hay alumnos inscriptos.</p>
   {% endif %}
+
+
 
   {% endblock %}
   
