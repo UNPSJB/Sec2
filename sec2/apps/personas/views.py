@@ -1,4 +1,6 @@
-from django.shortcuts import render
+from django.shortcuts import get_object_or_404, render
+
+from apps.afiliados.models import Afiliado
 from .forms import *
 from .models import *
 from django.contrib import messages
@@ -32,17 +34,3 @@ class PersonaCreateView(CreateView):
         return context
 
 
-def FamiliaCreateView1(request, pk):
-    persona = Persona.objects.get(pk=pk)
-    if request.method == 'POST':
-        formset = VinculoFormSet(request.POST, request.FILES)
-        if formset.is_valid():
-            vinculos = formset.save(commit=False)
-            for v in vinculos:
-                v.vinculante = persona
-                v.save()
-            for d in formset.deleted_objects:
-                d.delete()
-    formset = VinculoFormSet(queryset=persona.vinculados.all())
-    return render(request, 'personas/vinculo_form.html', {
-        'formset': formset, 'persona': persona})

@@ -1,0 +1,176 @@
+{% extends 'detalle_listado_afiliado.html' %}
+{% load crispy_forms_tags %}
+{% load static %}
+
+
+{% block detalle %}
+<link href="{% static 'css/afiliado_confirm_delete.css' %}" rel="stylesheet" />
+
+<h3>{{subtitulodetalle1}}</h3>
+
+<div class="row">
+  <div class="col-md-2">
+    <img src="{% static 'images/perfil.jpg' %}" alt="Profile Image" class="img-thumbnail" />
+  </div>
+
+  <div class="col">
+    <div class="row">
+      <div class="col">
+        <p>
+          <strong>Dni:</strong> 
+          {{ afiliado.persona.dni }}
+        </p>
+      </div>
+      <div class="col">
+        <p>
+          <strong>Fecha de Nacimiento:</strong> 
+          {{ afiliado.persona.fecha_nacimiento }}
+        </p>
+        
+      </div>
+    </div>
+    
+    <div class="row">
+      <div class="col">
+        <p>
+          <strong>Apellido:</strong>
+          {{ afiliado.persona.apellido }}
+        </p>
+      </div>
+      <div class="col">
+        <p>
+          <strong>Nombre:</strong>
+          {{ afiliado.persona.nombre }}
+        </p>
+    </div>
+  </div>
+</div>
+</div>
+
+
+<br>
+<h3>{{subtitulodetalle2}}</h3>
+
+<div class="row">
+  <div class="col-md-2">
+    <p><strong>Estado:</strong> </p>
+  </div>
+  <div class="col-md-2">
+    <p class="status">
+      {% if afiliado.estado == 1 %}  <span class="pending-status">PENDIENTE</span>
+      {% elif afiliado.estado == 2 %} <span class="active-status">ACTIVO</span>
+      {% elif afiliado.estado == 3 %} <span class="inactive-status">INACTIVO</span>
+      {% endif %}
+    </p>
+  </div>
+
+  <div class="col-md-2">
+    <p><strong>Razón Social:</strong> </p>
+  </div>
+  <div class="col-md-2">
+    {{ afiliado.razon_social }}
+  </div>
+
+  <div class="col-md-2">
+    <p><strong>Hora Jornada:</strong> </p>
+  </div>
+  <div class="col-md-2">
+    {{ afiliado.horaJornada }}
+  </div>
+
+</div>
+
+<div class="row">
+  <div class="col-md-2">
+    <p><strong>Domicilio (empresa):</strong> </p>
+  </div>
+  <div class="col-md-2">
+    {{ afiliado.domicilio_empresa }}
+  </div>
+
+  <div class="col-md-2">
+    <p><strong>Fecha Ingreso:</strong> </p>
+  </div>
+  <div class="col-md-2">
+    {{ afiliado.fechaIngresoTrabajo }}
+  </div>
+
+  <div class="col-md-2">
+    <p><strong>Rama:</strong> </p>
+  </div>
+  <div class="col-md-2">
+    {{ afiliado.rama }}
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-md-2">
+    <p><strong>Fecha afiliación:</strong> </p>
+  </div>
+  <div class="col-md-2">
+    {{ afiliado.fechaAfiliacion }}
+  </div>
+
+  <div class="col-md-2">
+    <p><strong>Cuit empleador:</strong> </p>
+  </div>
+  <div class="col-md-2">
+    {{ afiliado.cuit_empleador }}
+  </div>
+  <div class="col-md-2">
+    <p><strong>Categoría Laboral:</strong> </p>
+  </div>
+  <div class="col-md-2">
+    {{ afiliado.categoria_laboral }}
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-md-2">
+    <p><strong>Localidad:</strong></p>
+  </div>
+  <div class="col-md-2">
+    {{ afiliado.localidad_empresa }}
+  </div>
+
+  <div class="col-md-2">
+    <p><strong>Sueldo:</strong> </p>
+  </div>
+  <div class="col-md-2">
+    {{ afiliado.sueldo }}
+  </div>
+</div>
+<br>
+{% endblock %}
+
+
+{% block botones %}
+<a href="{% url 'afiliados:crear_familiar' afiliado.pk %}" class="btn btn-sm btn-primary">Cargar Familiar</a>
+
+<div class="col d-flex justify-content-center"> 
+  {% if afiliado.estado == 1 or afiliado.estado == 2 %}
+    <a href="{% url 'afiliados:afiliado_actualizar' afiliado.pk %}" class="btn btn-sm btn-primary "><i class="fas fa-pencil-alt"></i> Modificar</a>
+  {% endif %}
+</div>
+
+<div class="col d-flex justify-content-center"> 
+  <a target="_blank" href="#" class="btn btn-sm btn-primary "><i class="fas fa-users"></i> Grupo Familiar</a>
+  {% comment %} <a target="_blank" href="{% url 'afiliados:grupo_familiar' afiliado.pk %}" class="btn btn-primary"><i class="fas fa-users"></i> Grupo Familiar</a> {% endcomment %}
+</div>
+
+<div class="col d-flex justify-content-end">
+  {% if afiliado.estado == 1 %}
+  <button type="button" class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#modal_afiliar_{{ afiliado.pk }}"><i class="fa-regular fa-circle-down"></i> Afiliar</button>
+  {% include 'modal_confirm_alta.html' with object=afiliado %}
+  {% endif %}
+  
+  {% if afiliado.estado == 2 %}
+  <button type="button" class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#modal_desafiliar_{{ afiliado.pk }}"><i class="fa-regular fa-circle-down"></i> Desafiliar</button>
+  {% include 'modal_confirm_baja.html' with object=afiliado %}
+  {% endif %}
+</div>
+{% endblock %}
+
+{% block extrajs_intermedia %}
+  {% comment %} <script src="{% static 'js/afiliado_confirm_delete.js' %}"></script> {% endcomment %}
+{% endblock %}

@@ -23,7 +23,7 @@ class Afiliado(Rol):
             raise ValidationError('La fecha no puede ser en el futuro.')
     
     fechaAfiliacion= models.DateField(
-        null=False,
+        null=True,
         blank=False,
         validators=[validate_fecha]
     )

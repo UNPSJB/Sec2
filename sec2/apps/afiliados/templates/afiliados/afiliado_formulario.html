@@ -1,274 +1,125 @@
-{% extends 'home_afiliado.html' %}
+{% extends 'alta_gestion_afiliados.html' %}
 {% load crispy_forms_tags %}
 {% load static %}
 
-{% block extracss_intermedia %}
-  <link href="{% static 'css/afiliado_formulario.css' %}" rel="stylesheet" />
-{% endblock %}
-
-{% block dinamica %}
-  <br />
-  <h3 class="titulo">{{ titulo }}</h3>
-  <div id="form-container" class="container">
+{% block formulario %}
+  <form method="post">
+    {% csrf_token %}
     <div class="row">
       <div class="col-12">
-        <ul class="nav nav-tabs" id="form-tabs">
-          <li class="nav-item">
-            <a class="nav-link active" id="tab-section-1" data-toggle="tab">Sección 1</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" id="tab-section-2" data-toggle="tab">Sección 2</a>
-          </li>
-        </ul>
+        <div class="tab-content" id="form-tabs-content">
+          {% comment %}SECCION 1{% endcomment %}
+          <div id="section1" class="tab-pane fade show active">
+            {% include 'persona_alta.html' %}
+          </div>
+
+          {% comment %}SECCION 2{% endcomment %}
+
+          <div id="section2" class="tab-pane fade">
+            <div class="row">
+              <div class="col">
+                <div class="form-group">
+                  <label for="{{ form.razon_social.id_for_label }}">Razón Social:</label>
+                  {{ form.razon_social }}
+                  {% include "error_campo.html" with field=form.razon_social %}
+                </div>
+              </div>
+
+              <div class="col">
+                <div class="form-group">
+                  <label for="{{ form.categoria_laboral.id_for_label }}">Categoría Laboral:</label>
+                  {{ form.categoria_laboral }}
+                  {% include "error_campo.html" with field=form.categoria_laboral %}
+                </div>
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="col">
+                <div class="form-group">
+                  <label for="{{ form.rama.id_for_label }}">Rama:</label>
+                  {{ form.rama }}
+                  {% include "error_campo.html" with field=form.rama %}
+                </div>
+              </div>
+              <div class="col">
+                <div class="row">
+                  <div class="col">
+                    <div class="form-group">
+                      <label for="{{ form.sueldo.id_for_label }}">Sueldo:</label>
+                      <input type="number" name="sueldo" step="1" min="0" required class="form-control" value="{{ form.sueldo.value }}" />
+                      {% include "error_campo.html" with field=form.sueldo %}
+                    </div>
+                  </div>
+                  
+                  <div class="col">
+                    <div class="form-group">
+                      <label for="{{ form.horaJornada.id_for_label }}">Hora de Jornada:</label>
+                      <input type="number" name="horaJornada" step="1" min="49" required class="form-control" value="{{ form.horaJornada.value|default:'' }}" />
+                      {% include "error_campo.html" with field=form.horaJornada %}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <div class="row">
+              {% comment %} <div class="col">
+                <div class="form-group">
+                  <label for="{{ form.fechaAfiliacion.id_for_label }}">Fecha de Afiliación:</label>
+                  {{ form.fechaAfiliacion }}
+                  {% include "error_campo.html" with field=form.fechaAfiliacion %}
+                </div>
+              </div> {% endcomment %}
+              <div class="col">
+                <div class="form-group">
+                  <label for="{{ form.fechaIngresoTrabajo.id_for_label }}">Fecha de Ingreso al Trabajo:</label>
+                  {{ form.fechaIngresoTrabajo }}
+                  {% include "error_campo.html" with field=form.fechaIngresoTrabajo %}
+                </div>
+              </div>
+              <div class="col">
+                <div class="form-group">
+                  <label for="{{ form.localidad_empresa.id_for_label }}">Localidad de la Empresa:</label>
+                  {{ form.localidad_empresa }}
+                  {% include "error_campo.html" with field=form.localidad_empresa %}
+                </div>
+              </div>
+            </div>
+
+
+            <div class="row">
+              <div class="col">
+                <div class="form-group">
+                  <label for="{{ form.cuit_empleador.id_for_label }}">CUIT del Empleador:</label>
+                  {{ form.cuit_empleador }}
+                  {% include "error_campo.html" with field=form.cuit_empleador %}
+                </div>
+              </div>
+              
+              <div class="col">
+                <div class="form-group">
+                  <label for="{{ form.domicilio_empresa.id_for_label }}">Domicilio de la Empresa:</label>
+                  {{ form.domicilio_empresa }}
+                  {% include "error_campo.html" with field=form.domicilio_empresa %}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
 
-    <form method="post">
-      {% csrf_token %}
-      <div class="row">
-        <div class="col-12">
-          <div class="tab-content" id="form-tabs-content">
-            <div id="section1" class="tab-pane fade show active">
-              <div class="row">
-                <div class="col">
-                  <div class="form-group">
-                    <label for="{{ form.dni.id_for_label }}">DNI:</label><br />
-                    {{ form.dni }}
-                    <br />
-                    <span class="help-text">{{ form.dni.help_text }}</span>
-                    <span class="error-text">{{ form.dni.errors }}</span>
-                  </div>
-                </div>
-
-                <div class="col">
-                  <div class="form-group">
-                    <label for="{{ form.cuil.id_for_label }}">CUIL:</label><br />
-                    {{ form.cuil }}
-                    <br />
-                    <span class="help-text">{{ form.cuil.help_text }}</span>
-                    <span class="error-text">{{ form.cuil.errors }}</span>
-                  </div>
-                </div>
-              </div>
-              <div class="row">
-                <div class="col">
-                  <br />
-                  <div class="form-group">
-                    <label for="{{ form.nombre.id_for_label }}">Nombre:</label><br />
-                    {{ form.nombre }}
-                    <small class="help-text">{{ form.nombre.help_text }}</small><br />
-                    <small class="error-text">{{ form.nombre.errors }}</small>
-                  </div>
-                </div>
-                <div class="col">
-                  <div class="form-group">
-                    <br />
-                    <label for="{{ form.apellido.id_for_label }}">Apellido:</label><br />
-                    {{ form.apellido }}
-                    <small class="help-text">{{ form.apellido.help_text }}</small><br />
-                    <small class="error-text">{{ form.apellido.errors }}</small>
-                  </div>
-                </div>
-              </div>
-
-              <div class="row">
-                <div class="col">
-                  <div class="form-group">
-                    <br />
-                    <label for="{{ form.fecha_nacimiento.id_for_label }}">Fecha de Nacimiento:</label>
-                    <br />
-                    {{ form.fecha_nacimiento }}
-                    <small class="help-text">{{ form.fecha_nacimiento.help_text }}</small><br />
-                    <small class="error-text">{{ form.fecha_nacimiento.errors }}</small>
-                    <br />
-                  </div>
-                </div>
-                <div class="col">
-                  <div class="form-group">
-                    <br />
-                    <label for="{{ form.nacionalidad.id_for_label }}">Nacionalidad:</label>
-                    {{ form.nacionalidad }}
-                    <small class="help-text">{{ form.nacionalidad.help_text }}</small><br />
-                    <small class="error-text">{{ form.nacionalidad.errors }}</small>
-                    <br />
-                  </div>
-                </div>
-              </div>
-
-              <div class="row">
-                <div class="col">
-                  <div class="form-group">
-                    <label for="{{ form.celular.id_for_label }}">Celular:</label>
-                    <br />
-                    {{ form.celular }}
-                    <br />
-                    <small class="help-text">{{ form.celular.help_text }}</small><br />
-                    <small class="error-text">{{ form.celular.errors }}</small>
-                    <br />
-                  </div>
-                </div>
-                <div class="col">
-                  <div class="form-group">
-                    <label for="{{ form.estado_civil.id_for_label }}">Estado Civil:</label><br />
-                    {{ form.estado_civil }}
-                    <small class="help-text">{{ form.estado_civil.help_text }}</small><br />
-                    <small class="error-text">{{ form.estado_civil.errors }}</small>
-                  </div>
-                </div>
-              </div>
-              <div class="row">
-                <div class="col">
-                  <div class="form-group">
-                    <label for="{{ form.direccion.id_for_label }}">Dirección:</label><br />
-                    {{ form.direccion }}
-                    <br />
-                    <small class="help-text">{{ form.direccion.help_text }}</small><br />
-                    <small class="error-text">{{ form.direccion.errors }}</small>
-                    <br />
-                  </div>
-                </div>
-
-                <div class="col">
-                  <div class="form-group">
-                    <label for="{{ form.mail.id_for_label }}">Correo Electrónico:</label>
-                    <br />
-                    {{ form.mail }}
-                    <br />
-                    <small class="help-text">{{ form.mail.help_text }}</small><br />
-                    <small class="error-text">{{ form.mail.errors }}</small>
-                    <br />
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div id="section2" class="tab-pane fade">
-              <div class="row">
-                <div class="col">
-                  <div class="form-group">
-                    <label for="{{ form.razon_social.id_for_label }}">Razón Social:</label>
-                    <br />
-                    {{ form.razon_social }}
-                    <small class="help-text">{{ form.razon_social.help_text }}</small><br />
-                    <small class="error-text">{{ form.razon_social.errors }}</small>
-                    <br />
-                  </div>
-                </div>
-                <div class="col">
-                  <div class="form-group">
-                    <label for="{{ form.categoria_laboral.id_for_label }}">Categoría Laboral:</label>
-                    <br />
-                    {{ form.categoria_laboral }}
-                    <small class="help-text">{{ form.categoria_laboral.help_text }}</small><br />
-                    <small class="error-text">{{ form.categoria_laboral.errors }}</small>
-                    <br />
-                  </div>
-                </div>
-              </div>
-              <div class="row">
-                <div class="col">
-                  <div class="form-group">
-                    <label for="{{ form.rama.id_for_label }}">Rama:</label>
-                    <br />
-                    {{ form.rama }}
-                    <small class="help-text">{{ form.rama.help_text }}</small><br />
-                    <small class="error-text">{{ form.rama.errors }}</small>
-                    <br />
-                  </div>
-                </div>
-                <div class="col">
-                  <div class="form-group">
-                    <label for="{{ form.sueldo.id_for_label }}">Sueldo:</label>
-                    <br />
-                    {{ form.sueldo }}
-                    <small class="help-text">{{ form.sueldo.help_text }}</small><br />
-                    <small class="error-text">{{ form.sueldo.errors }}</small>
-                    <br />
-                  </div>
-                </div>
-              </div>
-              <div class="row">
-                <div class="col">
-                  <div class="form-group">
-                    <label for="{{ form.fechaAfiliacion.id_for_label }}">Fecha de Afiliación:</label>
-                    <br />
-                    {{ form.fechaAfiliacion }}
-                    <small class="help-text">{{ form.fechaAfiliacion.help_text }}</small><br />
-                    <small class="error-text">{{ form.fechaAfiliacion.errors }}</small>
-                    <br />
-                  </div>
-                </div>
-                <div class="col">
-                  <div class="form-group">
-                    <label for="{{ form.fechaIngresoTrabajo.id_for_label }}">Fecha de Ingreso al Trabajo:</label>
-                    <br />
-                    {{ form.fechaIngresoTrabajo }}
-                    <small class="help-text">{{ form.fechaIngresoTrabajo.help_text }}</small><br />
-                    <small class="error-text">{{ form.fechaIngresoTrabajo.errors }}</small>
-                    <br />
-                  </div>
-                </div>
-              </div>
-              <div class="form-group">
-                <label for="{{ form.cuit_empleador.id_for_label }}">CUIT del Empleador:</label>
-                <br />
-                {{ form.cuit_empleador }}
-                <small class="help-text">{{ form.cuit_empleador.help_text }}</small><br />
-                <small class="error-text">{{ form.cuit_empleador.errors }}</small>
-                <br />
-              </div>
-
-              <div class="row">
-                <div class="col">
-                  <div class="form-group">
-                    <label for="{{ form.localidad_empresa.id_for_label }}">Localidad de la Empresa:</label>
-                    <br />
-                    {{ form.localidad_empresa }}
-                    <small class="help-text">{{ form.localidad_empresa.help_text }}</small><br />
-                    <small class="error-text">{{ form.localidad_empresa.errors }}</small>
-                    <br />
-                  </div>
-                </div>
-
-                <div class="col">
-                  <div class="form-group">
-                    <label for="{{ form.domicilio_empresa.id_for_label }}">Domicilio de la Empresa:</label>
-                    <br />
-                    {{ form.domicilio_empresa }}
-                    <br />
-                    <small class="help-text">{{ form.domicilio_empresa.help_text }}</small><br />
-                    <small class="error-text">{{ form.domicilio_empresa.errors }}</small>
-                  </div>
-                </div>
-              </div>
-              <div class="row">
-                <div class="col">
-                  <div class="form-group">
-                    <label for="{{ form.horaJornada.id_for_label }}">Hora de Jornada:</label>
-                    <br />
-                    {{ form.horaJornada }}
-                    <small class="help-text">{{ form.horaJornada.help_text }}</small><br />
-                    <small class="error-text">{{ form.horaJornada.errors }}</small>
-                    <br />
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
+    <div class="row">
+      <div class="col-12">
+        <div class="text-center mt-3">
+          <button id="prev-button" class="btn btn-primary" style="display: none;">Anterior</button>
+          <button id="next-button" class="btn btn-primary">Siguiente</button>
+          <button type="submit" class="btn btn-success" style="display: none;">Guardar</button>
         </div>
       </div>
-
-      <div class="row">
-        <div class="col-12">
-          <div class="text-center mt-3">
-            <button id="prev-button" class="btn btn-primary" style="display: none;">Anterior</button>
-            <button id="next-button" class="btn btn-primary">Siguiente</button>
-            <button type="submit" class="btn btn-success" style="display: none;">Guardar</button>
-          </div>
-        </div>
-      </div>
-    </form>
-  </div>
+    </div>
+  </form>
 {% endblock %}
 
 {% block extrajs_intermedia %}

@@ -1,7 +1,7 @@
 from apps.afiliados.forms import Afiliado
 from django.template import loader
 from django.http import HttpResponse
-from django.shortcuts import redirect, render
+from django.shortcuts import get_object_or_404, redirect, render
 from django.views.generic.edit import CreateView, DeleteView, UpdateView
 from django.contrib import messages
 from django.urls import reverse_lazy
@@ -14,6 +14,7 @@ from django.urls import reverse
 from django.http import HttpResponseRedirect
 #CONSTANTE
 from utils.constants import *
+from datetime import date
 
 # ----------------------------- AFILIADO VIEW ----------------------------------- #
 def index(request):
@@ -44,8 +45,8 @@ class AfiliadoCreateView(CreateView):
             persona = Persona(
                 dni=dni,
                 cuil=form.cleaned_data["cuil"],
-                nombre=form.cleaned_data["nombre"],
-                apellido=form.cleaned_data["apellido"],
+                nombre= form.cleaned_data["nombre"].title(),
+                apellido=form.cleaned_data["apellido"].title(),
                 fecha_nacimiento=form.cleaned_data["fecha_nacimiento"],
                 mail=form.cleaned_data["mail"],
                 celular=form.cleaned_data["celular"],
@@ -58,16 +59,17 @@ class AfiliadoCreateView(CreateView):
             # Crear una instancia de Afiliado
             afiliado = Afiliado(
                 persona=persona,
-                razon_social=form.cleaned_data["razon_social"],
-                categoria_laboral=form.cleaned_data["categoria_laboral"],
-                rama=form.cleaned_data["rama"],
+                razon_social=form.cleaned_data["razon_social"].title(),
+                categoria_laboral=form.cleaned_data["categoria_laboral"].title(),
+                rama=form.cleaned_data["rama"].title(),
                 sueldo=form.cleaned_data["sueldo"],
-                fechaAfiliacion=form.cleaned_data["fechaAfiliacion"],
+                # fechaAfiliacion=form.cleaned_data["fechaAfiliacion"],
                 fechaIngresoTrabajo=form.cleaned_data["fechaIngresoTrabajo"],
                 cuit_empleador=form.cleaned_data["cuit_empleador"],
                 localidad_empresa=form.cleaned_data["localidad_empresa"],
-                domicilio_empresa=form.cleaned_data["domicilio_empresa"],
+                domicilio_empresa=form.cleaned_data["domicilio_empresa"].title(),
                 horaJornada=form.cleaned_data["horaJornada"],
+                tipo = Afiliado.TIPO,
             )
             afiliado.save()
 
@@ -75,8 +77,22 @@ class AfiliadoCreateView(CreateView):
             return redirect('afiliados:afiliado_listar')
 
     def form_invalid(self, form):
-        messages.warning(self.request, f'{ICON_TRIANGLE} {MSJ_CORRECTION}')
+        messages.warning(self.request, f'{ICON_TRIANGLE} Corrija los errores marcados.')
         return super().form_invalid(form)
+
+# ----------------------------- AFILIADO DETALLE ----------------------------------- #
+class AfiliadoDetailView (DeleteView):
+    model = Afiliado
+    template_name = 'afiliados/afiliado_detalle.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['titulo'] = "Datos del afiliado"
+        context['subtitulodetalle1'] = "Datos personales"
+        context['subtitulodetalle2'] = "Datos de afiliación"
+        return context
+
+
 
 # ----------------------------- AFILIADO LIST ----------------------------------- #
 class AfliadosListView(ListFilterView):
@@ -138,13 +154,7 @@ class AfliadosListActivoView(ListFilterView):
             )
         return super().get_queryset()
 
-# ----------------------------- AFILIADO DETALLE ----------------------------------- #
-class AfiliadoDetailView (DeleteView):
-    model = Afiliado
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['titulo'] = "Datos del afiliado"
-        return context
+
 # ----------------------------- AFILIADO UPDATE ----------------------------------- #
 class AfiliadoUpdateView(UpdateView):
     model = Afiliado
@@ -194,10 +204,11 @@ class AfiliadoUpdateView(UpdateView):
 # ----------------------------- AFILIADO ACEPTAR ----------------------------------- #
 
 def afiliado_aceptar(request, pk):
-    a = Afiliado.objects.get(pk=pk)
-    a.estado= 2
-    a.save()
-    # mensaje de exito
+    afiliado = Afiliado.objects.get(pk=pk)
+    # Establecer la fecha de afiliación a la fecha actual
+    afiliado.fechaAfiliacion = date.today()
+    afiliado.estado = 2
+    afiliado.save()
     messages.success(request, f'{ICON_CHECK} El afiliado ha sido aceptado.')
     return redirect('afiliados:afiliado_listar')
 
@@ -207,7 +218,7 @@ def afiliado_desafiliar(request, pk):
     fecha = datetime.now()
     a.persona.desafiliar(a,fecha)
     a.save()
-    messages.success(request, 'f{ICON_CHECK} Se ha desafiliado.')
+    messages.success(request, f'{ICON_CHECK} Se ha desafiliado.')
     return redirect('afiliados:afiliado_listar')
 
 #---------- HTML PARA FUNCIONALIDADES PENDIENTES

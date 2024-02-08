@@ -7,6 +7,8 @@ from utils.constants import *
 from django import forms
 from django.utils import timezone
 import re
+from django.core.validators import MinValueValidator, MaxValueValidator
+
 
 ########### Utilizado para el AFILIADO CRATE VIEW ##############################################
 class AfiliadoPersonaForm(forms.ModelForm):
@@ -15,13 +17,14 @@ class AfiliadoPersonaForm(forms.ModelForm):
     categoria_laboral = forms.CharField(max_length=20, validators=[text_and_numeric_validator])
     rama = forms.CharField(max_length=50, validators=[text_and_numeric_validator])
     sueldo = forms.DecimalField(max_digits=9, decimal_places=2, validators=[validate_positive_decimal])
-    fechaAfiliacion = forms.DateField(widget=forms.DateInput(attrs={'type': 'date'}))
+    # fechaAfiliacion = forms.DateField(widget=forms.DateInput(attrs={'type': 'date'}))
     fechaIngresoTrabajo = forms.DateField(widget=forms.DateInput(attrs={'type': 'date'}))
     cuit_empleador = forms.CharField(max_length=11, validators=[numeric_validator], help_text='Cuit sin puntos y guiones. Ej: 01234567899')
     localidad_empresa = forms.ChoiceField(choices=LOCALIDADES_CHUBUT, initial="TRELEW")
     domicilio_empresa = forms.CharField(max_length=50, validators=[text_and_numeric_validator], help_text='Calle y numero')
-    horaJornada = forms.IntegerField(validators=[MinValueValidator(1)])
-
+    horaJornada = forms.IntegerField(
+        help_text="Cantidad horas semanales."
+    )
     def clean_fechaAfiliacion(self):
         fecha_afiliacion = self.cleaned_data.get('fechaAfiliacion')
         if fecha_afiliacion > timezone.now().date():
@@ -159,3 +162,9 @@ class AfiliadoUpdateForm(forms.ModelForm):
     def clean(self):
         cleaned_data = super(AfiliadoUpdateForm, self).clean()
         return cleaned_data
+    
+
+######################################
+    
+
+    
