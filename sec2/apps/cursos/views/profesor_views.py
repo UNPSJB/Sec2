@@ -1,3 +1,4 @@
+from django.urls import reverse
 from django.shortcuts import get_object_or_404, redirect
 from ..models import Actividad, Profesor, Titular
 from ..forms.profesor_forms import *
@@ -13,10 +14,9 @@ from django.db import transaction
 
 ## ------------------ CREATE DE PROFESOR ------------------
 class ProfesorCreateView(CreateView):
-    model = Profesor
-    form_class = FormularioProfesor
+    model = Persona
+    form_class = ProfesorPersonaForm
     template_name = 'profesor/profesor_form.html'  
-    success_url = reverse_lazy('cursos:index')
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -25,9 +25,18 @@ class ProfesorCreateView(CreateView):
         return context
 
     def form_valid(self, form):
-        with transaction.atomic():
+        dni = form.cleaned_data["dni"]
+        existing_person = Persona.objects.filter(dni=dni).first()
+        print("PERSONA EXISTE")
+        print(existing_person)
+        
+        if existing_person:
+            messages.error(self.request, f'{ICON_ERROR} ERROR: Ya existe una persona registrada en el sistema como {existing_person.obtenerRol()} con el mismo DNI.')
+            form = ProfesorPersonaForm(self.request.POST)
+            return self.render_to_response(self.get_context_data(form=form))
+        else:
             persona = Persona(
-                dni=form.cleaned_data["dni"],
+                dni=dni,
                 cuil=form.cleaned_data["cuil"],
                 nombre=form.cleaned_data["nombre"],
                 apellido=form.cleaned_data["apellido"],
@@ -37,6 +46,7 @@ class ProfesorCreateView(CreateView):
                 estado_civil=form.cleaned_data["estado_civil"],
                 nacionalidad=form.cleaned_data["nacionalidad"],
                 direccion=form.cleaned_data["direccion"],
+                es_profesor = True
             )
             persona.save()
 
@@ -44,18 +54,17 @@ class ProfesorCreateView(CreateView):
             actividades_seleccionadas = self.request.POST.getlist('actividades')
 
             profesor = Profesor(persona=persona,
-                                tipo = Profesor.TIPO)
-            
+                                tipo = Profesor.TIPO
+                                )
+                
             profesor.ejerce_desde = form.cleaned_data["ejerce_desde"]
-            Profesor.register 
+            # Profesor.register 
             profesor.save()
-            profesor.persona.es_profesor = True
             profesor.actividades.set(actividades_seleccionadas)
             messages.success(self.request, f'{ICON_CHECK} Profesor dado de alta con éxito!')
-
-        # Mostrar el mensaje de éxito
-        
-        return super().form_valid(form)
+            # Redirige al listado de profesores
+            detail_url = reverse('cursos:profesor_listado')
+            return redirect(detail_url)
 
     def form_invalid(self, form):
         messages.warning(self.request, f'{ICON_TRIANGLE} Por favor, corrija los errores a continuación.')

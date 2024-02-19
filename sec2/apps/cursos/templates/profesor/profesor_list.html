@@ -24,7 +24,11 @@
         <td>{{ forloop.counter }}</td>
         <td>{{ profesor.persona.dni }}</td>
         <td>{{ profesor }}</td>
-        <td>{{ profesor.actividades }}</td>
+        <td>
+          {% for actividad in profesor.actividades.all %}
+          {{actividad}}
+          {% endfor %}
+        </td>
         <td class="text-end">
           <a href="{% url 'cursos:profesor_detalle' profesor.pk %}" class="btn btn-primary btn-sm btn-detalle"><i class="fa-regular fa-eye"></i> Detalle</a>
           <a href="{% url 'cursos:profesor_editar' profesor.pk %}" class="btn btn-primary btn-sm btn-detalle"><i class="fa-regular fa-pen-to-square"></i> Modificar</a>

@@ -44,10 +44,6 @@ class AfiliadoPersonaForm(forms.ModelForm):
         widgets = {
             'fecha_nacimiento': forms.DateInput(attrs={'type': 'date'}),
         }
-        # labels = {
-            # 'fechaIngresoTrabajo': "Fecha de ingreso al trabajo",
-            # 'fechaAfiliacion': "Fecha de afiliación"
-        # }
 
     def clean_fecha_nacimiento(self):
         fecha_nacimiento = self.cleaned_data.get('fecha_nacimiento')

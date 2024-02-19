@@ -1,11 +1,80 @@
+from datetime import timezone
 from django import forms
 from django.forms import ValidationError
 from apps.personas.forms import PersonaForm,PersonaUpdateForm
 from apps.personas.models import Persona
+from utils.constants import ESTADO_CIVIL, MAX_LENGTHS, NACIONALIDADES
 from ..models import Actividad, Profesor
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Fieldset, Submit, HTML
 from sec2.utils import FiltrosForm
+
+## ------------ FORMULARIO DE PROFESOR --------------
+class ProfesorPersonaForm(forms.ModelForm):
+    ejerce_desde = forms.DateField(widget=forms.DateInput(attrs={'type': 'date'}))
+    
+    actividades = forms.ModelMultipleChoiceField(
+        queryset=Actividad.objects.all(),
+        widget=forms.CheckboxSelectMultiple,
+        required=False  # Puedes ajustar esto según tus necesidades
+    )
+
+    class Meta:
+        model = Persona
+        fields = ['dni', 'cuil', 'nombre', 'apellido', 'fecha_nacimiento', 'celular', 'direccion', 'nacionalidad', 'mail', 'estado_civil']
+        widgets = {
+            'fecha_nacimiento': forms.DateInput(attrs={'type': 'date'}),
+        }
+
+########### PROFESOR UPDATE ##############################################
+class ProfesorUpdateForm(forms.ModelForm):
+
+    class Meta:
+        model = Profesor
+        fields = '__all__'
+        exclude = ['tipo', 'hasta', 'persona']
+        labels = {
+            'ejerce_desde': "Fecha desde que empezo a ejercer",
+        }
+
+    def __init__(self, *args, **kwargs):
+        super(ProfesorUpdateForm, self).__init__(*args, **kwargs)
+        persona_fields = ['dni', 'cuil', 'nombre', 'apellido', 'fecha_nacimiento', 'celular', 'direccion', 'nacionalidad', 'mail', 'estado_civil']
+        for field_name in persona_fields:
+            if field_name == 'fecha_nacimiento':
+                self.fields[field_name] = forms.DateField(
+                    required=True,
+                    initial=getattr(self.instance.persona, field_name),
+                )
+            elif field_name == 'estado_civil':
+                self.fields[field_name] = forms.ChoiceField(
+                    choices=ESTADO_CIVIL,
+                    required=True,
+                    initial=getattr(self.instance.persona, field_name),
+                )
+            elif field_name == 'nacionalidad':
+                self.fields[field_name] = forms.ChoiceField(
+                    choices=NACIONALIDADES,
+                    required=True,
+                    initial=getattr(self.instance.persona, field_name),
+                )
+            elif field_name in MAX_LENGTHS:
+                max_length = MAX_LENGTHS[field_name]
+                self.fields[field_name] = forms.CharField(
+                    max_length=max_length,
+                    required=True,
+                    initial=getattr(self.instance.persona, field_name),
+                    help_text=getattr(self.instance.persona._meta.get_field(field_name), 'help_text', '')
+                )
+            else:
+                self.fields[field_name] = forms.CharField(
+                    required=True,
+                    initial=getattr(self.instance.persona, field_name),
+                    help_text=getattr(self.instance.persona._meta.get_field(field_name), 'help_text', '')
+                )
+            self.fields[field_name].widget.attrs['readonly'] = False
+
+
 
 ## ------------ FORMULARIO DE PROFESOR --------------
 class ProfesorForm(forms.ModelForm):
@@ -73,40 +142,6 @@ class FormularioProfesor(forms.ModelForm):
 FormularioProfesor.base_fields.update(ProfesorForm.base_fields)
 
 
-class ProfesorUpdateForm(forms.ModelForm):
-    class Meta:
-        model = Persona
-        fields = '__all__'
-        labels = {
-            'fechaIngresoTrabajo': "Fecha de ingreso al trabajo",
-            'fechaAfiliacion': "Fecha de afiliación",
-        }
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        persona_fields = ['dni', 'cuil', 'nombre', 'apellido', 'fecha_nacimiento', 'celular', 'direccion', 'nacionalidad', 'mail', 'estado_civil']
-        for field_name in persona_fields:
-            if field_name == 'dni':
-                self.fields[field_name].initial = getattr(self.instance.persona, field_name)
-            if field_name == 'cuil':
-                self.fields[field_name].initial = getattr(self.instance.persona, field_name)
-            if field_name == 'nacionalidad':
-                self.fields[field_name].initial = getattr(self.instance.persona, field_name)
-            if field_name == 'nombre':
-                self.fields[field_name].initial = getattr(self.instance.persona, field_name)
-            if field_name == 'apellido':
-                self.fields[field_name].initial = getattr(self.instance.persona, field_name)
-            if field_name == 'fecha_nacimiento':
-                self.fields[field_name].initial = getattr(self.instance.persona, field_name)
-            if field_name == 'celular':
-                self.fields[field_name].initial = getattr(self.instance.persona, field_name)
-
-            if field_name == 'direccion':
-                self.fields[field_name].initial = getattr(self.instance.persona, field_name)
-            if field_name == 'mail':
-                self.fields[field_name].initial = getattr(self.instance.persona, field_name)
-            if field_name == 'estado_civil':
-                self.fields[field_name].initial = getattr(self.instance.persona, field_name)
 
 
 ## ------------ FILTRO DE PROFESOR --------------
