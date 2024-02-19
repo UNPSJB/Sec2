@@ -47,7 +47,8 @@
                   <div class="col">
                     <div class="form-group">
                       <label for="{{ form.sueldo.id_for_label }}">Sueldo:</label>
-                      <input type="number" name="sueldo" step="1" min="0" required class="form-control" value="{{ form.sueldo.value }}" />
+                      <input type="text" name="sueldo" required class="form-control" value="{{ form.initial.sueldo }}" />
+
                       {% include "error_campo.html" with field=form.sueldo %}
                     </div>
                   </div>
@@ -55,7 +56,7 @@
                   <div class="col">
                     <div class="form-group">
                       <label for="{{ form.horaJornada.id_for_label }}">Hora de Jornada:</label>
-                      <input type="number" name="horaJornada" step="1" min="49" required class="form-control" value="{{ form.horaJornada.value|default:'' }}" />
+                      <input type="number" name="horaJornada" step="1" min="1" max="49" required class="form-control" value="{{ form.horaJornada.value|default:'' }}" />
                       {% include "error_campo.html" with field=form.horaJornada %}
                     </div>
                   </div>
@@ -64,13 +65,6 @@
             </div>
             
             <div class="row">
-              {% comment %} <div class="col">
-                <div class="form-group">
-                  <label for="{{ form.fechaAfiliacion.id_for_label }}">Fecha de Afiliación:</label>
-                  {{ form.fechaAfiliacion }}
-                  {% include "error_campo.html" with field=form.fechaAfiliacion %}
-                </div>
-              </div> {% endcomment %}
               <div class="col">
                 <div class="form-group">
                   <label for="{{ form.fechaIngresoTrabajo.id_for_label }}">Fecha de Ingreso al Trabajo:</label>

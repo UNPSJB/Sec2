@@ -10,17 +10,6 @@ from django.urls import reverse_lazy
 from django.shortcuts import redirect
 from django.views.generic.edit import CreateView
 
-"""
-CLASE CREADA DE PRUEBA PORQUE NO FUNCABA EL ALTA DE GRUPO FAMILIAR
-class FamiliaCreateView(CreateView):
-    model = Persona
-    form_class = PersonaForm
-    success_url = reverse_lazy('personas:crear_familiar')
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['titulo'] = "Alta de Grupo Familiar"
-        return context """
 
 
 class PersonaCreateView(CreateView):

@@ -1,4 +1,5 @@
-from .models import Afiliado
+import decimal
+from .models import Afiliado, Familiar
 from apps.personas.models import Persona
 from sec2.utils import FiltrosForm
 from datetime import date
@@ -63,13 +64,24 @@ class AfiliadoFilterForm(FiltrosForm):
 
 ########### Utilizado para el AFILIADO UPDATE ##############################################
 class AfiliadoUpdateForm(forms.ModelForm):
+    sueldo = forms.CharField(
+        max_length=12,  # Ajusta según tus necesidades
+        validators=[
+            RegexValidator(
+                regex=r'^\d{1,3}(,\d{3})*(\,\d{1,2})?$',
+                message='Ingrese un sueldo válido (tiene que tener un "," y hasta dos decimales).',
+                code='invalid_sueldo_format',
+            ),
+        ],
+        required=True,
+    )
+        
     class Meta:
         model = Afiliado
         fields = '__all__'
-        exclude = ['tipo', 'hasta', 'estado', 'persona']
+        exclude = ['tipo', 'hasta', 'estado', 'persona', 'fechaAfiliacion']
         labels = {
             'fechaIngresoTrabajo': "Fecha de ingreso al trabajo",
-            'fechaAfiliacion': "Fecha de afiliación",
         }
 
     def __init__(self, *args, **kwargs):
@@ -114,7 +126,12 @@ class AfiliadoUpdateForm(forms.ModelForm):
         if fecha_nacimiento > timezone.now().date():
             raise forms.ValidationError('La fecha de nacimiento no puede estar en el futuro.')
         return fecha_nacimiento
-
+    
+    def clean_sueldo(self):
+        # sueldo = self.cleaned_data['sueldo'].replace(',', '.')  # Elimina la coma
+        sueldo = self.cleaned_data['sueldo'].replace(',', '.')  # Elimina la coma
+        return decimal.Decimal(sueldo)
+    
     def clean_nombre(self):
         nombre = self.cleaned_data['nombre']
         if not nombre.isalpha():
@@ -135,19 +152,6 @@ class AfiliadoUpdateForm(forms.ModelForm):
             raise forms.ValidationError('El correo electrónico no es válido.')
         return mail
 
-    def clean_celular(self):
-        celular = self.cleaned_data['celular']
-        if not re.match(r'^\d{3}-\d{8}$', celular):
-            raise forms.ValidationError('El número de celular debe tener el formato correcto (###-########).')
-        return celular
-
-    def clean_direccion(self):
-        direccion = self.cleaned_data['direccion']
-        # Agrega tus propias validaciones de dirección si es necesario
-        if not direccion.isalnum():
-            raise forms.ValidationError('La dirección no es válida.')
-        return direccion
-
     def save(self, commit=True):
         # Actualiza los campos de Afiliado
         afiliado = super().save(commit=False)
@@ -164,7 +168,63 @@ class AfiliadoUpdateForm(forms.ModelForm):
         return cleaned_data
     
 
-######################################
-    
+########### FAMILIAR ##############################################
+class GrupoFamiliarPersonaForm(forms.ModelForm):
 
-    
+    tipo = forms.ChoiceField(choices=Familiar.TIPOS)
+
+    class Meta:
+        model = Persona
+        fields = ['dni', 'cuil', 'nombre', 'apellido', 'fecha_nacimiento', 'celular', 'direccion', 'nacionalidad', 'mail', 'estado_civil']
+        widgets = {
+            'fecha_nacimiento': forms.DateInput(attrs={'type': 'date'}),
+        }
+
+########### FAMILIAR ##############################################
+class GrupoFamiliarPersonaUpdateForm(forms.ModelForm):
+
+    tipo = forms.ChoiceField(choices=Familiar.TIPOS)
+
+    class Meta:
+        model = Persona
+        fields = ['dni', 'cuil', 'nombre', 'apellido', 'fecha_nacimiento', 'celular', 'direccion', 'nacionalidad', 'mail', 'estado_civil']
+        widgets = {
+            'fecha_nacimiento': forms.DateInput(attrs={'type': 'date'}),
+        }
+
+    def __init__(self, *args, **kwargs):
+        super(GrupoFamiliarPersonaUpdateForm, self).__init__(*args, **kwargs)
+        persona_fields = ['dni', 'cuil', 'nombre', 'apellido', 'fecha_nacimiento', 'celular', 'direccion', 'nacionalidad', 'mail', 'estado_civil']
+        for field_name in persona_fields:
+            if field_name == 'fecha_nacimiento':
+                self.fields[field_name] = forms.DateField(
+                    required=True,
+                    initial=getattr(self.instance.persona, field_name),
+                )
+            elif field_name == 'estado_civil':
+                self.fields[field_name] = forms.ChoiceField(
+                    choices=ESTADO_CIVIL,
+                    required=True,
+                    initial=getattr(self.instance.persona, field_name),
+                )
+            elif field_name == 'nacionalidad':
+                self.fields[field_name] = forms.ChoiceField(
+                    choices=NACIONALIDADES,
+                    required=True,
+                    initial=getattr(self.instance.persona, field_name),
+                )
+            elif field_name in MAX_LENGTHS:
+                max_length = MAX_LENGTHS[field_name]
+                self.fields[field_name] = forms.CharField(
+                    max_length=max_length,
+                    required=True,
+                    initial=getattr(self.instance.persona, field_name),
+                    help_text=getattr(self.instance.persona._meta.get_field(field_name), 'help_text', '')
+                )
+            else:
+                self.fields[field_name] = forms.CharField(
+                    required=True,
+                    initial=getattr(self.instance.persona, field_name),
+                    help_text=getattr(self.instance.persona._meta.get_field(field_name), 'help_text', '')
+                )
+            self.fields[field_name].widget.attrs['readonly'] = False  # P

@@ -5,8 +5,10 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.views.generic.edit import CreateView, DeleteView, UpdateView
 from django.contrib import messages
 from django.urls import reverse_lazy
-from datetime import datetime  
-from .models import Afiliado
+from datetime import datetime
+
+from apps.personas.forms import PersonaForm, PersonaUpdateForm  
+from .models import Afiliado, Familiar
 from .forms import *
 from sec2.utils import ListFilterView
 from django.db import transaction  # Agrega esta línea para importar el módulo transaction
@@ -36,9 +38,10 @@ class AfiliadoCreateView(CreateView):
     def form_valid(self, form):
         dni = form.cleaned_data["dni"]
         existing_person = Persona.objects.filter(dni=dni).first()
-
+        print("PERSONA")
+        print(existing_person)
         if existing_person:
-            messages.error(self.request, f'{ICON_ERROR} La persona ya está registrada en el sistema.')
+            messages.error(self.request, f'{ICON_ERROR} ERROR: Ya existe una persona registrada en el sistema como {existing_person.obtenerRol()} con el mismo DNI.')
             form = AfiliadoPersonaForm(self.request.POST)
             return self.render_to_response(self.get_context_data(form=form))
         else:
@@ -53,6 +56,7 @@ class AfiliadoCreateView(CreateView):
                 estado_civil=form.cleaned_data["estado_civil"],
                 nacionalidad=form.cleaned_data["nacionalidad"],
                 direccion=form.cleaned_data["direccion"],
+                es_afiliado = True
             )
             persona.save()
 
@@ -72,9 +76,9 @@ class AfiliadoCreateView(CreateView):
                 tipo = Afiliado.TIPO,
             )
             afiliado.save()
-
+            detail_url = reverse('afiliados:afiliado_detalle', kwargs={'pk': afiliado.pk})
             messages.success(self.request, f'{ICON_CHECK} Alta de afiliado exitosa!')
-            return redirect('afiliados:afiliado_listar')
+            return redirect(detail_url)
 
     def form_invalid(self, form):
         messages.warning(self.request, f'{ICON_TRIANGLE} Corrija los errores marcados.')
@@ -91,8 +95,6 @@ class AfiliadoDetailView (DeleteView):
         context['subtitulodetalle1'] = "Datos personales"
         context['subtitulodetalle2'] = "Datos de afiliación"
         return context
-
-
 
 # ----------------------------- AFILIADO LIST ----------------------------------- #
 class AfliadosListView(ListFilterView):
@@ -176,10 +178,9 @@ class AfiliadoUpdateView(UpdateView):
 
             # Utiliza el formulario personalizado para validar los datos de la persona
             persona_form = PersonaUpdateForm(form.cleaned_data, instance=existing_person)
-            
+
             if persona_form.is_valid():
                 persona = persona_form.save(commit=False)
-                
                 # Utiliza una transacción para garantizar la integridad de los datos
                 with transaction.atomic():
                     persona.save()
@@ -188,8 +189,8 @@ class AfiliadoUpdateView(UpdateView):
                 messages.success(self.request, f'{ICON_CHECK} Modificación exitosa!')
 
                 # Redirige al usuario al detalle del afiliado
-                afiliado_detail_url = reverse('afiliados:Afiliado', kwargs={'pk': afiliado.pk})
-                return HttpResponseRedirect(afiliado_detail_url)
+                detail_url = reverse('afiliados:afiliado_detalle', kwargs={'pk': afiliado.pk})
+                return redirect(detail_url)
             else:
                 # Si el formulario de la persona no es válido, maneja los errores adecuadamente
                 # Por ejemplo, podrías mostrar los errores en el formulario o tomar otra acción
@@ -201,13 +202,19 @@ class AfiliadoUpdateView(UpdateView):
             form = AfiliadoPersonaForm(self.request.POST)
             return self.render_to_response(self.get_context_data(form=form))
 
+    def form_invalid(self, form):
+        messages.warning(self.request, f'{ICON_TRIANGLE} Corrija los errores marcados.')
+        for field, errors in form.errors.items():
+            print(f"Campo: {field}, Errores: {', '.join(errors)}")
+        return super().form_invalid(form)
 # ----------------------------- AFILIADO ACEPTAR ----------------------------------- #
-
 def afiliado_aceptar(request, pk):
     afiliado = Afiliado.objects.get(pk=pk)
     # Establecer la fecha de afiliación a la fecha actual
     afiliado.fechaAfiliacion = date.today()
     afiliado.estado = 2
+    afiliado.persona.es_afiliado = True
+    afiliado.persona.save()
     afiliado.save()
     messages.success(request, f'{ICON_CHECK} El afiliado ha sido aceptado.')
     return redirect('afiliados:afiliado_listar')
@@ -224,3 +231,188 @@ def afiliado_desafiliar(request, pk):
 #---------- HTML PARA FUNCIONALIDADES PENDIENTES
 def funcionalidad_pendiente(request):
     return render(request, 'funcionalidad_pendiente.html')
+
+def es_menor_de_edad(self, fecha_nacimiento):
+    # Verificar si la fecha de nacimiento es menor de edad (menor de 18 años)
+    hoy = date.today()
+    return (hoy - fecha_nacimiento).days < 365 * 18
+
+# ----------------------------- CREACIÓN DE FAMILIAR -----------------------------
+class FamiliaCreateView(CreateView):
+    model = Familiar
+    form_class = GrupoFamiliarPersonaForm #utiliza un formulario unificado
+    template_name = 'grupoFamiliar/grupo_familiar_alta.html'
+    success_url = reverse_lazy('afiliados:afiliado_crear')
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['titulo'] = "Carga Familiar"
+        return context
+    
+    def form_valid(self, form):
+        dni = form.cleaned_data["dni"]
+
+        afiliado = get_object_or_404(Afiliado, pk=self.kwargs.get('pk'))
+        existing_person = Persona.objects.filter(dni=dni).first()
+        if existing_person:
+            messages.error(self.request, f'{ICON_ERROR} ERROR: Ya existe una persona registrada en el sistema como {existing_person.obtenerRol()} con el mismo DNI.')
+            form = GrupoFamiliarPersonaForm(self.request.POST)
+            return self.render_to_response(self.get_context_data(form=form))
+        else:
+            # Verificar si ya hay un familiar con el tipo "Esposo/a"
+            esposo_existente = afiliado.familia.filter(tipo=1).exists()
+            if esposo_existente and form.cleaned_data["tipo"] == '1':
+                messages.error(self.request, f'{ICON_ERROR} Ya existe un esposo/a para el afiliado asociado.')
+                form = GrupoFamiliarPersonaForm(self.request.POST)
+                # return self.render_to_response(self.get_context_data(form=form))
+                return self.form_invalid(form)
+
+            # Verificar si es menor de edad cuando el tipo es 'Hijo/a'
+            if form.cleaned_data["tipo"] == '2' and not es_menor_de_edad(self, form.cleaned_data["fecha_nacimiento"]):
+                messages.error(self.request, f'{ICON_ERROR} El Hijo/a debe ser menor de edad.')
+                form = GrupoFamiliarPersonaForm(self.request.POST)
+                return self.form_invalid(form)
+            
+            persona = Persona(
+                dni=dni,
+                cuil=form.cleaned_data["cuil"],
+                nombre= form.cleaned_data["nombre"].title(),
+                apellido=form.cleaned_data["apellido"].title(),
+                fecha_nacimiento=form.cleaned_data["fecha_nacimiento"],
+                mail=form.cleaned_data["mail"],
+                celular=form.cleaned_data["celular"],
+                estado_civil=form.cleaned_data["estado_civil"],
+                nacionalidad=form.cleaned_data["nacionalidad"],
+                direccion=form.cleaned_data["direccion"],
+                es_grupo_familiar = True
+            )
+            persona.save()
+
+            # Crear una instancia de Afiliado
+            familiar = Familiar(
+                tipo =form.cleaned_data["tipo"],
+                persona = persona
+            )
+            familiar.save()
+
+            afiliado.familia.add(familiar)
+
+            messages.success(self.request, f'{ICON_CHECK} Carga de familiar exitosa!')
+            detail_url = reverse('afiliados:afiliado_detalle', kwargs={'pk': afiliado.pk})
+            return redirect(detail_url)
+
+    def form_invalid(self, form):
+        return super().form_invalid(form)
+    
+# ----------------------------- DETALLE DE FAMILIAR -----------------------------
+class FamiliarDetailView(DeleteView):
+    model = Familiar
+    template_name = 'grupoFamiliar/grupo_familiar_detalle.html'
+
+    def get_object(self, queryset=None):
+        afiliado_pk = self.kwargs.get('pk')
+        familiar_pk = self.kwargs.get('familiar_pk')
+        self.afiliado = Afiliado.objects.get(pk=afiliado_pk)
+        return Familiar.objects.get(afiliado__pk=afiliado_pk, pk=familiar_pk)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        familiar = self.object
+        context['titulo'] = "Datos del familiar"
+        context['afiliado'] = self.afiliado
+        return context
+
+# ----------------------------- UPDATE DE FAMILIAR -----------------------------
+class FamiliarUpdateView(UpdateView):
+    model = Familiar
+    form_class = GrupoFamiliarPersonaUpdateForm
+    template_name = 'grupoFamiliar/grupo_familiar_editar.html'
+
+    def get_object(self, queryset=None):
+        afiliado_pk = self.kwargs.get('pk')
+        familiar_pk = self.kwargs.get('familiar_pk')
+        self.afiliado = Afiliado.objects.get(pk=afiliado_pk)
+        return Familiar.objects.get(afiliado__pk=afiliado_pk, pk=familiar_pk)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['titulo'] = "Modicacion de Familiar"
+        return context
+    
+    def form_valid(self, form):
+        dni = form.cleaned_data["dni"]
+        
+        #chequeo si existe la persona
+        existing_person = Persona.objects.filter(dni=dni).first()
+
+        if existing_person:
+            #si existe la persona entonces verifico que mi afiliado tenga a este familiar
+            afiliado = self.afiliado
+            # Verifico si el afiliado tiene al familiar
+            if afiliado.familia.filter(persona=existing_person).exists():
+                # El afiliado tiene al familiar
+
+                # Obtengo el objeto Familiar asociado al afiliado y la persona existente
+                familiar = get_object_or_404(Familiar, afiliado=afiliado, persona=existing_person)
+
+                if form.cleaned_data["tipo"] == '1' and not familiar.tipo == 1:
+                    # Verificar si ya hay un familiar con el tipo "Esposo/a"
+                    esposo_existente = afiliado.familia.filter(tipo=1).exists()
+                    if esposo_existente:
+                        messages.error(self.request, f'{ICON_ERROR} Ya existe un esposo/a para el afiliado asociado.')
+                        form = GrupoFamiliarPersonaForm(self.request.POST)
+                        # return self.render_to_response(self.get_context_data(form=form))
+                        return self.form_invalid(form)
+
+                # Verificar si es menor de edad cuando el tipo es 'Hijo/a'
+                if form.cleaned_data["tipo"] == '2' and not es_menor_de_edad(self,form.cleaned_data["fecha_nacimiento"]):
+                    messages.error(self.request, f'{ICON_ERROR} El Hijo/a debe ser menor de edad.')
+                    form = GrupoFamiliarPersonaForm(self.request.POST)
+                    return self.form_invalid(form)
+            
+
+                familiar = form.save(commit=False)
+                # Utiliza el formulario personalizado para validar los datos de la persona
+                persona_form = PersonaUpdateForm(form.cleaned_data, instance=existing_person)
+                if persona_form.is_valid():
+                    persona = persona_form.save(commit=False)
+
+                    # Utiliza una transacción para garantizar la integridad de los datos
+                    with transaction.atomic():
+                        persona.save()
+                        familiar.tipo = form.cleaned_data["tipo"]
+                        familiar.save()
+
+                    messages.success(self.request, f'{ICON_CHECK} Modificación de familiar exitosa!')
+                    afiliado_pk = self.kwargs.get('pk')
+
+                    # Redirige al detalle del familiar en lugar del detalle del afiliado
+                    familiar_pk = self.kwargs.get('familiar_pk')
+                    familiar_detail_url = reverse('afiliados:familiar_detalle', kwargs={'pk': afiliado_pk, 'familiar_pk': familiar_pk})
+
+                    # Agrega un pequeño script de JavaScript para cerrar la ventana y recargar la página
+                    return HttpResponseRedirect(familiar_detail_url)
+                else: 
+                    messages.error(self.request, f'{ICON_ERROR} Error en la validación de datos de la persona.')
+                    return self.render_to_response(self.get_context_data(form=persona_form))
+            else:
+                # El afiliado no tiene al familiar
+                messages.error(self.request, f'{ICON_ERROR} El afiliado no tiene a este familiar.')
+                return self.render_to_response(self.get_context_data(form=form))
+        else:
+            messages.error(self.request, f'{ICON_ERROR} La persona no está registrada en el sistema.')
+            form = GrupoFamiliarPersonaUpdateForm(self.request.POST)
+            return self.render_to_response(self.get_context_data(form=form))
+    
+# ----------------------------- FAMILIAR ELIMINAR -----------------------------------
+def familiar_eliminar(request, pk, familiar_pk):
+    # Obtener el objeto Familiar
+    familiar = get_object_or_404(Familiar, pk=familiar_pk)
+    familiar.activo = False
+
+    # print(familiar)
+    # fecha = datetime.now()
+    # familiar.persona.desafiliar(familiar,fecha)
+    familiar.save()
+    messages.success(request, f'{ICON_CHECK} Se ha desafiliado.')
+    return redirect('afiliados:afiliado_listar')

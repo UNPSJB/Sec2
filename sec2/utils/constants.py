@@ -256,7 +256,7 @@ MAX_LENGTHS = {
         'cuil': 11,
         'nombre': 30,
         'apellido': 30,
-        'celular': 12,
+        'celular': 13,
         'direccion': 50,
         'nacionalidad': 2,
         'mail': 50,

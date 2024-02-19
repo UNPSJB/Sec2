@@ -23,8 +23,10 @@ urlpatterns = [
     path('mostrar/<int:pk>/desafiliar', afiliado_desafiliar, name="desafiliar_afiliado"),
     
     #GRUPO FAMILIAR
-    # path('afiliado/<int:pk>/grupoFamiliar/crear', FamiliaCreateView1, name="crear_familiar"),
-
+    path('afiliado/<int:pk>/grupoFamiliar/crear', FamiliaCreateView.as_view(), name="crear_familiar"),
+    path('afiliado/<int:pk>/grupoFamiliar/familia/<int:familiar_pk>', FamiliarDetailView.as_view(), name="familiar_detalle"),
+    path('afiliado/<int:pk>/grupoFamiliar/familia/<int:familiar_pk>/editar', FamiliarUpdateView.as_view(), name="familiar_editar"),
+    path('afiliado/<int:pk>/grupoFamiliar/familia/<int:familiar_pk>/eliminar', familiar_eliminar, name="familiar_eliminar"),
     
     # path('mostrar/pendientes',AfliadosListPendienteView.as_view(), name="afiliado_listar_pendiente"),
     # path('mostrar/activos',AfliadosListActivoView.as_view(), name="afiliado_listar_activos"),

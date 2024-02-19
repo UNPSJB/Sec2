@@ -1,4 +1,4 @@
-from apps.personas.models import Persona, Vinculo
+from apps.personas.models import Persona
 from django.forms import ModelForm, modelformset_factory, ValidationError, BaseFormSet
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit
@@ -38,33 +38,3 @@ class PersonaWidget(s2forms.ModelSelect2Widget):
 
 class BuscadorPersonasForm(forms.Form):
    buscar = forms.ModelChoiceField(queryset=Persona.objects.all(), widget=PersonaWidget)
-
-
-
-class VinculoForm(forms.ModelForm):
-    class Meta:
-        model = Vinculo
-        fields = '__all__'
-        # fields = ("tipo",
-        #           "vinculado")
-        widgets = {
-            'vinculado': PersonaWidget
-        }
-
-class BaseVinculoFormSet(BaseFormSet):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.helper = FormHelper()
-        self.helper.template = 'bootstrap5/table_inline_formset.html'
-        self.helper.add_input(Submit('submit', 'Guardar'))
-    
-    def clean(self):
-        personas = [p['vinculado'].id for p in self.cleaned_data if 'vinculado' in p.keys()]
-        if len(set(personas)) != len(personas):
-            raise ValidationError("Solo puede existir un tipo de relacion con una persona")
-        # Validar no tener vinculos recursivos
-
-VinculoFormSet = modelformset_factory(Vinculo, form=VinculoForm, formset=BaseVinculoFormSet,
-    extra=1,
-    can_delete=True
-)

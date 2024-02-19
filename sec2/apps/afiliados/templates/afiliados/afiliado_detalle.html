@@ -75,7 +75,7 @@
     <p><strong>Hora Jornada:</strong> </p>
   </div>
   <div class="col-md-2">
-    {{ afiliado.horaJornada }}
+    {{ afiliado.horaJornada }} hrs semanales
   </div>
 
 </div>
@@ -137,7 +137,7 @@
     <p><strong>Sueldo:</strong> </p>
   </div>
   <div class="col-md-2">
-    {{ afiliado.sueldo }}
+    ${{ afiliado.sueldo }} AR
   </div>
 </div>
 <br>
@@ -145,18 +145,70 @@
 
 
 {% block botones %}
-<a href="{% url 'afiliados:crear_familiar' afiliado.pk %}" class="btn btn-sm btn-primary">Cargar Familiar</a>
-
 <div class="col d-flex justify-content-center"> 
   {% if afiliado.estado == 1 or afiliado.estado == 2 %}
     <a href="{% url 'afiliados:afiliado_actualizar' afiliado.pk %}" class="btn btn-sm btn-primary "><i class="fas fa-pencil-alt"></i> Modificar</a>
   {% endif %}
 </div>
 
-<div class="col d-flex justify-content-center"> 
-  <a target="_blank" href="#" class="btn btn-sm btn-primary "><i class="fas fa-users"></i> Grupo Familiar</a>
-  {% comment %} <a target="_blank" href="{% url 'afiliados:grupo_familiar' afiliado.pk %}" class="btn btn-primary"><i class="fas fa-users"></i> Grupo Familiar</a> {% endcomment %}
+<div class="col d-flex justify-content-center">
+  <button type="button" class="btn btn-info btn-sm" data-bs-toggle="modal" data-bs-target="#exampleModal">
+    <i class="fas fa-users"></i>
+    Grupo Familiar
+  </button>
 </div>
+
+<!-- Modal -->
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 class="modal-title fs-5" id="exampleModalLabel">Grupo Familiar</h2>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        {% if afiliado.familia.all %}
+        <table class="table table-sm table-hover">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Vinculo</th>
+              <th>Dni</th>
+              <th>Apellido</th> 
+              <th>Nombre</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for familiar in afiliado.familia.all %}
+            <tr>
+              <td>{{ forloop.counter }}</td>
+              <td>{{ familiar.get_tipo_display }}</td>
+              <td>{{ familiar.persona.dni }}</td>
+              <td>{{ familiar.persona.apellido }}</td>
+              <td>{{ familiar.persona.nombre }}</td>
+              <td class="text-end">
+                <a href="{% url 'afiliados:familiar_detalle' pk=afiliado.pk familiar_pk=familiar.pk %}" class="btn btn-primary btn-detalle btn-sm"         onclick="window.open(this.href, '_blank', 'width=600,height=400'); return false;">
+                  <i class="fa-regular fa-eye"></i> Detalle</a>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+        {% else %}
+        <p>No familiar asociado al afiliado.</p>
+        {% endif %}
+      </div>
+      <div class="modal-footer">
+        <a href="{% url 'afiliados:crear_familiar' afiliado.pk %}" 
+        class="btn btn-primary btn-sm">
+        <i class="fa-solid fa-plus"></i> Nuevo Familiar
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+
 
 <div class="col d-flex justify-content-end">
   {% if afiliado.estado == 1 %}
