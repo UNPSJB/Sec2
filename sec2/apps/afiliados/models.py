@@ -1,9 +1,11 @@
 from django.db import models
+from apps.cursos.models import Dictado
 from apps.personas.models import Persona, Rol
 from django.utils import timezone
 from utils.constants import *
 from utils.regularexpressions import *
 
+# -------------------- FAMILIAR ------------------
 class Familiar(models.Model):
     TIPOS = (
         (1, "Esposo/a"),
@@ -18,7 +20,10 @@ class Familiar(models.Model):
     tipo=models.PositiveSmallIntegerField(choices=TIPOS)
     persona=models.ForeignKey(Persona, related_name = "familiares", on_delete = models.CASCADE) 
     activo = models.BooleanField(default=True)  # Agregamos el campo "estado" con valor predeterminado True
+    dictados = models.ManyToManyField(Dictado, related_name="familiares", blank=True)
+    lista_espera = models.ManyToManyField(Dictado, related_name='familiaress_en_espera', blank=True)
 
+# -------------------- AFILIADO ------------------
 class Afiliado(Rol):
     TIPO = 1
 
@@ -55,8 +60,10 @@ class Afiliado(Rol):
     )
     domicilio_empresa = models.CharField(max_length=50, validators=[text_and_numeric_validator], help_text='Calle y numero')
     horaJornada = models.PositiveIntegerField(validators=[MinValueValidator(1)])
+    dictados = models.ManyToManyField(Dictado, related_name="afiliados", blank=True)
+    lista_espera = models.ManyToManyField(Dictado, related_name='afiliados_en_espera', blank=True)
     familia = models.ManyToManyField(Familiar, blank=True)
-    
+
     def __str__(self):
         return f"Tipo: {self.TIPO} Razon social: {self.razon_social} CUIT:{self.cuit_empleador}"
     
