@@ -28,6 +28,10 @@ urlpatterns = [
     path('afiliado/<int:pk>/grupoFamiliar/familia/<int:familiar_pk>/editar', FamiliarUpdateView.as_view(), name="familiar_editar"),
     path('afiliado/<int:pk>/grupoFamiliar/familia/<int:familiar_pk>/eliminar', familiar_eliminar, name="familiar_eliminar"),
     
+    #ACCEDIDOS DESDE LA APLICACION DE CURSOS
+    path('afiliado/grupoFamiliar/familia/<int:familiar_pk>', FamiliarDetailView_.as_view(), name="familiar_detalle_"),
+    path('afiliado/grupoFamiliar/familia/<int:familiar_pk>/editar', FamiliarUpdateView_.as_view(), name="familiar_editar_"),
+
     # path('mostrar/pendientes',AfliadosListPendienteView.as_view(), name="afiliado_listar_pendiente"),
     # path('mostrar/activos',AfliadosListActivoView.as_view(), name="afiliado_listar_activos"),
     # FALTA IMPLEMENTAR LA PARTE DE GRUPO FAMILIAR

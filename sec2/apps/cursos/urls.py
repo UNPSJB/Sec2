@@ -73,7 +73,8 @@ urlpatterns = [
     #ALUMNNOS POR CURSO
     path('cursos/curso/<int:curso_pk>/dictados/dictado/<int:dictado_pk>/Alumnos', AlumnosEnDictadoList.as_view(), name="alumno_inscripto"),
 
-    #INSCRIPCION DEL AFLIADO
+
+    #AREA DE INSCRIPCIONES
     path('cursos/curso/<int:curso_pk>/dictados/dictado/<int:dictado_pk>/Afiliado/<int:afiliado_pk>/inscribir', inscribirAfiliado , name="afiliado_inscribir"),
     path('cursos/curso/<int:curso_pk>/dictados/dictado/<int:dictado_pk>/GrupoFamiliar/<int:persona_pk>/inscribir', inscribirFamiliar , name="familiar_inscribir"),
     path('cursos/curso/<int:curso_pk>/dictados/dictado/<int:dictado_pk>/Profesor/<int:persona_pk>/inscribir', inscribirProfesor , name="profesor_inscribir"),

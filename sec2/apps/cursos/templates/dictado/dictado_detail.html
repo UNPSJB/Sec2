@@ -184,10 +184,12 @@
                 {% if inscrito.persona.es_afiliado %}
                 <a href="{% url 'afiliados:afiliado_detalle' inscrito.pk %}" class="btn btn-primary btn-sm btn-detalle"><i class="fa-regular fa-eye"></i> Detalle</a>
                 {% elif inscrito.persona.es_grupo_familiar %}
-                <a href="{% url 'afiliados:familiar_detalle' inscrito.pk %}" class="btn btn-primary btn-sm btn-detalle"><i class="fa-regular fa-eye"></i> Detalle</a>
-
+                <a href="{% url 'afiliados:familiar_detalle_' inscrito.pk %}" class="btn btn-primary btn-sm btn-detalle"><i class="fa-regular fa-eye"></i> Detalle</a>
+                {% elif inscrito.persona.es_profesor %}
+                <a href="{% url 'cursos:profesor_detalle' inscrito.pk %}" class="btn btn-primary btn-sm btn-detalle"><i class="fa-regular fa-eye"></i> Detalle</a>
+                {% elif inscrito.persona.es_alumno %}
+                <a href="{% url 'cursos:profesor_detalle' inscrito.pk %}" class="btn btn-primary btn-sm btn-detalle"><i class="fa-regular fa-eye"></i> FALTA HACER EL DETALLE DEL ALUMNO</a>
                 {% endif %}
-
               </td>
             </tr>
           {% endfor %}
