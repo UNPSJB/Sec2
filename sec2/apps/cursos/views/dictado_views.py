@@ -1,6 +1,7 @@
 from django.views import View
 from django.views.generic import DetailView
 from django.views.generic.edit import CreateView, UpdateView
+from apps.afiliados.models import Afiliado, Familiar
 from apps.personas.forms import PersonaForm
 
 from apps.personas.models import Persona
@@ -134,8 +135,34 @@ class DictadoDetailView(DetailView):
         clases = Clase.objects.filter(reserva__horario__dictado=dictado).order_by('reserva__fecha')
         context['clases'] = clases
 
+        # OBTENGO A TODOS MIS ALUMNOS (Alumnos, Afiliado, GrupoFamiliar, Profeosres como alumno)
+        afiliado_inscritos = Afiliado.objects.filter(dictados=dictado)
+        familiares_inscritos = Familiar.objects.filter(dictados=dictado)    
+        profesores_inscritos = Profesor.objects.filter(dictados_inscriptos=dictado)
         alumnos_inscritos = Alumno.objects.filter(dictados=dictado)
+        
+        # Combino todos los objetos en una lista
+        todos_inscritos = list(afiliado_inscritos) + list(familiares_inscritos) + list(profesores_inscritos) + list(alumnos_inscritos)
+
+        # Ordeno la lista por DNI y Apellido
+        todos_inscritos_sorted = sorted(todos_inscritos, key=lambda x: (x.persona.dni, x.persona.apellido))
+
+        # Agrego la lista ordenada al contexto
+        context['todos_inscritos_sorted'] = todos_inscritos_sorted
+        context['afiliado_inscritos'] = afiliado_inscritos
+        context['familiares_inscritos'] = familiares_inscritos
+        context['profesores_inscritos'] = profesores_inscritos
         context['alumnos_inscritos'] = alumnos_inscritos
+    
+        # Calculo la suma total de inscritos
+        total_inscritos = (
+            afiliado_inscritos.count() +
+            familiares_inscritos.count() +
+            profesores_inscritos.count() +
+            alumnos_inscritos.count()
+        )
+
+        context['total_inscritos'] = total_inscritos
         if curso.es_convenio:
             context['costo_parcial'] = 'Gratuito'
         else:
@@ -249,7 +276,7 @@ from django.shortcuts import render
 from django.http import Http404, HttpResponse, JsonResponse
 
 class BuscarPersonaView(View):
-    
+
     def get(self, request, *args, **kwargs):
         dni = request.GET.get('dni', '')
         print("----------------------------------------------",dni)
@@ -259,6 +286,7 @@ class BuscarPersonaView(View):
             if persona is not None:
                 print("---------------SI EXISTE----------------------------:", persona)
                 persona_data = {
+                    'pk': persona.pk,
                     'dni': persona.dni,
                     'cuil': persona.cuil,
                     'nombre': persona.nombre,
@@ -273,6 +301,7 @@ class BuscarPersonaView(View):
                     'es_alumno': persona.es_alumno,
                     'es_profesor': persona.es_profesor,
                     'es_encargado': persona.es_encargado,
+                    'es_grupo_familiar': persona.es_grupo_familiar,
                 }
                 return JsonResponse({'persona': persona_data})
             else:
@@ -369,3 +398,59 @@ def sacarListaEspera(request, curso_pk, dictado_pk, alumno_pk):
     messages.success(request, f'{ICON_CHECK} Alumno dado de alta correctamente en el dictado.')
     
     return redirect(reverse('cursos:dictado_lista_espera', kwargs={'curso_pk': curso_pk, 'dictado_pk': dictado_pk}))
+
+
+# ----------------- INSCRIPCION PARA EL AFILIADO -----------------
+def inscribirAfiliado(request, curso_pk, dictado_pk, persona_pk):
+    dictado = get_object_or_404(Dictado, curso__pk=curso_pk, pk=dictado_pk)
+    afiliado = get_object_or_404(Afiliado, persona__pk=persona_pk)
+
+    afiliado.dictados.add(dictado)
+    afiliado.persona.es_alumno = True
+    afiliado.persona.save()
+    afiliado.save()
+    
+    messages.success(request, f'{ICON_CHECK} Familiar inscrito al curso exitosamente!. Cierre la ventana y recargue el detalle del dictado')
+    return redirect(reverse('cursos:verificar_persona', kwargs={'curso_pk': curso_pk, 'dictado_pk': dictado_pk}))
+
+# ----------------- INSCRIPCION PARA EL GRUPO FAMILIAR -----------------
+def inscribirFamiliar(request, curso_pk, dictado_pk, persona_pk):
+    dictado = get_object_or_404(Dictado, curso__pk=curso_pk, pk=dictado_pk)
+    familiar = get_object_or_404(Familiar, persona__pk=persona_pk)
+
+    familiar.dictados.add(dictado)
+    familiar.persona.es_alumno = True
+    familiar.persona.save()
+    familiar.save()
+    
+    messages.success(request, f'{ICON_CHECK} Familiar inscrito al curso exitosamente!. Cierre la ventana y recargue el detalle del dictado')
+    return redirect(reverse('cursos:verificar_persona', kwargs={'curso_pk': curso_pk, 'dictado_pk': dictado_pk}))
+
+# ----------------- INSCRIPCION PARA EL PROFESOR COMO ALUMNO -----------------
+def inscribirProfesor(request, curso_pk, dictado_pk, persona_pk):
+    dictado = get_object_or_404(Dictado, curso__pk=curso_pk, pk=dictado_pk)
+    profesor = get_object_or_404(Profesor, persona__pk=persona_pk)
+    
+    # Verificar si existe un Titular con ese Profesor y ese Dictado
+    titular_existente = Titular.objects.filter(profesor=profesor, dictado=dictado).exists()
+    
+    if titular_existente:
+        messages.error(request, f'{ICON_ERROR} Error: El profesor a inscribir es titular del dictado.')
+    else:
+        profesor.dictados_inscriptos.add(dictado)
+        profesor.persona.es_alumno = True
+        profesor.persona.save()
+        profesor.save()
+        messages.success(request, f'{ICON_CHECK} Familiar inscrito al curso exitosamente!. Cierre la ventana y recargue el detalle del dictado')
+
+    return redirect(reverse('cursos:verificar_persona', kwargs={'curso_pk': curso_pk, 'dictado_pk': dictado_pk}))
+
+# ----------------- INSCRIPCION PARA EL ALUMNO YA EXISTENTE-----------------
+def inscribirAlumno(request, curso_pk, dictado_pk, persona_pk):
+    dictado = get_object_or_404(Dictado, curso__pk=curso_pk, pk=dictado_pk)
+    alumno = get_object_or_404(Alumno, persona__pk=persona_pk)
+    print(alumno)
+    alumno.dictados.add(dictado)
+    alumno.save()
+    messages.success(request, f'{ICON_CHECK} Alumno inscrito al curso exitosamente!. Cierre la ventana y recargue el detalle del dictado')
+    return redirect(reverse('cursos:verificar_persona', kwargs={'curso_pk': curso_pk, 'dictado_pk': dictado_pk}))

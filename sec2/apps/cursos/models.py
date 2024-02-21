@@ -180,6 +180,8 @@ class Profesor(Rol):
     TIPO = 2
     ejerce_desde = models.DateField()
     actividades = models.ManyToManyField(Actividad, blank=True)
+    dictados_inscriptos = models.ManyToManyField(Dictado, related_name="profesores_dictados_inscriptos", blank=True)
+    lista_espera = models.ManyToManyField(Dictado, related_name='profesores_en_espera', blank=True)
 
     def __str__(self):
         if self.persona_id and hasattr(self, 'persona'):

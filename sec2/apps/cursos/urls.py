@@ -70,13 +70,20 @@ urlpatterns = [
     #CONTROL DE ASISTENCIA
     path('marcar_asistencia/Alumno/<int:clase_id>/', marcar_asistencia, name='generar_asistencia'),
 
-        #ALUMNNOS POR CURSO
+    #ALUMNNOS POR CURSO
     path('cursos/curso/<int:curso_pk>/dictados/dictado/<int:dictado_pk>/Alumnos', AlumnosEnDictadoList.as_view(), name="alumno_inscripto"),
-   
+
+    #INSCRIPCION DEL AFLIADO
+    path('cursos/curso/<int:curso_pk>/dictados/dictado/<int:dictado_pk>/Afiliado/<int:afiliado_pk>/inscribir', inscribirAfiliado , name="afiliado_inscribir"),
+    path('cursos/curso/<int:curso_pk>/dictados/dictado/<int:dictado_pk>/GrupoFamiliar/<int:persona_pk>/inscribir', inscribirFamiliar , name="familiar_inscribir"),
+    path('cursos/curso/<int:curso_pk>/dictados/dictado/<int:dictado_pk>/Profesor/<int:persona_pk>/inscribir', inscribirProfesor , name="profesor_inscribir"),
+    path('cursos/curso/<int:curso_pk>/dictados/dictado/<int:dictado_pk>/Alumno/<int:persona_pk>/inscribir', inscribirAlumno , name="alumno_inscribir"),
+
+
 
     # path('<int:pk>/dictado/profesor',  ProfesorDelDictadoListView.as_view(), name="profesor_dictado"),
     # path('<int:pk>/dictado/profesor/<int:ppk>/presente',  registrarAsistenciaProfesor, name="asistencia_profesor"),
-    # path('<int:pk>/dictado/alumnos/<int:apk>/asistencia', registrarAsistenciaAlumno, name="asistencia_alumno"),
+    # path('<int:pk>/dictado/   alumnos/<int:apk>/asistencia', registrarAsistenciaAlumno, name="asistencia_alumno"),
     # path('<int:pk>/inscriptos', AlumnosListView.as_view(), name="ver_inscriptos"),
     # path('<int:dpk>/dictado/<int:pk>/asistencia', registrarAsistenciaAlumno, name="asistencia_alumno"),
     # path('<int:pk>/inscriptos', AlumnosListView.as_view(), name="ver_inscriptos"),

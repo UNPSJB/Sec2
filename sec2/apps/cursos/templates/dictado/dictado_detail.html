@@ -47,7 +47,7 @@
     <p><strong>Total de cupos:</strong></p>
   </div>
   <div class="col-md-3">
-    <p>{{ dictado.cupo }} participantes</p>
+    <p>{{ total_inscritos }}/{{ dictado.cupo }} participantes</p>
   </div>
   <div class="col-md-2">
     <p><strong>Inicio:</strong></p>
@@ -148,33 +148,53 @@
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
-        <h2 class="modal-title fs-5" id="exampleModalLabel">Alumnos Inscriptos</h2>
+        <h2 class="modal-title fs-5" id="exampleModalLabel">Inscriptos</h2>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
-        {% if alumnos_inscritos %}
+        {% if alumnos_inscritos or afiliado_inscritos or familiares_inscritos or profesores_inscritos %}
         <table class="table table-sm table-hover">
           <thead>
             <tr>
-              <th>#</th>
               <th>Dni</th>
               <th>Apellido</th> 
               <th>Nombre</th>
+              <th>Rol</th>
+              <th></th>
             </tr>
           </thead>
           <tbody>
-            {% for alumno in alumnos_inscritos %}
-            <tr class="bg-transition fila-personalizada">
-            <td>{{ forloop.counter }}</td>
-            <td>{{ alumno.persona.dni}}</td>
-            <td>{{ alumno.persona.apellido}}</td>
-            <td>{{ alumno.persona.nombre}}</td>
+            {% for inscrito in todos_inscritos_sorted %}
+            <tr>
+              <td>{{ inscrito.persona.dni }}</td>
+              <td>{{ inscrito.persona.apellido }}</td>
+              <td>{{ inscrito.persona.nombre }}</td>
+              <td>
+                {% if inscrito.persona.es_afiliado %}
+                  Afiliado
+                {% elif inscrito.persona.es_grupo_familiar %}
+                  Familiar
+                {% elif inscrito.persona.es_profesor %}
+                  Profesor
+                {% elif inscrito.persona.es_alumno %}
+                  Alumno
+                {% endif %}
+              </td>
+              <td>
+                {% if inscrito.persona.es_afiliado %}
+                <a href="{% url 'afiliados:afiliado_detalle' inscrito.pk %}" class="btn btn-primary btn-sm btn-detalle"><i class="fa-regular fa-eye"></i> Detalle</a>
+                {% elif inscrito.persona.es_grupo_familiar %}
+                <a href="{% url 'afiliados:familiar_detalle' inscrito.pk %}" class="btn btn-primary btn-sm btn-detalle"><i class="fa-regular fa-eye"></i> Detalle</a>
+
+                {% endif %}
+
+              </td>
             </tr>
-            {% endfor %}
+          {% endfor %}
           </tbody>
         </table>
         {% else %}
-        <p>No hay alumnos inscriptos.</p>
+        <p>No hay alumnos/afiliado/Grupo Familiar inscriptos.</p>
         {% endif %}
       </div>
       <div class="modal-footer">

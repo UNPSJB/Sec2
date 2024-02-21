@@ -10,119 +10,226 @@
   </form>
 
   <div id="resultadosPersona"></div>
-  <script>
-    // Variable para evitar múltiples búsquedas simultáneas
-    var busquedaRealizada = false
-    var hayCupo = {{ hay_cupo|lower }};
 
+<script>
+// Variable para evitar múltiples búsquedas simultáneas
+var busquedaRealizada = false
+var hayCupo = {{ hay_cupo|lower }};
+
+// Función para realizar la búsqueda de persona por DNI
+function buscarPersona() {
+  // Limpiar el contenido del div resultadosPersona
+  document.getElementById('resultadosPersona').innerHTML = '';
   
-    // Función para realizar la búsqueda de persona por DNI
-    function buscarPersona() {
-      // Limpiar el contenido del div resultadosPersona
-      document.getElementById('resultadosPersona').innerHTML = '';
+  // Verificar si ya se realizó una búsqueda
+  if (busquedaRealizada) {
+    console.log('Búsqueda ya realizada, evitando otra solicitud.')
+    return
+  }
   
-      // Verificar si ya se realizó una búsqueda
-      if (busquedaRealizada) {
-        console.log('Búsqueda ya realizada, evitando otra solicitud.')
-        return
-      }
+  // Obtener el valor del DNI
+  var dni = document.getElementById('dni').value
   
-      // Obtener el valor del DNI
-      var dni = document.getElementById('dni').value
+  // Validar el formato del DNI
+  if (!dni) {
+    alert('Por favor, ingrese un número de DNI.')
+    return
+  }
   
-      // Validar el formato del DNI
-      if (!dni) {
-        alert('Por favor, ingrese un número de DNI.')
-        return
-      }
+  if (dni.length !== 8) {
+    alert('El DNI debe tener exactamente 8 dígitos.')
+    return
+  }
   
-      if (dni.length !== 8) {
-        alert('El DNI debe tener exactamente 8 dígitos.')
-        return
-      }
+  // Marcar la búsqueda como realizada
+  busquedaRealizada = true
   
-      // Marcar la búsqueda como realizada
-      busquedaRealizada = true
-  
-      // Realizar la llamada AJAX
-      var xhr = new XMLHttpRequest();
-      xhr.open("GET", "{% url 'cursos:buscar_persona' %}?dni=" + dni, true);
-      xhr.onreadystatechange = function () {
-        if (xhr.readyState == 4 && xhr.status == 200) {
-          // Procesar la respuesta
-          var respuesta = JSON.parse(xhr.responseText);
-          mostrarResultados(respuesta.persona);
-        }
-      };
-      xhr.send();
+  // Realizar la llamada AJAX
+  var xhr = new XMLHttpRequest();
+  xhr.open("GET", "{% url 'cursos:buscar_persona' %}?dni=" + dni, true);
+  xhr.onreadystatechange = function () {
+    if (xhr.readyState == 4 && xhr.status == 200) {
+      // Procesar la respuesta
+      var respuesta = JSON.parse(xhr.responseText);
+      mostrarResultados(respuesta.persona);
     }
-  
-    // Función para mostrar los resultados en la página
-    function mostrarResultados(persona) {
-      var resultadosDiv = document.getElementById('resultadosPersona');
-      
-      if (persona) {
+  };
+  xhr.send();
+}
 
-        resultadosDiv.innerHTML = `
-          <h2>Información:</h2>
-          <p>DNI: ${persona.dni}</p>
-          <p>Nombre: ${persona.nombre} ${persona.apellido}</p>
-        `;
-        if (persona.es_afiliado) {
-          // Mostrar mensaje adicional si es alumno
-          resultadosDiv.innerHTML += `
-            <p>Es afiliado.[FALTA INSCRIBIRLO]</p>
-          `;
-        }
-        if (persona.es_alumno) {
-          // Mostrar mensaje adicional si es alumno
-          //si es alumno tengo que chequear si ya esta inscrito al curso
-          resultadosDiv.innerHTML += `
-            <p>Es alumno.</p>
-          `;
-        }
-        if (persona.es_profesor) {
-          // Mostrar mensaje adicional si es alumno
-          //si es alumno tengo que chequear que no sea el mismo profesor que dicta el curso
-          resultadosDiv.innerHTML += `
-            <p>Es profesor [FALTA INCCRIBIRO].</p>
-          `;
-        }
+// Función para mostrar los resultados en la página
+function mostrarResultados(persona) {
+  
+  var resultadosDiv = document.getElementById('resultadosPersona');
+  
+  // PERSONA ENCONTRADA
+  if (persona) {
+    resultadosDiv.innerHTML = `
+    <h2>Información:</h2>
+    <p>DNI: ${persona.dni}</p>
+    <p>Nombre: ${persona.nombre} ${persona.apellido}</p>`;
     
-        if (persona.es_encargado) {
-          // Mostrar mensaje adicional si es alumno
+    if (persona.es_afiliado) {
+      
+      if (persona.es_alumno) {
+        resultadosDiv.innerHTML += `
+        <p>Es afiliado y alumno.</p>`;
+
+      }else{
+        resultadosDiv.innerHTML += `
+        <p>Es afiliado.</p>`;
+      }
+
+      resultadosDiv.innerHTML += `
+      <div class="text-center">
+        <button class="btn btn-secondary btn-sm btn-detalle" onclick="inscribirAfiliado({{ curso_pk }}, {{ dictado_pk }}, ${persona.pk})">Inscribir</button>
+      </div>`;
+
+    }else{
+      if (persona.es_grupo_familiar) {
+        
+        if (persona.es_alumno) {
           resultadosDiv.innerHTML += `
-            <p>Es encargado [FALTA INSCRIBIRLO].</p>
-          `;
+          <p>Es Grupo Familiar y alumno.</p>`;
+
+        }else{
+          resultadosDiv.innerHTML += `
+          <p>Es Grupo Familiar.</p>`;
         }
+        
+        resultadosDiv.innerHTML += `
+        <div class="text-center">
+          <button class="btn btn-secondary btn-sm btn-detalle" onclick="inscribirGrupoFamiliar({{ curso_pk }}, {{ dictado_pk }}, ${persona.pk})">Inscribir</button>
+        </div>`;
 
-      } else {
-        // Persona no encontrada
-        // Si no la encuentra, dar la opción de darla de alta como alumno o afiliar
-        resultadosDiv.innerHTML = `
-        <p>La persona no está registrada en el sistema.</p>
-        `;
+      }else{
+        
+        if (persona.es_profesor) {
 
-        if (hayCupo) {
-          // Mostrar el botón de dar de alta como alumno
+          if (persona.es_alumno) {
+            resultadosDiv.innerHTML += `
+            <p>Es profesor y alumno.</p>`;
+  
+          }else{
+            resultadosDiv.innerHTML += `
+            <p>Es profesor.</p>`;
+          }
           resultadosDiv.innerHTML += `
           <div class="text-center">
-            <button class="btn btn-secondary btn-sm btn-detalle" onclick="altaAlumno({{ curso_pk }}, {{ dictado_pk }})">Dar de alta como alumno</button>
-          </div>
-          `;
-        } else {
-          // Mostrar el mensaje de no hay cupo
-          resultadosDiv.innerHTML += `
-          <div class="text-center">
-            <button class="btn btn-warning btn-sm btn-detalle" onclick="altaListaDeEspera({{ curso_pk }}, {{ dictado_pk }})">Dar de alta y poner en lista de espera</button>
-          </div>
-          `;
+            <button class="btn btn-secondary btn-sm btn-detalle" onclick="inscribirProfesor({{ curso_pk }}, {{ dictado_pk }}, ${persona.pk})">Inscribir</button>
+          </div>`;
+        }else{
+          
+          // ALUMNO
+          if (persona.es_alumno) {
+            resultadosDiv.innerHTML += `
+            <p>Es alumno.</p>`;
+
+            resultadosDiv.innerHTML += `
+            <div class="text-center">
+              <button class="btn btn-secondary btn-sm btn-detalle" onclick="inscribirAlumno({{ curso_pk }}, {{ dictado_pk }}, ${persona.pk})">Inscribir</button>
+            </div>`;
+          }
+          else{
+            // ENCARGADO
+            if (persona.es_encargado) {
+              resultadosDiv.innerHTML += `
+              <p>Es encargado [FALTA INSCRIBIRLO].</p>`;
+            }
+          }
         }
       }
-        // Restablecer la variable para permitir nuevas búsquedas
-        busquedaRealizada = false;
+    }
+  }else {
+    // PERSONA NO ENCONTRADA
+    // Si no la encuentra, dar la opción de darla de alta como alumno o afiliar
+    resultadosDiv.innerHTML = `
+    <p>La persona no está registrada en el sistema.</p>`;
+    
+    if (hayCupo) {
+      // Mostrar el botón de dar de alta como alumno
+      resultadosDiv.innerHTML += `
+      <div class="text-center">
+        <button class="btn btn-secondary btn-sm btn-detalle" onclick="altaAlumno({{ curso_pk }}, {{ dictado_pk }})">Dar de alta como alumno</button>
+      </div>`;
+    } else {
+      // Mostrar el mensaje de no hay cupo
+      resultadosDiv.innerHTML += `
+      <div class="text-center">
+        <button class="btn btn-warning btn-sm btn-detalle" onclick="altaListaDeEspera({{ curso_pk }}, {{ dictado_pk }})">Dar de alta y poner en lista de espera</button>
+      </div>`;
+    }
+  }
+  // Restablecer la variable para permitir nuevas búsquedas
+  busquedaRealizada = false;
+}
+
+    // INSCIPCION DEL AFILIADO
+    function inscribirAfiliado(curso_pk, dictado_pk, afiliado_pk) {
+      console.log("Curso PK:", curso_pk);
+      console.log("Dictado PK:", dictado_pk);
+      console.log("Afiliado PK:", afiliado_pk);
+
+      // Construir la URL usando reverse
+      var url = "{% url 'cursos:afiliado_inscribir' curso_pk=9999 dictado_pk=9999 afiliado_pk=8888 %}"
+      .replace('9999', curso_pk)
+      .replace('9999', dictado_pk)
+      .replace('8888', afiliado_pk);
+
+      console.log("URL ", url);
+      window.location.href = url;
     }
 
+    // INSCIPCION DE FAMILIAR
+    function inscribirGrupoFamiliar(curso_pk, dictado_pk, persona_pk) {
+      console.log("Curso PK:", curso_pk);
+      console.log("Dictado PK:", dictado_pk);
+      console.log("Persona PK:", persona_pk);
+
+      // Construir la URL usando reverse
+      var url = "{% url 'cursos:familiar_inscribir' curso_pk=9999 dictado_pk=9999 persona_pk=8888 %}"
+      .replace('9999', curso_pk)
+      .replace('9999', dictado_pk)
+      .replace('8888', persona_pk);
+
+      console.log("URL ", url);
+      window.location.href = url;
+    }
+
+    // INSCIPCION DE FAMILIAR
+    function inscribirProfesor(curso_pk, dictado_pk, persona_pk) {
+      console.log("Curso PK:", curso_pk);
+      console.log("Dictado PK:", dictado_pk);
+      console.log("Persona PK:", persona_pk);
+
+      // Construir la URL usando reverse
+      var url = "{% url 'cursos:profesor_inscribir' curso_pk=9999 dictado_pk=9999 persona_pk=8888 %}"
+      .replace('9999', curso_pk)
+      .replace('9999', dictado_pk)
+      .replace('8888', persona_pk);
+
+      console.log("URL ", url);
+      window.location.href = url;
+    }
+
+    
+    // INSCIPCION DE FAMILIAR
+    function inscribirAlumno(curso_pk, dictado_pk, persona_pk) {
+      console.log("Curso PK:", curso_pk);
+      console.log("Dictado PK:", dictado_pk);
+      console.log("Persona PK:", persona_pk);
+
+      // Construir la URL usando reverse
+      var url = "{% url 'cursos:alumno_inscribir' curso_pk=9999 dictado_pk=9999 persona_pk=8888 %}"
+      .replace('9999', curso_pk)
+      .replace('9999', dictado_pk)
+      .replace('8888', persona_pk);
+
+      console.log("URL ", url);
+      window.location.href = url;
+    }
+
+        
     // Función para redirigir a la URL de inscripción de alumno
     function altaAlumno(curso_pk, dictado_pk) {
       // Redirigir a la URL de inscripción de alumno

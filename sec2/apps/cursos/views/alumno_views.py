@@ -16,6 +16,7 @@ from sec2.utils import ListFilterView
 from django.shortcuts import redirect
 from utils.constants import *
 from django.contrib import messages
+from django.urls import reverse
 
 # ---------------- ALUMNO CREATE ----------------
 class AlumnoCreateView(CreateView):
@@ -30,7 +31,6 @@ class AlumnoCreateView(CreateView):
         return reverse_lazy('cursos:persona_inscribir', kwargs={'curso_pk': curso_pk, 'dictado_pk': dictado_pk})
 
     def get_context_data(self, **kwargs):
-        print("----------2----------")
         context = super().get_context_data(**kwargs)
         curso_pk = self.kwargs.get('curso_pk')
         dictado_pk = self.kwargs.get('dictado_pk')
@@ -38,7 +38,7 @@ class AlumnoCreateView(CreateView):
 
         # Print or log the values of curso_pk and dictado_pk for debugging
         print(f"curso_pk: {curso_pk}, dictado_pk: {dictado_pk}")
-        
+
         dictado = get_object_or_404(Dictado, curso__pk=curso_pk, pk=dictado_pk)
         context['titulo'] = f'Inscripción para {dictado.curso.nombre}'
         return context
@@ -64,6 +64,7 @@ class AlumnoCreateView(CreateView):
                 estado_civil=form.cleaned_data["estado_civil"],
                 nacionalidad=form.cleaned_data["nacionalidad"],
                 direccion=form.cleaned_data["direccion"],
+                es_alumno = True
             )
             persona.save()
 
@@ -73,7 +74,7 @@ class AlumnoCreateView(CreateView):
                 tipo = Alumno.TIPO
             )
             
-            alumno.register
+            # alumno.register
             alumno.save()
             
             
@@ -88,9 +89,9 @@ class AlumnoCreateView(CreateView):
 
             # Agregar el alumno a los dictados seleccionados
             alumno.dictados.add(dictado)
-            messages.success(self.request, f'{ICON_CHECK} Alumno inscrito al curso exitosamente!. Cierre la ventana y recargue el detalle del dictado')
             # Agregar el mensaje de éxito para mostrar en el template
-            return super().form_valid(form)
+            messages.success(self.request, f'{ICON_CHECK} Alumno inscrito al curso exitosamente!. Cierre la ventana y recargue el detalle del dictado')
+            return redirect(reverse('cursos:verificar_persona', kwargs={'curso_pk': curso_pk, 'dictado_pk': dictado_pk}))
         
     def form_invalid(self, form):
         messages.warning(self.request, f'Corrige los errores en el formulario.')
