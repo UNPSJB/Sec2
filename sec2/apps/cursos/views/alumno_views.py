@@ -252,3 +252,31 @@ def marcar_asistencia(request, clase_id):
 
     messages.error(request, f'{ICON_ERROR} Ha ocurrido un error inesperado.')
     return redirect('cursos:clase_detalle', curso_pk=clase.reserva.horario.dictado.curso.pk, dictado_pk=clase.reserva.horario.dictado.pk, clase_pk=clase.pk)
+
+#------------ LISTADO DE TODOS MIS ALUMNOS  --------------
+class AlumnosListView(ListFilterView):
+    model = Alumno
+    paginate_by = 11
+    filter_class = AlumnoFilterForm
+    template_name = 'alumno/alumno_listado.html'  
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        filter_form = AlumnoFilterForm(self.request.GET)
+        context['filtros'] = filter_form
+        context['titulo'] = "Listado de Alumno"
+        return context
+
+##--------------- ALUMNO DETALLE --------------------------------
+from django.views.generic import DetailView
+
+class AlumnoDetailView(DetailView):
+    model = Alumno
+    template_name = 'alumno/alumno_detalle.html'
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['titulo'] = "Detalle del alumno"
+        context['tituloListado'] = 'Clases Asociadas'
+        alumno = self.object  # El objeto de dictado obtenido de la vista
+        return context

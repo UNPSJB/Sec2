@@ -80,6 +80,9 @@ urlpatterns = [
     path('cursos/curso/<int:curso_pk>/dictados/dictado/<int:dictado_pk>/Profesor/<int:persona_pk>/inscribir', inscribirProfesor , name="profesor_inscribir"),
     path('cursos/curso/<int:curso_pk>/dictados/dictado/<int:dictado_pk>/Alumno/<int:persona_pk>/inscribir', inscribirAlumno , name="alumno_inscribir"),
 
+    path('alumnos', AlumnosListView.as_view(), name="alumnos_listado"),
+    path('alumnos/<int:pk>/', AlumnoDetailView.as_view(), name="alumno_detalle"),
+
 
 
     # path('<int:pk>/dictado/profesor',  ProfesorDelDictadoListView.as_view(), name="profesor_dictado"),

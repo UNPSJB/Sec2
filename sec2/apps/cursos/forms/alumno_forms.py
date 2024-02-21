@@ -3,6 +3,8 @@ from apps.cursos.models import Alumno
 from apps.personas.models import Persona
 from datetime import date
 
+from sec2.utils import FiltrosForm
+
 #-------------- Fusion de formulario Alumno y Persona----------------
 class AlumnoPersonaForm(forms.ModelForm):
     class Meta:
@@ -11,3 +13,7 @@ class AlumnoPersonaForm(forms.ModelForm):
         widgets = {
             'fecha_nacimiento': forms.DateInput(attrs={'type': 'date'}),
         }
+
+
+class AlumnoFilterForm(FiltrosForm):
+    nombre = forms.CharField(required=False)

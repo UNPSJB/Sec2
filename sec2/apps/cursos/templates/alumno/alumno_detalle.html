@@ -11,7 +11,7 @@
       </p>
     </div>
     <div class="col-md-5">
-      <p>{{ profesor.persona.dni }}</p>
+      <p>{{ alumno.persona.dni }}</p>
     </div>
 
     <div class="col-md-2">
@@ -20,7 +20,7 @@
       </p>
     </div>
     <div class="col">
-      <p>{{ profesor.ejerce_desde }}</p>
+      {% comment %} <p>{{ profesor.ejerce_desde }}</p> {% endcomment %}
     </div>
   </div>
 
@@ -31,7 +31,7 @@
       </p>
     </div>
     <div class="col">
-      <p>{{ profesor.persona.nombre }}</p>
+      <p>{{ alumno.persona.nombre }}</p>
     </div>
   </div>
 
@@ -42,31 +42,15 @@
       </p>
     </div>
     <div class="col-md-5">
-      <p>{{ profesor.persona.apellido }}</p>
+      <p>{{ alumno.persona.apellido }}</p>
     </div>
+</div>
 
-    <div class="col-md-2">
-        <p>
-          <strong>Actividades:</strong>
-        </p>
-      </div>
-      <div class="col">
-        <p>
-          {% for actividad in profesor.actividades.all %}
-          {{actividad}}
-          {% endfor %}
-        </p>
-      </div>
-  </div>
-
-  <div class="row">
-   
-  </div>
 {% endblock %}
 
 {% block botones %}
 <div class="col d-flex justify-content-center">
-    <a href="{% url 'cursos:profesor_editar' profesor.pk %}" class="btn btn-primary btn-sm btn-detalle"><i class="fa-regular fa-pen-to-square"></i> Modificar</a>
+    {% comment %} <a href="{% url 'cursos:profesor_editar' profesor.pk %}" class="btn btn-primary btn-sm btn-detalle"><i class="fa-regular fa-pen-to-square"></i> Modificar</a> {% endcomment %}
   </div>
 
   <div class="col d-flex justify-content-end">
@@ -93,7 +77,6 @@
       <td>{{ titular.dictado.fecha }}</td>
       <td>{{ titular.dictado.curso.nombre }}</td>
       <td class="text-end">
-        <a href="{% url 'cursos:dictado_detalle' curso_pk=titular.dictado.curso.pk dictado_pk=titular.dictado.pk %}" class="btn btn-primary btn-detalle btn-sm"><i class="fa-regular fa-eye"></i> Detalle</a>
       </td>
     </tr>
     {% endfor %}

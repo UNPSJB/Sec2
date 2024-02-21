@@ -188,7 +188,7 @@
                 {% elif inscrito.persona.es_profesor %}
                 <a href="{% url 'cursos:profesor_detalle' inscrito.pk %}" class="btn btn-primary btn-sm btn-detalle"><i class="fa-regular fa-eye"></i> Detalle</a>
                 {% elif inscrito.persona.es_alumno %}
-                <a href="{% url 'cursos:profesor_detalle' inscrito.pk %}" class="btn btn-primary btn-sm btn-detalle"><i class="fa-regular fa-eye"></i> FALTA HACER EL DETALLE DEL ALUMNO</a>
+                <a href="{% url 'cursos:alumnos_listado' %}" class="btn btn-primary btn-sm btn-detalle"><i class="fa-regular fa-eye"></i> FALTA HACER EL DETALLE DEL ALUMNO</a>
                 {% endif %}
               </td>
             </tr>
