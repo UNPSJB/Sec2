@@ -57,6 +57,48 @@ function buscarPersona() {
   xhr.send();
 }
 
+function mostrarInformacion(persona) {
+  return `
+    <h2>Información:</h2>
+    <p>DNI: ${persona.dni} | ${persona.apellido} ${persona.nombre}</p>`;
+}
+
+function mostrarTipoPersona(persona) {
+  if (persona.es_afiliado) {
+    if (persona.es_alumno) {
+      return `<p>Es afiliado y alumno.</p>`;
+    } else {
+      return `<p>Es afiliado.</p>`;
+    }
+  } else if (persona.es_grupo_familiar) {
+    if (persona.es_alumno) {
+      return `<p>Es Grupo Familiar y alumno.</p>`;
+    } else {
+      return `<p>Es Grupo Familiar.</p>`;
+    }
+  } else if (persona.es_profesor) {
+    if (persona.es_alumno) {
+      return `<p>Es profesor y alumno.</p>`;
+    } else {
+      return `<p>Es profesor.</p>`;
+    }
+  } else if (persona.es_alumno) {
+    return `<p>Es alumno.</p>`;
+  } else if (persona.es_encargado) {
+    return `<p>Es encargado [FALTA INSCRIBIRLO].</p>`;
+  }
+  return '';
+}
+
+function mostrarBotonInscripcion(msj) {
+  return `
+    <div class="text-center">
+      ${msj}
+    </div>`;
+    CONFIGURAR LOS DISTITOS BOTONES
+}
+
+
 // Función para mostrar los resultados en la página
 function mostrarResultados(persona) {
   
@@ -64,15 +106,28 @@ function mostrarResultados(persona) {
 
   // PERSONA ENCONTRADA
   if (persona) {
-    resultadosDiv.innerHTML = `
-    <h2>Información:</h2>
-    <p>DNI: ${persona.dni} | ${persona.apellido} ${persona.nombre}</p>`;
-    
+    resultadosDiv.innerHTML = mostrarInformacion(persona);
+    resultadosDiv.innerHTML += mostrarTipoPersona(persona);
+
+    if (!estaInscrita(persona)) {
+      if (hayCupo) {
+      resultadosDiv.innerHTML += `<p>HAY CUPO.</p>`;
+
+      }else{
+        resultadosDiv.innerHTML += `<p>El curso esta lleno.</p>`;
+        resultadosDiv.innerHTML += mostrarBotonInscripcion('Agregar a a lista de espera');
+
+      }
+    }else{
+      resultadosDiv.innerHTML += `<p>Esta persona ya está inscrita en el dictado.</p>`;
+
+    }
+
     if (persona.es_afiliado) {
       
       if (persona.es_alumno) {
         resultadosDiv.innerHTML += `
-        <p>Es afiliado y alumno.</p>`;
+        <p>wwwEs afiliado y alumno.</p>`;
 
       }else{
         resultadosDiv.innerHTML += `
@@ -81,10 +136,17 @@ function mostrarResultados(persona) {
       }
       
       if (!estaInscrita(persona)) {
+        if (hayCupo) {
+          resultadosDiv.innerHTML += `
+          <div class="text-center">
+            <button class="btn btn-secondary btn-sm btn-detalle" onclick="inscribirAfiliado({{ curso_pk }}, {{ dictado_pk }}, ${persona.pk})">Inscribir</button>
+          </div>`;
+        }else
         resultadosDiv.innerHTML += `
         <div class="text-center">
-          <button class="btn btn-secondary btn-sm btn-detalle" onclick="inscribirAfiliado({{ curso_pk }}, {{ dictado_pk }}, ${persona.pk})">Inscribir</button>
+          <button class="btn btn-warning btn-sm btn-detalle" onclick="inscribirAfiliado({{ curso_pk }}, {{ dictado_pk }}, ${persona.pk})">NO HAY CUPOInscribir</button>
         </div>`;
+
       } else {
         resultadosDiv.innerHTML += `<p>Esta persona ya está inscrita en el dictado.</p>`;
       }
@@ -94,7 +156,7 @@ function mostrarResultados(persona) {
         
         if (persona.es_alumno) {
           resultadosDiv.innerHTML += `
-          <p>Es Grupo Familiar y alumno.</p>`;
+          <p>ASASDSADEs Grupo Familiar y alumno.</p>`;
 
         }else{
           resultadosDiv.innerHTML += `
@@ -102,6 +164,7 @@ function mostrarResultados(persona) {
         }
         
         if (!estaInscrita(persona)) {
+
           resultadosDiv.innerHTML += `
           <div class="text-center">
             <button class="btn btn-secondary btn-sm btn-detalle" onclick="inscribirGrupoFamiliar({{ curso_pk }}, {{ dictado_pk }}, ${persona.pk})">Inscribir</button>
