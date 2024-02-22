@@ -23,11 +23,8 @@
       {% endblock %}
     </div>
   </div>
-
-  <div class="container-sm">
-    <h3 class="subtitulo">{{ tituloListado }}</h3>
-    {% block listado_asociado %}
-
-    {% endblock %}
-  </div>
+  
+  {% block listado_asociado %}
+  {% endblock %}
+  
 {% endblock %}

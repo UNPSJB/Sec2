@@ -188,7 +188,7 @@
                 {% elif inscrito.persona.es_profesor %}
                 <a href="{% url 'cursos:profesor_detalle' inscrito.pk %}" class="btn btn-primary btn-sm btn-detalle"><i class="fa-regular fa-eye"></i> Detalle</a>
                 {% elif inscrito.persona.es_alumno %}
-                <a href="{% url 'cursos:alumnos_listado' %}" class="btn btn-primary btn-sm btn-detalle"><i class="fa-regular fa-eye"></i> FALTA HACER EL DETALLE DEL ALUMNO</a>
+                <a href="{% url 'cursos:alumno_detalle' pk=inscrito.pk %}" class="btn btn-primary btn-sm btn-detalle"><i class="fa-regular fa-eye"></i> Detalle</a>
                 {% endif %}
               </td>
             </tr>
@@ -243,7 +243,10 @@
 {% endblock %}
 
 {% block listado_asociado %}
+
   {% if clases %}
+  <div class="container-sm">
+    <h3 class="subtitulo">{{ tituloListado }}</h3>
     <table class="table table-sm table-hover">
       <thead>
         <tr>
@@ -275,12 +278,9 @@
         {% endfor %}
       </tbody>
     </table>
-  {% else %}
-    <p>No hay clases asociadas.</p>
   {% endif %}
+  </div>
   
-
-
   {% endblock %}
 
   

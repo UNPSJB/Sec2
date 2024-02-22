@@ -277,6 +277,6 @@ class AlumnoDetailView(DetailView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['titulo'] = "Detalle del alumno"
-        context['tituloListado'] = 'Clases Asociadas'
+        context['tituloListado'] = 'Dicados Inscriptos'
         alumno = self.object  # El objeto de dictado obtenido de la vista
         return context

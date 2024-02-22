@@ -7,47 +7,7 @@
 <link href="{% static 'css/afiliado_confirm_delete.css' %}" rel="stylesheet" />
 
 <h3>{{subtitulodetalle1}}</h3>
-
-<div class="row">
-  <div class="col-md-2">
-    <img src="{% static 'images/perfil.jpg' %}" alt="Profile Image" class="img-thumbnail" />
-  </div>
-
-  <div class="col">
-    <div class="row">
-      <div class="col">
-        <p>
-          <strong>Dni:</strong> 
-          {{ afiliado.persona.dni }}
-        </p>
-      </div>
-      <div class="col">
-        <p>
-          <strong>Fecha de Nacimiento:</strong> 
-          {{ afiliado.persona.fecha_nacimiento }}
-        </p>
-        
-      </div>
-    </div>
-    
-    <div class="row">
-      <div class="col">
-        <p>
-          <strong>Apellido:</strong>
-          {{ afiliado.persona.apellido }}
-        </p>
-      </div>
-      <div class="col">
-        <p>
-          <strong>Nombre:</strong>
-          {{ afiliado.persona.nombre }}
-        </p>
-    </div>
-  </div>
-</div>
-</div>
-
-
+{% include "persona_detalle.html" with persona=afiliado.persona %}
 <br>
 <h3>{{subtitulodetalle2}}</h3>
 
@@ -223,6 +183,11 @@
 </div>
 {% endblock %}
 
-{% block extrajs_intermedia %}
-  {% comment %} <script src="{% static 'js/afiliado_confirm_delete.js' %}"></script> {% endcomment %}
+{% block listado_asociado %}
+{% if afiliado.dictados.all %}
+  <div class="container-sm">
+    <h3 class="subtitulo">{{ tituloListado }}</h3>
+    {% include "inscripcion_dictado.html" with dictados=afiliado.dictados.all %}
+  </div>
+{% endif %}
 {% endblock %}

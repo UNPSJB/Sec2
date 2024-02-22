@@ -136,42 +136,43 @@
 {% endblock %}
 
 {% block listado_asociado %}
-  {% if dictados %}
-    <table class="table table-sm table-hover">
-      <thead>
-        <tr>
-          <th>#</th>
-          <th>Fecha Inicio</th>
-          <th>Cupo</th>
-          <th>Desc</th>
-          <th>Duración</th>
-          <th></th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for dictado in dictados %}
-          <tr>
-            <td>{{ forloop.counter }}</td>
-            <td>{{ dictado.fecha }}</td>
-            <td>0/{{ dictado.cupo }}</td>
-            <td>{{ dictado.descuento }} %</td>
-            <td>{{ dictado.modulos_por_clase }} hrs</td>
-            <td class="text-end">
-              <a href="{% url 'cursos:dictado_detalle' curso_pk=curso.pk dictado_pk=dictado.pk %}" class="btn btn-primary btn-detalle btn-sm"><i class="fa-regular fa-eye"></i> Detalle</a>
-
-            </td>
-          </tr>
-        {% endfor %}
-      </tbody>
-    </table>
-  {% else %}
-    <p>No hay dictados asociados.</p>
-  {% endif %}
-  <!-- Agrega este bloque en tu plantilla -->
+{% if dictados %}
+<div class="container-sm">
+  <h3 class="subtitulo">{{ tituloListado }}</h3>
+  <table class="table table-sm table-hover">
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>Fecha Inicio</th>
+        <th>Cupo</th>
+        <th>Desc</th>
+        <th>Duración</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for dictado in dictados %}
+      <tr>
+        <td>{{ forloop.counter }}</td>
+        <td>{{ dictado.fecha }}</td>
+        <td>0/{{ dictado.cupo }}</td>
+        <td>{{ dictado.descuento }} %</td>
+        <td>{{ dictado.modulos_por_clase }} hrs</td>
+        <td class="text-end">
+          <a href="{% url 'cursos:dictado_detalle' curso_pk=curso.pk dictado_pk=dictado.pk %}" class="btn btn-primary btn-detalle btn-sm"><i class="fa-regular fa-eye"></i> Detalle</a>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  
   {% if tiene_dictados %}
-    <a href="{% url 'cursos:dictado_crear' pk=object.pk %}" class="btn btn-primary btn-sm btn-detalle"><i class="fa-regular fa-plus"></i> Nuevo Dictado</a>
+  <a href="{% url 'cursos:dictado_crear' pk=object.pk %}" class="btn btn-primary btn-sm btn-detalle"><i class="fa-regular fa-plus"></i> Nuevo Dictado</a>
   {% else %}
-    <button type="button" class="btn btn-primary btn-sm btn-detalle" data-bs-toggle="modal" data-bs-target="#exampleModal"><i class="fa-regular fa-plus"></i> Nuevo Dictado</button>
-    {% include 'curso/modal_primer_dictado.html' %}
+  <button type="button" class="btn btn-primary btn-sm btn-detalle" data-bs-toggle="modal" data-bs-target="#exampleModal"><i class="fa-regular fa-plus"></i> Nuevo Dictado</button>
+  {% include 'curso/modal_primer_dictado.html' %}
   {% endif %}
+</div>
+{% endif %}
+
 {% endblock %}

@@ -4,48 +4,7 @@
 {% load static %}
 
 {% block detalle %}
-  <div class="row">
-    <div class="col-md-1">
-      <p>
-        <strong>Dni:</strong>
-      </p>
-    </div>
-    <div class="col-md-5">
-      <p>{{ alumno.persona.dni }}</p>
-    </div>
-
-    <div class="col-md-2">
-      <p>
-        <strong>Ejerce desde:</strong>
-      </p>
-    </div>
-    <div class="col">
-      {% comment %} <p>{{ profesor.ejerce_desde }}</p> {% endcomment %}
-    </div>
-  </div>
-
-  <div class="row">
-    <div class="col-md-1">
-      <p>
-        <strong>Nombre:</strong>
-      </p>
-    </div>
-    <div class="col">
-      <p>{{ alumno.persona.nombre }}</p>
-    </div>
-  </div>
-
-  <div class="row">
-    <div class="col-md-1">
-      <p>
-        <strong>Apellido:</strong>
-      </p>
-    </div>
-    <div class="col-md-5">
-      <p>{{ alumno.persona.apellido }}</p>
-    </div>
-</div>
-
+  {% include "persona_detalle.html" with persona=alumno.persona %}
 {% endblock %}
 
 {% block botones %}
@@ -60,37 +19,10 @@
 {% endblock %}
 
 {% block listado_asociado %}
-{% if titulares %}
-<table class="table table-sm table-hover">
-  <thead>
-    <tr>
-      <th>#</th>
-      <th>Fecha Inicio</th>
-      <th>Curso</th>
-      <th></th>
-    </tr>
-  </thead>
-  <tbody>
-    {% for titular in titulares %}
-    <tr>
-      <td>{{ forloop.counter }}</td>
-      <td>{{ titular.dictado.fecha }}</td>
-      <td>{{ titular.dictado.curso.nombre }}</td>
-      <td class="text-end">
-      </td>
-    </tr>
-    {% endfor %}
-  </tbody>
-</table>
-{% else %}
-<p>No hay dictados asociados.</p>
+{% if alumno.dictados.all %}
+<div class="container-sm">
+  <h3 class="subtitulo">{{ tituloListado }}</h3>
+  {% include "inscripcion_dictado.html" with dictados=alumno.dictados.all %}
+</div>
 {% endif %}
-
 {% endblock %}
-
-
-
-{% comment %} {{ object.get_actividad_display }}
-{% if mensaje %}
-  <div class="alert alert-info" role="alert">registro finalizado exitosamente</div>
-{% endif %} {% endcomment %}

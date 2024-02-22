@@ -18,6 +18,7 @@
         <th>Tipo</th>
         <th>Modulos</th>
         <th></th>
+        
       </tr>
     </thead>
 
@@ -36,7 +37,6 @@
             {% endif %}
           </td>
           <td>{{ curso.modulos_totales }} horas</td>
-          <td>{{ curso. }} </td>
           <td class="text-end">
             <a href="{% url 'cursos:curso_detalle' curso.pk %}" class="btn btn-primary btn-detalle btn-sm"><i class="fa-regular fa-eye"></i> Detalle</a>
           </td>

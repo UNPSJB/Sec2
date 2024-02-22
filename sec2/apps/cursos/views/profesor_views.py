@@ -77,8 +77,9 @@ class ProfesorDetailView(DetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['titulo'] = "Profesor"
+        context['titulo'] = "Detalle del Profesor"
         context['tituloListado'] = 'Titular'
+        context['tituloDictadoInscrito'] = 'Dictados que esta inscrito como alumno'
         # Obtener el profesor actual
         profesor = self.object
         # Obtener todos los titulares asociados a este profesor

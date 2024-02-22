@@ -1,0 +1,81 @@
+<div class="row">
+    <div class="col-md-2">
+      <p>
+        <strong>Dni:</strong>
+      </p>
+    </div>
+    <div class="col-md-2">
+      <p>{{ persona.dni }}</p>
+    </div>
+
+    <div class="col-md-1">
+      <p>
+        <strong>Cuit:</strong>
+      </p>
+    </div>
+    <div class="col-md-3">
+      <p>{{ persona.cuil }}</p>
+    </div>
+    <div class="col-md-1">
+        <p>
+          <strong>Nacimiento:</strong>
+        </p>
+      </div>
+      <div class="col-md-2">
+        <p>{{ persona.fecha_nacimiento }}</p>
+      </div>
+  </div>
+
+  <div class="row">
+    <div class="col-md-2">
+      <p>
+        <strong>Nombre:</strong>
+      </p>
+    </div>
+    <div class="col-md-2">
+      <p>{{ persona.nombre }}</p>
+    </div>
+    <div class="col-md-1">
+      <p>
+        <strong>Apellido:</strong>
+      </p>
+    </div>
+    <div class="col-md-3">
+      <p>{{ persona.apellido }}</p>
+    </div>
+    <div class="col-md-1">
+        <p>
+          <strong>Celular:</strong>
+        </p>
+      </div>
+      <div class="col-md-2">
+        <p>{{ persona.celular }}</p>
+      </div>
+  </div>
+
+  <div class="row">
+    <div class="col-md-2">
+      <p>
+        <strong>Pais:</strong>
+      </p>
+    </div>
+    <div class="col-md-2">
+      <p>{{ persona.get_nacionalidad_display }}</p>
+    </div>
+    <div class="col-md-1">
+      <p>
+        <strong>Estado:</strong>
+      </p>
+    </div>
+    <div class="col-md-3">
+        <p>{{ persona.get_estado_civil_display }}</p>
+    </div>
+    <div class="col-md-1">
+        <p>
+          <strong>Mail:</strong>
+        </p>
+      </div>
+      <div class="col-md-2">
+        <p>{{ persona.mail }}</p>
+      </div>
+  </div>

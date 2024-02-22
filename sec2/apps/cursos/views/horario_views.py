@@ -185,6 +185,7 @@ def asignar_aula(request, curso_pk, dictado_pk, horario_id):
         # Actualizar el campo 'aula' en el objeto Horario
         horario.aula = aula_seleccionada
         horario.save()
+        messages.success(request, f'{ICON_CHECK} Reservas generadas para el horario.')    
          # Redirigir a la vista dictado_detalle con los parámetros necesarios
         return redirect('cursos:dictado_detalle', curso_pk=horario.dictado.curso.pk, dictado_pk=horario.dictado.pk)
     else:

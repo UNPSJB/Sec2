@@ -93,6 +93,7 @@ class AfiliadoDetailView (DeleteView):
         context['titulo'] = "Datos del afiliado"
         context['subtitulodetalle1'] = "Datos personales"
         context['subtitulodetalle2'] = "Datos de afiliación"
+        context['tituloListado'] = "Dictados Incritos"
         return context
 
 # ----------------------------- AFILIADO LIST ----------------------------------- #
@@ -318,6 +319,7 @@ class FamiliarDetailView(DeleteView):
         context = super().get_context_data(**kwargs)
         familiar = self.object
         context['titulo'] = "Datos del familiar"
+        context['tituloListado'] = "Dictados Insciptos"
         context['afiliado'] = self.afiliado
         return context
 
@@ -333,7 +335,7 @@ class FamiliarDetailView_(DeleteView):
         context = super().get_context_data(**kwargs)
         familiar = self.object
         context['titulo'] = "Datos del familiar"
-
+        context['tituloListado'] = "Dictados Insciptos"
         # Obtener el afiliado relacionado con el familiar
         afiliado = get_object_or_404(Afiliado, familia=familiar)            
 
