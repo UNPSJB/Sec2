@@ -29,7 +29,6 @@ class DictadoCreateView(CreateView):
         context['profesores_capacitados'] = Profesor.objects.filter(actividades=actividad_curso)
         return context
 
-
     def form_valid(self, form):
         # Obtén el curso asociado al dictado
         curso = get_object_or_404(Curso, pk=self.kwargs.get('pk'))
@@ -303,6 +302,7 @@ class BuscarPersonaView(View):
                     'es_encargado': persona.es_encargado,
                     'es_grupo_familiar': persona.es_grupo_familiar,
                 }
+
                 return JsonResponse({'persona': persona_data})
             else:
                 print("--------------PERSONA NO EXISTE--------------------------------",dni)
@@ -321,20 +321,51 @@ class VerificarInscripcionView(View):
         dictado = get_object_or_404(Dictado, curso__pk=curso_pk, pk=dictado_pk)
         print("DICTADO: ", dictado.cupo)
 
-        # Obtener la cantidad de alumnos inscritos en el dictado
+        # OBTENGO A TODOS MIS ALUMNOS (Alumnos, Afiliado, GrupoFamiliar, Profeosres como alumno)
+        afiliado_inscritos = Afiliado.objects.filter(dictados=dictado)
+        familiares_inscritos = Familiar.objects.filter(dictados=dictado)    
+
+        # Obtener el atributo persona de todos los familiares_inscritos
+        personas_familiares_inscritos = familiares_inscritos.values_list('persona', flat=True)
+
+        # Convertir el resultado en una lista si es necesario
+        lista_personas_familiares_inscritos = list(personas_familiares_inscritos)
+
+        # Imprimir o utilizar la lista según tus necesidades
+        print(lista_personas_familiares_inscritos)
+
+        print(familiares_inscritos)
+        profesores_inscritos = Profesor.objects.filter(dictados_inscriptos=dictado)
         alumnos_inscritos = Alumno.objects.filter(dictados=dictado)
-        cantidad_alumnos_inscritos = alumnos_inscritos.count()
-        print("TOTAL INSCRIPTOS: ", cantidad_alumnos_inscritos)
+        
+        # Calculo la suma total de inscritos
+        total_inscritos = (
+            afiliado_inscritos.count() +
+            familiares_inscritos.count() +
+            profesores_inscritos.count() +
+            alumnos_inscritos.count()
+        )
+
+        print("TOTAL INSCRIPTOS: ", total_inscritos)
 
         # Verificar si hay cupo
-        hay_cupo = cantidad_alumnos_inscritos < dictado.cupo
+        hay_cupo = total_inscritos < dictado.cupo
         print("HAY CUPO: ", hay_cupo)
+
+        # Inicializamos los ids como una lista vacía
+        inscritos_ids = []
+        # Agrega los IDs de afiliados, familiares, profesores, alumno
+        inscritos_ids.extend(list(afiliado_inscritos.values_list('persona__pk', flat=True)))
+        inscritos_ids.extend(list(familiares_inscritos.values_list('persona__pk', flat=True)))
+        inscritos_ids.extend(list(profesores_inscritos.values_list('persona__pk', flat=True)))
+        inscritos_ids.extend(list(alumnos_inscritos.values_list('persona__pk', flat=True)))
 
         context = {
             'titulo': 'Incripción',
             'curso_pk': curso_pk,
             'dictado_pk': dictado_pk,
             'hay_cupo': hay_cupo,
+            'inscritos_ids': inscritos_ids,
         }
         return render(request, self.template_name, context)
 

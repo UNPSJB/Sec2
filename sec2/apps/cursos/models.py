@@ -100,7 +100,7 @@ class Dictado(models.Model):
             MaxValueValidator(100, message="El descuento no puede ser mayor que 100."),
         ]
     )
-
+    
 #------------- HORARIO --------------------
 from datetime import datetime, timedelta
 
@@ -155,6 +155,13 @@ class Alumno(Rol):
     
     def esta_inscripto_o_en_espera(self, dictado):
         return dictado in self.dictados.all() or dictado in self.lista_espera.all()
+
+    def esta_inscrito_en_dictado(self, dictado_pk):
+        """
+        Verifica si el alumno está inscrito en el dictado con la clave primaria dictado_pk.
+        Devuelve True si está inscrito, False en caso contrario.
+        """
+        return self.dictados.filter(pk=dictado_pk).exists()
 
 Rol.register(Alumno)
 
