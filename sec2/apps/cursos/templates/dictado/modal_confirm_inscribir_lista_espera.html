@@ -1,0 +1,18 @@
+<div class="modal fade" id="modal_inscribir_listaEspera_{{ inscrito_listaEspera.persona.pk }}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+      <div class="modal-content">
+          <div class="modal-header">
+              <h1 class="modal-title fs-5" id="exampleModalLabel">Inscribir Afiliado</h1>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body text-center">
+              ¿Estás seguro de que deseas inscribir a la persona?
+          </div>
+          <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+              <button type="button" class="btn btn-success" onclick="gestionListaEsperaAfiliado('inscribir', {{ curso_pk }}, {{ dictado.pk }}, {{ inscrito_listaEspera.persona.pk }})">Aceptar</button>
+          </div>
+      </div>
+  </div>
+</div>
+

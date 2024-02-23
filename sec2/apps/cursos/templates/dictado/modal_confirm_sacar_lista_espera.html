@@ -1,0 +1,17 @@
+<div class="modal fade" id="modal_eliminar_sacar_lista_espera_{{ inscrito_listaEspera.persona.pk }}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="exampleModalLabel">Eliminar Afiliado</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body text-center">
+                ¿Estás seguro de que deseas eliminar al afiliado?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                <button type="button" class="btn btn-danger" onclick="gestionListaEsperaAfiliado('quitar', {{ curso_pk }}, {{ dictado.pk }}, {{ inscrito_listaEspera.persona.pk }})">Eliminar</button>
+            </div>
+        </div>
+    </div>
+</div>

@@ -13,31 +13,56 @@
   <div class="container">
     {% include 'message.html' %}
     <div class="row justify-content-center">
-      {% if alumnos_lista_espera %}
+      {% if todos_inscritos_listaEspera %}
         <table class="table table-sm table-hover">
           <thead>
             <tr>
               <th>#</th>
               <th>Dni</th>
-              <th>Apellido</th>
               <th>Nombre</th>
               <th>Rol</th>
               <th></th>
             </tr>
           </thead>
           <tbody>
-            {% for alumno in alumnos_lista_espera %}
-              <tr class="bg-transition fila-personalizada">
+            {% for inscrito_listaEspera in todos_inscritos_listaEspera %}
+              <tr>
                 <td>{{ forloop.counter }}</td>
-                <td>{{ alumno.persona.dni }}</td>
-                <td>{{ alumno.persona.apellido }}</td>
-                <td>{{ alumno.persona.nombre }}</td>
-                <td>Rol de la persona</td>
+                <td>{{ inscrito_listaEspera.persona.dni }}</td>
+                <td>{{ inscrito_listaEspera.persona.apellido }} {{ inscrito_listaEspera.persona.nombre }}</td>
+
+                {% if inscrito_listaEspera.persona.es_afiliado %}
+                <td>Afiliado</td>
                 <td class="text-end">
                   {% if hay_cupo %}
-                  <a href="{% url 'cursos:sacar_lista_espera_poner_en_dictado' curso_pk=dictado.curso.pk dictado_pk=dictado.pk alumno_pk=alumno.pk %}" class="btn btn-primary btn-sm btn-detalle"><i class="fa-solid fa-door-open"></i>Inscribir al curso</a>
+                  <button class="btn btn-success btn-sm btn-detalle" data-bs-toggle="modal" data-bs-target="#modal_inscribir_listaEspera_{{ inscrito_listaEspera.persona.pk }}">
+                    Inscribir
+                  </button>
                   {% endif %}
+                  <button class="btn btn-danger btn-sm btn-detalle" data-bs-toggle="modal" data-bs-target="#modal_eliminar_sacar_lista_espera_{{ inscrito_listaEspera.persona.pk }}">
+                    Eliminar
+                  </button>
                 </td>
+                {% include 'dictado/modal_confirm_sacar_lista_espera.html' %}
+                {% include 'dictado/modal_confirm_inscribir_lista_espera.html' %}
+                
+                {% elif inscrito_listaEspera.persona.es_grupo_familiar %}
+                <td>Familiar</td>
+                <td class="text-end">
+                {% if hay_cupo %}
+                <button class="btn btn-success btn-sm btn-detalle" data-bs-toggle="modal" data-bs-target="#modal_inscribir_listaEspera_{{ inscrito_listaEspera.persona.pk }}">
+                  Inscribir
+                </button>
+                {% endif %}
+                  <button class="btn btn-danger btn-sm btn-detalle" data-bs-toggle="modal" data-bs-target="#modal_eliminar_sacar_lista_espera_{{ inscrito_listaEspera.persona.pk }}">
+                    Eliminar
+                  </button>
+                </td>
+                {% elif inscrito_listaEspera.persona.es_profesor %}
+                <td>Profesor</td>
+                {% elif inscrito_listaEspera.persona.es_alumno %}
+                <td>Alumno</td>
+                {% endif %}
               </tr>
             {% endfor %}
           </tbody>
@@ -48,9 +73,34 @@
     </div>
     <button type="button" class="btn btn-sm btn-secondary" onclick="cerrarVentana()">Cerrar</button>
   </div>
+
+
   <script>
     function cerrarVentana() {
       window.close();
     }
+    function gestionListaEsperaAfiliado(accion, curso_pk, dictado_pk, persona_pk) {
+      var url = "{% url 'cursos:afiliado_gestion_lista_espera' curso_pk=9999 dictado_pk=9999 persona_pk=8888 accion='placeholder' %}"
+        .replace('9999', curso_pk)
+        .replace('9999', dictado_pk)
+        .replace('8888', persona_pk)
+        .replace('placeholder', accion);  // Reemplazar la acción dinámicamente
+        
+      window.location.href = url;
+    }
+
+  function gestionListaEsperaGrupoFamiliar(accion, curso_pk, dictado_pk, persona_pk) {
+    var url = "{% url 'cursos:grupoFamiliar_gestion_lista_espera' curso_pk=9999 dictado_pk=9999 persona_pk=8888 accion='placeholder' %}"
+        .replace('9999', curso_pk)
+        .replace('9999', dictado_pk)
+        .replace('8888', persona_pk)
+        .replace('placeholder', accion);  // Reemplazar la acción dinámicamente
+        
+    window.location.href = url;
+  }
+
+    
   </script>
+
+
 {% endblock %}

@@ -134,7 +134,7 @@ class DictadoDetailView(DetailView):
         clases = Clase.objects.filter(reserva__horario__dictado=dictado).order_by('reserva__fecha')
         context['clases'] = clases
 
-        # OBTENGO A TODOS MIS ALUMNOS (Alumnos, Afiliado, GrupoFamiliar, Profeosres como alumno)
+        # OBTENGO A TODOS MIS ALUMNOS INSCRITOS(Alumnos, Afiliado, GrupoFamiliar, Profeosres como alumno)
         afiliado_inscritos = Afiliado.objects.filter(dictados=dictado)
         familiares_inscritos = Familiar.objects.filter(dictados=dictado)    
         profesores_inscritos = Profesor.objects.filter(dictados_inscriptos=dictado)
@@ -319,24 +319,17 @@ class VerificarInscripcionView(View):
         dictado_pk = kwargs.get('dictado_pk')
         # Obtener el objeto Dictado o devolver un error 404 si no existe
         dictado = get_object_or_404(Dictado, curso__pk=curso_pk, pk=dictado_pk)
-        print("DICTADO: ", dictado.cupo)
 
         # OBTENGO A TODOS MIS ALUMNOS (Alumnos, Afiliado, GrupoFamiliar, Profeosres como alumno)
         afiliado_inscritos = Afiliado.objects.filter(dictados=dictado)
         familiares_inscritos = Familiar.objects.filter(dictados=dictado)    
-
-        # Obtener el atributo persona de todos los familiares_inscritos
-        personas_familiares_inscritos = familiares_inscritos.values_list('persona', flat=True)
-
-        # Convertir el resultado en una lista si es necesario
-        lista_personas_familiares_inscritos = list(personas_familiares_inscritos)
-
-        # Imprimir o utilizar la lista según tus necesidades
-        print(lista_personas_familiares_inscritos)
-
-        print(familiares_inscritos)
         profesores_inscritos = Profesor.objects.filter(dictados_inscriptos=dictado)
         alumnos_inscritos = Alumno.objects.filter(dictados=dictado)
+
+        afiliado_inscritos_listaEspera = Afiliado.objects.filter(lista_espera=dictado)
+        familiares_inscritos_listaEspera = Familiar.objects.filter(lista_espera=dictado)    
+        profesores_inscritos_listaEspera = Profesor.objects.filter(lista_espera=dictado)
+        alumnos_inscritos_listaEspera = Alumno.objects.filter(lista_espera=dictado)
         
         # Calculo la suma total de inscritos
         total_inscritos = (
@@ -345,14 +338,8 @@ class VerificarInscripcionView(View):
             profesores_inscritos.count() +
             alumnos_inscritos.count()
         )
-
-        print("TOTAL INSCRIPTOS: ", total_inscritos)
-
-        # Verificar si hay cupo
         hay_cupo = total_inscritos < dictado.cupo
-        print("HAY CUPO: ", hay_cupo)
 
-        # Inicializamos los ids como una lista vacía
         inscritos_ids = []
         # Agrega los IDs de afiliados, familiares, profesores, alumno
         inscritos_ids.extend(list(afiliado_inscritos.values_list('persona__pk', flat=True)))
@@ -360,12 +347,20 @@ class VerificarInscripcionView(View):
         inscritos_ids.extend(list(profesores_inscritos.values_list('persona__pk', flat=True)))
         inscritos_ids.extend(list(alumnos_inscritos.values_list('persona__pk', flat=True)))
 
+        inscritosEspera_ids = []
+        inscritosEspera_ids.extend(list(afiliado_inscritos_listaEspera.values_list('persona__pk', flat=True)))
+        inscritosEspera_ids.extend(list(familiares_inscritos_listaEspera.values_list('persona__pk', flat=True)))
+        inscritosEspera_ids.extend(list(profesores_inscritos_listaEspera.values_list('persona__pk', flat=True)))
+        inscritosEspera_ids.extend(list(alumnos_inscritos_listaEspera.values_list('persona__pk', flat=True)))
+
         context = {
             'titulo': 'Incripción',
             'curso_pk': curso_pk,
             'dictado_pk': dictado_pk,
             'hay_cupo': hay_cupo,
             'inscritos_ids': inscritos_ids,
+            'inscritosEspera_ids': inscritosEspera_ids,
+
         }
         return render(request, self.template_name, context)
 
@@ -396,23 +391,39 @@ def listaEspera(request, curso_pk, dictado_pk ):
     # Obtener el objeto Dictado
     dictado = Dictado.objects.get(id=dictado_pk)
 
-    # Obtener todos los alumnos en lista de espera para el dictado
-    alumnos_lista_espera = Alumno.objects.filter(lista_espera=dictado)
-    print(alumnos_lista_espera)
-
+    # OBTENGO A TODOS MIS ALUMNOS (Alumnos, Afiliado, GrupoFamiliar, Profeosres como alumno)
+    afiliado_inscritos = Afiliado.objects.filter(dictados=dictado)
+    familiares_inscritos = Familiar.objects.filter(dictados=dictado)    
+    profesores_inscritos = Profesor.objects.filter(dictados_inscriptos=dictado)
     alumnos_inscritos = Alumno.objects.filter(dictados=dictado)
-    cantidad_alumnos_inscritos = alumnos_inscritos.count()
-    print("TOTAL INSCRIPTOS: ", cantidad_alumnos_inscritos)
-    hay_cupo = cantidad_alumnos_inscritos < dictado.cupo
-    print("HAY CUPO: ", hay_cupo)
-
-
+    # Calculo la suma total de inscritos
+    total_inscritos = (
+        afiliado_inscritos.count() +
+        familiares_inscritos.count() +
+        profesores_inscritos.count() +
+        alumnos_inscritos.count()
+    )
+    # OBTENGO A TODOS MIS PERSONAS EN LISTA DE ESPERA(Alumnos, Afiliado, GrupoFamiliar, Profeosres como alumno)
+    afiliado_inscritos_listaEspera = Afiliado.objects.filter(lista_espera=dictado)
+    familiares_inscritos_listaEspera = Familiar.objects.filter(lista_espera=dictado)    
+    profesores_inscritos_listaEspera = Profesor.objects.filter(lista_espera=dictado)
+    alumnos_inscritos_listaEspera = Alumno.objects.filter(lista_espera=dictado)
+    
+    # Combino todos los objetos en una lista
+    todos_inscritos_listaEspera = list(afiliado_inscritos_listaEspera) + list(familiares_inscritos_listaEspera) + list(profesores_inscritos_listaEspera) + list(alumnos_inscritos_listaEspera)
+    
+    hay_cupo = total_inscritos < dictado.cupo
+    print("HAY CUPO")
+    print(hay_cupo)
     titulo = 'Lista de espera'
+
     context = {
         'dictado': dictado,
-        'alumnos_lista_espera': alumnos_lista_espera,
+        'todos_inscritos_listaEspera': todos_inscritos_listaEspera,
         'titulo': titulo,
         'hay_cupo': hay_cupo,
+        'curso_pk': curso_pk,
+
     }
     return render(request, 'dictado/dictado_lista_espera.html', context)
 
@@ -433,6 +444,7 @@ def sacarListaEspera(request, curso_pk, dictado_pk, alumno_pk):
 
 # ----------------- INSCRIPCION PARA EL AFILIADO -----------------
 def inscribirAfiliado(request, curso_pk, dictado_pk, persona_pk):
+
     dictado = get_object_or_404(Dictado, curso__pk=curso_pk, pk=dictado_pk)
     afiliado = get_object_or_404(Afiliado, persona__pk=persona_pk)
 
@@ -441,7 +453,7 @@ def inscribirAfiliado(request, curso_pk, dictado_pk, persona_pk):
     afiliado.persona.save()
     afiliado.save()
     
-    messages.success(request, f'{ICON_CHECK} Familiar inscrito al curso exitosamente!. Cierre la ventana y recargue el detalle del dictado')
+    messages.success(request, f'{ICON_CHECK} Afiliado inscrito al curso exitosamente!. Cierre la ventana y recargue el detalle del dictado')
     return redirect(reverse('cursos:verificar_persona', kwargs={'curso_pk': curso_pk, 'dictado_pk': dictado_pk}))
 
 # ----------------- INSCRIPCION PARA EL GRUPO FAMILIAR -----------------
@@ -472,7 +484,7 @@ def inscribirProfesor(request, curso_pk, dictado_pk, persona_pk):
         profesor.persona.es_alumno = True
         profesor.persona.save()
         profesor.save()
-        messages.success(request, f'{ICON_CHECK} Familiar inscrito al curso exitosamente!. Cierre la ventana y recargue el detalle del dictado')
+        messages.success(request, f'{ICON_CHECK} Profesor inscrito al curso exitosamente!. Cierre la ventana y recargue el detalle del dictado')
 
     return redirect(reverse('cursos:verificar_persona', kwargs={'curso_pk': curso_pk, 'dictado_pk': dictado_pk}))
 
@@ -485,3 +497,94 @@ def inscribirAlumno(request, curso_pk, dictado_pk, persona_pk):
     alumno.save()
     messages.success(request, f'{ICON_CHECK} Alumno inscrito al curso exitosamente!. Cierre la ventana y recargue el detalle del dictado')
     return redirect(reverse('cursos:verificar_persona', kwargs={'curso_pk': curso_pk, 'dictado_pk': dictado_pk}))
+
+# ----------------- INSCRIPCION PARA EL AFILIADO -----------------
+def agregarListaEsperaAfiliado(request, curso_pk, dictado_pk, persona_pk):
+
+    dictado = get_object_or_404(Dictado, curso__pk=curso_pk, pk=dictado_pk)
+    afiliado = get_object_or_404(Afiliado, persona__pk=persona_pk)
+
+    afiliado.lista_espera.add(dictado)
+    afiliado.save()
+    
+    messages.success(request, f'{ICON_CHECK} Afiliado agregado a la lista de espera exitosamente!. Cierre la ventana y recargue el detalle del dictado')
+    return redirect(reverse('cursos:verificar_persona', kwargs={'curso_pk': curso_pk, 'dictado_pk': dictado_pk}))
+
+# ----------------- INSCRIPCION PARA EL GRUPO FAMILIAR -----------------
+def agregarListaEsperaFamiliar(request, curso_pk, dictado_pk, persona_pk):
+    dictado = get_object_or_404(Dictado, curso__pk=curso_pk, pk=dictado_pk)
+    familiar = get_object_or_404(Familiar, persona__pk=persona_pk)
+
+    familiar.lista_espera.add(dictado)
+    familiar.save()
+    
+    messages.success(request, f'{ICON_CHECK} Familiar agregado a la lista de espera exitosamente!. Cierre la ventana y recargue el detalle del dictado')
+    return redirect(reverse('cursos:verificar_persona', kwargs={'curso_pk': curso_pk, 'dictado_pk': dictado_pk}))
+
+# ----------------- INSCRIPCION PARA EL GRUPO FAMILIAR -----------------
+def agregarListaEsperaProfesor(request, curso_pk, dictado_pk, persona_pk):
+    dictado = get_object_or_404(Dictado, curso__pk=curso_pk, pk=dictado_pk)
+    profesor = get_object_or_404(Profesor, persona__pk=persona_pk)
+    
+    # Verificar si existe un Titular con ese Profesor y ese Dictado
+    titular_existente = Titular.objects.filter(profesor=profesor, dictado=dictado).exists()
+    
+    if titular_existente:
+        messages.error(request, f'{ICON_ERROR} Error: El profesor a inscribir es titular del dictado.')
+    else:
+        profesor.lista_espera.add(dictado)
+        profesor.save()
+        messages.success(request, f'{ICON_CHECK} Profesor agregado a la lista de espera exitosamente!. Cierre la ventana y recargue el detalle del dictado')
+
+    return redirect(reverse('cursos:verificar_persona', kwargs={'curso_pk': curso_pk, 'dictado_pk': dictado_pk}))
+
+# ----------------- INSCRIPCION PARA EL ALUMNO YA EXISTENTE-----------------
+def agregarListaEsperaAlumno(request, curso_pk, dictado_pk, persona_pk):
+    dictado = get_object_or_404(Dictado, curso__pk=curso_pk, pk=dictado_pk)
+    alumno = get_object_or_404(Alumno, persona__pk=persona_pk)
+
+    alumno.lista_espera.add(dictado)
+    alumno.save()
+
+    messages.success(request, f'{ICON_CHECK} Alumno agregado a la lista de espera exitosamente!. Cierre la ventana y recargue el detalle del dictado')
+    return redirect(reverse('cursos:verificar_persona', kwargs={'curso_pk': curso_pk, 'dictado_pk': dictado_pk}))
+
+###################### GESTIÓN DE LISTA DE ESPERA DE AFIIADO
+def gestionListaEsperaAfiliado(request, curso_pk, dictado_pk, persona_pk, accion):
+    
+    dictado = get_object_or_404(Dictado, curso__pk=curso_pk, pk=dictado_pk)
+    afiliado = get_object_or_404(Afiliado, persona__pk=persona_pk)
+    
+    if accion == 'inscribir':
+        # Sacar el dictado de la lista de espera del afiliado
+        afiliado.lista_espera.remove(dictado)
+        afiliado.dictados.add(dictado)
+        afiliado.persona.es_alumno = True
+        afiliado.persona.save()
+        messages.success(request, f'{ICON_CHECK} Afiliado inscrito al curso exitosamente!. Cierre la ventana y recargue el detalle del dictado')
+
+    elif accion == 'quitar':
+        afiliado.lista_espera.remove(dictado)
+        messages.success(request, f'{ICON_CHECK} Afiliado sacado de la lista de espera ')
+    afiliado.save()
+    return redirect('cursos:dictado_lista_espera', curso_pk=curso_pk, dictado_pk=dictado_pk)
+
+###################### GESTIÓN DE LISTA DE ESPERA DE GRUPO FAMILIAR
+def gestionListaEsperaGrupoFamiliar(request, curso_pk, dictado_pk, persona_pk, accion):
+    
+    dictado = get_object_or_404(Dictado, curso__pk=curso_pk, pk=dictado_pk)
+    afiliado = get_object_or_404(Afiliado, persona__pk=persona_pk)
+    
+    if accion == 'inscribir':
+        # Sacar el dictado de la lista de espera del afiliado
+        afiliado.lista_espera.remove(dictado)
+        afiliado.dictados.add(dictado)
+        afiliado.persona.es_alumno = True
+        afiliado.persona.save()
+        messages.success(request, f'{ICON_CHECK} Afiliado inscrito al curso exitosamente!. Cierre la ventana y recargue el detalle del dictado')
+
+    elif accion == 'quitar':
+        afiliado.lista_espera.remove(dictado)
+        messages.success(request, f'{ICON_CHECK} Afiliado sacado de la lista de espera ')
+    afiliado.save()
+    return redirect('cursos:dictado_lista_espera', curso_pk=curso_pk, dictado_pk=dictado_pk)

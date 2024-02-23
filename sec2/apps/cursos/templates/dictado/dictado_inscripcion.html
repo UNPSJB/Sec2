@@ -90,14 +90,36 @@ function mostrarTipoPersona(persona) {
   return '';
 }
 
-function mostrarBotonInscripcion(msj) {
+// Función para mostrar el botón de inscripción
+function mostrarBotonInscripcion(persona, mensaje) {
+  var nombreFuncion = obtenerNombreFuncion(persona);
   return `
     <div class="text-center">
-      ${msj}
+      <button class="btn btn-secondary btn-sm btn-detalle" onclick="inscribir${nombreFuncion}({{ curso_pk }}, {{ dictado_pk }}, ${persona.pk})">${mensaje}</button>
     </div>`;
-    CONFIGURAR LOS DISTITOS BOTONES
 }
 
+// Función para mostrar el botón de lista de espera
+function mostrarBotonListaEspera(persona, mensaje) {
+  var nombreFuncion = obtenerNombreFuncion(persona);
+  return `
+    <div class="text-center">
+      <button class="btn btn-warning btn-sm btn-detalle" onclick="agregarListaEspera${nombreFuncion}({{ curso_pk }}, {{ dictado_pk }}, ${persona.pk})">${mensaje}</button>
+    </div>`;
+}
+
+// Función para obtener el nombre de la función según el tipo de persona
+function obtenerNombreFuncion(persona) {
+  if (persona.es_afiliado) {
+    return "Afiliado";
+  } else if (persona.es_grupo_familiar) {
+    return "GrupoFamiliar";
+  } else if (persona.es_profesor) {
+    return "Profesor";
+  } else if (persona.es_alumno) {
+    return "Alumno";
+  }
+}
 
 // Función para mostrar los resultados en la página
 function mostrarResultados(persona) {
@@ -109,124 +131,24 @@ function mostrarResultados(persona) {
     resultadosDiv.innerHTML = mostrarInformacion(persona);
     resultadosDiv.innerHTML += mostrarTipoPersona(persona);
 
-    if (!estaInscrita(persona)) {
+    // Si la persona NO esta incrita y NO esta en lista de espera. Muestro los botones
+    if (!estaInscrita(persona) && !existeEnListaEspera(persona)) {
       if (hayCupo) {
-      resultadosDiv.innerHTML += `<p>HAY CUPO.</p>`;
-
+        resultadosDiv.innerHTML += mostrarBotonInscripcion(persona, 'Inscribir');
       }else{
-        resultadosDiv.innerHTML += `<p>El curso esta lleno.</p>`;
-        resultadosDiv.innerHTML += mostrarBotonInscripcion('Agregar a a lista de espera');
-
+        resultadosDiv.innerHTML += mostrarBotonListaEspera(persona, 'Poner en lista de espera');
       }
     }else{
-      resultadosDiv.innerHTML += `<p>Esta persona ya está inscrita en el dictado.</p>`;
-
+      if (!existeEnListaEspera(persona)) {
+        resultadosDiv.innerHTML += `<p>La persona está inscrita en el dictado.</p>`;
+      }else{
+        resultadosDiv.innerHTML += `<p>La persona esta en lista de espera en el dictado.</p>`;
+      }
     }
 
-    if (persona.es_afiliado) {
-      
-      if (persona.es_alumno) {
-        resultadosDiv.innerHTML += `
-        <p>wwwEs afiliado y alumno.</p>`;
+  }else{
+    resultadosDiv.innerHTML += `<p>La persona no existe en el sistema.</p>`;
 
-      }else{
-        resultadosDiv.innerHTML += `
-        <p>Es afiliado.</p> `;
-        
-      }
-      
-      if (!estaInscrita(persona)) {
-        if (hayCupo) {
-          resultadosDiv.innerHTML += `
-          <div class="text-center">
-            <button class="btn btn-secondary btn-sm btn-detalle" onclick="inscribirAfiliado({{ curso_pk }}, {{ dictado_pk }}, ${persona.pk})">Inscribir</button>
-          </div>`;
-        }else
-        resultadosDiv.innerHTML += `
-        <div class="text-center">
-          <button class="btn btn-warning btn-sm btn-detalle" onclick="inscribirAfiliado({{ curso_pk }}, {{ dictado_pk }}, ${persona.pk})">NO HAY CUPOInscribir</button>
-        </div>`;
-
-      } else {
-        resultadosDiv.innerHTML += `<p>Esta persona ya está inscrita en el dictado.</p>`;
-      }
-
-    }else{
-      if (persona.es_grupo_familiar) {
-        
-        if (persona.es_alumno) {
-          resultadosDiv.innerHTML += `
-          <p>ASASDSADEs Grupo Familiar y alumno.</p>`;
-
-        }else{
-          resultadosDiv.innerHTML += `
-          <p>Es Grupo Familiar.</p>`;
-        }
-        
-        if (!estaInscrita(persona)) {
-
-          resultadosDiv.innerHTML += `
-          <div class="text-center">
-            <button class="btn btn-secondary btn-sm btn-detalle" onclick="inscribirGrupoFamiliar({{ curso_pk }}, {{ dictado_pk }}, ${persona.pk})">Inscribir</button>
-          </div>`;
-        } else {
-          resultadosDiv.innerHTML += `<p>Esta persona ya está inscrita en el dictado.</p>`;
-        }
-
-      }else{
-        
-        if (persona.es_profesor) {
-
-          if (persona.es_alumno) {
-            resultadosDiv.innerHTML += `
-            <p>Es profesor y alumno.</p>`;
-  
-          }else{
-            resultadosDiv.innerHTML += `
-            <p>Es profesor.</p>`;
-          }
-
-          if (!estaInscrita(persona)) {
-            resultadosDiv.innerHTML += `
-            <div class="text-center">
-              <button class="btn btn-secondary btn-sm btn-detalle" onclick="inscribirProfesor({{ curso_pk }}, {{ dictado_pk }}, ${persona.pk})">Inscribir</button>
-            </div>`;
-          } else {
-            resultadosDiv.innerHTML += `<p>Esta persona ya está inscrita en el dictado.</p>`;
-          }
-
-        }else{
-          
-          // ALUMNO
-          if (persona.es_alumno) {
-            resultadosDiv.innerHTML += `
-            <p>Es alumno.</p>`;
-
-            if (!estaInscrita(persona)) {
-              resultadosDiv.innerHTML += `
-              <div class="text-center">
-                <button class="btn btn-secondary btn-sm btn-detalle" onclick="inscribirAlumno({{ curso_pk }}, {{ dictado_pk }}, ${persona.pk})">Inscribir</button>
-              </div>`;
-            } else {
-              resultadosDiv.innerHTML += `<p>Esta persona ya está inscrita en el dictado.</p>`;
-            }
-          }
-          else{
-            // ENCARGADO
-            if (persona.es_encargado) {
-              resultadosDiv.innerHTML += `
-              <p>Es encargado [FALTA INSCRIBIRLO].</p>`;
-            }
-          }
-        }
-      }
-    }
-  }else {
-    // PERSONA NO ENCONTRADA
-    // Si no la encuentra, dar la opción de darla de alta como alumno o afiliar
-    resultadosDiv.innerHTML = `
-    <p>La persona no está registrada en el sistema.</p>`;
-    
     if (hayCupo) {
       // Mostrar el botón de dar de alta como alumno
       resultadosDiv.innerHTML += `
@@ -255,90 +177,110 @@ function estaInscrita(persona) {
 
   return estaAsociada;
 }
-    // INSCIPCION DEL AFILIADO
-    function inscribirAfiliado(curso_pk, dictado_pk, afiliado_pk) {
-      console.log("Curso PK:", curso_pk);
-      console.log("Dictado PK:", dictado_pk);
-      console.log("Afiliado PK:", afiliado_pk);
 
-      // Construir la URL usando reverse
-      var url = "{% url 'cursos:afiliado_inscribir' curso_pk=9999 dictado_pk=9999 afiliado_pk=8888 %}"
-      .replace('9999', curso_pk)
-      .replace('9999', dictado_pk)
-      .replace('8888', afiliado_pk);
+// Función que devuelve el estado de inscripción
+function existeEnListaEspera(persona) {
+  var inscritosEsperaIds = {{ inscritosEspera_ids }};
+  // Verificar si la persona está asociada a algún afiliado
+  var estaAsociada = inscritosEsperaIds.includes(persona.pk);
+  console.log("inscritosEsperaIds:", inscritosEsperaIds);
+  console.log("persona.pk:", persona.pk);
 
-      console.log("URL ", url);
-      window.location.href = url;
-    }
+  return estaAsociada;
+}
 
-    // INSCIPCION DE FAMILIAR
-    function inscribirGrupoFamiliar(curso_pk, dictado_pk, persona_pk) {
-      console.log("Curso PK:", curso_pk);
-      console.log("Dictado PK:", dictado_pk);
-      console.log("Persona PK:", persona_pk);
+//------------------- GESTION DE LISTA DE INSCIPCION --------------------
+// INSCIPCION DEL AFILIADO
+function inscribirAfiliado(curso_pk, dictado_pk, persona_pk) {
+  // Construir la URL usando reverse
+  var url = "{% url 'cursos:afiliado_inscribir' curso_pk=9999 dictado_pk=9999 persona_pk=8888 %}"
+  .replace('9999', curso_pk)
+  .replace('9999', dictado_pk)
+  .replace('8888', persona_pk);
 
-      // Construir la URL usando reverse
-      var url = "{% url 'cursos:familiar_inscribir' curso_pk=9999 dictado_pk=9999 persona_pk=8888 %}"
-      .replace('9999', curso_pk)
-      .replace('9999', dictado_pk)
-      .replace('8888', persona_pk);
+  window.location.href = url;
+}
 
-      console.log("URL ", url);
-      window.location.href = url;
-    }
+// INSCIPCION DE FAMILIAR
+function inscribirGrupoFamiliar(curso_pk, dictado_pk, persona_pk) {
+  // Construir la URL usando reverse
+  var url = "{% url 'cursos:familiar_inscribir' curso_pk=9999 dictado_pk=9999 persona_pk=8888 %}"
+  .replace('9999', curso_pk)
+  .replace('9999', dictado_pk)
+  .replace('8888', persona_pk);
 
-    // INSCIPCION DE FAMILIAR
-    function inscribirProfesor(curso_pk, dictado_pk, persona_pk) {
-      console.log("Curso PK:", curso_pk);
-      console.log("Dictado PK:", dictado_pk);
-      console.log("Persona PK:", persona_pk);
+  window.location.href = url;
+}
 
-      // Construir la URL usando reverse
-      var url = "{% url 'cursos:profesor_inscribir' curso_pk=9999 dictado_pk=9999 persona_pk=8888 %}"
-      .replace('9999', curso_pk)
-      .replace('9999', dictado_pk)
-      .replace('8888', persona_pk);
+// INSCIPCION DE FAMILIAR
+function inscribirProfesor(curso_pk, dictado_pk, persona_pk) {
+  // Construir la URL usando reverse
+  var url = "{% url 'cursos:profesor_inscribir' curso_pk=9999 dictado_pk=9999 persona_pk=8888 %}"
+  .replace('9999', curso_pk)
+  .replace('9999', dictado_pk)
+  .replace('8888', persona_pk);
 
-      console.log("URL ", url);
-      window.location.href = url;
-    }
+  window.location.href = url;
+}
 
-    
-    // INSCIPCION DE FAMILIAR
-    function inscribirAlumno(curso_pk, dictado_pk, persona_pk) {
-      console.log("Curso PK:", curso_pk);
-      console.log("Dictado PK:", dictado_pk);
-      console.log("Persona PK:", persona_pk);
+// INSCIPCION DE FAMILIAR
+function inscribirAlumno(curso_pk, dictado_pk, persona_pk) {
+  // Construir la URL usando reverse
+  var url = "{% url 'cursos:alumno_inscribir' curso_pk=9999 dictado_pk=9999 persona_pk=8888 %}"
+  .replace('9999', curso_pk)
+  .replace('9999', dictado_pk)
+  .replace('8888', persona_pk);
 
-      // Construir la URL usando reverse
-      var url = "{% url 'cursos:alumno_inscribir' curso_pk=9999 dictado_pk=9999 persona_pk=8888 %}"
-      .replace('9999', curso_pk)
-      .replace('9999', dictado_pk)
-      .replace('8888', persona_pk);
+  window.location.href = url;
+}
 
-      console.log("URL ", url);
-      window.location.href = url;
-    }
+//------------------- GESTION DE LISTA DE ESPERA --------------------
+function agregarListaEsperaAfiliado (curso_pk, dictado_pk, persona_pk) {
+  // Construir la URL usando reverse
+  var url = "{% url 'cursos:afiliado_agregar_lista_espera' curso_pk=9999 dictado_pk=9999 persona_pk=8888 %}"
+  .replace('9999', curso_pk)
+  .replace('9999', dictado_pk)
+  .replace('8888', persona_pk);
 
-        
-    // Función para redirigir a la URL de inscripción de alumno
-    function altaAlumno(curso_pk, dictado_pk) {
-      // Redirigir a la URL de inscripción de alumno
-      window.location.href = `{% url 'cursos:persona_inscribir' curso_pk=9999 dictado_pk=9999 %}`.replace('9999', curso_pk).replace('9999', dictado_pk);
-    }
-    
-    // Función para redirigir a la URL de inscripción de alumno
-    function altaListaDeEspera(curso_pk, dictado_pk) {
-      // Redirigir a la URL de inscripción de alumno
-      window.location.href = `{% url 'cursos:persona_poner_lista_espera' curso_pk=9999 dictado_pk=9999 %}`.replace('9999', curso_pk).replace('9999', dictado_pk);
-    }
+  window.location.href = url;
+}
 
-    // Función para otra acción (por ejemplo, afiliación)
-    function afiliar() {
-      // Agrega la lógica necesaria para la afiliación aquí
-      // ...
-    }
+function agregarListaEsperaGrupoFamiliar (curso_pk, dictado_pk, persona_pk) {
+  // Construir la URL usando reverse
+  var url = "{% url 'cursos:familiar_agregar_lista_espera' curso_pk=9999 dictado_pk=9999 persona_pk=8888 %}"
+  .replace('9999', curso_pk)
+  .replace('9999', dictado_pk)
+  .replace('8888', persona_pk);
 
-    </script>
+  window.location.href = url;
+}
+
+function agregarListaEsperaProfesor (curso_pk, dictado_pk, persona_pk) {
+  // Construir la URL usando reverse
+  var url = "{% url 'cursos:profesor_agregar_lista_espera' curso_pk=9999 dictado_pk=9999 persona_pk=8888 %}"
+  .replace('9999', curso_pk)
+  .replace('9999', dictado_pk)
+  .replace('8888', persona_pk);
+
+  window.location.href = url;
+}
+
+function agregarListaEsperaAlumno (curso_pk, dictado_pk, persona_pk) {
+  // Construir la URL usando reverse
+  var url = "{% url 'cursos:alumno_agregar_lista_espera' curso_pk=9999 dictado_pk=9999 persona_pk=8888 %}"
+  .replace('9999', curso_pk)
+  .replace('9999', dictado_pk)
+  .replace('8888', persona_pk);
+
+  window.location.href = url;
+}
+
+// Función para redirigir a la URL de inscripción de alumno
+function altaListaDeEspera(curso_pk, dictado_pk) {
+  // Redirigir a la URL de inscripción de alumno
+  window.location.href = `{% url 'cursos:persona_poner_lista_espera' curso_pk=9999 dictado_pk=9999 %}`.replace('9999', curso_pk).replace('9999', dictado_pk);
+}
+
+</script>
   
 {% endblock %}
