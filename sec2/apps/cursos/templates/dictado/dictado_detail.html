@@ -148,7 +148,7 @@
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
-        <h2 class="modal-title fs-5" id="exampleModalLabel">Inscriptos</h2>
+        <h2 class="modal-title fs-5" id="exampleModalLabel">Inscritos</h2>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
@@ -171,15 +171,21 @@
               <td>{{ inscrito.persona.nombre }}</td>
               <td>
                 {% if inscrito.persona.es_afiliado %}
-                  Afiliado
+                Afiliado
                 {% elif inscrito.persona.es_grupo_familiar %}
-                  Familiar
+                Familiar
                 {% elif inscrito.persona.es_profesor %}
-                  Profesor
+                Profesor
                 {% elif inscrito.persona.es_alumno %}
-                  Alumno
+                Alumno
                 {% endif %}
               </td>
+
+              <td class="text-end">
+                <button type="button" class="btn btn-danger btn-sm btn-detalle" 
+                onclick="gestionInscripcion{% if inscrito.persona.es_afiliado %}Afiliado{% elif inscrito.persona.es_grupo_familiar %}Familiar{% elif inscrito.persona.es_profesor %}Profesor{% elif inscrito.persona.es_alumno %}Alumno{% endif %}('desinscribir', {{ dictado.curso.pk }}, {{ dictado.pk }}, {{ inscrito.persona.pk }})">Desinscribir</button>
+              </td>
+
               <td>
                 {% if inscrito.persona.es_afiliado %}
                 <a href="{% url 'afiliados:afiliado_detalle' inscrito.pk %}" class="btn btn-primary btn-sm btn-detalle"><i class="fa-regular fa-eye"></i> Detalle</a>
@@ -280,7 +286,38 @@
     </table>
   {% endif %}
   </div>
-  
+
+  <script>
+//------------------- GESTION DE INSCRIPCION --------------------
+function gestionInscripcion(accion, curso_pk, dictado_pk, persona_pk, tipo) {
+  var url = `{% url 'cursos:gestion_inscripcion' curso_pk=9999 dictado_pk=9999 persona_pk=8888 tipo='placeholder' accion='placeholder' %}`
+    .replace('9999', curso_pk)
+    .replace('9999', dictado_pk)
+    .replace('8888', persona_pk)
+    .replace('placeholder', tipo)  // Reemplazar el tipo dinámicamente
+    .replace('placeholder', accion);  // Reemplazar la acción dinámicamente
+  window.location.href = url;
+}
+// Llamadas específicas
+function gestionInscripcionAfiliado(accion, curso_pk, dictado_pk, persona_pk) {
+  gestionInscripcion(accion, curso_pk, dictado_pk, persona_pk, 'Afiliado');
+}
+
+function gestionInscripcionFamiliar(accion, curso_pk, dictado_pk, persona_pk) {
+  gestionInscripcion(accion, curso_pk, dictado_pk, persona_pk, 'Familiar');
+}
+
+function gestionInscripcionProfesor(accion, curso_pk, dictado_pk, persona_pk) {
+  gestionInscripcion(accion, curso_pk, dictado_pk, persona_pk, 'Profesor');
+}
+
+function gestionInscripcionAlumno(accion, curso_pk, dictado_pk, persona_pk) {
+  gestionInscripcion(accion, curso_pk, dictado_pk, persona_pk, 'Alumno');
+}
+  </script>
+
+    
+
   {% endblock %}
 
   

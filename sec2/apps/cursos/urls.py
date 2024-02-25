@@ -72,23 +72,11 @@ urlpatterns = [
     #ALUMNNOS POR CURSO
     path('cursos/curso/<int:curso_pk>/dictados/dictado/<int:dictado_pk>/Alumnos', AlumnosEnDictadoList.as_view(), name="alumno_inscripto"),
 
-    #AREA DE INSCRIPCIONES
-    path('cursos/curso/<int:curso_pk>/dictados/dictado/<int:dictado_pk>/Afiliado/<int:persona_pk>/inscribir', inscribirAfiliado , name="afiliado_inscribir"),
-    path('cursos/curso/<int:curso_pk>/dictados/dictado/<int:dictado_pk>/GrupoFamiliar/<int:persona_pk>/inscribir', inscribirFamiliar , name="familiar_inscribir"),
-    path('cursos/curso/<int:curso_pk>/dictados/dictado/<int:dictado_pk>/Profesor/<int:persona_pk>/inscribir', inscribirProfesor , name="profesor_inscribir"),
-    path('cursos/curso/<int:curso_pk>/dictados/dictado/<int:dictado_pk>/Alumno/<int:persona_pk>/inscribir', inscribirAlumno , name="alumno_inscribir"),
-    
     # GESTION DE LISTA DE ESPERA
-    path('cursos/curso/<int:curso_pk>/dictados/dictado/<int:dictado_pk>/Afiliado/<int:persona_pk>/listaEspera/<str:accion>/', gestionListaEsperaAfiliado, name="afiliado_gestion_lista_espera"),
-    path('cursos/curso/<int:curso_pk>/dictados/dictado/<int:dictado_pk>/GrupoFamiliar/<int:persona_pk>/listaEspera/<str:accion>/', gestionListaEsperaGrupoFamiliar, name="grupoFamiliar_gestion_lista_espera"),
+    path('cursos/curso/<int:curso_pk>/dictados/dictado/<int:dictado_pk>/<str:tipo>/<int:persona_pk>/listaEspera/<str:accion>/', gestionListaEspera, name="gestion_lista_espera"),
+    # GESTION DE INSCRIPCION
+    path('cursos/curso/<int:curso_pk>/dictados/dictado/<int:dictado_pk>/<str:tipo>/<int:persona_pk>/Incripcion/<str:accion>/', gestionInscripcion, name="gestion_inscripcion"),
     
-    #AREA DE LISTA DE PONER EN LISTA DE ESPERA
-    path('cursos/curso/<int:curso_pk>/dictados/dictado/<int:dictado_pk>/Afiliado/<int:persona_pk>/listaEspera/agregar', agregarListaEsperaAfiliado , name="afiliado_agregar_lista_espera"),
-    path('cursos/curso/<int:curso_pk>/dictados/dictado/<int:dictado_pk>/GrupoFamiliar/<int:persona_pk>/listaEspera/agregar', agregarListaEsperaFamiliar , name="familiar_agregar_lista_espera"),
-    path('cursos/curso/<int:curso_pk>/dictados/dictado/<int:dictado_pk>/Profesor/<int:persona_pk>/listaEspera/agregar', agregarListaEsperaProfesor , name="profesor_agregar_lista_espera"),
-    path('cursos/curso/<int:curso_pk>/dictados/dictado/<int:dictado_pk>/Alumno/<int:persona_pk>/listaEspera/agregar', agregarListaEsperaAlumno , name="alumno_agregar_lista_espera"),
-    
-
     path('alumnos', AlumnosListView.as_view(), name="alumnos_listado"),
     path('alumnos/<int:pk>/', AlumnoDetailView.as_view(), name="alumno_detalle"),
 
