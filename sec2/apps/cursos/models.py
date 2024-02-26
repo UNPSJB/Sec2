@@ -162,21 +162,6 @@ class Alumno(Rol):
 
 Rol.register(Alumno)
 
-#------------- CLASE --------------------
-from django.shortcuts import get_object_or_404
-    
-def marcar_asistencia(request, clase_id, alumno_id):
-    clase = get_object_or_404(Clase, pk=clase_id)
-    alumno = get_object_or_404(Alumno, pk=alumno_id)
-
-    if alumno in clase.reserva.aula.curso.alumnos.all():  # Verifica que el alumno esté inscrito en el curso
-        clase.asistencia.add(alumno)
-        # Puedes realizar otras acciones aquí, como guardar el registro en la base de datos
-        return HttpResponse("Asistencia marcada correctamente.")
-    else:
-        return HttpResponse("Error: El alumno no está inscrito en este curso.")
-    
-
 #------------- PROFESOR --------------------
 class Profesor(Rol):
     # ForeignKey
@@ -197,9 +182,40 @@ Rol.register(Profesor)
 #------------- CLASE --------------------
 class Clase(models.Model):
     reserva = models.ForeignKey(Reserva, related_name="clases", on_delete=models.CASCADE, null=True, blank=True)
-    asistencia = models.ManyToManyField(Alumno, related_name="clases_asistidas", blank=True)
+    #para que se procesa a tomar la asistencia de la siguiente clase
     asistencia_tomada = models.BooleanField(default=False)
-    asistencia_profesores = models.ManyToManyField(Profesor, through='AsistenciaProfesor', related_name='clases_asistidas', blank=True)
+    
+    # Agregar un campo para registrar la asistencia de diferentes roles
+    asistencia = models.ManyToManyField(Rol, related_name="asistencias", blank=True)
+    asistencia_profesor = models.ManyToManyField(Profesor, related_name="asistencias_titular", blank=True)
+
+    def marcar_asistencia(self, rol):
+        # Verificar que la asistencia no se haya tomado antes
+        if not self.asistencia_tomada:
+            self.asistencia.add(rol)
+            return True
+        else:
+            return False
+
+    def tomar_asistencia(self):
+        # Marcar la asistencia para la clase
+        self.asistencia_tomada = True
+        self.save()
+    
+    def tiene_asistencia(self, inscrito):
+        return inscrito in self.asistencia.all()
+
+from django.shortcuts import get_object_or_404
+    
+# Luego, podrías usar este método en tu vista para marcar la asistencia de un alumno, profesor, etc.
+def marcar_asistencia(request, clase_id, rol_id):
+    clase = get_object_or_404(Clase, pk=clase_id)
+    rol = get_object_or_404(Rol, pk=rol_id)
+
+    if clase.marcar_asistencia(rol):
+        return HttpResponse("Asistencia marcada correctamente.")
+    else:
+        return HttpResponse("Error: La asistencia ya ha sido tomada.")
 
 #------------- TITULAR --------------------
 class Titular(models.Model):
@@ -209,10 +225,16 @@ class Titular(models.Model):
 
 #------------- ASISTENCIA PROFESOR --------------------
 class AsistenciaProfesor(models.Model):
-    # ForeignKey
     profesor = models.ForeignKey(Profesor, on_delete=models.CASCADE)
     clase = models.ForeignKey(Clase, on_delete=models.CASCADE)
     asistio = models.BooleanField(default=False)
+
+
+class AsistenciaAlumno(models.Model):
+    alumno = models.ForeignKey(Alumno, on_delete=models.CASCADE)
+    clase = models.ForeignKey(Clase, on_delete=models.CASCADE)
+    asistio = models.BooleanField(default=False)
+
 
 
 # class Asistencia_profesor(models.Model):

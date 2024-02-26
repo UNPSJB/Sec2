@@ -123,6 +123,17 @@ class Persona(models.Model):
         self.es_alumno = False
         self.save()
 
+    def obtenerTipo(self):
+        if self.es_afiliado:
+            return 'Afiliado'
+        elif self.es_grupo_familiar:
+            return 'Familiar'
+        elif self.es_profesor:
+            return 'Profesor'
+        elif self.es_alumno:
+            return 'Alumno'
+    
+
 
 
 class Rol(models.Model):

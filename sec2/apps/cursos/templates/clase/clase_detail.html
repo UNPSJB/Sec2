@@ -2,108 +2,93 @@
 {% load crispy_forms_tags %}
 
 {% block detalle %}
-  <div class="row">
-    
-    <div class="col">
-      <p><strong>Fecha:</strong> {{ clase.reserva.fecha }}</p>
-    </div>
-    
-    <div class="col">
-      <p><strong>Hora Inicio:</strong> {{ clase.reserva.horario.hora_inicio }} hrs.</p>
-    </div>
-    
-    <div class="col">
-      <p><strong>Hora fin:</strong> {{ clase.reserva.horario.hora_fin }} hrs.</p>
-    </div>
-    
-    <div class="col">
-      <p><strong>Lugar:</strong> {{ clase.reserva.aula }}</p>
-    </div>
+<div class="container">
+  <div class="row row-cols-1 row-cols-sm-2 row-cols-md-4">
+    <div class="col"><p><strong>Fecha:</strong> {{ clase.reserva.fecha }}</p></div>
+    <div class="col"><p><strong>Hora Inicio:</strong> {{ clase.reserva.horario.hora_inicio }} hrs.</p></div>
+    <div class="col"><p><strong>Hora fin:</strong> {{ clase.reserva.horario.hora_fin }} hrs.</p></div>
+    <div class="col"><p><strong>Lugar:</strong> {{ clase.reserva.aula }}</p></div>
   </div>
+</div>
+{% endblock %}
 
-  {% endblock %}
 
-  {% block listado_asociado %}
-  {% if alumnos_inscritos %}
+{% block listado_asociado %}
+
+<div class="container-sm">
+  <h3 class="subtitulo">{{ tituloListado }}</h3>
+  
+  {% if inscritos %}
+  <h5 class="subtitulo">{{ tituloListado1 }}</h5>
   <form method="post" action="{% url 'cursos:generar_asistencia' clase.id  %}">
     {% csrf_token %}
-    <h5 class="text-center"> {{tituloListado1}}</h5>
     <table class="table table-sm table-hover">
       <thead>
         <tr>
-          <th>#</th>
-          <th>Dni</th> 
-          <th>Apellido</th> 
-          <th>Nombre</th>
-          <th class="text-center">Asistencia</th> 
+          {% include "clase/cabecera_tabla_asistencia.html" %}
+          <th>Rol</th>
+          <th class="text-center">Asistencia</th>
+
         </tr>
       </thead>
       <tbody>
-        {% for alumno in alumnos_inscritos %}
+        {% for inscrito in inscritos %}
         <tr>
-          <td>{{ forloop.counter }}</td>
-          <td>{{ alumno.persona.dni }}</td>
-          <td>{{ alumno.persona.apellido }}</td>
-          <td>{{ alumno.persona.nombre }}</td>
+          {% include "clase/cuerpo_tabla_asistencia.html" with persona=inscrito.persona%}
+          <td>{{ inscrito.persona.obtenerTipo }}</td>
           <td class="text-center">
             <input 
             type="checkbox"
             name="alumnos_asistencia"
-            value="{{ alumno.id }}"
+            value="{{ inscrito.id }}"
             {% if clase.asistencia_tomada %}disabled{% endif %}
-            {% if alumno in alumnos_asistieron %}checked{% endif %}>
+            {% if inscrito.persona.pk in lista_asistencia %}checked{% endif %}>
           </td>
         </tr>
         {% endfor %}
       </tbody>
     </table>
 
-    <br>
-    
-    <h5 class="text-center"> {{tituloListado2}}</h5>
+    <h5 class="subtitulo"> {{tituloListado2}}</h5>
     <table class="table table-sm table-hover">
       <thead>
         <tr>
-          <th>#</th>
-          <th>Dni</th> 
-          <th>Apellido</th> 
-          <th>Nombre</th>
-          <th class="text-center">Asistencia</th> 
+          {% include "clase/cabecera_tabla_asistencia.html" %}
+          <th class="text-center">Asistencia</th>
         </tr>
       </thead>
       <tbody>
         {% for titular in titulares %}
         <tr>
-          <td>{{ forloop.counter }}</td>
-          <td>{{ titular.profesor.persona.dni }}</td>
-          <td>{{ titular.profesor.persona.apellido }}</td>
-          <td>{{ titular.profesor.persona.nombre }}</td>
+          {% include "clase/cuerpo_tabla_asistencia.html" with persona=titular.profesor.persona%}
           <td class="text-center">
             <input 
             type="checkbox"
             name="profesor__asistencia"
             value="{{ titular.profesor.id }}" 
             {% if clase.asistencia_tomada %}disabled{% endif %}
-            {% if titular.profesor.id in profesores_asistieron %}checked{% endif %}>
+            {% if titular.profesor.persona.pk in lista_asistencia_titular %}checked{% endif %}>
           </td>
         </tr>
         {% endfor %}
       </tbody>
     </table>
-
+    
     {% if not clase.asistencia_tomada %}
     <div class="text-center">
       <button class="btn btn-success btn-detalle" type="submit">Generar Asistencia</button>
     </div>
     {% endif %}
-  
-  
+    
+    
   </form>
+</div>
+
   {% else %}
   <p>No hay alumnos inscriptos.</p>
   {% endif %}
-
-
-
+  
+  
+  
   {% endblock %}
   

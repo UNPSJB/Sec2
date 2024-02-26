@@ -97,6 +97,7 @@ class DictadoDetailView(DetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        
         dictado = self.object  # El objeto de dictado obtenido de la vista
         
         context['titulo'] = "Detalle del dictado"
@@ -140,7 +141,8 @@ class DictadoDetailView(DetailView):
         alumnos_inscritos = Alumno.objects.filter(dictados=dictado)
         
         # Combino todos los objetos en una lista
-        todos_inscritos = list(afiliado_inscritos) + list(familiares_inscritos) + list(profesores_inscritos) + list(alumnos_inscritos)
+        todos_inscritos = list(afiliado_inscritos) + list(profesores_inscritos) + list(alumnos_inscritos)
+        # todos_inscritos = list(afiliado_inscritos) + list(familiares_inscritos) + list(profesores_inscritos) + list(alumnos_inscritos)
 
         # Ordeno la lista por DNI y Apellido
         todos_inscritos_sorted = sorted(todos_inscritos, key=lambda x: (x.persona.dni, x.persona.apellido))

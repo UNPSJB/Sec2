@@ -4,6 +4,7 @@ from pyexpat.errors import messages
 import uuid
 
 from django.http import HttpResponse
+from apps.afiliados.models import Afiliado, Familiar
 
 from apps.cursos.models import AsistenciaProfesor, Clase
 
@@ -197,30 +198,30 @@ def marcar_asistencia(request, clase_id):
             return redirect('cursos:clase_detalle', curso_pk=clase.reserva.horario.dictado.curso.pk, dictado_pk=clase.reserva.horario.dictado.pk, clase_pk=clase.pk)
 
     if request.method == 'POST':
-        # Obtén la lista de IDs de alumnos que se les marcó la asistencia
+        # ------------- ASISTENCIA PARA INSCRITOS
         alumnos_asistencia_ids = request.POST.getlist('alumnos_asistencia')
 
-        # Obtén los objetos Alumno correspondientes a los IDs seleccionados
+        # Obtengo los objeros de las asistencias
         alumnos_asistencia = Alumno.objects.filter(id__in=alumnos_asistencia_ids)
+        afiliado_asistencia = Afiliado.objects.filter(id__in=alumnos_asistencia_ids)
+        familiar_asistencia = Familiar.objects.filter(id__in=alumnos_asistencia_ids)
+        profesor_asistencia_inscripto = Profesor.objects.filter(id__in=alumnos_asistencia_ids)
+        
+        #unifico mis objetos en una lista: FALTA LA ASISTENCIA DEL FAMILIAR
+        # lista_asistencia = list(alumnos_asistencia) + list(afiliado_asistencia) + list(familiar_asistencia) + list(profesor_asistencia_inscripto)        
+        lista_asistencia = list(alumnos_asistencia) + list(afiliado_asistencia) +  list(profesor_asistencia_inscripto)        
+        clase.asistencia.set(lista_asistencia)
 
-        # Establecer la asistencia de los alumnos en la clase
-        clase.asistencia.set(alumnos_asistencia)
-
-        # Obtener la lista de IDs de profesores que se les marcó la asistencia
+        # ------------- ASISTENCIA PARA PROFESOR(ES)
+        # para el titular
         profesor_asistencia_ids = request.POST.getlist('profesor__asistencia')
+        profesor_titular = Profesor.objects.filter(id__in=profesor_asistencia_ids)
+        clase.asistencia_profesor.set(profesor_titular)
 
-        # Obtener los objetos Profesor correspondientes a los IDs seleccionados
-        profesor_asistencia = Profesor.objects.filter(id__in=profesor_asistencia_ids)
-
-        # Crear instancias de AsistenciaProfesor para registrar la asistencia de los profesores
-        for profesor in profesor_asistencia:
-            AsistenciaProfesor.objects.create(profesor=profesor, clase=clase, asistio=True)
-
-        # Actualizar el campo asistencia_tomada a True
         clase.asistencia_tomada = True
         clase.save()
 
-        messages.success(request, f'{ICON_CHECK} Asistencia tomada correctamente.')
+        messages.success(request, f'{ICON_CHECK} Asistencia tomada correctasdsmente.')
         return redirect('cursos:dictado_detalle', curso_pk=clase.reserva.horario.dictado.curso.pk, dictado_pk=clase.reserva.horario.dictado.pk)
 
     messages.error(request, f'{ICON_ERROR} Ha ocurrido un error inesperado.')

@@ -169,17 +169,7 @@
               <td>{{ inscrito.persona.dni }}</td>
               <td>{{ inscrito.persona.apellido }}</td>
               <td>{{ inscrito.persona.nombre }}</td>
-              <td>
-                {% if inscrito.persona.es_afiliado %}
-                Afiliado
-                {% elif inscrito.persona.es_grupo_familiar %}
-                Familiar
-                {% elif inscrito.persona.es_profesor %}
-                Profesor
-                {% elif inscrito.persona.es_alumno %}
-                Alumno
-                {% endif %}
-              </td>
+              <td>{{ inscrito.persona.obtenerTipo }}</td>
 
               <td class="text-end">
                 <button type="button" class="btn btn-danger btn-sm btn-detalle" 
