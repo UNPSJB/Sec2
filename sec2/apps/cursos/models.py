@@ -68,13 +68,10 @@ class Curso(models.Model):
     
     def get_tipo_curso(self):
         if self.es_convenio:
-            print("SOY CONVENIO")
             return 'convenio'
         elif self.requiere_certificado_medico:
-            print("SOY ACTIVIDAD")
             return 'actividad'
         else:
-            print("SOY SEC")
             return 'sec'
 
 #------------- DICTADO --------------------

@@ -33,8 +33,6 @@ from django.core.exceptions import ValidationError
 
 #         # Obtener el día de la semana de la fecha seleccionada (0 para lunes, 1 para martes, etc.)
 #         dia_semana_fecha = fecha.weekday()
-#         print("DIA SEMANA Y FECHA")
-#         print(dia_semana_fecha)
 #         # Verificar si hay al menos un horario cuyo día sea igual a la fecha seleccionada
 #         if not any(horario.dia_semana == dia_semana_fecha for horario in horarios_dictado):
 #             raise ValidationError("La fecha seleccionada no está habilitada para este dictado.")

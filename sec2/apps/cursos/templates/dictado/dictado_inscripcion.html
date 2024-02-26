@@ -169,13 +169,13 @@ function mostrarResultados(persona) {
       // Mostrar el botón de dar de alta como alumno
       resultadosDiv.innerHTML += `
       <div class="text-center">
-        <button class="btn btn-secondary btn-sm btn-detalle" onclick="altaAlumno({{ curso_pk }}, {{ dictado_pk }})">Dar de alta como alumno</button>
+        <button class="btn btn-secondary btn-sm btn-detalle" onclick="gestionInscripcionAlumnoNuevo('inscribir_alumno_nuevo', {{ curso_pk }}, {{ dictado_pk }}, null)">Dar de alta como alumno e inscribir</button>
       </div>`;
     } else {
       // Mostrar el mensaje de no hay cupo
       resultadosDiv.innerHTML += `
       <div class="text-center">
-        <button class="btn btn-warning btn-sm btn-detalle" onclick="altaListaDeEspera({{ curso_pk }}, {{ dictado_pk }})">Dar de alta y poner en lista de espera</button>
+        <button class="btn btn-warning btn-sm btn-detalle" onclick="gestionListaEsperaAlumnoNuevo('inscribir_alumno_nuevo', {{ curso_pk }}, {{ dictado_pk }}, null)">Dar de alta y poner en lista de espera</button>
       </div>`;
     }
   }
@@ -213,7 +213,6 @@ function gestionListaEspera(accion, curso_pk, dictado_pk, persona_pk, tipo) {
     .replace('8888', persona_pk)
     .replace('placeholder', tipo)  // Reemplazar el tipo dinámicamente
     .replace('placeholder', accion);  // Reemplazar la acción dinámicamente
-      
   window.location.href = url;
 }
 
@@ -232,6 +231,10 @@ function gestionListaEsperaProfesor(accion, curso_pk, dictado_pk, persona_pk) {
 
 function gestionListaEsperaAlumno(accion, curso_pk, dictado_pk, persona_pk) {
   gestionListaEspera(accion, curso_pk, dictado_pk, persona_pk, 'Alumno');
+}
+
+function gestionListaEsperaAlumnoNuevo(accion, curso_pk, dictado_pk, persona_pk) {
+  gestionListaEspera(accion, curso_pk, dictado_pk, 9999999999, 'AlumnoNuevo');
 }
 
 //------------------- GESTION DE INSCRIPCION --------------------
@@ -261,52 +264,9 @@ function gestionInscripcionAlumno(accion, curso_pk, dictado_pk, persona_pk) {
   gestionInscripcion(accion, curso_pk, dictado_pk, persona_pk, 'Alumno');
 }
 
+function gestionInscripcionAlumnoNuevo(accion, curso_pk, dictado_pk, persona_pk) {
+  gestionInscripcion(accion, curso_pk, dictado_pk, 9999999999, 'AlumnoNuevo');
+}
 
-//------------------- GESTION DE LISTA DE ESPERA --------------------
-{% comment %} function agregarListaEsperaAfiliado (curso_pk, dictado_pk, persona_pk) {
-  // Construir la URL usando reverse
-  var url = "{% url 'cursos:afiliado_agregar_lista_espera' curso_pk=9999 dictado_pk=9999 persona_pk=8888 %}"
-  .replace('9999', curso_pk)
-  .replace('9999', dictado_pk)
-  .replace('8888', persona_pk);
-
-  window.location.href = url;
-} {% endcomment %}
-
-{% comment %} function agregarListaEsperaGrupoFamiliar (curso_pk, dictado_pk, persona_pk) {
-  // Construir la URL usando reverse
-  var url = "{% url 'cursos:familiar_agregar_lista_espera' curso_pk=9999 dictado_pk=9999 persona_pk=8888 %}"
-  .replace('9999', curso_pk)
-  .replace('9999', dictado_pk)
-  .replace('8888', persona_pk);
-
-  window.location.href = url;
-} {% endcomment %}
-
-{% comment %} function agregarListaEsperaProfesor (curso_pk, dictado_pk, persona_pk) {
-  // Construir la URL usando reverse
-  var url = "{% url 'cursos:profesor_agregar_lista_espera' curso_pk=9999 dictado_pk=9999 persona_pk=8888 %}"
-  .replace('9999', curso_pk)
-  .replace('9999', dictado_pk)
-  .replace('8888', persona_pk);
-
-  window.location.href = url;
-} {% endcomment %}
-
-{% comment %} function agregarListaEsperaAlumno (curso_pk, dictado_pk, persona_pk) {
-  // Construir la URL usando reverse
-  var url = "{% url 'cursos:alumno_agregar_lista_espera' curso_pk=9999 dictado_pk=9999 persona_pk=8888 %}"
-  .replace('9999', curso_pk)
-  .replace('9999', dictado_pk)
-  .replace('8888', persona_pk);
-
-  window.location.href = url;
-} {% endcomment %}
-
-{% comment %} // Función para redirigir a la URL de inscripción de alumno
-function altaListaDeEspera(curso_pk, dictado_pk) {
-  // Redirigir a la URL de inscripción de alumno
-  window.location.href = `{% url 'cursos:persona_poner_lista_espera' curso_pk=9999 dictado_pk=9999 %}`.replace('9999', curso_pk).replace('9999', dictado_pk);
-} {% endcomment %}
 </script>
 {% endblock %}

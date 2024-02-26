@@ -57,11 +57,6 @@ class ClaseDetailView(DetailView):
 
         # Obtener los profesores de AsistenciaProfesor que son titulares y tienen la clase
         profesores_asistieron = AsistenciaProfesor.objects.filter(clase=clase).values_list('profesor__id', flat=True)
-
-
-        print("profesores_asistieron")
-        print(profesores_asistieron)
-
         context["dictado"] = dictado
         context["clase"] = clase
         context["titulo"] = "Detalle de clase"

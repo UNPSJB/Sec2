@@ -115,7 +115,6 @@ class FormularioProfesor(forms.ModelForm):
         return self.cleaned_data['dni']
 
     def clean_cuil(self):
-        print("ESTOY EN EL CLEAN CUIL")
         self.persona = Persona.objects.filter(dni=self.cleaned_data['cuil']).first()
         if self.persona is not None and self.persona.es_profesor:
             raise ValidationError("Ya existe un Profesor activo con ese cuil")
@@ -128,7 +127,6 @@ class FormularioProfesor(forms.ModelForm):
         return valid and personaForm.is_valid() and profesorForm.is_valid()
     
     # def save(self, commit=False):
-    #     print("ESTOY EN EL SAVE")
     #     if self.persona is None:
     #         personaForm = PersonaForm(data=self.cleaned_data)
     #         # self.persona = personaForm.save()

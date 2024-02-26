@@ -186,7 +186,6 @@ class CursoUpdateView(UpdateView):
         return super().get(request, *args, **kwargs)
         
     def form_valid(self, form):
-        print("----------7-------------")
         curso = form.save()
         messages.success(self.request, f'{ICON_CHECK} Curso modificado con éxito')
         return redirect('cursos:curso_detalle', pk=curso.pk)

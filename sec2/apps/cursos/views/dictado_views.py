@@ -93,7 +93,6 @@ class DictadoDetailView(DetailView):
     def get_object(self, queryset=None):
         curso_pk = self.kwargs.get('curso_pk')
         dictado_pk = self.kwargs.get('dictado_pk')
-        print(f'curso_pk: {curso_pk}, dictado_pk: {dictado_pk}')
         return Dictado.objects.get(curso__pk=curso_pk, pk=dictado_pk)
 
     def get_context_data(self, **kwargs):
@@ -278,12 +277,10 @@ class BuscarPersonaView(View):
 
     def get(self, request, *args, **kwargs):
         dni = request.GET.get('dni', '')
-        print("----------------------------------------------",dni)
         try:
             # FILTRA EL PRIMERO QUE ENCUENTRA POR QUE LO GUARDA DOS VECES EN LA BASE
             persona = Persona.objects.filter(dni=dni).first()
             if persona is not None:
-                print("---------------SI EXISTE----------------------------:", persona)
                 persona_data = {
                     'pk': persona.pk,
                     'dni': persona.dni,
@@ -305,7 +302,6 @@ class BuscarPersonaView(View):
 
                 return JsonResponse({'persona': persona_data})
             else:
-                print("--------------PERSONA NO EXISTE--------------------------------",dni)
                 return JsonResponse({'persona': None})
         except Persona.DoesNotExist:
             return JsonResponse({'persona': None})
@@ -411,10 +407,7 @@ def listaEspera(request, curso_pk, dictado_pk ):
     
     # Combino todos los objetos en una lista
     todos_inscritos_listaEspera = list(afiliado_inscritos_listaEspera) + list(familiares_inscritos_listaEspera) + list(profesores_inscritos_listaEspera) + list(alumnos_inscritos_listaEspera)
-    
     hay_cupo = total_inscritos < dictado.cupo
-    print("HAY CUPO")
-    print(hay_cupo)
     titulo = 'Lista de espera'
 
     context = {
@@ -428,6 +421,10 @@ def listaEspera(request, curso_pk, dictado_pk ):
     return render(request, 'dictado/dictado_lista_espera.html', context)
 
 # ----------- GESTION DE LISTA DE ESPERA
+from django.urls import reverse
+from django.urls import reverse
+from django.http import HttpResponseRedirect
+
 def gestionListaEspera(request, curso_pk, dictado_pk, persona_pk, tipo, accion):
     dictado = get_object_or_404(Dictado, curso__pk=curso_pk, pk=dictado_pk)
 
@@ -439,6 +436,8 @@ def gestionListaEspera(request, curso_pk, dictado_pk, persona_pk, tipo, accion):
         persona = get_object_or_404(Profesor, persona__pk=persona_pk)
     elif tipo == 'Alumno':
         persona = get_object_or_404(Alumno, persona__pk=persona_pk)
+    elif tipo == 'AlumnoNuevo':
+        pass
     else:
         raise Http404("Tipo de persona no válido")
 
@@ -453,7 +452,11 @@ def gestionListaEspera(request, curso_pk, dictado_pk, persona_pk, tipo, accion):
         persona.persona.es_alumno = True
         persona.persona.save()
         messages.success(request, f'{ICON_CHECK} {tipo} inscrito al curso exitosamente!. Cierre la ventana y recargue el detalle del dictado')
-
+    
+    elif accion == 'inscribir_alumno_nuevo':
+        url = reverse('cursos:alumno_nuevo_lista_espera', kwargs={'curso_pk': curso_pk, 'dictado_pk': dictado_pk})
+        return HttpResponseRedirect(url)
+    
     elif accion == 'quitar':
         persona.lista_espera.remove(dictado)
         messages.success(request, f'{ICON_CHECK} {tipo} sacado de la lista de espera ')
@@ -487,6 +490,8 @@ def gestionInscripcion(request, curso_pk, dictado_pk, persona_pk, tipo, accion):
         persona = get_object_or_404(Profesor, persona__pk=persona_pk)
     elif tipo == 'Alumno':
         persona = get_object_or_404(Alumno, persona__pk=persona_pk)
+    elif tipo == 'AlumnoNuevo':
+        pass
     else:
         raise Http404("Tipo de persona no válido")
 
@@ -505,6 +510,10 @@ def gestionInscripcion(request, curso_pk, dictado_pk, persona_pk, tipo, accion):
         persona.save()
         messages.success(request, f'{ICON_CHECK} {tipo} inscrito al curso exitosamente!. Cierre la ventana y recargue el detalle del dictado')
         return redirect('cursos:verificar_persona', curso_pk=curso_pk, dictado_pk=dictado_pk)
+    
+    elif accion == 'inscribir_alumno_nuevo':
+        url = reverse('cursos:alumno_nuevo_inscribir', kwargs={'curso_pk': curso_pk, 'dictado_pk': dictado_pk})
+        return HttpResponseRedirect(url)
     
     elif accion == 'desinscribir':
 

@@ -515,7 +515,6 @@ def familiar_eliminar(request, pk, familiar_pk):
     familiar = get_object_or_404(Familiar, pk=familiar_pk)
     familiar.activo = False
 
-    # print(familiar)
     # fecha = datetime.now()
     # familiar.persona.desafiliar(familiar,fecha)
     familiar.save()

@@ -62,10 +62,6 @@ class HorarioCreateView(CreateView):
 
         # Obtén el primer horario del dictado con es_primer_horario=True
         primer_horario = Horario.objects.filter(dictado=dictado, es_primer_horario=True).first()
-        print("DIA DE LA SEMANA DE INICIO")
-        print(primer_horario.dictado.fecha.weekday())
-        print("DIA DE LA SEMANA INGRESADO")
-        print(dia_semana_form)
         if primer_horario is not None:
             # Si el día de la semana es mayor, lanza el error de que no se puede
             #generar un horario antes que el de la fecha de inicio estipulada
@@ -123,10 +119,8 @@ def asignar_aula(request, curso_pk, dictado_pk, horario_id):
     necesita_equipamento_informatico = horario.dictado.curso.requiere_equipamiento_informatico
 
     if necesita_equipamento_informatico:
-        print("REQUIRE EQUIPAMENTO INFORMATICO")
         todas_aulas = Aula.objects.filter(tipo='computacion')
     else:
-        print("NO REQUIRE EQUIPAMENTO INFORMATICO")
         todas_aulas = Aula.objects.filter(tipo='normal')
 
     # Obtener las aulas ocupadas en el horario actual

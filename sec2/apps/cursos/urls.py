@@ -62,8 +62,6 @@ urlpatterns = [
     path('buscar-persona/', BuscarPersonaView.as_view(), name='buscar_persona'),
 
     # ALUMNO (accedido desde el dictado)
-    path('cursos/curso/<int:curso_pk>/dictados/dictado/<int:dictado_pk>/Alumnos/inscribir', AlumnoCreateView.as_view(), name="persona_inscribir"),
-    path('cursos/curso/<int:curso_pk>/dictados/dictado/<int:dictado_pk>/Alumnos/inscribirListaEspera', AlumnoListaEsperaCreateView.as_view(), name="persona_poner_lista_espera"),
     path('cursos/curso/<int:curso_pk>/dictados/dictado/<int:dictado_pk>/Alumnos/listaEspera', listaEspera , name="dictado_lista_espera"),
 
     #CONTROL DE ASISTENCIA
@@ -74,9 +72,14 @@ urlpatterns = [
 
     # GESTION DE LISTA DE ESPERA
     path('cursos/curso/<int:curso_pk>/dictados/dictado/<int:dictado_pk>/<str:tipo>/<int:persona_pk>/listaEspera/<str:accion>/', gestionListaEspera, name="gestion_lista_espera"),
+    path('cursos/curso/<int:curso_pk>/dictados/dictado/<int:dictado_pk>/AlumnoNuevo/inscribirListaEspera', AlumnoListaEsperaCreateView.as_view(), name="alumno_nuevo_lista_espera"),
+    
     # GESTION DE INSCRIPCION
     path('cursos/curso/<int:curso_pk>/dictados/dictado/<int:dictado_pk>/<str:tipo>/<int:persona_pk>/Incripcion/<str:accion>/', gestionInscripcion, name="gestion_inscripcion"),
+    path('cursos/curso/<int:curso_pk>/dictados/dictado/<int:dictado_pk>/AlumnoNuevo/inscribir', AlumnoCreateView.as_view(), name="alumno_nuevo_inscribir"),
     
+
+
     path('alumnos', AlumnosListView.as_view(), name="alumnos_listado"),
     path('alumnos/<int:pk>/', AlumnoDetailView.as_view(), name="alumno_detalle"),
 
