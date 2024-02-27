@@ -21,10 +21,8 @@ ESTADO_CIVIL = (
     )
 
 LOCALIDADES_CHUBUT = [
-        ("COMODORO RIVADAVIA", "Comodoro Rivadavia"),
         ("RAWSON", "Rawson"),
         ("PUERTO MADRYN", "Puerto Madryn"),
-        ("ESQUEL", "Esquel"),
         ("GAIMAN", "Gaiman"),
         ("TRELEW", "Trelew"),
     ]

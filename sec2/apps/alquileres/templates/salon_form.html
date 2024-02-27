@@ -21,18 +21,7 @@
           {{ form.localidad }}
         </div>
       </div>
-    </div>
-
-    <div class="row">
-      <div class="col">
-        <div class="form-group">
-          {{ form.nombre.label_tag }}
-          {{ form.nombre }}
-          <small class="error-text" style="color: red;">{{ form.nombre.error }}</small>
-        </div>
-      </div>
-    </div>
-    
+    </div> 
     <div class="row">
       <div class="col">
         <div class="form-group">
@@ -42,11 +31,53 @@
           <small class="error-text" style="color: red;">{{ form.direccion.error }}</small>
         </div>
       </div>
+      <div class="col">
+        <div class="form-group">
+          {{ form.capacidad.label_tag }}
+          {{ form.capacidad }}
+          <small class="error-text" style="color: red;">{{ form.capacidad.error }}</small>
+        </div>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col">
+        <div class="form-group">
+          {{ form.encargado.label_tag }}
+          {{ form.encargado }}
+          <small class="error-text" style="color: red;">{{ form.encargado.error }}</small>
+        </div>
+      </div>
+      <div class="col">
+        <div class="form-group">
+          {{ form.precio.label_tag }}
+          {{ form.precio }}
+          <small class="error-text" style="color: red;">{{ form.precio.error }}</small>
+        </div>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col">
+        <div class="form-group">
+          {{ form.tipo_salon.label_tag }}
+          {{ form.tipo_salon }}
+          <small class="error-text" style="color: red;">{{ form.tipo_salon.error }}</small>
+        </div>
+      </div>
+      <div class="col">
+        <div class="form-group">
+          <label for="{{ form.servicios.id_for_label }}">Servicios:</label>
+          {{ form.servicios.label_tag }}
+          {{ form.servicios }}
+          <small class="error-text" style="color: red;">{{ form.servicios.error }}</small>
+        </div>
+      </div>
     </div>
 
     <div class="row row-cols-1 row-cols-sm-1 row-cols-md-2">
       <div class="col">
-        <a href="{% url 'cursos:index' %}" class="btn btn-secondary">Cancelar</a>
+        <a href="{% url 'alquiler:index' %}" class="btn btn-secondary">Cancelar</a>
       </div>
       <div class="col">
         <button type="submit" class="btn btn-primary">Guardar</button>

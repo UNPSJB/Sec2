@@ -1,0 +1,94 @@
+{% extends 'home_alquiler.html' %}
+{% load crispy_forms_tags %}
+{% load static %}
+
+{% block extracss_intermedia %}
+  <link href="{% static 'css/afiliado_confirm_delete.css' %}" rel="stylesheet" />
+{% endblock %}
+
+{% block dinamica %}
+  <div class="container">
+    <h1 class="titulo">{{ titulo }}</h1>
+    <div class="row">
+      <div class="col-md-6">
+        <div class="profile-container">
+          <div class="profile-image">
+            <img src="{% static 'images/perfil.jpg' %}" alt="Profile Image" class="img-thumbnail" />
+          </div>
+          <div class="profile-details">
+            <br />
+            <h2>Datos Del Afiliado</h2>
+            <p>
+              <strong>Nombre:</strong> {{ alquiler.afiliado.persona.nombre }}
+            </p>
+            <p>
+              <strong>Apellido:</strong> {{ alquiler.afiliado.persona.apellido }}
+            </p>
+            <p>
+              <strong>DNI:</strong> {{ alquiler.afiliado.persona.dni }}
+            </p>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-6">
+        <div class="affiliation-details">
+          <h2>Datos del Alquiler</h2>
+          <p>
+            <strong>Salon:</strong> {{ alquiler.salon }}
+          </p>
+          <p>
+            <strong>Fecha de solicitud:</strong> {{ alquiler.fecha_solicitud }}
+          </p>
+          <p>
+            <strong>Fecha de alquiler:</strong> {{ alquiler.fecha_alquiler }}
+          </p>
+          <p>
+            <strong>Turno:</strong> {{ alquiler.turno }}
+          </p>
+          <p>
+            <strong>Seguro:</strong> {{ alquiler.seguro }}
+          </p>
+          <p>
+            <strong>Lista de espera:</strong> {{ alquiler.lista_espera }}
+          </p>
+        </div>
+      </div>
+    </div>
+    <div class="action-buttons">
+      <div class="container">
+        <div class="row">
+          <div class="col">
+          </div>
+          <div class="col">
+            <a target="_blank" href="#" class="btn btn-primary"><i class="fas fa-users"></i> Agregar a Lista de Espera</a>
+            {% comment %} <a target="_blank" href="{% url 'afiliados:grupo_familiar' afiliado.pk %}" class="btn btn-primary"><i class="fas fa-users"></i> Grupo Familiar</a> {% endcomment %}
+          </div>
+          <div class="col">
+              <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#exampleModal_desafiliar"><i class="fas fa-arrow-down"></i> Dar de baja</button>
+              <div class="modal fade" id="exampleModal_desafiliar" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                  <div class="modal-content">
+                    <div class="modal-header">
+                      <h1 class="modal-title fs-5" id="exampleModalLabel">Confirmar</h1>
+                      <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                      <h5>¿Estás seguro de que deseas desafiliar?</h5>
+                    </div>
+                    <div class="modal-footer">
+                      {% comment %}<a href="{% url 'afiliados:desafiliar_afiliado' afiliado.pk %}" class="btn btn-danger">Confirmar</a>{% endcomment %}
+                      <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}
+
+{% block extrajs_intermedia %}
+  {% comment %} <script src="{% static 'js/afiliado_confirm_delete.js' %}"></script> {% endcomment %}
+{% endblock %}
