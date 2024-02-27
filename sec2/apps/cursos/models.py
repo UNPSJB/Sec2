@@ -224,16 +224,16 @@ class Titular(models.Model):
     dictado= models.ForeignKey(Dictado, on_delete=models.CASCADE)
 
 #------------- ASISTENCIA PROFESOR --------------------
-class AsistenciaProfesor(models.Model):
-    profesor = models.ForeignKey(Profesor, on_delete=models.CASCADE)
-    clase = models.ForeignKey(Clase, on_delete=models.CASCADE)
-    asistio = models.BooleanField(default=False)
+# class AsistenciaProfesor(models.Model):
+#     profesor = models.ForeignKey(Profesor, on_delete=models.CASCADE)
+#     clase = models.ForeignKey(Clase, on_delete=models.CASCADE)
+#     asistio = models.BooleanField(default=False)
 
 
-class AsistenciaAlumno(models.Model):
-    alumno = models.ForeignKey(Alumno, on_delete=models.CASCADE)
-    clase = models.ForeignKey(Clase, on_delete=models.CASCADE)
-    asistio = models.BooleanField(default=False)
+# class AsistenciaAlumno(models.Model):
+#     alumno = models.ForeignKey(Alumno, on_delete=models.CASCADE)
+#     clase = models.ForeignKey(Clase, on_delete=models.CASCADE)
+#     asistio = models.BooleanField(default=False)
 
 
 

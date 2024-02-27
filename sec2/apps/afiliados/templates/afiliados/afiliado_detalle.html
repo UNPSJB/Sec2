@@ -132,8 +132,8 @@
           <thead>
             <tr>
               <th>#</th>
-              <th>Vinculo</th>
               <th>Dni</th>
+              <th>Vinculo</th>
               <th>Apellido</th> 
               <th>Nombre</th>
               <th></th>
@@ -143,8 +143,8 @@
             {% for familiar in afiliado.familia.all %}
             <tr>
               <td>{{ forloop.counter }}</td>
-              <td>{{ familiar.get_tipo_display }}</td>
               <td>{{ familiar.persona.dni }}</td>
+              <td>{{ familiar.get_tipo_display }}</td>
               <td>{{ familiar.persona.apellido }}</td>
               <td>{{ familiar.persona.nombre }}</td>
               <td class="text-end">

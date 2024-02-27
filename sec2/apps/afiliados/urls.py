@@ -16,13 +16,13 @@ urlpatterns = [
     path('afiliados/listar',AfliadosListView.as_view(), name="afiliado_listar"),
     path('afiliado/<int:pk>',AfiliadoDetailView.as_view(), name="afiliado_detalle"),
 
-
     # AFILIACION - DESAFILIACIÓN
     path('modificar/<int:pk>', AfiliadoUpdateView.as_view(), name="afiliado_actualizar"),
     path('mostrar/<int:pk>/aceptar', afiliado_aceptar, name="aceptar_afiliado"),
     path('mostrar/<int:pk>/desafiliar', afiliado_desafiliar, name="desafiliar_afiliado"),
     
     #GRUPO FAMILIAR
+    path('grupofamiliar/crear', alta_familiar, name="crear_familiar_directo"),
     path('afiliado/<int:pk>/grupoFamiliar/crear', FamiliaCreateView.as_view(), name="crear_familiar"),
     path('afiliado/<int:pk>/grupoFamiliar/familia/<int:familiar_pk>', FamiliarDetailView.as_view(), name="familiar_detalle"),
     path('afiliado/<int:pk>/grupoFamiliar/familia/<int:familiar_pk>/editar', FamiliarUpdateView.as_view(), name="familiar_editar"),

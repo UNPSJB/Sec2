@@ -165,9 +165,73 @@ class AfiliadoUpdateForm(forms.ModelForm):
     
 
 ########### FAMILIAR ##############################################
+class AfiliadoSelectForm(forms.Form):
+    afiliado_seleccionado = forms.ModelChoiceField(
+        queryset=Afiliado.objects.all().order_by('persona__dni'),
+        label='Seleccione un Afiliado',
+        empty_label="---------------",  # Set the default value
+        to_field_name='id',
+    )
+    
+    tipo = forms.ChoiceField(choices=Familiar.TIPOS_RELACION)
+
+    dni = forms.CharField(
+        max_length=8,
+        help_text='Sin puntos',
+        validators=[
+            # ... validators for dni field ...
+        ]
+    )
+    cuil = forms.CharField(
+        max_length=11,
+        help_text='Sin puntos y guiones',
+        validators=[
+            # ... validators for cuil field ...
+        ]
+    )
+    nombre = forms.CharField(max_length=30, validators=[text_validator])
+    apellido = forms.CharField(max_length=30, validators=[text_validator])
+    fecha_nacimiento = forms.DateField(
+        widget=forms.DateInput(attrs={'type': 'date'}),
+        validators=[
+            # ... validators for fecha_nacimiento field ...
+        ]
+    )
+    celular = forms.CharField(
+        max_length=13,
+        validators=[
+            # ... validators for celular field ...
+        ],
+        help_text='Ejemplo: 549XXXXXXXXX'
+    )
+    direccion = forms.CharField(max_length=50, help_text='Calle y numero')
+    nacionalidad = forms.CharField(
+        max_length=2,
+        # ... additional attributes for nacionalidad field ...
+    )
+    mail = forms.EmailField(
+        max_length=50,
+        # validators=[EmailValidator(message='Debe ser un correo válido.')],
+        help_text='Debe ser un correo válido.'
+    )
+    estado_civil = forms.ChoiceField(choices=ESTADO_CIVIL)
+
+    es_afiliado = forms.BooleanField(initial=False, required=False)
+    es_alumno = forms.BooleanField(initial=False, required=False)
+    es_profesor = forms.BooleanField(initial=False, required=False)
+    es_encargado = forms.BooleanField(initial=False, required=False)
+    es_grupo_familiar = forms.BooleanField(initial=False, required=False)
+
+    def __init__(self, *args, **kwargs):
+        super(AfiliadoSelectForm, self).__init__(*args, **kwargs)
+        self.fields['afiliado_seleccionado'].label_from_instance = self.label_from_instance_with_strextra
+
+    def label_from_instance_with_strextra(self, obj):
+        return obj.__strextra__()
+    
 class GrupoFamiliarPersonaForm(forms.ModelForm):
 
-    tipo = forms.ChoiceField(choices=Familiar.TIPOS)
+    tipo = forms.ChoiceField(choices=Familiar.TIPOS_RELACION)
 
     class Meta:
         model = Persona

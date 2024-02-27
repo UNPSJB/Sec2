@@ -132,11 +132,19 @@ class Persona(models.Model):
             return 'Profesor'
         elif self.es_alumno:
             return 'Alumno'
-    
 
 
-
+############## PATRON DE ROLES #####################################3
 class Rol(models.Model):
+    """
+        TIPO PARA ROLES
+        0: ROL DE ORIGEN
+        1: AFILIADO
+        2: GRUPO FAMILIAR
+
+        
+
+    """
     TIPO = 0
     TIPOS = []
     persona = models.ForeignKey(Persona, related_name="roles", on_delete=models.CASCADE)

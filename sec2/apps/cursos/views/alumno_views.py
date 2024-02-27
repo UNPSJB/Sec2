@@ -6,7 +6,7 @@ import uuid
 from django.http import HttpResponse
 from apps.afiliados.models import Afiliado, Familiar
 
-from apps.cursos.models import AsistenciaProfesor, Clase
+from apps.cursos.models import Clase
 
 from ..forms.alumno_forms import *
 from ..forms.curso_forms import *

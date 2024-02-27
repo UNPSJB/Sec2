@@ -6,8 +6,10 @@ from utils.constants import *
 from utils.regularexpressions import *
 
 # -------------------- FAMILIAR ------------------
-class Familiar(models.Model):
-    TIPOS = (
+class Familiar(Rol):
+    TIPO = 2  # Define un valor único para el tipo de rol de Familiar
+
+    TIPOS_RELACION = (
         (1, "Esposo/a"),
         (2, "Hijo/a"),
         # (3, "Padre"),
@@ -15,14 +17,16 @@ class Familiar(models.Model):
         # (5, "Hermano"),
         # (6, "Tutor"),
     )
-    # AFILIADO = [1, 2, 3, 4, 5]
-    # ALUMNO = [3, 4, 6]
-    tipo=models.PositiveSmallIntegerField(choices=TIPOS)
-    persona=models.ForeignKey(Persona, related_name = "familiares", on_delete = models.CASCADE) 
-    activo = models.BooleanField(default=True)  # Agregamos el campo "estado" con valor predeterminado True
-    dictados = models.ManyToManyField(Dictado, related_name="familiares", blank=True)
-    lista_espera = models.ManyToManyField(Dictado, related_name='familiaress_en_espera', blank=True)
 
+    tipo_relacion = models.PositiveSmallIntegerField(choices=TIPOS_RELACION)
+    activo = models.BooleanField(default=False)  # Agregamos el campo "activo" con valor predeterminado True
+    dictados = models.ManyToManyField(Dictado, related_name="familiares", blank=True)
+    lista_espera = models.ManyToManyField(Dictado, related_name='familiares_en_espera', blank=True)
+    
+    def __str__(self):
+        return f"Tipo: {self.get_tipo_display()} Relación: {self.get_tipo_relacion_display()} Activo: {self.activo}"
+
+Rol.register(Familiar)
 # -------------------- AFILIADO ------------------
 class Afiliado(Rol):
     TIPO = 1
@@ -62,9 +66,24 @@ class Afiliado(Rol):
     horaJornada = models.PositiveIntegerField(validators=[MinValueValidator(1)])
     dictados = models.ManyToManyField(Dictado, related_name="afiliados", blank=True)
     lista_espera = models.ManyToManyField(Dictado, related_name='afiliados_en_espera', blank=True)
-    familia = models.ManyToManyField(Familiar, blank=True)
+    familia = models.ManyToManyField(Familiar, through='RelacionFamiliar', blank=True)
 
     def __str__(self):
         return f"Tipo: {self.TIPO} Razon social: {self.razon_social} CUIT:{self.cuit_empleador}"
     
+    def __strextra__(self):
+        # Define your new string representation here
+        return f"{self.persona.dni} | {self.persona}"
+    
+    def tiene_esposo(self):
+        esposo_existente = self.familia.filter(tipo_relacion=1).exists()
+        return esposo_existente
+
 Rol.register(Afiliado)
+
+class RelacionFamiliar(models.Model):
+    afiliado = models.ForeignKey(Afiliado, on_delete=models.CASCADE)
+    familiar = models.ForeignKey(Familiar, on_delete=models.CASCADE)
+    # tipo_relacion = models.PositiveSmallIntegerField(choices=Familiar.TIPOS_RELACION)
+
+

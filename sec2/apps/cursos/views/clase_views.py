@@ -4,7 +4,7 @@ from django.shortcuts import render, redirect
 from django.views.generic import DetailView
 from sec2.utils import ListFilterView
 from django.contrib import messages
-from ..models import AsistenciaProfesor, Clase, Dictado, Aula, Horario, Profesor, Reserva, Titular
+from ..models import Clase, Dictado, Aula, Horario, Profesor, Reserva, Titular
 from ..forms.clase_forms import *
 from django.urls import reverse
 from django.shortcuts import get_object_or_404
@@ -75,9 +75,6 @@ class ClaseDetailView(DetailView):
         titulares_asistieron = clase.asistencia_profesor.all()
         titulares_asistieron_personas = titulares_asistieron.values_list('persona', flat=True)
         context["lista_asistencia_titular"] = titulares_asistieron_personas
-        # profesores_asistieron = AsistenciaProfesor.objects.filter(clase=clase).values_list('profesor__id', flat=True)
-
-        # context["profesores_asistieron"] = profesores_asistieron
 
         return context
 

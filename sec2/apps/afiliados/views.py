@@ -8,7 +8,7 @@ from django.urls import reverse_lazy
 from datetime import datetime
 
 from apps.personas.forms import PersonaForm, PersonaUpdateForm  
-from .models import Afiliado, Familiar
+from .models import Afiliado, Familiar, RelacionFamiliar
 from .forms import *
 from sec2.utils import ListFilterView
 from django.db import transaction  # Agrega esta línea para importar el módulo transaction
@@ -237,6 +237,66 @@ def es_menor_de_edad(self, fecha_nacimiento):
     hoy = date.today()
     return (hoy - fecha_nacimiento).days < 365 * 18
 
+def alta_familiar(request):
+    if request.method == 'POST':
+        form = AfiliadoSelectForm(request.POST)
+        if form.is_valid():
+            dni = form.cleaned_data["dni"]
+            existing_person = Persona.objects.filter(dni=dni).first()
+            if existing_person:
+                messages.error(request, f'{ICON_ERROR} ERROR: Ya existe una persona registrada en el sistema como {existing_person.obtenerRol()} con el mismo DNI.')
+                form = AfiliadoSelectForm(request.POST)
+
+            else:
+                afiliado_seleccionado_id = request.POST.get('afiliado_seleccionado')
+                afiliado = get_object_or_404(Afiliado, pk=afiliado_seleccionado_id)
+                if afiliado.tiene_esposo() and form.cleaned_data["tipo"] == '1':
+                    messages.error(request, f'{ICON_ERROR} ERROR: Ya existe una persona registrada en el sistema como {existing_person.obtenerRol()} con el mismo DNI.')
+                    form = AfiliadoSelectForm(request.POST)
+                else:
+                    if form.cleaned_data["tipo"] == '2' and not es_menor_de_edad(form.cleaned_data["fecha_nacimiento"]):
+                        messages.error(request, f'{ICON_ERROR} El Hijo/a debe ser menor de edad.')
+                        form = AfiliadoSelectForm(request.POST)
+                    else:
+                        persona = Persona(
+                            dni=dni,
+                            cuil=form.cleaned_data["cuil"],
+                            nombre= form.cleaned_data["nombre"].title(),
+                            apellido=form.cleaned_data["apellido"].title(),
+                            fecha_nacimiento=form.cleaned_data["fecha_nacimiento"],
+                            mail=form.cleaned_data["mail"],
+                            celular=form.cleaned_data["celular"],
+                            estado_civil=form.cleaned_data["estado_civil"],
+                            nacionalidad=form.cleaned_data["nacionalidad"],
+                            direccion=form.cleaned_data["direccion"],
+                            es_grupo_familiar = True
+                        )
+                        persona.save()
+                        # Crear una instancia de Afiliado
+                        familiar = Familiar(
+                            persona = persona,
+                            tipo_relacion =form.cleaned_data["tipo"],
+                            tipo = Familiar.TIPO,
+                        )
+                        familiar.save()
+
+                        relacion = RelacionFamiliar(
+                            afiliado = afiliado,
+                            familiar = familiar,
+                        )
+                        relacion.save()
+                        messages.success(request, f'{ICON_CHECK} Carga de familiar exitosa!')
+                        form = AfiliadoSelectForm(request.POST)
+    else:
+        form = AfiliadoSelectForm()
+
+    context = {
+        'form': form,
+        'titulo': 'Alta de Familiar',  # Replace with your desired title
+    }
+    return render(request, 'grupoFamiliar/grupo_familiar_alta_directa.html', context)
+
+
 # ----------------------------- CREACIÓN DE FAMILIAR -----------------------------
 class FamiliaCreateView(CreateView):
     model = Familiar
@@ -259,9 +319,8 @@ class FamiliaCreateView(CreateView):
             form = GrupoFamiliarPersonaForm(self.request.POST)
             return self.render_to_response(self.get_context_data(form=form))
         else:
-            # Verificar si ya hay un familiar con el tipo "Esposo/a"
-            esposo_existente = afiliado.familia.filter(tipo=1).exists()
-            if esposo_existente and form.cleaned_data["tipo"] == '1':
+
+            if afiliado.tiene_esposo() and form.cleaned_data["tipo"] == '1':
                 messages.error(self.request, f'{ICON_ERROR} Ya existe un esposo/a para el afiliado asociado.')
                 form = GrupoFamiliarPersonaForm(self.request.POST)
                 # return self.render_to_response(self.get_context_data(form=form))
@@ -290,12 +349,17 @@ class FamiliaCreateView(CreateView):
 
             # Crear una instancia de Afiliado
             familiar = Familiar(
-                tipo =form.cleaned_data["tipo"],
-                persona = persona
+                persona = persona,
+                tipo_relacion =form.cleaned_data["tipo"],
+                tipo = Familiar.TIPO,
             )
             familiar.save()
-
-            afiliado.familia.add(familiar)
+            
+            relacion = RelacionFamiliar(
+                afiliado = afiliado,
+                familiar = familiar,
+            )
+            relacion.save()
 
             messages.success(self.request, f'{ICON_CHECK} Carga de familiar exitosa!')
             detail_url = reverse('afiliados:afiliado_detalle', kwargs={'pk': afiliado.pk})
