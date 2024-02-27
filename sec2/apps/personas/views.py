@@ -1,4 +1,6 @@
-from django.shortcuts import render
+from django.shortcuts import get_object_or_404, render
+
+from apps.afiliados.models import Afiliado
 from .forms import *
 from .models import *
 from django.contrib import messages
@@ -8,29 +10,16 @@ from django.urls import reverse_lazy
 from django.shortcuts import redirect
 from django.views.generic.edit import CreateView
 
-"""
-CLASE CREADA DE PRUEBA PORQUE NO FUNCABA EL ALTA DE GRUPO FAMILIAR
-class FamiliaCreateView(CreateView):
-    model = Persona
-    form_class = PersonaForm
-    success_url = reverse_lazy('personas:crear_familiar')
 
+
+class PersonaCreateView(CreateView):
+    model = Persona
+    form_class = PersonaForm #utiliza un formulario unificado
+    template_name = 'personas/persona_form.html'
+    
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['titulo'] = "Alta de Grupo Familiar"
-        return context """
+        context['titulo'] = "Formulario de Afiliación"
+        return context
 
-def FamiliaCreateView1(request, pk):
-    persona = Persona.objects.get(pk=pk)
-    if request.method == 'POST':
-        formset = VinculoFormSet(request.POST, request.FILES)
-        if formset.is_valid():
-            vinculos = formset.save(commit=False)
-            for v in vinculos:
-                v.vinculante = persona
-                v.save()
-            for d in formset.deleted_objects:
-                d.delete()
-    formset = VinculoFormSet(queryset=persona.vinculados.all())
-    return render(request, 'personas/vinculo_form.html', {
-        'formset': formset, 'persona': persona})
+

@@ -11,29 +11,21 @@
 {% block dinamica %}
   <div class="container-sm">
     <h2 class="titulo">{{ titulo }}</h2>
-    <br />
+    {% block detalle %}
+
+    {% endblock %}
+    {% block horarios %}
+
+    {% endblock %}
     <div class="row">
-      {% block detalle_lado_izquierdo %}
+      {% block botones %}
 
       {% endblock %}
-
-      {% block detalle_lado_derecho %}
-
-      {% endblock %}
-
-      <br />
-      <div class="row">
-        {% block botones %}
-
-        {% endblock %}
-      </div>
     </div>
   </div>
+  
+  {% block listado_asociado %}
+  {% endblock %}
 
-  <div class="container-sm">
-    <h3 class="subtitulo">{{ tituloListado }}</h3>
-    {% block listado_asociado %}
-    {% endblock %}
-    {% include 'pagination.html' %}
-  </div>
+
 {% endblock %}

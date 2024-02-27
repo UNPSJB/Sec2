@@ -1,0 +1,91 @@
+{% extends 'detalle_listado.html' %}
+
+{% load crispy_forms_tags %}
+{% load static %}
+
+{% block detalle %}
+
+{% include "persona_detalle.html" with persona=profesor.persona %}
+
+<div class="row">
+  <div class="col-md-2">
+    <p>
+      <strong>Ejerce desde:</strong>
+    </p>
+  </div>
+  <div class="col-md-2">
+    <p>{{ profesor.ejerce_desde }}</p>
+  </div>
+  <div class="col-md-2">
+    <p>
+      <strong>Actividades:</strong>
+    </p>
+  </div>
+  <div class="col">
+    <p>
+      {% for actividad in profesor.actividades.all %}
+      {{actividad}}
+      {% endfor %}
+    </p>
+  </div>
+</div>
+
+{% endblock %}
+
+{% block botones %}
+<div class="col d-flex justify-content-center">
+    <a href="{% url 'cursos:profesor_editar' profesor.pk %}" class="btn btn-primary btn-sm btn-detalle"><i class="fa-regular fa-pen-to-square"></i> Modificar</a>
+  </div>
+
+  <div class="col d-flex justify-content-end">
+    {% comment %} <button type="button" class="btn btn-danger btn-sm btn-detalle" data-bs-toggle="modal" data-bs-target="#exampleModal_eliminar"><i class="fa-regular fa-circle-down"></i> Dar de Baja</button> {% endcomment %}
+    {% comment %} {% include 'curso/modal_confirm_baja.html' %} {% endcomment %}
+  </div>
+{% endblock %}
+
+{% block listado_asociado %}
+
+{% if titulares %}
+<div class="container-sm">
+  <h3 class="subtitulo">{{ tituloListado }}</h3>
+  <table class="table table-sm table-hover">
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>Fecha Inicio</th>
+        <th>Curso</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for titular in titulares %}
+      <tr>
+        <td>{{ forloop.counter }}</td>
+        <td>{{ titular.dictado.fecha }}</td>
+        <td>{{ titular.dictado.curso.nombre }}</td>
+        <td class="text-end">
+          <a href="{% url 'cursos:dictado_detalle' curso_pk=titular.dictado.curso.pk dictado_pk=titular.dictado.pk %}" class="btn btn-primary btn-detalle btn-sm"><i class="fa-regular fa-eye"></i> Detalle</a>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endif %}
+
+{% if profesor.dictados_inscriptos.all %}
+<div class="container-sm">
+  <h3 class="subtitulo">{{ tituloDictadoInscrito }}</h3>
+  {% include "inscripcion_dictado.html" with dictados=profesor.dictados_inscriptos.all %}
+</div>
+{% endif %}
+
+{% endblock %}
+
+
+
+
+{% comment %} {{ object.get_actividad_display }}
+{% if mensaje %}
+  <div class="alert alert-info" role="alert">registro finalizado exitosamente</div>
+{% endif %} {% endcomment %}

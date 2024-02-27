@@ -1,11 +1,109 @@
-{% extends 'alta_ventana_nueva.html' %}
+{% extends 'alta.html' %}
 
 {% load crispy_forms_tags %}
 
 {% block formulario %}
-  <form method="post">
+{% if profesores_capacitados %}
+  <form method="post" autocomplete="off">
     {% csrf_token %}
-    {{ form }}
-    <button type="submit">Submit</button>
+    <div class="row">
+      <div class="col">
+        <div class="form-group">{{ form.periodo_pago.label_tag }}
+          {{ form.periodo_pago }}</div>
+      </div>
+        <div class="col">
+          <div class="form-group">
+            <label for="aula_seleccionada">Profesor asigado:</label>
+            <select name="profesor">
+                {% for profesor in profesores_capacitados %}
+                    <option value="{{ profesor.id }}">{{ profesor }}</option>
+                {% endfor %}
+            </select>
+          </div>
+        </div>
+    </div>
+
+    <div class="row">
+      <div class="col">
+        <div class="form-group">
+          {{ form.cupo.label_tag }}
+          <input type="number" name="cupo" step="1" min="1"max="50" required class="form-control" value="{{ form.cupo.value|default:'' }}" />
+        </div>
+      </div>
+
+      <div class="col">
+        <div class="form-group">
+          {{ form.descuento.label_tag }}
+          <input type="number" name="descuento" step="1" min="0" max="100"required class="form-control" value="{{ form.descuento.value|default:'' }}" />
+          <small class="error-text" style="color: red;">{{ form.descuento.error }}</small>
+          <small class="form-text text-muted">{{ form.descuento.help_text }}</small>
+        </div>
+      </div>
+      
+      <div class="col">
+        <div class="form-group">
+          {{ form.modulos_por_clase.label_tag }}
+          <input type="number" name="modulos_por_clase" step="1" min="1" max="5" required class="form-control" value="{{ form.modulos_por_clase.value|default:'' }}" />
+          <small class="form-text text-muted">{{ form.modulos_por_clase.help_text }}</small>
+        </div>
+      </div>
+      
+      
+      
+      {% if not tiene_fecha_cargada %}
+      <div class="col">
+        <div class="form-group">
+          {{ form.fecha.label_tag }}
+          <input type="datetime-local" name="fecha" required class="form-control" value="{{ form.fecha.value|default:'' }}" min="{{ current_date }}" />
+          <small class="form-text text-muted">{{ form.fecha.help_text }}</small>
+        </div>
+      </div>
+      {% endif %}
+      
+      <script>
+        // Obtener la fecha y hora actuales en formato ISO
+        var currentDate = new Date().toISOString().slice(0, 16)
+        
+        // Obtener el día de la semana actual (0 para domingo, 1 para lunes, etc.)
+        var currentDayOfWeek = new Date().getDay()
+        
+        // Calcular la diferencia para llegar al próximo domingo
+        var daysUntilNextSunday = (7 - currentDayOfWeek) % 7
+        
+        // Calcular la fecha del próximo domingo en formato ISO
+        var nextSunday = new Date()
+        nextSunday.setDate(nextSunday.getDate() + daysUntilNextSunday)
+        var nextSundayISO = nextSunday.toISOString().slice(0, 16)
+        
+        // Establecer el límite mínimo y máximo en el campo de fecha
+        document.getElementsByName('fecha')[0].min = nextSundayISO
+      </script>
+    </div>
+
+    {% if curso.es_convenio %}
+    <div class="row mx-auto">
+      <div class="col text-center">
+        <div class="form-group">
+          {{ form.asistencia_obligatoria }}
+          <label for="{{ form.asistencia_obligatoria.id_for_label }}">Control de asistencia</label>
+        </div>
+      </div>
+    </div>
+    {% endif %}
+
+    <div class="row row-cols-1 row-cols-sm-1 row-cols-md-2">
+      <div class="col">
+        <a href="{% url 'cursos:index' %}" class="btn btn-secondary">Cancelar</a>
+      </div>
+      <div class="col">
+        <button type="submit" class="btn btn-primary">Guardar</button>
+      </div>
+    </div>
   </form>
+  {% else %}
+  No hay profesores capacitados para esta actividad.
+  <a href="{% url 'cursos:profesor_crear' %}" class="btn btn-primary btn-sm btn-detalle"><i class="fa-solid fa-plus"></i> Crear profesor</a>
+
+{% endif %}
+
 {% endblock %}

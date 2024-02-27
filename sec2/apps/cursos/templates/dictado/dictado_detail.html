@@ -1,102 +1,254 @@
- {% extends 'detalle_ventana_nueva.html' %}
+{% extends 'detalle_listado.html' %}
 {% load crispy_forms_tags %}
 {% load static %}
 
 {% block detalle %}
-  <div class="row">
-    <div class="col-md-6">
-      <p>
-        <strong>Nombre:</strong> {{ dictado.nombre }}
-      </p>
-    </div>
-    <div class="col-md-6">
-      <p>
-        <strong>Titular:</strong> {{ nombre_profesor }}
-      </p>
-    </div>
-  </div>
+<div class="row">
 
-  <div class="row">
-    <div class="col-md-6">
-      <p>
-        <strong>Costo:</strong> ${{ dictado.costo }} AR por {{ dictado.get_periodo_pago_display }}
-      </p>
-    </div>
-    <div class="col-md-6">
-      <strong>Método de pago:</strong> Por {{ dictado.get_periodo_pago_display }}
-    </div>
+  <div class="col-md-2">
+    <p><strong>Desc. afiliados:</strong></p>
   </div>
-
-  <div class="row">
-    <div class="col">
-      <p>
-        <strong>Descuento:</strong> Afiliados al sindicato reciben un descuento del {{ dictado.descuento }}% en cuota mensual
-      </p>
-    </div>
+  <div class="col-md-3">
+    <p>{{ dictado.descuento }}% de descuento</p>
   </div>
+  <div class="col-md-2">
+    <p><strong>Titular:</strong></p>
+  </div>
+  <div class="col-md-3">
+    <p>{{ nombre_profesor }}</p>
+  </div>
+</div>
 
-  <div class="row">
-    <div class="col-md-6">
-      <p>
-        <strong>Cantidad de clases:</strong> {{ dictado.cantidad_clase }} aproximado
-      </p>
-    </div>
-    <div class="col-md-6">
-      <strong>Módulos por Clase:</strong>
-      {% if dictado.modulos == 1 %}
-        {{ dictado.modulos }} módulo ({{ dictado.modulos }} hora por clase)
+<div class="row">
+  <div class="col-md-2">
+    <p>
+      <strong>Valor:</strong>
+    </p>
+  </div>
+  <div class="col-md-3">
+    <p>{{costo_parcial}} </p>
+  </div>
+  <div class="col-md-2">
+    <p><strong>Módulos por Clase:</strong></p>
+  </div>
+  <div class="col-md-4">
+    <p>
+      {% if dictado.modulos_por_clase == 1 %}
+      {{ dictado.modulos_por_clase }} módulo ({{ dictado.modulos_por_clase }} hora por clase)
       {% else %}
-        {{ dictado.modulos }} módulos ({{ dictado.modulos }} horas por clase)
+      {{ dictado.modulos_por_clase }} módulos ({{ dictado.modulos_por_clase }} horas por clase)
       {% endif %}
-    </div>
+    </p>
   </div>
+</div>
 
-  <div class="row">
-    <div class="col-md-6">
-      <p>
-        <strong>Capcidad minima:</strong> {{ dictado.minimo_alumnos }} participantes
-      </p>
-    </div>
-    <div class="col-md-6">
-      <strong>Limite de capacidad:</strong> {{ dictado.maximos_alumnos }} participantes
-    </div>
+<div class="row">
+  <div class="col-md-2">
+    <p><strong>Total de cupos:</strong></p>
   </div>
+  <div class="col-md-3">
+    <p>{{ total_inscritos }}/{{ dictado.cupo }} participantes</p>
+  </div>
+  <div class="col-md-2">
+    <p><strong>Inicio:</strong></p>
+  </div>
+  <div class="col-md-2">
+    <p>{{ dictado.fecha }} </p>
+  </div>
+</div>
+{% endblock %}
 
-  <div class="row">
-    <div class="col">
-      <p>
-        <strong>Certificado médico:</strong>
-        {% if dictado.certificado_medico == 1 %}
-          Se requiere certificado médico para participar, especialmente para actividades físicas intensas.
-        {% elif dictado.certificado_medico == 2 %}
-          No requiere
-        {% elif dictado.certificado_medico == 3 %}
-          Se recomienda certificado médico, pero no es obligatorio
+{% block horarios %}
+<div class="d-flex justify-content-center">
+
+<table class="table table-sm table-hover" style="width: 40%;">
+  <thead>
+    <tr>
+      <th>Día</th>
+      <th>Desde</th>
+      <th>Hasta</th>
+      <th>Lugar asignado</th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for horario in horarios %}
+    <tr>
+      <td>{{ horario.get_dia_semana_display }}</td>
+      <td>{{ horario.hora_inicio }} hrs.</td>
+      <td>{{ horario.hora_fin }} hrs.</td>
+      <td>
+        {% if horario.reserva %}
+        {{ horario.reserva.aula }}
+        {% else %}
+        Sin reserva
         {% endif %}
-      </p>
+      </td>
+      
+      {% if not horario.reserva %}
+      <td class="text-end">
+        {% if hay_reserva %}
+        <a href="{% url 'cursos:asignar_aula' curso_pk=horario.dictado.curso.pk dictado_pk=horario.dictado.pk horario_id=horario.pk %}" class="btn btn-primary btn-sm btn-detalle">
+          <i class="fa-solid fa-door-open"></i>Reservar Aula
+        </a>
+        {% else %}
+            <button type="button" class="btn btn-primary btn-sm btn-detalle" data-bs-toggle="modal" data-bs-target="#exampleModal{{ horario.pk }}">
+                <i class="fa-solid fa-door-open"></i>Reservar Aula
+            </button>
+        {% endif %}
+      </td>
+    {% endif %}
+    </tr>
+    <!-- Modal -->
+    {% if not horario.reserva %}
+    <div class="modal fade" id="exampleModal{{ horario.pk }}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h1 class="modal-title fs-5" id="exampleModalLabel">Reserva de aula</h1>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <p>¿Desea reservar aulas? Una vez hecha una reserva no podrá generar más horarios.</p>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary btn-sm " data-bs-dismiss="modal">Cancelar</button>
+            <a href="{% url 'cursos:asignar_aula' curso_pk=horario.dictado.curso.pk dictado_pk=horario.dictado.pk horario_id=horario.pk %}" class="btn btn-primary btn-sm">
+              <i class="fa-solid fa-door-open"></i> Reservar
+            </a>
+          </div>
+        </div>
+      </div>
     </div>
-  </div>
+    {% endif %}
+    {% endfor %}
+  </tbody>
+</table>
+</div>
 {% endblock %}
 
 {% block botones %}
+  {% comment %} <div class="col d-flex justify-content-center">
+    <a href="{% url 'cursos:dictado_editar' curso_pk=curso.pk dictado_pk=dictado.pk %}" class="btn btn-primary btn-sm btn-detalle"><i class="fa-regular fa-pen-to-square"></i> Modificar</a>
+  </div> {% endcomment %}
+  
   <div class="col d-flex justify-content-center">
-    <a href="{% url 'cursos:dictado_editar' curso_pk=curso.pk dictado_pk=object.pk %}" class="btn btn-primary btn-sm btn-detalle"><i class="fa-regular fa-pen-to-square"></i> Modificar</a>
+    <button type="button" class="btn btn-info btn-sm btn-detalle" data-bs-toggle="modal" data-bs-target="#exampleModal">
+      <i class="fa-solid fa-list"></i>
+      Alumnos
+    </button>
   </div>
 
-  <div class="col d-flex justify-content-end">
-    <button type="button" class="btn btn-danger btn-sm btn-detalle" data-bs-toggle="modal" data-bs-target="#exampleModal_eliminar"><i class="fa-regular fa-circle-down"></i> Dar de Baja</button>
-    {% include 'dictado/modal_confirm_baja.html' %}
+  {% comment %} <a href="{% url 'cursos:alumno_inscripto' curso_pk=dictado.curso.pk dictado_pk=dictado.pk %}" class="btn btn-info btn-sm btn-detalle"> {% endcomment %}
+    {% comment %} Lista de alumnos {% endcomment %}
+    {% comment %} </a> {% endcomment %}
+
+<!-- Modal -->
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 class="modal-title fs-5" id="exampleModalLabel">Inscritos</h2>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        {% if alumnos_inscritos or afiliado_inscritos or familiares_inscritos or profesores_inscritos %}
+        <table class="table table-sm table-hover">
+          <thead>
+            <tr>
+              <th>Dni</th>
+              <th>Apellido</th> 
+              <th>Nombre</th>
+              <th>Rol</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for inscrito in todos_inscritos_sorted %}
+            <tr>
+              <td>{{ inscrito.persona.dni }}</td>
+              <td>{{ inscrito.persona.apellido }}</td>
+              <td>{{ inscrito.persona.nombre }}</td>
+              <td>{{ inscrito.persona.obtenerTipo }}</td>
+
+              <td class="text-end">
+                <button type="button" class="btn btn-danger btn-sm btn-detalle" 
+                onclick="gestionInscripcion{% if inscrito.persona.es_afiliado %}Afiliado{% elif inscrito.persona.es_grupo_familiar %}Familiar{% elif inscrito.persona.es_profesor %}Profesor{% elif inscrito.persona.es_alumno %}Alumno{% endif %}('desinscribir', {{ dictado.curso.pk }}, {{ dictado.pk }}, {{ inscrito.persona.pk }})">Desinscribir</button>
+              </td>
+
+              <td>
+                {% if inscrito.persona.es_afiliado %}
+                <a href="{% url 'afiliados:afiliado_detalle' inscrito.pk %}" class="btn btn-primary btn-sm btn-detalle"><i class="fa-regular fa-eye"></i> Detalle</a>
+                {% elif inscrito.persona.es_grupo_familiar %}
+                <a href="{% url 'afiliados:familiar_detalle_' inscrito.pk %}" class="btn btn-primary btn-sm btn-detalle"><i class="fa-regular fa-eye"></i> Detalle</a>
+                {% elif inscrito.persona.es_profesor %}
+                <a href="{% url 'cursos:profesor_detalle' inscrito.pk %}" class="btn btn-primary btn-sm btn-detalle"><i class="fa-regular fa-eye"></i> Detalle</a>
+                {% elif inscrito.persona.es_alumno %}
+                <a href="{% url 'cursos:alumno_detalle' pk=inscrito.pk %}" class="btn btn-primary btn-sm btn-detalle"><i class="fa-regular fa-eye"></i> Detalle</a>
+                {% endif %}
+              </td>
+            </tr>
+          {% endfor %}
+          </tbody>
+        </table>
+        {% else %}
+        <p>No hay alumnos/afiliado/Grupo Familiar inscriptos.</p>
+        {% endif %}
+      </div>
+      <div class="modal-footer">
+        <a href="{% url 'cursos:dictado_lista_espera' curso_pk=dictado.curso.pk dictado_pk=dictado.pk %}" 
+        class="btn btn-warning btn-sm " 
+        onclick="window.open(this.href, '_blank', 'width=600,height=400'); return false;">
+        <i class="fa-solid fa-list"></i>
+        Lista de espera
+        </a>
+        <a href="{% url 'cursos:verificar_persona' curso_pk=dictado.curso.pk dictado_pk=dictado.pk %}" 
+        class="btn btn-primary btn-sm " 
+        onclick="window.open(this.href, '_blank', 'width=600,height=400'); return false;">
+         <i class="fa-regular fa-pen-to-square"></i> Inscribir
+        </a>
+        <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Close</button>
+      </div>
+    </div>
   </div>
+</div>
+  
+{% if not  hay_reserva %}
+<div class="col d-flex justify-content-center">
+  <a href="{% url 'cursos:horario_crear' curso_pk=dictado.curso.pk dictado_pk=dictado.pk %}" class="btn btn-primary btn-detalle">
+    <i class="fa-solid fa-plus"></i> Generar Horario
+  </a>
+</div>
+{% endif %}
+
+{% if todos_los_horarios_con_aula %}
+
+{% if not clases %}
+<div class="col d-flex justify-content-center">
+  <a href="{% url 'cursos:generar_clases' curso_pk=curso.pk dictado_id=dictado.pk %}" class="btn btn-primary btn-detalle">
+    <i class="fa-solid fa-plus"></i> Generar Clases
+  </a>
+</div>
+{% endif %}
+{% endif %}
+
+<div class="col d-flex justify-content-end">
+  <button type="button" class="btn btn-danger btn-sm btn-detalle" data-bs-toggle="modal" data-bs-target="#exampleModal_eliminar"><i class="fa-regular fa-circle-down"></i> Dar de Baja</button>
+  {% include 'dictado/modal_confirm_baja.html' %}
+</div>
 {% endblock %}
 
 {% block listado_asociado %}
+
   {% if clases %}
+  <div class="container-sm">
+    <h3 class="subtitulo">{{ tituloListado }}</h3>
     <table class="table table-sm table-hover">
       <thead>
         <tr>
           <th>#</th>
-          <th>Nombre</th>
-          <th>Inscriptos</th>
+          <th>Fecha</th>
+          <th class="text-center">Asistencia</th>
           <th></th>
         </tr>
       </thead>
@@ -104,23 +256,58 @@
         {% for clase in clases %}
           <tr>
             <td>{{ forloop.counter }}</td>
-            <td>{{ clase.nombre }}</td>
-            <td>{{ clase.inscritos }} / {{ dictado.maximos_alumnos }}</td>
-            <td>
-              <a 
-              href="{% url 'cursos:clase_detalle' curso_pk=curso.pk dictado_pk=dictado.pk clase_pk=clase.pk %}" 
-              class="btn btn-primary btn-detalle"
-              >
-              <i class="fa-regular fa-eye"></i> Detalle</a>
-           </td>
-
-            
+            <td>{{ clase.reserva.horario.get_dia_semana_display }} {{ clase.reserva.fecha }}</td>
+            <td class="text-center">  
+              {% if clase.asistencia_tomada %}
+              <i class="fa-solid fa-check" style="color:green"></i>
+              {% else %}
+              <i class="fa-solid fa-xmark" style="color:red"></i>
+              {% endif %}
+            </td>
+            {% comment %} <a href="{% url 'cursos:clase_detalle' curso_pk = curso.pk dictado_pk = dictado.pk clase_pk = clase.pk %}" class="btn btn-primary btn-detalle"><i class="fa-regular fa-eye"></i> Detalle</a> {% endcomment %}
+            <td class="text-end">
+              <a href="{% url 'cursos:clase_detalle' curso_pk=curso.pk dictado_pk=dictado.pk clase_pk=clase.pk %}" class="btn btn-primary btn-detalle btn-sm"><i class="fa-regular fa-eye"></i> Detalle</a>
+              {% comment %} <a href="{% url 'cursos:clase_detalle' curso_pk = curso.pk dictado_pk = dictado.pk clase_pk = clase.pk %}" class="btn btn-primary btn-detalle"><i class="fa-regular fa-eye"></i> Detalle</a> {% endcomment %}
+            </td>
           </tr>
+          
         {% endfor %}
       </tbody>
     </table>
-  {% else %}
-    <p>No hay clases asociadas.</p>
   {% endif %}
-  <a href="{% url 'cursos:clase_crear' curso_pk=curso.pk dictado_pk=object.pk %}" class="btn btn-primary btn-detalle"><i class="fa-solid fa-plus"></i> Nuevo</a>
-{% endblock %}
+  </div>
+
+  <script>
+//------------------- GESTION DE INSCRIPCION --------------------
+function gestionInscripcion(accion, curso_pk, dictado_pk, persona_pk, tipo) {
+  var url = `{% url 'cursos:gestion_inscripcion' curso_pk=9999 dictado_pk=9999 persona_pk=8888 tipo='placeholder' accion='placeholder' %}`
+    .replace('9999', curso_pk)
+    .replace('9999', dictado_pk)
+    .replace('8888', persona_pk)
+    .replace('placeholder', tipo)  // Reemplazar el tipo dinámicamente
+    .replace('placeholder', accion);  // Reemplazar la acción dinámicamente
+  window.location.href = url;
+}
+// Llamadas específicas
+function gestionInscripcionAfiliado(accion, curso_pk, dictado_pk, persona_pk) {
+  gestionInscripcion(accion, curso_pk, dictado_pk, persona_pk, 'Afiliado');
+}
+
+function gestionInscripcionFamiliar(accion, curso_pk, dictado_pk, persona_pk) {
+  gestionInscripcion(accion, curso_pk, dictado_pk, persona_pk, 'Familiar');
+}
+
+function gestionInscripcionProfesor(accion, curso_pk, dictado_pk, persona_pk) {
+  gestionInscripcion(accion, curso_pk, dictado_pk, persona_pk, 'Profesor');
+}
+
+function gestionInscripcionAlumno(accion, curso_pk, dictado_pk, persona_pk) {
+  gestionInscripcion(accion, curso_pk, dictado_pk, persona_pk, 'Alumno');
+}
+  </script>
+
+    
+
+  {% endblock %}
+
+  

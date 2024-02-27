@@ -30,10 +30,11 @@ label {
 
 /* Estilo para los campos de entrada y selects */
 input[type="text"],
-input[type="time"],
+input[type="email"],
+input[type="date"],
 select {
     width: 100%;
-    padding: 10px;
+    padding: 5px;
     border: 1px solid #ccc;
     border-radius: 4px;
 }

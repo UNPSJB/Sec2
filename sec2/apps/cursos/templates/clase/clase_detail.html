@@ -1,70 +1,94 @@
-{% extends 'detalle_ventana_nueva.html' %}
+{% extends 'detalle_listado.html' %}
 {% load crispy_forms_tags %}
 
 {% block detalle %}
-  <div class="row">
-    <div class="col-md-6">
-      <p>
-        <strong>Nombre:</strong>
-        {{ clase.nombre }}
-      </p>
-    </div>
-    <div class="col-md-6">
-      <p>
-        <strong>Inscriptos:</strong> {{ clase.inscritos }} de {{ dictado.maximos_alumnos }}
-      </p>
-    </div>
+<div class="container">
+  <div class="row row-cols-1 row-cols-sm-2 row-cols-md-4">
+    <div class="col"><p><strong>Fecha:</strong> {{ clase.reserva.fecha }}</p></div>
+    <div class="col"><p><strong>Hora Inicio:</strong> {{ clase.reserva.horario.hora_inicio }} hrs.</p></div>
+    <div class="col"><p><strong>Hora fin:</strong> {{ clase.reserva.horario.hora_fin }} hrs.</p></div>
+    <div class="col"><p><strong>Lugar:</strong> {{ clase.reserva.aula }}</p></div>
   </div>
+</div>
+{% endblock %}
 
-  <div class="row">
-    <div class="col-md-6">
-      <p>
-        <strong>Fecha de inicio:</strong>
-        {% if object.horarios.all %}
-        <td> 07/01/2024 </td>
-        
-        {% else %}
-          A definir
-        {% endif %}
-      </p>
-    </div>
-  </div>
 
-  {% if horarios %}
+{% block listado_asociado %}
+
+<div class="container-sm">
+  <h3 class="subtitulo">{{ tituloListado }}</h3>
+  
+  {% if inscritos %}
+  <h5 class="subtitulo">{{ tituloListado1 }}</h5>
+  <form method="post" action="{% url 'cursos:generar_asistencia' clase.id  %}">
+    {% csrf_token %}
     <table class="table table-sm table-hover">
       <thead>
         <tr>
-          <th>Día</th>
-          <th>Desde</th>
-          <th>Hasta</th>
-          <th>Aula</th>
-          <th></th>
+          {% include "clase/cabecera_tabla_asistencia.html" %}
+          <th>Rol</th>
+          <th class="text-center">Asistencia</th>
+
         </tr>
       </thead>
-
       <tbody>
-        {% for horario in horarios %}
+        {% for inscrito in inscritos %}
         <tr>
-            <td>{{ horario.get_dia_semana_display }}</td>
-            <td>{{ horario.hora_inicio }}</td>
-            <td>{{ horario.hora_inicio }} + {{ clase.dictado.modulos }} horas </td>
-            <td>{{ horario.aula }}</td>
-            <td>[icono de editar]</td>
+          {% include "clase/cuerpo_tabla_asistencia.html" with persona=inscrito.persona%}
+          <td>{{ inscrito.persona.obtenerTipo }}</td>
+          <td class="text-center">
+            <input 
+            type="checkbox"
+            name="alumnos_asistencia"
+            value="{{ inscrito.id }}"
+            {% if clase.asistencia_tomada %}disabled{% endif %}
+            {% if inscrito.persona.pk in lista_asistencia %}checked{% endif %}>
+          </td>
         </tr>
         {% endfor %}
       </tbody>
     </table>
+
+    <h5 class="subtitulo"> {{tituloListado2}}</h5>
+    <table class="table table-sm table-hover">
+      <thead>
+        <tr>
+          {% include "clase/cabecera_tabla_asistencia.html" %}
+          <th class="text-center">Asistencia</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for titular in titulares %}
+        <tr>
+          {% include "clase/cuerpo_tabla_asistencia.html" with persona=titular.profesor.persona%}
+          <td class="text-center">
+            <input 
+            type="checkbox"
+            name="profesor__asistencia"
+            value="{{ titular.profesor.id }}" 
+            {% if clase.asistencia_tomada %}disabled{% endif %}
+            {% if titular.profesor.persona.pk in lista_asistencia_titular %}checked{% endif %}>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    
+    {% if not clase.asistencia_tomada %}
+    <div class="text-center">
+      <button class="btn btn-success btn-detalle" type="submit">Generar Asistencia</button>
+    </div>
+    {% endif %}
+    
+    
+  </form>
+</div>
+
+  {% else %}
+  <p>No hay alumnos inscriptos.</p>
   {% endif %}
-  {% endblock %}
-
-  {% block botones %}
-  <div class="col d-flex justify-content-center">
-    <a href="{% url 'cursos:horario_crear' curso_pk=clase.dictado.curso.pk dictado_pk=clase.dictado.pk clase_pk=clase.pk %}" class="btn btn-primary btn-detalle"><i class="fa-solid fa-plus"></i> Generar Horario</a>
-  </div>
-  {% endblock %}
-
-
-
-{% block listado_asociado %}
   
-{% endblock %}
+  
+  
+  {% endblock %}
+  

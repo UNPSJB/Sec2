@@ -15,10 +15,10 @@ text_validator = RegexValidator(
 )
 
 text_and_numeric_validator = RegexValidator(
-        regex=r'^[A-Za-z0-9\s]+$',
-        message=f'{XMARK_ICON} Sin caracteres especiales.',
-        code='invalid_text'
-    )
+    regex=r'^[A-Za-z0-9\sñÑ]+$',
+    message=f'{XMARK_ICON} Sin caracteres especiales.',
+    code='invalid_text'
+)
 
 def validate_positive_decimal(value):
     if value < 0:

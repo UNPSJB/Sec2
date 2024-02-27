@@ -1,7 +1,7 @@
 .btn-detalle {
-    font-size: 12px;
+    font-size: 10px;
     /*Ajusta el tamaño de fuente del botón según tus necesidades */
-    padding: 5px 10px;
+    /* padding: 5px 10px; */
     /*Ajusta el espaciado interno del botón según tus necesidades*/
     margin-top: 5px;
     margin-bottom: 5px;
@@ -26,4 +26,13 @@
 .container-sm{
     padding-left: 3%;
     padding-right: 3%;
+}
+
+/* Estilo para los campos de entrada y selects */
+input[type="text"],
+select {
+    width: 100%;
+    padding: 5px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
 }

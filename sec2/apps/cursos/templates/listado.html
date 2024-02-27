@@ -17,8 +17,8 @@
             {% block botones %}
             {% endblock %}
         </div>
-        <div class="col-md-6 text-center"> <!-- Utiliza col-md-6 para que la paginación esté en el centro en dispositivos medianos y grandes, y text-center para centrar el texto -->
-            {% include "pagination.html" %}
+        <div class="col-md-6 text-center"> 
+          {% comment %} ACA IRIA EL PAGINATOR {% endcomment %}
         </div>
     </div>
 </div>
@@ -28,17 +28,11 @@
 
     {% block tabla_listado %}
       {% endblock %}
-
     </div>
   </div>
-
-  
-
 </div>
 
 {% block nav_lateral_filtro %}
-
     {% include 'nav_filtro.html' %}
-    
   {% endblock %}
 {% endblock %}

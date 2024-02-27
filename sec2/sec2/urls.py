@@ -22,7 +22,8 @@ from .views import *
 urlpatterns = [
     
     #PRINCIPALES
-    path('', login, name="login"),
+    # path('', login, name="login"),
+    path('', home, name="login"),
     path('admin/', admin.site.urls),
     path('home/', home, name="home"),
     path("select2/", include("django_select2.urls")),
@@ -30,17 +31,11 @@ urlpatterns = [
     #APLICACIONES
     path('home/app_afiliados/',include('apps.afiliados.urls')),
     path('home/app_cursos/',include('apps.cursos.urls')),
+    path('home/app_personas/',include('apps.personas.urls')),
     path('home/app_alquileres/',include('apps.alquileres.urls')),
-    
-    #! lo llama otra vez?
-   # path('home/app_afiliados/', include('apps.personas.urls')),
-
     # path('cursos/',include('apps.cursos.urls')),
     # path('alquileres/',include('apps.alquileres.urls')),
     # path('pagos/',include('apps.pagos.urls')),
-    
-
-
 ]
 
 

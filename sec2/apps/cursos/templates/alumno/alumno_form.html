@@ -1,20 +1,20 @@
-{% extends "home_curso.html" %}
+{% extends 'alta_ventana_nueva.html' %}
 {% load crispy_forms_tags %}
 {% load static %}
 
-{% block dinamica %}
-    {% if form.errors %}
-    <div class="alert alert-danger" role="alert">
-      No se pudo cargar el formulario comunicarse con soporte
-    </div>
-    <p>{{form.errors}}</p>
-    {% endif %}
-    
-   {% crispy form %}
-    
-    {% if mensaje %}
-    <div class="alert alert-info" role="alert">
-      registro finalizado exitosamente
-    </div>
-    {% endif %}
+{% block formulario %}
+  <br />
+    <form method="post">
+      {% csrf_token %}
+      {% include 'persona_alta.html' %}
+
+      <div class="row">
+        <div class="col-12">
+          <div class="text-center mt-3">
+            <button id="prev-button" class="btn btn-primary" style="display: none;">Anterior</button>
+            <button type="submit" class="btn btn-success">Guardar</button>
+          </div>
+        </div>
+    </form>
+  </div>
 {% endblock %}

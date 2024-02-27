@@ -11,7 +11,7 @@
 
 {% block container %}
   <br />
-  <h2 class="titulo">{{ titulo }} {{ curso.nombre }}</h2>
+  <h2 class="titulo">{{ titulo }}</h2>
   <br />
   <div class="container-sm">
     <div class="table-responsive">
@@ -25,7 +25,7 @@
           </tr>
         </thead>
         <tbody>
-          {% for dictado in object_list %}
+          {% comment %} {% for dictado in object_list %}
             <tr class="bg-transition fila-personalizada">
               <td style="border-left-width: 0px; padding-left: 20px;">{{ dictado.cantidad_clase }}</td>
               <td>{{ dictado.titular }}</td>
@@ -33,7 +33,7 @@
                 <a href="{% url 'cursos:dictado' dictado.pk %}" class="btn btn-primary btn-detalle"><i class="fa-regular fa-eye"></i> Detalle</a>
               </td>
             </tr>
-          {% endfor %}
+          {% endfor %} {% endcomment %}
         </tbody>
       </table>
     </div>

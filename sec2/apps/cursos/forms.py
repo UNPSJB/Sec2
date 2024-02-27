@@ -3,7 +3,7 @@ from django.forms import ValidationError
 from apps.cursos.models import Alumno
 from apps.personas.forms import PersonaForm,PersonaUpdateForm
 from apps.personas.models import Persona
-from .models import Aula, Profesor, Dictado, Curso, Clase, Titular, Pago_alumno, Actividad
+from .models import Aula, Profesor, Dictado, Curso, Titular, Pago_alumno, Actividad
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Fieldset, Submit, HTML
 from sec2.utils import FiltrosForm

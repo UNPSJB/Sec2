@@ -1,0 +1,193 @@
+{% extends 'detalle_listado_afiliado.html' %}
+{% load crispy_forms_tags %}
+{% load static %}
+
+
+{% block detalle %}
+<link href="{% static 'css/afiliado_confirm_delete.css' %}" rel="stylesheet" />
+
+<h3>{{subtitulodetalle1}}</h3>
+{% include "persona_detalle.html" with persona=afiliado.persona %}
+<br>
+<h3>{{subtitulodetalle2}}</h3>
+
+<div class="row">
+  <div class="col-md-2">
+    <p><strong>Estado:</strong> </p>
+  </div>
+  <div class="col-md-2">
+    <p class="status">
+      {% if afiliado.estado == 1 %}  <span class="pending-status">PENDIENTE</span>
+      {% elif afiliado.estado == 2 %} <span class="active-status">ACTIVO</span>
+      {% elif afiliado.estado == 3 %} <span class="inactive-status">INACTIVO</span>
+      {% endif %}
+    </p>
+  </div>
+
+  <div class="col-md-2">
+    <p><strong>Razón Social:</strong> </p>
+  </div>
+  <div class="col-md-2">
+    {{ afiliado.razon_social }}
+  </div>
+
+  <div class="col-md-2">
+    <p><strong>Hora Jornada:</strong> </p>
+  </div>
+  <div class="col-md-2">
+    {{ afiliado.horaJornada }} hrs semanales
+  </div>
+
+</div>
+
+<div class="row">
+  <div class="col-md-2">
+    <p><strong>Domicilio (empresa):</strong> </p>
+  </div>
+  <div class="col-md-2">
+    {{ afiliado.domicilio_empresa }}
+  </div>
+
+  <div class="col-md-2">
+    <p><strong>Fecha Ingreso:</strong> </p>
+  </div>
+  <div class="col-md-2">
+    {{ afiliado.fechaIngresoTrabajo }}
+  </div>
+
+  <div class="col-md-2">
+    <p><strong>Rama:</strong> </p>
+  </div>
+  <div class="col-md-2">
+    {{ afiliado.rama }}
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-md-2">
+    <p><strong>Fecha afiliación:</strong> </p>
+  </div>
+  <div class="col-md-2">
+    {{ afiliado.fechaAfiliacion }}
+  </div>
+
+  <div class="col-md-2">
+    <p><strong>Cuit empleador:</strong> </p>
+  </div>
+  <div class="col-md-2">
+    {{ afiliado.cuit_empleador }}
+  </div>
+  <div class="col-md-2">
+    <p><strong>Categoría Laboral:</strong> </p>
+  </div>
+  <div class="col-md-2">
+    {{ afiliado.categoria_laboral }}
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-md-2">
+    <p><strong>Localidad:</strong></p>
+  </div>
+  <div class="col-md-2">
+    {{ afiliado.localidad_empresa }}
+  </div>
+
+  <div class="col-md-2">
+    <p><strong>Sueldo:</strong> </p>
+  </div>
+  <div class="col-md-2">
+    ${{ afiliado.sueldo }} AR
+  </div>
+</div>
+<br>
+{% endblock %}
+
+
+{% block botones %}
+<div class="col d-flex justify-content-center"> 
+  {% if afiliado.estado == 1 or afiliado.estado == 2 %}
+    <a href="{% url 'afiliados:afiliado_actualizar' afiliado.pk %}" class="btn btn-sm btn-primary "><i class="fas fa-pencil-alt"></i> Modificar</a>
+  {% endif %}
+</div>
+
+<div class="col d-flex justify-content-center">
+  <button type="button" class="btn btn-info btn-sm" data-bs-toggle="modal" data-bs-target="#exampleModal">
+    <i class="fas fa-users"></i>
+    Grupo Familiar
+  </button>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 class="modal-title fs-5" id="exampleModalLabel">Grupo Familiar</h2>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        {% if afiliado.familia.all %}
+        <table class="table table-sm table-hover">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Dni</th>
+              <th>Vinculo</th>
+              <th>Apellido</th> 
+              <th>Nombre</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for familiar in afiliado.familia.all %}
+            <tr>
+              <td>{{ forloop.counter }}</td>
+              <td>{{ familiar.persona.dni }}</td>
+              <td>{{ familiar.get_tipo_display }}</td>
+              <td>{{ familiar.persona.apellido }}</td>
+              <td>{{ familiar.persona.nombre }}</td>
+              <td class="text-end">
+                <a href="{% url 'afiliados:familiar_detalle' pk=afiliado.pk familiar_pk=familiar.pk %}" class="btn btn-primary btn-detalle btn-sm"         onclick="window.open(this.href, '_blank', 'width=600,height=400'); return false;">
+                  <i class="fa-regular fa-eye"></i> Detalle</a>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+        {% else %}
+        <p>No familiar asociado al afiliado.</p>
+        {% endif %}
+      </div>
+      <div class="modal-footer">
+        <a href="{% url 'afiliados:crear_familiar' afiliado.pk %}" 
+        class="btn btn-primary btn-sm">
+        <i class="fa-solid fa-plus"></i> Nuevo Familiar
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<div class="col d-flex justify-content-end">
+  {% if afiliado.estado == 1 %}
+  <button type="button" class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#modal_afiliar_{{ afiliado.pk }}"><i class="fa-regular fa-circle-down"></i> Afiliar</button>
+  {% include 'modal_confirm_alta.html' with object=afiliado %}
+  {% endif %}
+  
+  {% if afiliado.estado == 2 %}
+  <button type="button" class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#modal_desafiliar_{{ afiliado.pk }}"><i class="fa-regular fa-circle-down"></i> Desafiliar</button>
+  {% include 'modal_confirm_baja.html' with object=afiliado %}
+  {% endif %}
+</div>
+{% endblock %}
+
+{% block listado_asociado %}
+{% if afiliado.dictados.all %}
+  <div class="container-sm">
+    <h3 class="subtitulo">{{ tituloListado }}</h3>
+    {% include "inscripcion_dictado.html" with dictados=afiliado.dictados.all %}
+  </div>
+{% endif %}
+{% endblock %}

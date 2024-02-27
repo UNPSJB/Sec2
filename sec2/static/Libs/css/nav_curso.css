@@ -109,11 +109,6 @@
     /* Color de fondo para el botón de Curso */
 }
 
-.submenu-toggle[data-submenu="actividades"] {
-    background-color: #FF7043;
-    /* Color de fondo para el botón de Actividades */
-}
-
 .submenu-toggle[data-submenu="profesor"] {
     background-color: #4B0082;
     /* Color de fondo para el botón de Profesor (Indigo) */
@@ -179,7 +174,6 @@
 }
 
 #curso-submenu,
-#actividades-submenu,
 #profesor-submenu,
 #aulas-submenu,
 #pago-submenu {
@@ -213,4 +207,39 @@ hr {
     margin-top: 0px;
     border-top-width: 0px;
     margin-bottom: 3%;
+}
+
+.enlace {
+    font-size: 18px;
+    text-align: left;
+    margin-bottom: 0px;
+
+    display: inline-block;
+    padding: 7px;
+    border-radius: 0px;
+    text-decoration: none; /* Quitar el subrayado del enlace */
+    color: white; /* Color del texto */
+    display: block; width: 100%;
+
+}
+
+#enlaceActividad:hover,
+#enlaceAula:hover {
+    color: #FFA500; /* Cambiar el color en el hover */
+}
+
+#enlaceActividad{
+    background-color: #FF7043;
+    border: 2px solid #FF7043;
+    
+}
+
+#enlaceAula{
+    background-color: #8B0000;
+    border: 2px solid #8B0000;
+}
+
+#enlaceAlumno{
+    background-color: #881979;
+    border: 2px solid #881979;
 }
