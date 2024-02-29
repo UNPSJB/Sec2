@@ -3,7 +3,7 @@ from unittest.util import _MAX_LENGTH
 from django.db import models
 from apps.personas.models import *
 from apps.afiliados.models import *
-from utils.constants import LOCALIDADES_CHUBUT
+from utils.choices import LOCALIDADES_CHUBUT
 from apps.personas.models import Rol, Persona
 
 # Create your models here.

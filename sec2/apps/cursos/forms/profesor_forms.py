@@ -3,7 +3,7 @@ from django import forms
 from django.forms import ValidationError
 from apps.personas.forms import PersonaForm,PersonaUpdateForm
 from apps.personas.models import Persona
-from utils.constants import ESTADO_CIVIL, MAX_LENGTHS, NACIONALIDADES
+from utils.choices import *
 from ..models import Actividad, Profesor
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Fieldset, Submit, HTML

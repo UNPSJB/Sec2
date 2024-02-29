@@ -4,43 +4,30 @@
   <form method="post" enctype="multipart/form-data">
     {% csrf_token %}
     
-    <div class="row">
-        <div class="col">
-            <label>Seleccione al afiliado:</label>
-            {{ form.afiliado_seleccionado }}
+    <div class="row row-cols-1 row-cols-sm-2 row-cols-md-2">
+      <div class="col">
+        <div class="form-group">
+          <label>Seleccione al afiliado:</label>
+          {{ form.afiliado_seleccionado }}
         </div>
-        <div class="col">
-            <label for="{{ form.tipo.id_for_label }}"> Seleccione el parentezco:</label>
-            {{ form.tipo }}
+      </div>
+      <div class="col">
+        <div class="form-group">
+          <label for="{{ form.tipo.id_for_label }}"> Seleccione el parentezco:</label>
+          {{ form.tipo }}
         </div>
+      </div>
     </div>
-
-
-    <div class="row">
-
-
-        <div class="col-12">
-            <div class="tab-content" id="form-tabs-content">
-            {% comment %}SECCION 1{% endcomment %}
-            <div class="tab-pane fade show active">
-                <div class="col">
-                </div>
-                <div class="col">
-                  <div class="form-group">
-                      </div>
-                </div>
-              </div>
-
-              {% include 'persona_alta.html' %}
-            </div>
-  
-            <div id="section2" class="tab-pane fade">
-              <div class="row">
-               
-            </div>
+    
+      <div class="col-12">
+        <div class="tab-content" id="form-tabs-content">
+          {% comment %}SECCION 1{% endcomment %}
+          <div class="tab-pane fade show active">
+            {% include 'persona_alta.html' %}
           </div>
         </div>
       </div>
+
       <div class="row">
         <div class="col-12">
           <div class="text-center mt-3">

@@ -12,9 +12,10 @@ app_name = "afiliados"
 urlpatterns = [
     path('',index, name="index"),
     path('afiliados/afiliado/crear/',AfiliadoCreateView.as_view(), name="afiliado_crear"),
-    
     path('afiliados/listar',AfliadosListView.as_view(), name="afiliado_listar"),
     path('afiliado/<int:pk>',AfiliadoDetailView.as_view(), name="afiliado_detalle"),
+
+
 
     # AFILIACION - DESAFILIACIÓN
     path('modificar/<int:pk>', AfiliadoUpdateView.as_view(), name="afiliado_actualizar"),
@@ -23,6 +24,8 @@ urlpatterns = [
     
     #GRUPO FAMILIAR
     path('grupofamiliar/crear', alta_familiar, name="crear_familiar_directo"),
+    path('grupofamiliar/listado', RelacionFamiliarListView.as_view(), name="grupo_familiar_listar"),
+
     path('afiliado/<int:pk>/grupoFamiliar/crear', FamiliaCreateView.as_view(), name="crear_familiar"),
     path('afiliado/<int:pk>/grupoFamiliar/familia/<int:familiar_pk>', FamiliarDetailView.as_view(), name="familiar_detalle"),
     path('afiliado/<int:pk>/grupoFamiliar/familia/<int:familiar_pk>/editar', FamiliarUpdateView.as_view(), name="familiar_editar"),

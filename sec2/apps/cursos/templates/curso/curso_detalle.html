@@ -55,9 +55,7 @@
 
   <div class="row">
     <div class="col-md-2">
-      <p>
-        <strong>Descripción:</strong>
-      </p>
+      <p class="negrita">Descripción:</p>
     </div>
     <div class="col-md-4">
       <p>{{ curso.descripcion }}</p>
@@ -75,9 +73,7 @@
   {% if curso.area == 2 %}
     <div class="row">
       <div class="col-md-2">
-        <p>
-          <strong>Certificado Médico:</strong>
-        </p>
+        <p class="negrita">Certificado Médico:</p>
       </div>
 
       {% if curso.requiere_certificado_medico %}
@@ -96,7 +92,7 @@
     
     {% if curso.area != 2 %}  
     <div class="col-md-2">
-      <p><strong>Equip. Informatico</strong></p>
+      <p class="negrita">Equip. Informatico</p>
     </div>
     <div class="col-md-4">
       <p>
@@ -136,7 +132,6 @@
 {% endblock %}
 
 {% block listado_asociado %}
-{% if dictados %}
 <div class="container-sm">
   <h3 class="subtitulo">{{ tituloListado }}</h3>
   <table class="table table-sm table-hover">
@@ -155,7 +150,7 @@
       <tr>
         <td>{{ forloop.counter }}</td>
         <td>{{ dictado.fecha }}</td>
-        <td>0/{{ dictado.cupo }}</td>
+        <td>[FALTA CALCULAR EL CUPO]/{{ dictado.cupo }}</td>
         <td>{{ dictado.descuento }} %</td>
         <td>{{ dictado.modulos_por_clase }} hrs</td>
         <td class="text-end">
@@ -173,6 +168,5 @@
   {% include 'curso/modal_primer_dictado.html' %}
   {% endif %}
 </div>
-{% endif %}
 
 {% endblock %}

@@ -40,7 +40,7 @@ class AfiliadoCreateView(CreateView):
         existing_person = Persona.objects.filter(dni=dni).first()
         
         if existing_person:
-            messages.error(self.request, f'{ICON_ERROR} ERROR: Ya existe una persona registrada en el sistema como {existing_person.obtenerRol()} con el mismo DNI.')
+            messages.error(self.request, f'{ICON_ERROR} ERROR: Ya existe una persona registrada en el sistema con el mismo DNI.')
             form = AfiliadoPersonaForm(self.request.POST)
             return self.render_to_response(self.get_context_data(form=form))
         else:
@@ -80,7 +80,13 @@ class AfiliadoCreateView(CreateView):
             return redirect(detail_url)
 
     def form_invalid(self, form):
-        messages.warning(self.request, f'{ICON_TRIANGLE} Corrija los errores marcados.')
+        messages.warning(self.request, f'{ICON_TRIANGLE} {MSJ_CORRECTION}')
+        print("")
+        print("ERRORES DEL FORMULARIO")
+        for field, errors in form.errors.items():
+            for error in errors:
+                print(f"Error en el campo '{field}': {error}")
+        print("")
         return super().form_invalid(form)
 
 # ----------------------------- AFILIADO DETALLE ----------------------------------- #
@@ -90,18 +96,25 @@ class AfiliadoDetailView (DeleteView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        afiliado = self.object  # Access the Afiliado instance
         context['titulo'] = "Datos del afiliado"
         context['subtitulodetalle1'] = "Datos personales"
         context['subtitulodetalle2'] = "Datos de afiliación"
         context['tituloListado'] = "Dictados Incritos"
+
+        # Retrieve all RelacionFamiliar instances related to the Afiliado
+        relacion_familiar_list = afiliado.relacionfamiliar_set.all()
+        context['relacion_familiar_list'] = relacion_familiar_list
+
         return context
 
 # ----------------------------- AFILIADO LIST ----------------------------------- #
 class AfliadosListView(ListFilterView):
     model = Afiliado
     filter_class = AfiliadoFilterForm
-    success_url = reverse_lazy('afiliados:afiliado_listar')
     template_name = 'afiliados/afiliado_list.html'
+    paginate_by = MAXIMO_PAGINATOR
+    success_url = reverse_lazy('afiliados:afiliado_listar')
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -214,6 +227,7 @@ def afiliado_aceptar(request, pk):
     afiliado.fechaAfiliacion = date.today()
     afiliado.estado = 2
     afiliado.persona.es_afiliado = True
+    afiliado.activar_familiares()
     afiliado.persona.save()
     afiliado.save()
     messages.success(request, f'{ICON_CHECK} El afiliado ha sido aceptado.')
@@ -315,7 +329,7 @@ class FamiliaCreateView(CreateView):
         afiliado = get_object_or_404(Afiliado, pk=self.kwargs.get('pk'))
         existing_person = Persona.objects.filter(dni=dni).first()
         if existing_person:
-            messages.error(self.request, f'{ICON_ERROR} ERROR: Ya existe una persona registrada en el sistema como {existing_person.obtenerRol()} con el mismo DNI.')
+            messages.error(self.request, f'{ICON_ERROR} ERROR: Ya existe una persona registrada en el sistema con el mismo DNI.')
             form = GrupoFamiliarPersonaForm(self.request.POST)
             return self.render_to_response(self.get_context_data(form=form))
         else:
@@ -382,9 +396,13 @@ class FamiliarDetailView(DeleteView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         familiar = self.object
+        print("")
+        print(familiar)
+        print("")
         context['titulo'] = "Datos del familiar"
         context['tituloListado'] = "Dictados Insciptos"
         context['afiliado'] = self.afiliado
+        context['familiar'] = familiar  # Agregar el objeto familiar al contexto
         return context
 
 class FamiliarDetailView_(DeleteView):
@@ -573,6 +591,22 @@ class FamiliarUpdateView_(UpdateView):
             form = GrupoFamiliarPersonaUpdateForm(self.request.POST)
             return self.render_to_response(self.get_context_data(form=form))
         
+# -----------------------------  LIST ----------------------------------- #
+class RelacionFamiliarListView(ListFilterView):
+    model = RelacionFamiliar
+    filter_class = RelacionFamiliarFilterForm
+    template_name = 'relacion_familiar_listar.html'
+    paginate_by = MAXIMO_PAGINATOR
+    success_url = reverse_lazy('afiliados:afiliado_listar')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['titulo'] = "Grupo Familiar"
+        return context
+        
+    def get_queryset(self):
+        return super().get_queryset()
+
 # ----------------------------- FAMILIAR ELIMINAR -----------------------------------
 def familiar_eliminar(request, pk, familiar_pk):
     # Obtener el objeto Familiar

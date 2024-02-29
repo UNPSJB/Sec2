@@ -28,7 +28,7 @@ class ProfesorCreateView(CreateView):
         dni = form.cleaned_data["dni"]
         existing_person = Persona.objects.filter(dni=dni).first()
         if existing_person:
-            messages.error(self.request, f'{ICON_ERROR} ERROR: Ya existe una persona registrada en el sistema como {existing_person.obtenerRol()} con el mismo DNI.')
+            messages.error(self.request, f'{ICON_ERROR} ERROR: Ya existe una persona registrada en el sistema con el mismo DNI.')
             form = ProfesorPersonaForm(self.request.POST)
             return self.render_to_response(self.get_context_data(form=form))
         else:

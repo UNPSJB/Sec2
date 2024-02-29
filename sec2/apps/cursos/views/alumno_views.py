@@ -21,6 +21,9 @@ from django.urls import reverse
 
 # ---------------- ALUMNO CREATE ----------------
 class AlumnoCreateView(CreateView):
+    """
+    CREAR TTUTOR LEGAL EN EL CASO DE QUE SEA MENOR DE EDAD
+    """
     model = Persona
     form_class = AlumnoPersonaForm
     template_name = 'alumno/alumno_form.html'

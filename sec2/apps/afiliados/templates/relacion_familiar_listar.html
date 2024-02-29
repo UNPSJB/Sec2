@@ -1,0 +1,41 @@
+{% extends 'listado_afiliado.html' %}
+{% load crispy_forms_tags %}
+
+{% load static %}
+
+{% block tabla_listado %}
+  <table class="table table-sm table-hover">
+    <thead>
+      <tr class="text-center">
+        <th style="border-right: 1px solid #ccc;"></th>
+        <th colspan="2">GRUPO FAMILIAR</th>
+        <th style="border-right: 1px solid #ccc;"></th>
+        <th colspan="2" style="border-right: 1px solid #ccc;">AFILIADO</th>
+      </tr>
+      <tr>
+        <th style="border-right: 1px solid #ccc;">#</th>
+        <th>Dni</th>
+        <th>Nombre</th>
+        <th style="border-right: 1px solid #ccc;">Relacion</th>
+        <th>Dni</th>
+        <th style="border-right: 1px solid #ccc;">Nombre</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for relacion in page_obj %}
+        <tr>
+            <td class="negrita">{{ forloop.counter }}</td>
+            <td>{{ relacion.familiar.persona.dni }}</td>
+            <td>{{ relacion.familiar.persona.apellido }} {{ relacion.familiar.persona.nombre }}</td>
+            <td >{{ relacion.get_tipo_relacion_display }}</td>
+            <td>{{ relacion.afiliado.persona.dni }}</td>
+            <td>{{ relacion.afiliado.persona.apellido }} {{ relacion.afiliado.persona.nombre }}</td>
+            <td class="text-end">
+              <a href="{% url 'afiliados:familiar_detalle' pk=relacion.afiliado.pk familiar_pk=relacion.familiar.pk %}" class="btn btn-primary btn-sm btn-detalle" onclick="window.open(this.href, '_blank', 'width=600,height=400'); return false;"><i class="fa-regular fa-eye"></i> Detalle</a>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+  </table>
+{% endblock %}
