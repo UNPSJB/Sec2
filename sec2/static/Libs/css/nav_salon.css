@@ -162,16 +162,6 @@
     /* Elimina el marcador de lista de los elementos <li> */
 }
 
-#curso-submenu,
-#actividades-submenu,
-#profesor-submenu,
-#aulas-submenu,
-#pago-submenu {
-    margin-bottom: 0px;
-    padding: 0px;
-
-}
-
 .item-subMenu {
     padding-left: 5%;
 }

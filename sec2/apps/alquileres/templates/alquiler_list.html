@@ -20,11 +20,15 @@
 {% endblock %}
 
 {% block dinamica %}
+
 <br>
   <h3 class="titulo">{{ titulo }}</h3>
 
   <br />
-  <div id='calendar'></div>
+  
+  <div class="container-sm" id='calendar'></div>
+
+
   <div class="container-sm">
     <div class="table-responsive">
 
@@ -84,7 +88,8 @@
         </script>
 
         <script src="{% static 'libs/fullcalendar/main.js' %}"> </script>
-        <script src="{% static 'libs/fullcalendar/locales-all' %}"> </script>
+        <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.10/locales/es.js'></script>
+
         <script>
             // Paso 1: Inicializar el calendario
             document.addEventListener('DOMContentLoaded', function() {
@@ -93,6 +98,10 @@
                     // Paso 2: Configurar opciones
                     timeZone: 'UTC', // Zona horaria local
                     locale: 'es',
+                    buttonText: {
+                      today: 'Hoy'
+                    },
+
                     initialView: 'dayGridMonth', // Vista inicial del calendario
                     // Paso 3: Definir eventos
                     events: [ 
