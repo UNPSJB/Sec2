@@ -1,3 +1,4 @@
+import datetime
 from apps.afiliados.forms import Afiliado
 from django.template import loader
 from django.http import HttpResponse
@@ -328,6 +329,7 @@ def es_menor_de_edad(self, fecha_nacimiento):
 
 def alta_familiar(request):
     if request.method == 'POST':
+
         form = AfiliadoSelectForm(request.POST)
         if form.is_valid():
             dni = form.cleaned_data["dni"]
@@ -377,10 +379,22 @@ def alta_familiar(request):
                         mensaje_exito(request, f'{MSJ_FAMILIAR_CARGA_CORRECTA}')
                         form = AfiliadoSelectForm(request.POST)
     else:
+        afiliados = Afiliado.objects.all()
+        print("AFILIADOS")
+        print(afiliados)
         form = AfiliadoSelectForm()
 
+    encabezado = {
+        # 'fecha':datetime.today()
+    }
+    detalle = {
+
+    }
     context = {
         'form': form,
+        'enc' : encabezado,
+        'det' : detalle,
+        'clientes': afiliados,
         'titulo': 'Alta de Familiar',  # Replace with your desired title
     }
     return render(request, 'grupoFamiliar/grupo_familiar_alta_directa.html', context)

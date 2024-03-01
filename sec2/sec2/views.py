@@ -2,7 +2,6 @@ from django.shortcuts import render, redirect
 from django.contrib.auth import logout as django_logout, login as django_login, authenticate
 from django.urls import reverse_lazy
 from .forms import SecAuthenticationForm
-from apps.personas.forms import BuscadorPersonasForm
 
 # @login_required(login_url='/login')
 def login(request):

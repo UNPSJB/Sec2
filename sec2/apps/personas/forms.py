@@ -3,7 +3,6 @@ from django.forms import ModelForm, modelformset_factory, ValidationError, BaseF
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit
 from django import forms
-from django_select2 import forms as s2forms
 
 class PersonaForm(ModelForm):
     class Meta:
@@ -28,13 +27,3 @@ class PersonaUpdateForm(ModelForm):
         
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-
-class PersonaWidget(s2forms.ModelSelect2Widget):
-    search_fields = [
-        "dni__icontains",
-        "nombre__icontains",
-        "apellido__icontains",
-    ]
-
-class BuscadorPersonasForm(forms.Form):
-   buscar = forms.ModelChoiceField(queryset=Persona.objects.all(), widget=PersonaWidget)

@@ -162,6 +162,8 @@ class AfiliadoUpdateForm(forms.ModelForm):
     
 
 ########### FAMILIAR ##############################################
+from django_select2.forms import Select2Widget
+
 class AfiliadoSelectForm(forms.Form):
     class Meta:
         model = Persona
@@ -170,12 +172,7 @@ class AfiliadoSelectForm(forms.Form):
         'fecha_nacimiento': forms.DateInput(attrs={'type': 'date'}),
         }
     
-    afiliado_seleccionado = forms.ModelChoiceField(
-        queryset=Afiliado.objects.all().order_by('persona__dni'),
-        label='Seleccione un Afiliado',
-        empty_label="---------------",  # Set the default value
-        to_field_name='id',
-    )
+    afiliado_seleccionado = forms.ChoiceField(choices=TIPOS_RELACION_FAMILIAR)
     
     tipo = forms.ChoiceField(choices=TIPOS_RELACION_FAMILIAR)
     dni = forms.CharField(

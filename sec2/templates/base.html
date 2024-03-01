@@ -15,7 +15,9 @@
 
     <!-- Icono de la pestaña del navegador desde archivos estáticos -->
     <link rel="icon" type="image/x-icon" href="{% static 'images/logo.png' %}" />
-
+    
+    {% comment %} SELEC 2 - UTILIZADO COMO BUSCADOR {% endcomment %}
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
     <!-- Contenido adicional de hojas de estilo que se puede sobrescribir en plantillas secundarias -->
     {% block extracss %}
 
@@ -34,6 +36,7 @@
     <script src="{% static 'Libs/js/jquery.min.js' %}"></script>
     <script src="{% static 'Libs/js/popper.min.js' %}"></script>
     <script src="{% static 'Libs/js/main.js' %}"></script>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 
     <!-- Scripts JavaScript adicionales que se pueden sobrescribir en plantillas secundarias -->
     {% block extrajs %}
