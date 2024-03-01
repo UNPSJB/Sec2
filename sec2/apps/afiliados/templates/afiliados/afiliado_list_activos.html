@@ -43,7 +43,7 @@
                       <h5>¿Estás seguro de que deseas desafiliar?</h5>
                     </div>
                     <div class="modal-footer">
-                      <a href="{% url 'afiliados:desafiliar_afiliado' afiliado.pk %}" class="btn btn-danger">Confirmar</a>
+                      {% comment %} <a href="{% url 'afiliados:desafiliar_afiliado' afiliado.pk %}" class="btn btn-danger">Confirmar</a> {% endcomment %}
                       <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
                     </div>
                   </div>

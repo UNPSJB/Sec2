@@ -5,19 +5,21 @@
   <link href="{% static 'Libs/css/nav_curso.css' %}" rel="stylesheet" />
 {% endblock %}
 
-<div id="menu_afiliado">
+<div class="menu" id="menu_afiliado_principal">
   <br />
   <h3 class="titulo-menu">AFILIADOS</h3>
   <ul class="menu">
     <li>
       <a href="/home" id="mostrarMenuPrincipal"><i class="fa-solid fa-arrow-left-long"></i> Menu principal</a>
     </li>
-    <li>
-      <a href="{% url 'afiliados:crear_familiar_directo' %}"><i class="fa-solid fa-plus"></i> Alta Familiar</a>
-    </li>
-    <li>
-      <a href="{% url 'afiliados:grupo_familiar_listar' %}"><i class="fa-solid fa-list"></i> Lista de familiares</a>
-    </li>
+  </ul>
+</div>
+
+<hr />
+<div class="menu">
+  <!-- Botón desplegable para Curso -->
+  <button class="submenu-toggle" data-submenu="curso">Afiliado <i class="fa-solid fa-caret-down"></i></button>
+  <ul class="submenu" id="curso-submenu">
     <li>
       <a href="{% url 'afiliados:afiliado_crear' %}"><i class="fa-solid fa-plus"></i> Alta afiliado</a>
     </li>
@@ -26,3 +28,21 @@
     </li>
   </ul>
 </div>
+
+<hr />
+
+<div class="menu">
+  <!-- Botón desplegable para Curso -->
+  <button class="submenu-toggle" data-submenu="profesor">Grupo Familiar <i class="fa-solid fa-caret-down"></i></button>
+  <ul class="submenu" id="curso-submenu">
+    <li>
+      <a href="{% url 'afiliados:afiliado_crear' %}"><i class="fa-solid fa-plus"></i> Alta afiliado</a>
+    </li>
+    <li>
+      <a href="{% url 'afiliados:grupo_familiar_listar' %}"><i class="fa-solid fa-list"></i> Lista de familiares</a>
+    </li>
+  </ul>
+</div>
+  {% block extrajs %}
+  <script src="{% static 'Libs/js/nav_curso.js' %}"></script>
+{% endblock %}

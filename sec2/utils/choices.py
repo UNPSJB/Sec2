@@ -250,13 +250,13 @@ MAX_LENGTHS = {
 
 #------------- AFILIADO ------------
 AFILIADO_ESTADO = (
-        (1, "pendiente de aceptación"),
-        (2, "activo"),
-        (3, "inactivo"),
+        (1, "Pendiente"),
+        (2, "Activo"),
+        (3, "Inactivo"),
     )
 
 TIPOS_RELACION_FAMILIAR = (
-        (1, "Esposo/a"),
+        (1, "Conyugue"),
         (2, "Hijo/a"),
         # (3, "Padre"),
         # (4, "Madre"),

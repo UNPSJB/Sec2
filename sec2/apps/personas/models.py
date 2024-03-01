@@ -76,40 +76,6 @@ class Persona(models.Model):
         elif self.es_alumno:
             return 'Alumno'
     
-    # def afiliar(self, afiliado, fecha):
-    #     assert not self.es_afiliado, "Ya soy afiliado"
-    #     afiliado.desde = fecha
-    #     afiliado.persona = self
-    #     afiliado.estado = 1
-    #     afiliado.save()
-    #     self.es_afiliado = True
-    #     self.save()
-
-    # def desafiliar(self, afiliado, fecha):
-    #     assert afiliado.persona == self, "Afiliado incorrecto"
-    #     afiliado.hasta = fecha
-    #     afiliado.save()
-    #     afiliado.estado = 3
-    #     self.es_afiliado = False
-    #     self.save()
-
-    # def inscribir(self, alumno, curso):
-    #     assert alumno.curso == curso, "Alumno ya inscrito"
-    #     alumno.persona = self
-    #     alumno.save()
-    #     curso.alumnos.add(alumno)
-    #     self.es_alumno = True
-    #     self.save()
-
-    # def desinscribir(self, alumno, fecha):
-    #     assert alumno.persona == self, "Alumno equivocado"
-    #     alumno.hasta = fecha
-    #     alumno.save()
-    #     self.es_alumno = False
-    #     self.save()
-
-
-
 ############## PATRON DE ROLES #####################################3
 class Rol(models.Model):
     """

@@ -17,7 +17,11 @@
 <div class="col d-flex justify-content-center"> 
   {% if afiliado.estado == 1 or afiliado.estado == 2 %}
     <a href="{% url 'afiliados:afiliado_actualizar' afiliado.pk %}" class="btn btn-sm btn-primary "><i class="fas fa-pencil-alt"></i> Modificar</a>
-  {% endif %}
+    {% endif %}
+    
+    <a href="{% url 'afiliados:confeccionar_nota' afiliado.pk %}" class="btn btn-sm btn-primary ">
+      <i class="fa-solid fa-file-pdf"></i>Pdf</a>
+
 </div>
 
 <div class="col d-flex justify-content-center">
@@ -25,72 +29,23 @@
     <i class="fas fa-users"></i>
     Grupo Familiar
   </button>
+  {% include "afiliados/modal_afiliado_mostrar_grupoFamiliar.html" with relacion_familiar_list=relacion_familiar_list%}
+
 </div>
 
-
-<!-- Modal -->
-<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h2 class="modal-title fs-5" id="exampleModalLabel">Grupo Familiar</h2>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <div class="modal-body">
-        {% if relacion_familiar_list %}
-        <table class="table table-sm table-hover">
-          <thead>
-            <tr>
-              <th>#</th>
-              <th>Dni</th>
-              <th>Vinculo</th>
-              <th>Apellido</th> 
-              <th>Nombre</th>
-              <th></th>
-            </tr>
-          </thead>
-          <tbody>
-            
-            {% for relacion_familiar in relacion_familiar_list %}
-            <tr>
-                <td>{{ forloop.counter }}</td>
-                <td>{{ relacion_familiar.familiar.persona.dni }}</td>
-                <td>{{ relacion_familiar.get_tipo_relacion_display }}</td>
-                <td>{{ relacion_familiar.familiar.persona.apellido }}</td>
-                <td>{{ relacion_familiar.familiar.persona.nombre }}</td>
-                <td class="text-end">
-                    <a href="{% url 'afiliados:familiar_detalle' pk=afiliado.pk familiar_pk=relacion_familiar.familiar.pk %}" class="btn btn-primary btn-detalle btn-sm" onclick="window.open(this.href, '_blank', 'width=600,height=400'); return false;">
-                        <i class="fa-regular fa-eye"></i> Detalle
-                    </a>
-                </td>
-            </tr>
-            {% endfor %}
-          </tbody>
-        </table>
-        {% else %}
-        <p>No familiar asociado al afiliado.</p>
-        {% endif %}
-      </div>
-      <div class="modal-footer">
-        <a href="{% url 'afiliados:crear_familiar' afiliado.pk %}" 
-        class="btn btn-primary btn-sm">
-        <i class="fa-solid fa-plus"></i> Nuevo Familiar
-        </a>
-      </div>
-    </div>
-  </div>
-</div>
 
 
 <div class="col d-flex justify-content-end">
   {% if afiliado.estado == 1 %}
-  <button type="button" class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#modal_afiliar_{{ afiliado.pk }}"><i class="fa-regular fa-circle-down"></i> Afiliar</button>
-  {% include 'modal_confirm_alta.html' with object=afiliado %}
+  <button type="button" class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#modal_afiliar_{{ afiliado.pk }}">
+    <i class="fa-regular fa-circle-down"></i> Afiliar
+  </button>
+  {% include 'modal_confirm_alta.html' with object=afiliado detalleAfiliadoParam='detalleAfiliado' %}
   {% endif %}
   
   {% if afiliado.estado == 2 %}
   <button type="button" class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#modal_desafiliar_{{ afiliado.pk }}"><i class="fa-regular fa-circle-down"></i> Desafiliar</button>
-  {% include 'modal_confirm_baja.html' with object=afiliado %}
+  {% include 'modal_confirm_baja.html' with object=afiliado detalleAfiliadoParam='detalleAfiliado' %}
   {% endif %}
 </div>
 {% endblock %}

@@ -5,6 +5,7 @@ from utils.choices import AFILIADO_ESTADO, LOCALIDADES_CHUBUT, TIPOS_RELACION_FA
 from utils.constants import *
 from utils.funciones import validate_no_mayor_actual
 from utils.regularexpressions import *
+from datetime import date
 
 # -------------------- FAMILIAR ------------------
 class Familiar(Rol):
@@ -68,7 +69,32 @@ class Afiliado(Rol):
         for familiar in familiares:
             familiar.activo = True
             familiar.save()
+    
+    def desactivar_familiares(self):
+        familiares = self.familia.all()
+        for familiar in familiares:
+            familiar.activo = False
+            familiar.save()
 
+    def valorCuota(self):
+        # Calcular el 1% del sueldo
+        return self.sueldo * 0.01
+
+    def afiliar(self):
+        self.fechaAfiliacion = date.today()
+        self.estado = 2
+        self.persona.es_afiliado = True
+        self.activar_familiares()
+        self.persona.save()
+        self.save()
+
+    def desafiliar(self):
+        self.hasta = date.today()
+        self.estado = 3
+        self.persona.es_afiliado = False
+        self.desactivar_familiares()
+        self.persona.save()
+        self.save()
 Rol.register(Afiliado)
 
 # -------------------- RELACION FAMILIAR-AFILIADO ------------------
