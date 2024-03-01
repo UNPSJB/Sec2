@@ -1,7 +1,11 @@
+from django.urls import reverse
 from django.shortcuts import render, redirect
 from django.contrib.auth import logout as django_logout, login as django_login, authenticate
 from django.urls import reverse_lazy
+
+from apps.personas.models import Persona
 from .forms import SecAuthenticationForm
+from apps.personas.forms import BuscadorPersonasForm
 
 # @login_required(login_url='/login')
 def login(request):
@@ -31,4 +35,5 @@ def template_afiliado(request):
     return render(request, 'template_afiliado_home.html', {"title": "Gestion de Afiliados"})
 
 def home(request):
-    return render(request, 'home.html', {'buscador': BuscadorPersonasForm() })
+    personas = Persona.objects.all()
+    return render(request, 'home.html', {'clientes': personas})

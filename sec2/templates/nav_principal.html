@@ -2,8 +2,8 @@
 
 {% block extracss %}
   <link href="{% static 'Libs/css/nav_principal.css' %}" rel="stylesheet" />
-  {% comment %} <link href="{% static 'Libs/css/nav_afiliado.css' %}" rel="stylesheet" /> {% endcomment %}
-  {% comment %} <link href="{% static 'Libs/css/nav_curso.css' %}" rel="stylesheet" /> {% endcomment %}
+  <link href="{% static 'Libs/css/nav_afiliado.css' %}" rel="stylesheet" />
+  <link href="{% static 'Libs/css/nav_curso.css' %}" rel="stylesheet" />
 {% endblock %}
 
 <div class="menu" id="menu_principal">
@@ -44,6 +44,5 @@
 </div>
 
 {% block extrajs %}
-  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <script src="{% static 'Libs/js/nav_principal.js' %}"></script>
 {% endblock %}

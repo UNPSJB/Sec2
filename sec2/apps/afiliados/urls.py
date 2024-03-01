@@ -26,18 +26,17 @@ urlpatterns = [
 
     #RELACION AFILIADO-GRUPO FAMILIAR
     path('grupofamiliar/listado', RelacionFamiliarListView.as_view(), name="grupo_familiar_listar"),
-    
     path('afiliados/afiliado/<int:pk>/generarnota', confeccionarNota ,name="confeccionar_nota"),
 
-    
+
+    ## tiene que tener laopcion de llevarlo a mi misma vista, a otra ventana
+    path('afiliado/<int:pk>/grupoFamiliar/familia/<int:familiar_pk>/<str:ventana>/', FamiliarDetailView.as_view(), name="familiar_detalle"),
 
 
-
-    
-    path('afiliado/<int:pk>/grupoFamiliar/familia/<int:familiar_pk>', FamiliarDetailView.as_view(), name="familiar_detalle"),
     path('afiliado/<int:pk>/grupoFamiliar/familia/<int:familiar_pk>/editar', FamiliarUpdateView.as_view(), name="familiar_editar"),
     path('afiliado/<int:pk>/grupoFamiliar/familia/<int:familiar_pk>/eliminar', familiar_eliminar, name="familiar_eliminar"),
     
+
     #ACCEDIDOS DESDE LA APLICACION DE CURSOS
     path('afiliado/grupoFamiliar/familia/<int:familiar_pk>', FamiliarDetailView_.as_view(), name="familiar_detalle_"),
     path('afiliado/grupoFamiliar/familia/<int:familiar_pk>/editar', FamiliarUpdateView_.as_view(), name="familiar_editar_"),

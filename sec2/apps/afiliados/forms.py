@@ -162,8 +162,6 @@ class AfiliadoUpdateForm(forms.ModelForm):
     
 
 ########### FAMILIAR ##############################################
-from django_select2.forms import Select2Widget
-
 class AfiliadoSelectForm(forms.Form):
     class Meta:
         model = Persona
@@ -171,9 +169,7 @@ class AfiliadoSelectForm(forms.Form):
         widgets = {
         'fecha_nacimiento': forms.DateInput(attrs={'type': 'date'}),
         }
-    
-    afiliado_seleccionado = forms.ChoiceField(choices=TIPOS_RELACION_FAMILIAR)
-    
+
     tipo = forms.ChoiceField(choices=TIPOS_RELACION_FAMILIAR)
     dni = forms.CharField(
         max_length=8,
@@ -226,7 +222,6 @@ class AfiliadoSelectForm(forms.Form):
 
     def __init__(self, *args, **kwargs):
         super(AfiliadoSelectForm, self).__init__(*args, **kwargs)
-        self.fields['afiliado_seleccionado'].label_from_instance = self.label_from_instance_with_strextra
 
     def label_from_instance_with_strextra(self, obj):
         return obj.__strextra__()

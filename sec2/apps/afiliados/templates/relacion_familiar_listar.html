@@ -32,7 +32,7 @@
             <td >{{ relacion.get_tipo_relacion_display }}</td>
             {% include "tabla_persona_cuerpo.html" with persona=relacion.afiliado.persona %}
             <td class="text-end">
-              <a href="{% url 'afiliados:familiar_detalle' pk=relacion.afiliado.pk familiar_pk=relacion.familiar.pk %}" class="btn btn-primary btn-sm btn-detalle" onclick="window.open(this.href, '_blank', 'width=600,height=400'); return false;"><i class="fa-regular fa-eye"></i> Detalle</a>
+              <a href="{% url 'afiliados:familiar_detalle' pk=relacion.afiliado.pk familiar_pk=relacion.familiar.pk ventana='misma_ventana' %}" class="btn btn-primary btn-sm btn-detalle"; return false;"><i class="fa-regular fa-eye"></i> Detalle</a>
             </td>
         </tr>
         {% endfor %}

@@ -5,8 +5,7 @@
 {% block extracss %}
   <link href="{% static 'Libs/css/home.css' %}" rel="stylesheet" />
   <link href="{% static 'Libs/css/nav_top.css' %}" rel="stylesheet" />
-  {{ buscador.media.css }}
-{% endblock %}
+  {% endblock %}
 
 {% block container %}
   <div id="wrapper">
@@ -29,4 +28,11 @@
 {% endblock %}
 
 {% block extrajs %}
+
+<script src="{% static 'Libs/js/nav_principal.js' %}"></script>
+
+{{ buscador.media.js }}
+<script type="text/javascript">
+    $('.django-select2').on("change", () => console.log("hola"));
+</script>
 {% endblock %}

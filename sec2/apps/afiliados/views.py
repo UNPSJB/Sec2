@@ -339,7 +339,7 @@ def alta_familiar(request):
                 form = AfiliadoSelectForm(request.POST)
 
             else:
-                afiliado_seleccionado_id = request.POST.get('afiliado_seleccionado')
+                afiliado_seleccionado_id = request.POST.get('enc_cliente')
                 afiliado = get_object_or_404(Afiliado, pk=afiliado_seleccionado_id)
                 if afiliado.tiene_esposo() and form.cleaned_data["tipo"] == '1':
                     mensaje_error(request, f'{MSJ_PERSONA_EXISTE}')
@@ -380,20 +380,10 @@ def alta_familiar(request):
                         form = AfiliadoSelectForm(request.POST)
     else:
         afiliados = Afiliado.objects.all()
-        print("AFILIADOS")
-        print(afiliados)
         form = AfiliadoSelectForm()
 
-    encabezado = {
-        # 'fecha':datetime.today()
-    }
-    detalle = {
-
-    }
     context = {
         'form': form,
-        'enc' : encabezado,
-        'det' : detalle,
         'clientes': afiliados,
         'titulo': 'Alta de Familiar',  # Replace with your desired title
     }
@@ -473,7 +463,7 @@ class FamiliaCreateView(CreateView):
 # ----------------------------- DETALLE DE FAMILIAR -----------------------------
 class FamiliarDetailView(DeleteView):
     model = Familiar
-    template_name = 'grupoFamiliar/grupo_familiar_detalle.html'
+    template_name = 'grupoFamiliar/grupo_familiar_detalle_afiliado.html'
 
     def get_object(self, queryset=None):
         afiliado_pk = self.kwargs.get('pk')
@@ -484,15 +474,20 @@ class FamiliarDetailView(DeleteView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         familiar = self.object
-        print("")
-        print(familiar)
-        print("")
         context['titulo'] = "Datos del familiar"
-        context['tituloListado'] = "Dictados Insciptos"
+        context['tituloListado'] = "Dictados Inscritos"
         context['afiliado'] = self.afiliado
         context['familiar'] = familiar  # Agregar el objeto familiar al contexto
-        return context
 
+        ventana = self.kwargs.get('ventana')
+        if ventana == 'nueva_ventana':
+            return render(self.request, 'grupoFamiliar/grupo_familiar_detalle_nueva_ventana.html', context)
+        elif ventana == 'misma_ventana':
+            return context  # Similar, solo retorna el contexto
+        else:
+            # Manejar otro caso si es necesario
+            return render(self.request, 'nombre_de_tu_template_default.html', context)
+    
 class FamiliarDetailView_(DeleteView):
     model = Familiar
     template_name = 'grupoFamiliar/grupo_familiar_detalle_.html'
@@ -577,7 +572,7 @@ class FamiliarUpdateView(UpdateView):
 
                     # Redirige al detalle del familiar en lugar del detalle del afiliado
                     familiar_pk = self.kwargs.get('familiar_pk')
-                    familiar_detail_url = reverse('afiliados:familiar_detalle', kwargs={'pk': afiliado_pk, 'familiar_pk': familiar_pk})
+                    familiar_detail_url = reverse('afiliados:familiar_detalle', kwargs={'pk': afiliado_pk, 'familiar_pk': familiar_pk, 'ventana':'misma_ventana'})
 
                     # Agrega un pequeño script de JavaScript para cerrar la ventana y recargar la página
                     return HttpResponseRedirect(familiar_detail_url)
@@ -718,3 +713,5 @@ def familiar_eliminar(request, pk, familiar_pk):
     familiar.save()
     mensaje_advertencia(request, f'{MSJ_FAMILIAR_ELIMINADO}')
     return redirect('afiliados:afiliado_listar')
+
+

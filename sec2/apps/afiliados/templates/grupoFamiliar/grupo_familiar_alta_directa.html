@@ -7,7 +7,14 @@
     
     <div class="row row-cols-1 row-cols-sm-2 row-cols-md-2">
       <div class="col">
+        <label>Seleccione al afiliado:</label>
         <div class="form-group">
+          <select name="enc_cliente" id="enc_cliente">
+            <option value="0"> --------------- </option>
+            {% for item in clientes %}
+              <option value="{{item.id}}">{{item.persona.dni}} {{item.persona.nombre}} {{item.persona.apellido}}</option>
+            {% endfor %}
+          </select>
         </div>
       </div>
       <div class="col">
@@ -27,19 +34,6 @@
         </div>
       </div>
 
-
-      <div class="col-lg-5 form-group">
-        <select name="enc_cliente" id="enc_cliente">
-          <option value="0"> Seleccione Cliente </option>
-          {% for item in clientes %}
-            <option value="{{item.id}}"> {{item.persona.nombre}} {{item.persona.apellido}}</option>
-          {% endfor %}
-        </select>
-      </div>
-
-
-
-
       <div class="row">
         <div class="col-12">
           <div class="text-center mt-3">
@@ -53,14 +47,9 @@
 <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
 <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
 
-<!-- Otros scripts o código -->
-
-<!-- Inicializar Select2 en el campo enc_cliente -->
 <script>
   $(function () {
-    console.log("Script de inicialización ejecutado");
     $("#enc_cliente").select2();
-    console.log("Select2 aplicado");
   });
 </script>
 

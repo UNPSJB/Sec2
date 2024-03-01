@@ -27,3 +27,19 @@ class PersonaUpdateForm(ModelForm):
         
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+
+
+from django import forms
+from dal import autocomplete  # Asegúrate de tener django-autocomplete-light instalado
+from tkinter.ttk import Widget
+from django_select2 import forms as s2forms
+
+class PersonaWidget(s2forms.ModelSelect2Widget):
+    search_fields = [
+        "dni__icontains",
+        "nombre__icontains",
+        "apellido__icontains",
+    ]
+
+class BuscadorPersonasForm(forms.Form):
+   buscar = forms.ModelChoiceField(queryset=Persona.objects.all(), widget=PersonaWidget)

@@ -4,7 +4,6 @@
 
 {% block extracss_intermedia %}
   <link href="{% static 'css/alta.css' %}" rel="stylesheet" />
-  <!-- Incluir archivos estáticos de Select2 desde CDN -->
 {% endblock %}
 
 {% block dinamica %}
@@ -19,8 +18,11 @@
       </div>
     </div>
   </div>
+  {% block extrajs_intermedia_00 %}
+  {% endblock %}
 {% endblock %}
 
 {% block extrajs_intermedia %}
+
 
 {% endblock %}

@@ -34,6 +34,9 @@ urlpatterns = [
     path('home/app_alquileres/',include('apps.alquileres.urls')),
     path('select2/', include('django_select2.urls')),
 
+    
+
+
     # path('cursos/',include('apps.cursos.urls')),
     # path('alquileres/',include('apps.alquileres.urls')),
     # path('pagos/',include('apps.pagos.urls')),
