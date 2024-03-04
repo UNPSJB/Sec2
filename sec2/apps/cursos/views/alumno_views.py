@@ -241,7 +241,7 @@ class AlumnosListView(ListFilterView):
         context = super().get_context_data(**kwargs)
         filter_form = AlumnoFilterForm(self.request.GET)
         context['filtros'] = filter_form
-        context['titulo'] = "Listado de Alumno"
+        context['titulo'] = "Listado de Alumnos "
         return context
 
 ##--------------- ALUMNO DETALLE --------------------------------

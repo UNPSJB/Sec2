@@ -25,16 +25,15 @@
     <table class="table table-sm table-hover">
       <thead>
         <tr>
-          {% include "clase/cabecera_tabla_asistencia.html" %}
+          {% include "tabla_persona_cabecera.html" %}
           <th>Rol</th>
           <th class="text-center">Asistencia</th>
-
         </tr>
       </thead>
       <tbody>
         {% for inscrito in inscritos %}
         <tr>
-          {% include "clase/cuerpo_tabla_asistencia.html" with persona=inscrito.persona%}
+          {% include "tabla_persona_cuerpo.html" with persona=inscrito.persona%}
           <td>{{ inscrito.persona.obtenerTipo }}</td>
           <td class="text-center">
             <input 
@@ -53,14 +52,14 @@
     <table class="table table-sm table-hover">
       <thead>
         <tr>
-          {% include "clase/cabecera_tabla_asistencia.html" %}
+          {% include "tabla_persona_cabecera.html" %}
           <th class="text-center">Asistencia</th>
         </tr>
       </thead>
       <tbody>
         {% for titular in titulares %}
         <tr>
-          {% include "clase/cuerpo_tabla_asistencia.html" with persona=titular.profesor.persona%}
+          {% include "tabla_persona_cuerpo.html" with persona=titular.profesor.persona%}
           <td class="text-center">
             <input 
             type="checkbox"

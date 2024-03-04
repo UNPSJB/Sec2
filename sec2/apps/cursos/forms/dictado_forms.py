@@ -27,8 +27,8 @@ class DictadoForm(forms.ModelForm):
             raise forms.ValidationError('No se permiten fechas que sean domingos.')
 
         # Verificar que los minutos sean 00, 15 o 30
-        if fecha.minute not in [0, 15, 30]:
-            raise forms.ValidationError('Los minutos deben ser 00, 15 o 30.')
+        if fecha.minute not in [0, 30]:
+            raise forms.ValidationError('Los minutos deben ser 00 o 30.')
 
         # Verificar el rango de horas entre las 9 am y las 8 pm (20:00)
         if not (9 <= fecha.hour < 20):

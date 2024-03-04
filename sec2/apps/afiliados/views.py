@@ -34,6 +34,8 @@ class AfiliadoCreateView(CreateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['titulo'] = "Formulario de Afiliación"
+        personas = Persona.objects.all()
+        context['clientes'] = personas
         return context
 
     def form_valid(self, form):
@@ -473,24 +475,22 @@ class FamiliarDetailView(DeleteView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        
+        ventana = self.kwargs.get('ventana')
+        context['nueva_ventana'] = ventana == 'nueva_ventana'
         familiar = self.object
         context['titulo'] = "Datos del familiar"
         context['tituloListado'] = "Dictados Inscritos"
         context['afiliado'] = self.afiliado
         context['familiar'] = familiar  # Agregar el objeto familiar al contexto
+        return context
 
-        ventana = self.kwargs.get('ventana')
-        if ventana == 'nueva_ventana':
-            return render(self.request, 'grupoFamiliar/grupo_familiar_detalle_nueva_ventana.html', context)
-        elif ventana == 'misma_ventana':
-            return context  # Similar, solo retorna el contexto
-        else:
-            # Manejar otro caso si es necesario
-            return render(self.request, 'nombre_de_tu_template_default.html', context)
-    
-class FamiliarDetailView_(DeleteView):
+
+
+
+class FamiliarDetailVentanaNuevaView_(DeleteView):
     model = Familiar
-    template_name = 'grupoFamiliar/grupo_familiar_detalle_.html'
+    template_name = 'grupoFamiliar/grupo_familiar_detalle_nueva_ventana.html'
 
     def get_object(self, queryset=None):
         familiar_pk = self.kwargs.get('familiar_pk')
@@ -506,6 +506,8 @@ class FamiliarDetailView_(DeleteView):
 
         context['afiliado'] = afiliado
         return context
+    
+
 # ----------------------------- UPDATE DE FAMILIAR -----------------------------
 class FamiliarUpdateView(UpdateView):
     model = Familiar
@@ -520,6 +522,8 @@ class FamiliarUpdateView(UpdateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        ventana = self.kwargs.get('ventana')
+        context['nueva_ventana'] = ventana == 'nueva_ventana'
         context['titulo'] = "Modicacion de Familiar"
         return context
     
@@ -539,21 +543,20 @@ class FamiliarUpdateView(UpdateView):
                 # Obtengo el objeto Familiar asociado al afiliado y la persona existente
                 familiar = get_object_or_404(Familiar, afiliado=afiliado, persona=existing_person)
 
-                if form.cleaned_data["tipo"] == '1' and not familiar.tipo == 1:
+                # if form.cleaned_data["tipo"] == '1' and not familiar.tipo == 1:
                     # Verificar si ya hay un familiar con el tipo "Esposo/a"
-                    esposo_existente = afiliado.familia.filter(tipo=1).exists()
-                    if esposo_existente:
-                        mensaje_error(self.request, f'{MSJ_FAMILIAR_ESPOSA_EXISTE}')
-                        form = GrupoFamiliarPersonaForm(self.request.POST)
+                    # esposo_existente = afiliado.familia.filter(tipo=1).exists()
+                    # if esposo_existente:
+                        # mensaje_error(self.request, f'{MSJ_FAMILIAR_ESPOSA_EXISTE}')
+                        # form = GrupoFamiliarPersonaForm(self.request.POST)
                         # return self.render_to_response(self.get_context_data(form=form))
-                        return self.form_invalid(form)
+                        # return self.form_invalid(form)
 
                 # Verificar si es menor de edad cuando el tipo es 'Hijo/a'
-                if form.cleaned_data["tipo"] == '2' and not es_menor_de_edad(self,form.cleaned_data["fecha_nacimiento"]):
-                    mensaje_error(self.request, f'{MSJ_HIJO_MAYOR_EDAD}')
-                    form = GrupoFamiliarPersonaForm(self.request.POST)
-                    return self.form_invalid(form)
-            
+                # if form.cleaned_data["tipo"] == '2' and not es_menor_de_edad(self,form.cleaned_data["fecha_nacimiento"]):
+                    # mensaje_error(self.request, f'{MSJ_HIJO_MAYOR_EDAD}')
+                    # form = GrupoFamiliarPersonaForm(self.request.POST)
+                    # return self.form_invalid(form)
 
                 familiar = form.save(commit=False)
                 # Utiliza el formulario personalizado para validar los datos de la persona
@@ -564,7 +567,8 @@ class FamiliarUpdateView(UpdateView):
                     # Utiliza una transacción para garantizar la integridad de los datos
                     with transaction.atomic():
                         persona.save()
-                        familiar.tipo = form.cleaned_data["tipo"]
+                        # familiar.tipo = form.cleaned_data["tipo"]
+
                         familiar.save()
 
                     mensaje_exito(self.request, f'{MSJ_EXITO_MODIFICACION}')

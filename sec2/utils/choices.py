@@ -287,3 +287,9 @@ DIAS_SEMANA_CHOICES = [
         # (5, 'Sábado'),
     ]
 
+
+
+PERIODO_PAGO=(
+        (1, 'mes'),
+        (2, 'clase'),
+    )

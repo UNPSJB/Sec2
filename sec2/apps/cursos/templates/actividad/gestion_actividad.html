@@ -31,7 +31,7 @@
     <tbody>
       {% for actividad in actividades %}
         <tr class="bg-transition fila-personalizada">
-          <td>{{ forloop.counter }}</td>
+          <td class="negrita"> {{ page_obj.start_index|add:forloop.counter0 }}</td>
           <td>{{ actividad }}</td>
           <td class="text-end">
             <a href="{% url 'cursos:actividad_detalle' actividad.pk %}" class="btn btn-primary btn-sm btn-detalle"><i class="fa-regular fa-eye"></i> Detalle</a>
@@ -43,4 +43,7 @@
       {% endfor %}
     </tbody>
   </table>
+
+
+
 {% endblock %}

@@ -240,8 +240,6 @@ class GrupoFamiliarPersonaForm(forms.ModelForm):
 ########### FAMILIAR ##############################################
 class GrupoFamiliarPersonaUpdateForm(forms.ModelForm):
 
-    tipo = forms.ChoiceField(choices=Familiar.TIPOS)
-
     class Meta:
         model = Persona
         fields = ['dni', 'cuil', 'nombre', 'apellido', 'fecha_nacimiento', 'celular', 'direccion', 'nacionalidad', 'mail', 'estado_civil']

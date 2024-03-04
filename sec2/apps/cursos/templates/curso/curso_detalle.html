@@ -133,7 +133,15 @@
 
 {% block listado_asociado %}
 <div class="container-sm">
+  
   <h3 class="subtitulo">{{ tituloListado }}</h3>
+  
+  {% if tiene_dictados %}
+  <a href="{% url 'cursos:dictado_crear' pk=object.pk %}" class="btn btn-primary btn-sm btn-detalle"><i class="fa-regular fa-plus"></i> Nuevo Dictado</a>
+  {% else %}
+  <button type="button" class="btn btn-primary btn-sm btn-detalle" data-bs-toggle="modal" data-bs-target="#exampleModal"><i class="fa-regular fa-plus"></i> Nuevo Dictado</button>
+  {% include 'curso/modal_primer_dictado.html' %}
+  {% endif %}
   <table class="table table-sm table-hover">
     <thead>
       <tr>
@@ -148,7 +156,7 @@
     <tbody>
       {% for dictado in dictados %}
       <tr>
-        <td>{{ forloop.counter }}</td>
+        <td class="negrita"> {{ dictados.start_index|add:forloop.counter0 }}</td>
         <td>{{ dictado.fecha }}</td>
         <td>[FALTA CALCULAR EL CUPO]/{{ dictado.cupo }}</td>
         <td>{{ dictado.descuento }} %</td>
@@ -160,13 +168,7 @@
       {% endfor %}
     </tbody>
   </table>
-  
-  {% if tiene_dictados %}
-  <a href="{% url 'cursos:dictado_crear' pk=object.pk %}" class="btn btn-primary btn-sm btn-detalle"><i class="fa-regular fa-plus"></i> Nuevo Dictado</a>
-  {% else %}
-  <button type="button" class="btn btn-primary btn-sm btn-detalle" data-bs-toggle="modal" data-bs-target="#exampleModal"><i class="fa-regular fa-plus"></i> Nuevo Dictado</button>
-  {% include 'curso/modal_primer_dictado.html' %}
-  {% endif %}
+  {% include 'pagination.html' with page_obj=dictados %}
 </div>
 
 {% endblock %}

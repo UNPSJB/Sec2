@@ -9,13 +9,14 @@ class CursoForm(forms.ModelForm):
     class Meta:
         model = Curso
         fields = '__all__'
-        exclude= ['es_convenio', ]
+        exclude= ['es_convenio', 'actividad' ]
 
     area = forms.ChoiceField(
         choices=[('', '---------')] + AREAS,  # Agrega el valor por defecto a las opciones de AREAS
         widget=forms.Select(attrs={'class': 'form-control'}),
         required=True
     )
+
     def clean_nombre(self):
         nombre = self.cleaned_data['nombre']
         nombre_lower = nombre.lower()  # Convertir a minúsculas
@@ -26,8 +27,8 @@ class CursoForm(forms.ModelForm):
     
     def __init__(self, *args, **kwargs):
         super(CursoForm, self).__init__(*args, **kwargs)
-        self.fields['actividad'].label = 'Actividad'
-        self.fields['actividad'].queryset = Actividad.objects.all().order_by('nombre')
+        # self.fields['actividad'].label = 'Actividad'
+        # self.fields['actividad'].queryset = Actividad.objects.all().order_by('nombre')
         tipo_curso = kwargs.get('initial', {}).get('tipo_curso')
         if tipo_curso == 'convenio':
             self.fields['area'].initial = 0

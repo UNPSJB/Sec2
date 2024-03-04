@@ -13,21 +13,20 @@ from django.urls import reverse_lazy
 class CursoCreateView(CreateView):
     model = Curso
     form_class = CursoForm
-    success_url = reverse_lazy('cursos:curso_crear')
+    success_url = reverse_lazy('cursos:index')
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         tipo_curso = self.request.GET.get('tipo', None)
-
+        context['actividades'] = Actividad.objects.all().order_by('nombre')
         if tipo_curso == 'sec':
-            context['titulo'] = "Alta de Curso del SEC"
+            context['titulo'] = "Alta de Curso del SEC 2"
         elif tipo_curso == 'convenio':
             context['titulo'] = "Alta de Convenio"
         elif tipo_curso == 'actividad':
             context['titulo'] = "Alta de Gimnasia"
         else:
             context['titulo'] = "Tipo de Curso"  # Default title
-        
         return context
 
     def get_form_kwargs(self):
@@ -51,15 +50,24 @@ class CursoCreateView(CreateView):
 
     def form_valid(self, form):
         tipo_curso = self.request.GET.get('tipo', None)
+    # Obtener el ID de la actividad seleccionada en el formulario
+        actividad_id = self.request.POST.get('enc_cliente')        
+        print("ACTIVIDAAAAD----")
+        print(actividad_id)
+        actividad = get_object_or_404(Actividad, pk=actividad_id)
+
         # Actualizar el valor de es_convenio en base al tipo de curso
         if tipo_curso == 'convenio':
             form.instance.es_convenio = True
         else:
             form.instance.es_convenio = False
         # Guardar el formulario
+        # form.instance.actividad = actividad
         result = super().form_valid(form)
-
+        
+        form.instance.actividad = actividad
         form.instance.descripcion = form.cleaned_data['descripcion'].capitalize()
+        # form.instance.descripcion = form.cleaned_data['descripcion'].capitalize()
         form.instance.nombre = form.cleaned_data['nombre'].title()
         form.save()
         messages.success(self.request, f'{ICON_CHECK} Alta de curso exitosa!')
@@ -84,30 +92,43 @@ class CursoCreateView(CreateView):
         return super().form_invalid(form)
     
 #--------------- CURSO DETALLE --------------------------------
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+
 class CursoDetailView(DetailView):
     model = Curso
     template_name = 'curso/curso_detalle.html'
+    paginate_by = MAXIMO_PAGINATOR
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         curso = self.object  # El objeto de curso obtenido de la vista
-        
+
         context['titulo'] = f"Curso: {self.object.nombre}"
         context['tituloListado'] = 'Dictados Asociados'
-        
+
         # Obtener todos los dictados asociados al curso junto con los horarios
         dictados = curso.dictado_set.prefetch_related('horarios').all()
+
+        # Configurar la paginación
+        paginator = Paginator(dictados, self.paginate_by)
+        page = self.request.GET.get('page')
+
+        try:
+            dictados = paginator.page(page)
+        except PageNotAnInteger:
+            dictados = paginator.page(1)
+        except EmptyPage:
+            dictados = paginator.page(paginator.num_pages)
+
         context['dictados'] = dictados
-        # Verificar si hay dictados asociados
-        tiene_dictados = dictados.exists()
-        context['tiene_dictados'] = tiene_dictados
+        context['tiene_dictados'] = paginator.num_pages > 0  # Verificar si hay dictados asociados
 
         return context
 
 ##--------------- CURSO LIST --------------------------------
 class CursoListView(ListFilterView):
     model = Curso
-    paginate_by = 11
+    paginate_by = MAXIMO_PAGINATOR
     filter_class = CursoFilterForm
     template_name = 'curso/curso_list.html'
 
@@ -163,6 +184,10 @@ class CursoUpdateView(UpdateView):
             context['titulo'] = "Modificar Curso3"
         else:
             context['titulo'] = "Modificar Curso5"
+        
+        context['actividades'] = Actividad.objects.all().order_by('nombre')
+        print("AASDASDASD")
+        print(self.object.actividad.id)
         return context
 
     def get_form_kwargs(self):

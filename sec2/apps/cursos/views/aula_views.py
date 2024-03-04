@@ -1,16 +1,19 @@
 from django.shortcuts import get_object_or_404, redirect
 from django.views.generic.edit import CreateView, UpdateView
 from django.views.generic import DetailView, ListView
+
+from utils.funciones import mensaje_advertencia, mensaje_exito
 from ..models import Aula
 from ..forms.aula_forms import *
 from django.urls import reverse_lazy
 from django.contrib import messages
 
 ## ------------  CREATE AND LIST AULA -------------------
-class AulaCreateListView(CreateView, ListView):
+class GestionAulaView(CreateView, ListView):
     model = Aula
-    template_name = 'aula/aula_alta_listado.html'  
+    template_name = 'aula/gestion_aula.html'  
     form_class = AulaForm
+    paginate_by = MAXIMO_PAGINATOR
     context_object_name = 'aulas'
 
     def get_context_data(self, **kwargs):
@@ -26,11 +29,11 @@ class AulaCreateListView(CreateView, ListView):
     
     def form_valid(self, form):
         response = super().form_valid(form)
-        messages.success(self.request, f'{ICON_CHECK} Alta de aula exitosa!')
+        mensaje_exito(self.request, f'{MSJ_AULA_ALTA_EXITOSA}')
         return response
     
     def form_invalid(self, form):
-        messages.warning(self.request, f'{ICON_TRIANGLE} El tipo y numero de aula ya existe.')
+        mensaje_advertencia(self.request, f'{MSJ_TIPO_NUMERO_EXISTE}')
         return redirect('cursos:gestion_aula')
     
     def get(self, request, *args, **kwargs):

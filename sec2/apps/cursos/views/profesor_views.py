@@ -1,5 +1,7 @@
 from django.urls import reverse
 from django.shortcuts import get_object_or_404, redirect
+
+from utils.funciones import mensaje_advertencia, mensaje_error, mensaje_exito
 from ..models import Actividad, Profesor, Titular
 from ..forms.profesor_forms import *
 from django.views.generic import DetailView
@@ -20,7 +22,7 @@ class ProfesorCreateView(CreateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['titulo'] ="Alta de Profesor"
+        context['titulo'] ="Formulario de Profesor"
         context['actividades'] = Actividad.objects.all()  # Obtener todas las actividades
         return context
 
@@ -28,7 +30,7 @@ class ProfesorCreateView(CreateView):
         dni = form.cleaned_data["dni"]
         existing_person = Persona.objects.filter(dni=dni).first()
         if existing_person:
-            messages.error(self.request, f'{ICON_ERROR} ERROR: Ya existe una persona registrada en el sistema con el mismo DNI.')
+            mensaje_error(self.request, f'{MSJ_PERSONA_EXISTE}')
             form = ProfesorPersonaForm(self.request.POST)
             return self.render_to_response(self.get_context_data(form=form))
         else:
@@ -57,14 +59,15 @@ class ProfesorCreateView(CreateView):
             profesor.ejerce_desde = form.cleaned_data["ejerce_desde"]
             # Profesor.register 
             profesor.save()
+
             profesor.actividades.set(actividades_seleccionadas)
-            messages.success(self.request, f'{ICON_CHECK} Profesor dado de alta con éxito!')
+            mensaje_exito(self.request, f'{MSJ_CORRECTO_ALTA_PROFESOR}')
             # Redirige al listado de profesores
             detail_url = reverse('cursos:profesor_listado')
             return redirect(detail_url)
 
     def form_invalid(self, form):
-        messages.warning(self.request, f'{ICON_TRIANGLE} Por favor, corrija los errores a continuación.')
+        mensaje_advertencia(self.request, f'{ICON_TRIANGLE} {MSJ_CORRECTION}')
         return super().form_invalid(form)
 
 ## ------------------ DETALLE DE PROFESOR ------------------
@@ -97,7 +100,7 @@ class ProfesorUpdateView(UpdateView):
         return context
 
     def form_valid(self, form):
-        messages.add_message(self.request, messages.SUCCESS, 'Profesor modificada con éxito')
+        mensaje_exito(self.request, f'{MSJ_EXITO_MODIFICACION}')
         return super().form_valid(form)
 
     def form_invalid(self, form):
@@ -107,7 +110,7 @@ class ProfesorUpdateView(UpdateView):
 ## ------------------ LISTADO DE PROFESOR ------------------
 class ProfesorListView(ListFilterView):
     model = Profesor
-    paginate_by = 11
+    paginate_by = MAXIMO_PAGINATOR
     filter_class = ProfesorFilterForm
     template_name = 'profesor/profesor_list.html'  
     

@@ -1,5 +1,7 @@
 from django.views.generic.edit import CreateView, UpdateView
 from django.views.generic import ListView
+
+from utils.funciones import mensaje_advertencia, mensaje_error, mensaje_exito
 from ..models import Actividad
 from ..forms.actividad_forms import *
 from django.urls import reverse_lazy
@@ -8,17 +10,17 @@ from django.shortcuts import get_object_or_404, redirect
 from django.views.generic.detail import DetailView
 
 ## ------------  CREATE AND LIST ACTIVIDAD -------------------
-class ActividadCreateListView(CreateView, ListView):
+class GestionActividadView(CreateView, ListView):
     model = Actividad
-    template_name = 'actividad/actividad_alta_listado.html'
+    template_name = 'actividad/gestion_actividad.html'
     form_class = ActividadForm
+    paginate_by = MAXIMO_PAGINATOR
     context_object_name = 'actividades'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['titulo'] = "Gestión de Actividad"
         context['form'] = self.get_form()
-        context['actividades'] = self.get_queryset()  # Use filtered queryset
         context['filtros'] = ActividadFilterForm()
         return context
 
@@ -26,37 +28,28 @@ class ActividadCreateListView(CreateView, ListView):
         return reverse_lazy('cursos:gestion_actividad')
 
     def form_valid(self, form):
-        response = super().form_valid(form)
         form.instance.nombre = form.cleaned_data['nombre'].title()
-        form.save()
-        messages.success(self.request, f'{ICON_CHECK} Alta de actividad exitosa!')
-        return response
-    
+        mensaje_exito(self.request, f'{MSJ_ACTIVIDAD_ALTA_EXITOSA}')
+        return super().form_valid(form)
+
     def form_invalid(self, form):
-        messages.warning(self.request, f'{ICON_TRIANGLE} El nombre ya existe o posee caracteres no deseados.')
+        mensaje_advertencia(self.request, f'{MSJ_NOMBRE_EXISTE}')
         return redirect('cursos:gestion_actividad')
 
-    def get(self, request, *args, **kwargs):
-        # Asegúrate de que el queryset esté disponible antes de llamar a super().get()
-        self.object_list = self.get_queryset()
-        return super(CreateView, self).get(request, *args, **kwargs)
-
     def get_queryset(self):
-        # Default queryset, puedes ajustarlo según tus necesidades
-        queryset = Actividad.objects.all()
+        queryset = super().get_queryset()
 
-        # Obtén el formulario de filtro de la solicitud
         filter_form = ActividadFilterForm(self.request.GET)
-
-        # Verifica si el formulario es válido y aplica los filtros
         if filter_form.is_valid():
-            # Ejemplo: Filtrar según el campo 'nombre'
             nombre_filter = filter_form.cleaned_data.get('nombre')
             if nombre_filter:
-                # Coincidencia parcial insensible a mayúsculas y minúsculas para 'nombre'
                 queryset = queryset.filter(nombre__icontains=nombre_filter)
-        queryset = queryset.order_by('nombre')
-        return queryset
+
+        return queryset.order_by('nombre')
+
+    def get(self, request, *args, **kwargs):
+        self.object_list = self.get_queryset()
+        return super().get(request, *args, **kwargs)
 
 ## ------------ ACTIVIDAD DETALLE -------------------
 class ActividadDetailView(DetailView):
@@ -82,11 +75,11 @@ class ActividadUpdateView(UpdateView):
 
     def form_valid(self, form):
         actividad = form.save()
-        messages.success(self.request, f'{ICON_CHECK} Actividad modificada con éxito!')
+        mensaje_exito(self.request, f'{MSJ_EXITO_MODIFICACION}')
         return redirect('cursos:actividad_detalle', pk=actividad.pk)
 
     def form_invalid(self, form):
-        messages.warning(self.request, f'{ICON_TRIANGLE} El nombre ya existe o posee caracteres no deseados.')
+        mensaje_advertencia(self.request, f'{MSJ_NOMBRE_EXISTE}')
         for field, errors in form.errors.items():
             print(f"Campo: {field}, Errores: {', '.join(errors)}")
         return super().form_invalid(form)
@@ -96,7 +89,7 @@ def actividad_eliminar(request, pk):
     actividad = get_object_or_404(Actividad, pk=pk)
     try:
         actividad.delete()
-        messages.success(request, f'{ICON_CHECK} La actividad se se eliminó correctamente!')
+        mensaje_exito(request, f'{MSJ_ACTIVIDAD_EXITO_BAJA}')
     except Exception as e:
-        messages.error(request, 'Ocurrió un error al intentar eliminar la actividad.')
+        mensaje_error(request, f'{MSJ_ERROR_ELIMINAR}')
     return redirect('cursos:gestion_actividad')

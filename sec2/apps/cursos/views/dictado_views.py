@@ -85,10 +85,12 @@ class DictadoCreateView(CreateView):
 ##--------------- DICTADO DETALLE --------------------------------
 from decimal import Decimal, getcontext
 import math
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
 class DictadoDetailView(DetailView):
     model = Dictado
     template_name = 'dictado/dictado_detail.html'
+    paginate_by = MAXIMO_PAGINATOR
     
     def get_object(self, queryset=None):
         curso_pk = self.kwargs.get('curso_pk')
@@ -132,6 +134,18 @@ class DictadoDetailView(DetailView):
         context['todos_los_horarios_con_aula'] = todos_los_horarios_con_aula
         # Obtener todas las clases asociadas al dictado a través de los horarios
         clases = Clase.objects.filter(reserva__horario__dictado=dictado).order_by('reserva__fecha')
+        
+         # Configurar la paginación
+        paginator = Paginator(clases, self.paginate_by)
+        page = self.request.GET.get('page')
+
+        try:
+            clases = paginator.page(page)
+        except PageNotAnInteger:
+            clases = paginator.page(1)
+        except EmptyPage:
+            clases = paginator.page(paginator.num_pages)
+        
         context['clases'] = clases
 
         # OBTENGO A TODOS MIS ALUMNOS INSCRITOS(Alumnos, Afiliado, GrupoFamiliar, Profeosres como alumno)
@@ -350,13 +364,16 @@ class VerificarInscripcionView(View):
         inscritosEspera_ids.extend(list(familiares_inscritos_listaEspera.values_list('persona__pk', flat=True)))
         inscritosEspera_ids.extend(list(profesores_inscritos_listaEspera.values_list('persona__pk', flat=True)))
         inscritosEspera_ids.extend(list(alumnos_inscritos_listaEspera.values_list('persona__pk', flat=True)))
-
+        
+        personas = Persona.objects.all()
+        
         context = {
             'titulo': 'Incripción',
             'curso_pk': curso_pk,
             'dictado_pk': dictado_pk,
             'hay_cupo': hay_cupo,
             'inscritos_ids': inscritos_ids,
+            'personas' : personas,
             'inscritosEspera_ids': inscritosEspera_ids,
 
         }

@@ -25,7 +25,7 @@
     <tbody>
       {% for curso in object_list %}
         <tr class="bg-transition fila-personalizada">
-          <td>{{ forloop.counter }}</td>
+          <td class="negrita"> {{ page_obj.start_index|add:forloop.counter0 }}</td>
           <td>{{ curso.actividad }}</td>
           <td>{{ curso.get_area_display }}</td>
           <td>{{ curso.nombre }}</td>

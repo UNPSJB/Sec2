@@ -3,6 +3,7 @@ from django.http import HttpResponse
 from apps.personas.models import Rol
 from utils.constants import *
 from utils.choices import *
+from utils.funciones import validate_no_mayor_actual
 from utils.regularexpressions import *
 from django.core.validators import MinValueValidator, MaxValueValidator
 
@@ -167,10 +168,15 @@ class Profesor(Rol):
     # ForeignKey
     dictados = models.ManyToManyField(Dictado, through = "Titular", related_name="profesores", blank=True)
     TIPO = 2
-    ejerce_desde = models.DateField()
     actividades = models.ManyToManyField(Actividad, blank=True)
     dictados_inscriptos = models.ManyToManyField(Dictado, related_name="profesores_dictados_inscriptos", blank=True)
     lista_espera = models.ManyToManyField(Dictado, related_name='profesores_en_espera', blank=True)
+
+    ejerce_desde= models.DateField(
+        null=True,
+        blank=False,
+        validators=[validate_no_mayor_actual]
+    )
 
     def __str__(self):
         if self.persona_id and hasattr(self, 'persona'):

@@ -27,7 +27,7 @@
 
     <div id="content">
       {% block nav_top %}
-        {% include 'nav_top.html' %}
+        {% comment %} {% include 'nav_top.html' %} {% endcomment %}
       {% endblock %}
       {% block dinamica %}
         {% include 'index.html' %}

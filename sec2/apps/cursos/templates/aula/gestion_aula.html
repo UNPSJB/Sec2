@@ -46,7 +46,7 @@
   <tbody>
     {% for obj in object_list %}
     <tr class="bg-transition fila-personalizada">
-        <td>{{ forloop.counter }}</td>
+        <td class="negrita"> {{ page_obj.start_index|add:forloop.counter0 }}</td>
         <td>{{ obj }}</td>
         <td>{{ obj.capacidad }}</td>
         <td class="text-end">
