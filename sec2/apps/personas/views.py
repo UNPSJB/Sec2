@@ -12,7 +12,6 @@ from django.views.generic.edit import CreateView
 
 def mostrarPersona(request):
     persona_id = request.GET.get('enc_cliente')
-    print("ASDASDASDSA")
     print(persona_id)
     if persona_id is not None or persona_id != 0:
         # Obtener la persona seleccionada

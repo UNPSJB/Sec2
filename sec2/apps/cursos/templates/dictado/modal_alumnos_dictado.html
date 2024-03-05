@@ -21,11 +21,12 @@
                 {% include "tabla_persona_cuerpo.html" with persona=inscrito.persona %}
                 <td>{{ inscrito.persona.obtenerTipo }}</td>
                 <td class="text-end">
+                  {% if not dictado.finalizado %}
+
                   <button type="button" class="btn btn-danger btn-sm btn-detalle" 
                   onclick="gestionInscripcion{% if inscrito.persona.es_afiliado %}Afiliado{% elif inscrito.persona.es_grupo_familiar %}Familiar{% elif inscrito.persona.es_profesor %}Profesor{% elif inscrito.persona.es_alumno %}Alumno{% endif %}('desinscribir', {{ dictado.curso.pk }}, {{ dictado.pk }}, {{ inscrito.persona.pk }})">Desinscribir</button>
-                </td>
+                  {% endif %}
 
-                <td>
                   {% if inscrito.persona.es_afiliado %}
                   <a href="{% url 'afiliados:afiliado_detalle' inscrito.pk %}" class="btn btn-primary btn-sm btn-detalle"><i class="fa-regular fa-eye"></i> Detalle</a>
                   {% comment %} {% elif inscrito.persona.es_grupo_familiar %} {% endcomment %}
@@ -45,17 +46,20 @@
           {% endif %}
         </div>
         <div class="modal-footer">
+          {% if not dictado.finalizado %}
           <a href="{% url 'cursos:dictado_lista_espera' curso_pk=dictado.curso.pk dictado_pk=dictado.pk %}" 
           class="btn btn-warning btn-sm " 
           onclick="window.open(this.href, '_blank', 'width=600,height=400'); return false;">
           <i class="fa-solid fa-list"></i>
           Lista de espera
           </a>
+
           <a href="{% url 'cursos:verificar_persona' curso_pk=dictado.curso.pk dictado_pk=dictado.pk %}" 
           class="btn btn-primary btn-sm " 
           onclick="window.open(this.href, '_blank', 'width=600,height=400'); return false;">
            <i class="fa-regular fa-pen-to-square"></i> Inscribir
           </a>
+          {% endif %}
           <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Close</button>
         </div>
       </div>

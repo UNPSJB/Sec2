@@ -147,7 +147,7 @@
       <tr>
         <th>#</th>
         <th>Fecha Inicio</th>
-        <th>Cupo</th>
+        <th class="text-center">Cupo</th>
         <th>Desc</th>
         <th>Duración</th>
         <th></th>
@@ -158,7 +158,7 @@
       <tr>
         <td class="negrita"> {{ dictados.start_index|add:forloop.counter0 }}</td>
         <td>{{ dictado.fecha }}</td>
-        <td>[FALTA CALCULAR EL CUPO]/{{ dictado.cupo }}</td>
+        <td class="text-center">{{ dictado.cupo }}</td>
         <td>{{ dictado.descuento }} %</td>
         <td>{{ dictado.modulos_por_clase }} hrs</td>
         <td class="text-end">

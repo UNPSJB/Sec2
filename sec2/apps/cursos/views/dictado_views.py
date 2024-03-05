@@ -551,3 +551,11 @@ def gestionInscripcion(request, curso_pk, dictado_pk, persona_pk, tipo, accion):
         persona.save()
         messages.success(request, f'{ICON_CHECK} {tipo} ha sido desincrito del curso.')
         return redirect('cursos:dictado_detalle', curso_pk=dictado.curso.pk, dictado_pk=dictado.pk)
+    
+def finalizarDictado(request, curso_pk, dictado_pk):
+    dictado = get_object_or_404(Dictado, pk=dictado_pk)
+    dictado.finalizado = True
+    dictado.save()
+    print(dictado)
+    messages.success(request, f'{ICON_CHECK} Dictado finalizado con exitos!')
+    return redirect('cursos:dictado_detalle', curso_pk=curso_pk, dictado_pk=dictado_pk)

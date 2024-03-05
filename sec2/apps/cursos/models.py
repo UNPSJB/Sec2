@@ -98,7 +98,8 @@ class Dictado(models.Model):
             MaxValueValidator(100, message="El descuento no puede ser mayor que 100."),
         ]
     )
-    
+    finalizado = models.BooleanField(default=False)
+
 #------------- HORARIO --------------------
 from datetime import datetime, timedelta
 

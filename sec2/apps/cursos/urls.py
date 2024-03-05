@@ -46,6 +46,8 @@ urlpatterns = [
     path('cursos/curso/<int:pk>/dictados/dictado/crear', DictadoCreateView.as_view(), name="dictado_crear"),
     path('cursos/curso/<int:curso_pk>/dictados/dictado/<int:dictado_pk>', DictadoDetailView.as_view(), name="dictado_detalle"),
     path('cursos/curso/<int:curso_pk>/dictados/dictado/<int:dictado_pk>/editar', DictadoUpdateView.as_view(), name="dictado_editar"),
+    path('cursos/curso/<int:curso_pk>/dictados/dictado/<int:dictado_pk>/finalizar', finalizarDictado , name="dictado_finalizar"),
+
 
     # HORARIO (accedido desde dictado)
     path('curso/<int:curso_pk>/dictados/dictado/<int:dictado_pk>/horarios/horario/crear/', HorarioCreateView.as_view(), name='horario_crear'),
@@ -56,7 +58,7 @@ urlpatterns = [
     # CLASE (accedido desde dictaod)
     path('cursos/curso/<int:curso_pk>/dictados/dictado/<int:dictado_id>/generarclaeses/', generar_clases, name="generar_clases"),
     path('cursos/curso/<int:curso_pk>/dictados/dictado/<int:dictado_pk>/clases/clase/<int:clase_pk>', ClaseDetailView.as_view(), name="clase_detalle"),
-
+    
     ## VERIFICAR Y BUSCAR PERSONA ANTES DE PROCEDER A LA INSCRIPCION
     path('cursos/curso/<int:curso_pk>/dictados/dictado/<int:dictado_pk>/buscar', VerificarInscripcionView.as_view(), name="verificar_persona"),
     path('buscar-persona/', BuscarPersonaView.as_view(), name='buscar_persona'),

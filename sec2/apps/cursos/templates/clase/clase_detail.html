@@ -72,14 +72,16 @@
         {% endfor %}
       </tbody>
     </table>
-    
-    {% if not clase.asistencia_tomada %}
+
     <div class="text-center">
-      <button class="btn btn-success btn-detalle" type="submit">Generar Asistencia</button>
+      
+      {% if not dictado.finalizado and not clase.asistencia_tomada %}
+          <button class="btn btn-success btn-detalle" type="submit">Generar Asistencia</button>
+      {% else %}
+        <button class="btn btn-success btn-detalle" disabled type="submit">Generar Asistencia</button>
+      {% endif %}
     </div>
-    {% endif %}
-    
-    
+
   </form>
 </div>
 
