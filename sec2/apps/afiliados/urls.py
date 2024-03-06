@@ -23,7 +23,6 @@ urlpatterns = [
 
     #RELACION AFILIADO-GRUPO FAMILIAR
     path('grupofamiliar/listado', RelacionFamiliarListView.as_view(), name="grupo_familiar_listar"),
-    path('afiliados/afiliado/<int:pk>/generarnota', confeccionarNota ,name="confeccionar_nota"),
 
     #GRUPO FAMILIAR
     path('grupofamiliar/crear', alta_familiar, name="crear_familiar_directo"),
@@ -34,4 +33,7 @@ urlpatterns = [
     # path('afiliado/grupoFamiliar/familia/<int:familiar_pk>/editar', FamiliarUpdateView_.as_view(), name="familiar_editar_"),
     #ACCEDIDOS DESDE LA APLICACION DE CURSOS
     # path('afiliado/grupoFamiliar/familia/<int:familiar_pk>', FamiliarDetailVentanaNuevaView_.as_view(), name="familiar_detalle_"),
+
+    #GENERAR PDF
+    path('afiliados/afiliado/<int:pk>/generarnota', confeccionarNota ,name="confeccionar_nota"),
 ]

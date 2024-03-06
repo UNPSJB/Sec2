@@ -365,7 +365,7 @@ class VerificarInscripcionView(View):
         inscritosEspera_ids.extend(list(profesores_inscritos_listaEspera.values_list('persona__pk', flat=True)))
         inscritosEspera_ids.extend(list(alumnos_inscritos_listaEspera.values_list('persona__pk', flat=True)))
         
-        personas = Persona.objects.all()
+        # personas = Persona.objects.all()
         
         context = {
             'titulo': 'Incripción',
@@ -373,7 +373,7 @@ class VerificarInscripcionView(View):
             'dictado_pk': dictado_pk,
             'hay_cupo': hay_cupo,
             'inscritos_ids': inscritos_ids,
-            'personas' : personas,
+            # 'personas' : personas,
             'inscritosEspera_ids': inscritosEspera_ids,
 
         }
@@ -553,9 +553,131 @@ def gestionInscripcion(request, curso_pk, dictado_pk, persona_pk, tipo, accion):
         return redirect('cursos:dictado_detalle', curso_pk=dictado.curso.pk, dictado_pk=dictado.pk)
     
 def finalizarDictado(request, curso_pk, dictado_pk):
+    # OBTENEMOS EL DICTADO
     dictado = get_object_or_404(Dictado, pk=dictado_pk)
-    dictado.finalizado = True
+
+    # OBTENER TODAS LAS CLASES ASOCIADAS AL DICTADO
+    clases_del_dictado = Clase.objects.filter(reserva__horario__dictado=dictado)
+    
+    # OBTENER LA ÚLTIMA CLASE CON ASISTENCIA TOMADA
+    ultima_clase_con_asistencia = Clase.objects.filter(
+        reserva__horario__dictado=dictado,
+        asistencia_tomada=True
+    ).order_by('-reserva__fecha').first()
+
+    print("ULTIMA CLASE")
+    print(ultima_clase_con_asistencia)
+
+    #OBTENEMOS LA FECHA QUE SE REALIZO LA CLASE
+    fecha = ultima_clase_con_asistencia.reserva.fecha
+    #Le asignamos la fecha de fin a mi dictado
+    dictado.fecha_fin = fecha
+    dictado.estado = 3
+
+    #OBTENEMOS TODAS LAS CLASES QUE NO SE HAN TOMADO ASISTENCIA
+    clases_sin_asistencia = clases_del_dictado.filter(asistencia_tomada=False)
+
+    # ELIMINAR LA RESERVA DE LAS CLASES SIN ASISTENCIA
+    for clase_sin_asistencia in clases_sin_asistencia:
+        reserva = clase_sin_asistencia.reserva
+        reserva.delete()
+
+    # BORRAR LAS CLASES SIN ASISTENCIA
+    clases_sin_asistencia.delete()
+
     dictado.save()
-    print(dictado)
-    messages.success(request, f'{ICON_CHECK} Dictado finalizado con exitos!')
+
+    messages.success(request, f'{ICON_CHECK} Dictado finalizado con exito!')
     return redirect('cursos:dictado_detalle', curso_pk=curso_pk, dictado_pk=dictado_pk)
+
+
+from django.http import FileResponse
+from io import BytesIO
+import io
+from reportlab.pdfgen import canvas
+from reportlab.pdfbase.ttfonts import TTFont
+from reportlab.pdfbase import pdfmetrics
+from reportlab.lib.pagesizes import letter, landscape
+
+import locale
+
+def generate_pdf(dictado, persona, porcentaje_asistencia):
+    buffer = BytesIO()
+
+    # Configurar el tamaño del documento PDF como horizontal
+    p = canvas.Canvas(buffer, pagesize=landscape(letter))
+
+    # Configurar el título y el contenido del certificado
+    titulo = f"Certificado de Asistencia"
+
+    # Configurar la posición y el estilo del texto en el PDF
+    p.setFont("Helvetica-Bold", 46)
+    p.drawCentredString(400, 510, titulo)
+
+    contenido = f"Certificamos que\n\n{persona.nombre} {persona.apellido}\n\nParticipó del curso {dictado.curso.nombre}, organizado por el SEC 2.\nEl mismo se llevó a cabo en la localidad de Trelew desde  al ."
+    
+    p.setFont("Helvetica", 40)
+    contenido = f"Certificamos que"
+    p.drawCentredString(400, 450, contenido)
+    
+    p.setFont("Helvetica", 35)
+    contenido = f"{persona.nombre.upper()} {persona.apellido.upper()}."
+    p.drawCentredString(400, 390, contenido)
+    
+    p.setStrokeColorRGB(0.6, 0.6, 0.6)
+    p.line(100, 380, 700 ,380)
+    p.setStrokeColorRGB(0, 0, 0)
+
+    p.setFont("Helvetica", 20)
+    contenido = f"Participó del curso {dictado.curso.nombre}, organizado por el SEC 2. El mismo se"
+    p.drawString(100, 340, contenido)
+    
+    locale.setlocale(locale.LC_TIME, 'es_ES.UTF-8')
+    # Obtener la fecha en el formato deseado
+    fecha_str = dictado.fecha.strftime("%d de %B del %Y")
+    
+    contenido = f"llevó a cabo en la localidad de Trelew del {fecha_str}"
+    p.drawString(100, 310, contenido)
+
+    fecha_fin_str = dictado.fecha_fin.strftime("%d de %B del %Y")
+    contenido = f"al {fecha_fin_str}. Cumpliendo con un porcentaje de"
+    p.drawString(100, 280, contenido)
+
+    contenido = f"asistencia del {porcentaje_asistencia}% "
+    p.drawString(100, 250, contenido)
+    
+    p.setStrokeColorRGB(0.6, 0.6, 0.6)
+    p.line(150, 100, 300 ,100)
+    p.setStrokeColorRGB(0, 0, 0)
+    
+    p.setFont("Helvetica", 12)
+    contenido = f"Firma y aclaración"
+    p.drawString(175, 85, contenido)
+    # Guardar el PDF en el buffer
+    p.showPage()
+    p.save()
+
+    buffer.seek(0)
+    return buffer
+
+
+def generarPDF_Afiliado(request, dictado_pk, persona_pk):
+    persona = get_object_or_404(Persona, pk=persona_pk)
+    dictado = get_object_or_404(Dictado, pk=dictado_pk)
+
+    # Obtener las clases del dictado
+    clases = Clase.objects.filter(reserva__horario__dictado=dictado)
+
+    # Contar las clases a las que asistió el alumno
+    clases_asistidas = clases.filter(asistencia__persona=persona)
+
+    # Calcular el porcentaje de asistencia
+    porcentaje_asistencia = round((clases_asistidas.count() / clases.count()) * 100)
+    print(porcentaje_asistencia)
+    # Verificar si el alumno cumple con el 80% de asistencia
+    # if porcentaje_asistencia >= 80:
+    buffer = generate_pdf(dictado, persona, porcentaje_asistencia)
+    return FileResponse(buffer, as_attachment=True, filename="certifiado.pdf")
+    # else:
+        # Puedes manejar aquí el caso en el que el alumno no cumple con el 80% de asistencia
+        # return HttpResponse("El alumno no cumple con el 80% de asistencia requerido.")

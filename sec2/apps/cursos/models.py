@@ -83,7 +83,9 @@ class Dictado(models.Model):
     modulos_por_clase= models.PositiveIntegerField(help_text="Horas por clase")
     asistencia_obligatoria = models.BooleanField(default=False)
     periodo_pago=models.PositiveSmallIntegerField(choices=PERIODO_PAGO)
+    estado=models.PositiveSmallIntegerField(choices=ESTADO_DICTADO)
     fecha = models.DateTimeField(help_text="Seleccione la fecha de inicio")
+    fecha_fin = models.DateTimeField(null=True,blank=True )
     cupo = models.PositiveIntegerField(
         help_text="Máximo alumnos inscriptos",
         validators=[
@@ -98,7 +100,6 @@ class Dictado(models.Model):
             MaxValueValidator(100, message="El descuento no puede ser mayor que 100."),
         ]
     )
-    finalizado = models.BooleanField(default=False)
 
 #------------- HORARIO --------------------
 from datetime import datetime, timedelta

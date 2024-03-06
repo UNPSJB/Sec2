@@ -150,6 +150,7 @@
         <th class="text-center">Cupo</th>
         <th>Desc</th>
         <th>Duración</th>
+        <th>Estado</th>
         <th></th>
       </tr>
     </thead>
@@ -161,6 +162,7 @@
         <td class="text-center">{{ dictado.cupo }}</td>
         <td>{{ dictado.descuento }} %</td>
         <td>{{ dictado.modulos_por_clase }} hrs</td>
+        <td>{{ dictado.get_estado_display }} </td>
         <td class="text-end">
           <a href="{% url 'cursos:dictado_detalle' curso_pk=curso.pk dictado_pk=dictado.pk %}" class="btn btn-primary btn-detalle btn-sm"><i class="fa-regular fa-eye"></i> Detalle</a>
         </td>

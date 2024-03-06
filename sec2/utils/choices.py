@@ -287,9 +287,13 @@ DIAS_SEMANA_CHOICES = [
         # (5, 'Sábado'),
     ]
 
-
-
 PERIODO_PAGO=(
         (1, 'mes'),
         (2, 'clase'),
     )
+
+ESTADO_DICTADO=(
+        (1, 'No iniciado'),
+        (2, 'En curso'),
+        (3, 'Finalizado'),
+)

@@ -46,8 +46,8 @@ urlpatterns = [
     path('cursos/curso/<int:pk>/dictados/dictado/crear', DictadoCreateView.as_view(), name="dictado_crear"),
     path('cursos/curso/<int:curso_pk>/dictados/dictado/<int:dictado_pk>', DictadoDetailView.as_view(), name="dictado_detalle"),
     path('cursos/curso/<int:curso_pk>/dictados/dictado/<int:dictado_pk>/editar', DictadoUpdateView.as_view(), name="dictado_editar"),
+    
     path('cursos/curso/<int:curso_pk>/dictados/dictado/<int:dictado_pk>/finalizar', finalizarDictado , name="dictado_finalizar"),
-
 
     # HORARIO (accedido desde dictado)
     path('curso/<int:curso_pk>/dictados/dictado/<int:dictado_pk>/horarios/horario/crear/', HorarioCreateView.as_view(), name='horario_crear'),
@@ -79,14 +79,13 @@ urlpatterns = [
     # GESTION DE INSCRIPCION
     path('cursos/curso/<int:curso_pk>/dictados/dictado/<int:dictado_pk>/<str:tipo>/<int:persona_pk>/Incripcion/<str:accion>/', gestionInscripcion, name="gestion_inscripcion"),
     path('cursos/curso/<int:curso_pk>/dictados/dictado/<int:dictado_pk>/AlumnoNuevo/inscribir', AlumnoCreateView.as_view(), name="alumno_nuevo_inscribir"),
-    
-
 
     path('alumnos', AlumnosListView.as_view(), name="alumnos_listado"),
     path('alumnos/<int:pk>/', AlumnoDetailView.as_view(), name="alumno_detalle"),
 
-
-
+    #GENERAR PDF
+    path('generar-pdf-afiliado-dictado/<int:dictado_pk>/<int:persona_pk>', generarPDF_Afiliado , name="generar_pdf_dictado_finalizado_afiliado"),
+    
     # path('<int:pk>/dictado/profesor',  ProfesorDelDictadoListView.as_view(), name="profesor_dictado"),
     # path('<int:pk>/dictado/   alumnos/<int:apk>/asistencia', registrarAsistenciaAlumno, name="asistencia_alumno"),
     # path('<int:pk>/inscriptos', AlumnosListView.as_view(), name="ver_inscriptos"),

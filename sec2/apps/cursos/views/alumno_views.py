@@ -188,18 +188,36 @@ def marcar_asistencia(request, clase_id):
         reserva__fecha__lt=clase.reserva.fecha
     ).exists()
 
+    # Verificar si la clase actual es la última clase del dictado
+    es_ultima_clase = not Clase.objects.filter(
+        reserva__horario__dictado=clase.reserva.horario.dictado,
+        reserva__fecha__gt=clase.reserva.fecha
+    ).exists()
+
     if not es_primera_clase:
-        # La clase no es la primera, entonces verificamos la asistencia de la clase anterior
-        clase_anterior = Clase.objects.filter(
-            reserva__horario__dictado=clase.reserva.horario.dictado,
-            reserva__fecha__lt=clase.reserva.fecha
-        ).last()
+        if not es_ultima_clase:
+            # La clase no es la primera, entonces verificamos la asistencia de la clase anterior
+            clase_anterior = Clase.objects.filter(
+                reserva__horario__dictado=clase.reserva.horario.dictado,
+                reserva__fecha__lt=clase.reserva.fecha
+            ).last()
 
-        if not clase_anterior or not clase_anterior.asistencia_tomada:
-            # La asistencia de la clase anterior no se ha tomado, mostrar un mensaje de error
-            messages.error(request, f'{ICON_ERROR} La asistencia de la clase anterior no se ha tomado.')
-            return redirect('cursos:clase_detalle', curso_pk=clase.reserva.horario.dictado.curso.pk, dictado_pk=clase.reserva.horario.dictado.pk, clase_pk=clase.pk)
-
+            if not clase_anterior or not clase_anterior.asistencia_tomada:
+                # La asistencia de la clase anterior no se ha tomado, mostrar un mensaje de error
+                messages.error(request, f'{ICON_ERROR} La asistencia de la clase anterior no se ha tomado.')
+                return redirect('cursos:clase_detalle', curso_pk=clase.reserva.horario.dictado.curso.pk, dictado_pk=clase.reserva.horario.dictado.pk, clase_pk=clase.pk)
+        else:
+            #Codigo para cucando sea la ultima clase
+            #Se cambia el estado del dictado
+            clase.reserva.horario.dictado.estado = 3
+            clase.reserva.horario.dictado.fecha_fin = clase.reserva.fecha
+            clase.reserva.horario.dictado.save()
+    else:
+        #Codigo para cuando sea la primer clase
+        #Se cambia el estado del dictado
+        clase.reserva.horario.dictado.estado = 2
+        clase.reserva.horario.dictado.save()
+    
     if request.method == 'POST':
         # ------------- ASISTENCIA PARA INSCRITOS
         alumnos_asistencia_ids = request.POST.getlist('alumnos_asistencia')
@@ -224,7 +242,7 @@ def marcar_asistencia(request, clase_id):
         clase.asistencia_tomada = True
         clase.save()
 
-        messages.success(request, f'{ICON_CHECK} Asistencia tomada correctasdsmente.')
+        messages.success(request, f'{ICON_CHECK} Asistencia tomada correctamente.')
         return redirect('cursos:dictado_detalle', curso_pk=clase.reserva.horario.dictado.curso.pk, dictado_pk=clase.reserva.horario.dictado.pk)
 
     messages.error(request, f'{ICON_ERROR} Ha ocurrido un error inesperado.')
