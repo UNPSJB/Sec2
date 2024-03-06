@@ -1,4 +1,4 @@
-{% extends 'alta.html' %}
+{% extends 'app_cursos_alta.html' %}
 {% load crispy_forms_tags %}
 {% load static %}
 
@@ -10,8 +10,13 @@
 
     <div class="row">
       <div class="col">
-        {{ form.actividad.label_tag }}
-        {{ form.actividad }}
+        <label>Actividad</label>
+        <select name="enc_cliente" id="enc_cliente">
+            <option value="{{ object.actividad.id }}">{{ object.actividad.nombre }}</option>
+            {% for actividad in actividades %}
+                <option value="{{ actividad.id }}" {% if actividad.id == object.actividad.id %}selected{% endif %}>{{ actividad.nombre }}</option>
+            {% endfor %}
+        </select>
       </div>
       <div class="col">
         <div class="form-group">
@@ -60,4 +65,24 @@
       </div>
     </div>
   </form>
+
+    
+<!-- Incluir archivos estáticos de Select2 desde CDN -->
+<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+
+<script>
+  $(function () {
+    $("#enc_cliente").select2();
+
+    // Agregar evento change al select
+    $("#enc_cliente").change(function() {
+      // Habilitar o deshabilitar el botón según el valor seleccionado
+    });
+  });
+</script>
+
+  <script type="text/javascript">
+    $('.django-select2').on("change", () => console.log("hola"));
+</script>
 {% endblock %}

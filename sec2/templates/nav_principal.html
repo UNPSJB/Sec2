@@ -2,21 +2,28 @@
 
 {% block extracss %}
   <link href="{% static 'Libs/css/nav_principal.css' %}" rel="stylesheet" />
+  <link href="{% static 'Libs/css/nav_afiliado.css' %}" rel="stylesheet" />
   <link href="{% static 'Libs/css/nav_curso.css' %}" rel="stylesheet" />
 {% endblock %}
 
 <div class="menu" id="menu_principal">
   <br />
-  <h3 class="titulo-menu">SEC2</h3>
+  <h3 class="titulo-menu">SEC 2</h3>
   <ul class="menu">
     <li>
-      <a href="#" id="mostrarMenuAfiliado"><i class="fa-solid fa-person-dress"></i> Gestión de Afiliados</a>
+      <a href="#" id="mostrarMenuAfiliado">
+        <i class="fa-solid fa-person-dress"></i>
+        Gestión de Afiliados</a>
     </li>
     <li>
-      <a href="#" id="mostrarMenuCurso"><i class="fa-solid fa-graduation-cap"></i> Gestión de Cursos</a>
+      <a href="#" id="mostrarMenuCurso">
+        <i class="fa-solid fa-graduation-cap"></i> 
+        Gestión de Cursos</a>
     </li>
     <li>
-      <a href="#" id="mostrarMenuSalon"><i class="fa-solid fa-graduation-cap"></i> Gestión de Salon</a>
+      <a href="#" id="mostrarMenuSalon">
+        <i class="fa-solid fa-person-shelter"></i>
+         Gestión de Salon</a>
     </li>
   </ul>
 </div>
@@ -37,6 +44,5 @@
 </div>
 
 {% block extrajs %}
-  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <script src="{% static 'Libs/js/nav_principal.js' %}"></script>
 {% endblock %}

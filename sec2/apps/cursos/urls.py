@@ -17,13 +17,13 @@ urlpatterns = [
     path('',index, name="index"),
 
     # ACTIVIDADES
-    path('actividades/', ActividadCreateListView.as_view(), name="gestion_actividad"),
+    path('actividades/', GestionActividadView.as_view(), name="gestion_actividad"),
     path('actividades/actividad/<int:pk>', ActividadDetailView.as_view(), name="actividad_detalle"),
     path('actividades/actividad/<int:pk>/editar', ActividadUpdateView.as_view(), name="actividad_editar"),
     path('actividades/actividad/<int:pk>/eliminar', actividad_eliminar, name="actividad_eliminar"),
 
     # AULAS
-    path('aulas/', AulaCreateListView.as_view(), name="gestion_aula"),
+    path('aulas/', GestionAulaView.as_view(), name="gestion_aula"),
     path('aulas/aula/<int:pk>/', AulaDetailView.as_view(), name='aula_detalle'),
     path('aulas/aula/<int:pk>/editar', AulaUpdateView.as_view(), name="aula_editar"),
     path('aulas/<int:pk>/eliminar', aula_eliminar, name="aula_eliminar"),
@@ -46,6 +46,8 @@ urlpatterns = [
     path('cursos/curso/<int:pk>/dictados/dictado/crear', DictadoCreateView.as_view(), name="dictado_crear"),
     path('cursos/curso/<int:curso_pk>/dictados/dictado/<int:dictado_pk>', DictadoDetailView.as_view(), name="dictado_detalle"),
     path('cursos/curso/<int:curso_pk>/dictados/dictado/<int:dictado_pk>/editar', DictadoUpdateView.as_view(), name="dictado_editar"),
+    
+    path('cursos/curso/<int:curso_pk>/dictados/dictado/<int:dictado_pk>/finalizar', finalizarDictado , name="dictado_finalizar"),
 
     # HORARIO (accedido desde dictado)
     path('curso/<int:curso_pk>/dictados/dictado/<int:dictado_pk>/horarios/horario/crear/', HorarioCreateView.as_view(), name='horario_crear'),
@@ -56,14 +58,12 @@ urlpatterns = [
     # CLASE (accedido desde dictaod)
     path('cursos/curso/<int:curso_pk>/dictados/dictado/<int:dictado_id>/generarclaeses/', generar_clases, name="generar_clases"),
     path('cursos/curso/<int:curso_pk>/dictados/dictado/<int:dictado_pk>/clases/clase/<int:clase_pk>', ClaseDetailView.as_view(), name="clase_detalle"),
-
+    
     ## VERIFICAR Y BUSCAR PERSONA ANTES DE PROCEDER A LA INSCRIPCION
     path('cursos/curso/<int:curso_pk>/dictados/dictado/<int:dictado_pk>/buscar', VerificarInscripcionView.as_view(), name="verificar_persona"),
     path('buscar-persona/', BuscarPersonaView.as_view(), name='buscar_persona'),
 
     # ALUMNO (accedido desde el dictado)
-    path('cursos/curso/<int:curso_pk>/dictados/dictado/<int:dictado_pk>/Alumnos/inscribir', AlumnoCreateView.as_view(), name="persona_inscribir"),
-    path('cursos/curso/<int:curso_pk>/dictados/dictado/<int:dictado_pk>/Alumnos/inscribirListaEspera', AlumnoListaEsperaCreateView.as_view(), name="persona_poner_lista_espera"),
     path('cursos/curso/<int:curso_pk>/dictados/dictado/<int:dictado_pk>/Alumnos/listaEspera', listaEspera , name="dictado_lista_espera"),
 
     #CONTROL DE ASISTENCIA
@@ -72,30 +72,21 @@ urlpatterns = [
     #ALUMNNOS POR CURSO
     path('cursos/curso/<int:curso_pk>/dictados/dictado/<int:dictado_pk>/Alumnos', AlumnosEnDictadoList.as_view(), name="alumno_inscripto"),
 
-    #AREA DE INSCRIPCIONES
-    path('cursos/curso/<int:curso_pk>/dictados/dictado/<int:dictado_pk>/Afiliado/<int:persona_pk>/inscribir', inscribirAfiliado , name="afiliado_inscribir"),
-    path('cursos/curso/<int:curso_pk>/dictados/dictado/<int:dictado_pk>/GrupoFamiliar/<int:persona_pk>/inscribir', inscribirFamiliar , name="familiar_inscribir"),
-    path('cursos/curso/<int:curso_pk>/dictados/dictado/<int:dictado_pk>/Profesor/<int:persona_pk>/inscribir', inscribirProfesor , name="profesor_inscribir"),
-    path('cursos/curso/<int:curso_pk>/dictados/dictado/<int:dictado_pk>/Alumno/<int:persona_pk>/inscribir', inscribirAlumno , name="alumno_inscribir"),
-    
     # GESTION DE LISTA DE ESPERA
-    path('cursos/curso/<int:curso_pk>/dictados/dictado/<int:dictado_pk>/Afiliado/<int:persona_pk>/listaEspera/<str:accion>/', gestionListaEsperaAfiliado, name="afiliado_gestion_lista_espera"),
-    path('cursos/curso/<int:curso_pk>/dictados/dictado/<int:dictado_pk>/GrupoFamiliar/<int:persona_pk>/listaEspera/<str:accion>/', gestionListaEsperaGrupoFamiliar, name="grupoFamiliar_gestion_lista_espera"),
+    path('cursos/curso/<int:curso_pk>/dictados/dictado/<int:dictado_pk>/<str:tipo>/<int:persona_pk>/listaEspera/<str:accion>/', gestionListaEspera, name="gestion_lista_espera"),
+    path('cursos/curso/<int:curso_pk>/dictados/dictado/<int:dictado_pk>/AlumnoNuevo/inscribirListaEspera', AlumnoListaEsperaCreateView.as_view(), name="alumno_nuevo_lista_espera"),
     
-    #AREA DE LISTA DE PONER EN LISTA DE ESPERA
-    path('cursos/curso/<int:curso_pk>/dictados/dictado/<int:dictado_pk>/Afiliado/<int:persona_pk>/listaEspera/agregar', agregarListaEsperaAfiliado , name="afiliado_agregar_lista_espera"),
-    path('cursos/curso/<int:curso_pk>/dictados/dictado/<int:dictado_pk>/GrupoFamiliar/<int:persona_pk>/listaEspera/agregar', agregarListaEsperaFamiliar , name="familiar_agregar_lista_espera"),
-    path('cursos/curso/<int:curso_pk>/dictados/dictado/<int:dictado_pk>/Profesor/<int:persona_pk>/listaEspera/agregar', agregarListaEsperaProfesor , name="profesor_agregar_lista_espera"),
-    path('cursos/curso/<int:curso_pk>/dictados/dictado/<int:dictado_pk>/Alumno/<int:persona_pk>/listaEspera/agregar', agregarListaEsperaAlumno , name="alumno_agregar_lista_espera"),
-    
+    # GESTION DE INSCRIPCION
+    path('cursos/curso/<int:curso_pk>/dictados/dictado/<int:dictado_pk>/<str:tipo>/<int:persona_pk>/Incripcion/<str:accion>/', gestionInscripcion, name="gestion_inscripcion"),
+    path('cursos/curso/<int:curso_pk>/dictados/dictado/<int:dictado_pk>/AlumnoNuevo/inscribir', AlumnoCreateView.as_view(), name="alumno_nuevo_inscribir"),
 
     path('alumnos', AlumnosListView.as_view(), name="alumnos_listado"),
     path('alumnos/<int:pk>/', AlumnoDetailView.as_view(), name="alumno_detalle"),
 
-
-
+    #GENERAR PDF
+    path('generar-pdf-afiliado-dictado/<int:dictado_pk>/<int:persona_pk>', generarPDF_Afiliado , name="generar_pdf_dictado_finalizado_afiliado"),
+    
     # path('<int:pk>/dictado/profesor',  ProfesorDelDictadoListView.as_view(), name="profesor_dictado"),
-    # path('<int:pk>/dictado/profesor/<int:ppk>/presente',  registrarAsistenciaProfesor, name="asistencia_profesor"),
     # path('<int:pk>/dictado/   alumnos/<int:apk>/asistencia', registrarAsistenciaAlumno, name="asistencia_alumno"),
     # path('<int:pk>/inscriptos', AlumnosListView.as_view(), name="ver_inscriptos"),
     # path('<int:dpk>/dictado/<int:pk>/asistencia', registrarAsistenciaAlumno, name="asistencia_alumno"),

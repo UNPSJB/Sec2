@@ -1,4 +1,7 @@
 import decimal
+
+from utils.choices import AFILIADO_ESTADO, ESTADO_CIVIL, LOCALIDADES_CHUBUT, MAX_LENGTHS, NACIONALIDADES, TIPOS_RELACION_FAMILIAR
+from utils.funciones import validate_no_mayor_actual
 from .models import Afiliado, Familiar
 from apps.personas.models import Persona
 from sec2.utils import FiltrosForm
@@ -9,35 +12,29 @@ from django import forms
 from django.utils import timezone
 import re
 from django.core.validators import MinValueValidator, MaxValueValidator
+from django.core.validators import EmailValidator
 
-
-########### Utilizado para el AFILIADO CRATE VIEW ##############################################
+# ---------- Utilizado para el AFILIADO CRATE VIEW 
 class AfiliadoPersonaForm(forms.ModelForm):
-    # Campos específicos del afiliado
     razon_social = forms.CharField(max_length=30, validators=[text_and_numeric_validator])
     categoria_laboral = forms.CharField(max_length=20, validators=[text_and_numeric_validator])
     rama = forms.CharField(max_length=50, validators=[text_and_numeric_validator])
-    sueldo = forms.DecimalField(max_digits=9, decimal_places=2, validators=[validate_positive_decimal])
-    # fechaAfiliacion = forms.DateField(widget=forms.DateInput(attrs={'type': 'date'}))
-    fechaIngresoTrabajo = forms.DateField(widget=forms.DateInput(attrs={'type': 'date'}))
-    cuit_empleador = forms.CharField(max_length=11, validators=[numeric_validator], help_text='Cuit sin puntos y guiones. Ej: 01234567899')
-    localidad_empresa = forms.ChoiceField(choices=LOCALIDADES_CHUBUT, initial="TRELEW")
-    domicilio_empresa = forms.CharField(max_length=50, validators=[text_and_numeric_validator], help_text='Calle y numero')
+    sueldo = forms.IntegerField(validators=[MinValueValidator(0, 'El sueldo debe ser un valor positivo.')])
     horaJornada = forms.IntegerField(
-        help_text="Cantidad horas semanales."
-    )
-    def clean_fechaAfiliacion(self):
-        fecha_afiliacion = self.cleaned_data.get('fechaAfiliacion')
-        if fecha_afiliacion > timezone.now().date():
-            raise forms.ValidationError('La fecha de afiliación no puede ser en el futuro.')
-        return fecha_afiliacion
+        validators=[MinValueValidator(1)],
+                help_text="Total de horas trabajadas a la semana"
 
-    def clean_fechaIngresoTrabajo(self):
-        fecha_ingreso_trabajo = self.cleaned_data.get('fechaIngresoTrabajo')
-        if fecha_ingreso_trabajo > timezone.now().date():
-            raise forms.ValidationError('La fecha de ingreso al trabajo no puede ser en el futuro.')
-        return fecha_ingreso_trabajo
-    
+    )
+    cuit_empleador = forms.CharField(max_length=11, validators=[numeric_validator], help_text='Cuit sin puntos y guiones. Ej: 01234567899')
+    domicilio_empresa = forms.CharField(max_length=50, validators=[text_and_numeric_validator], help_text='Calle y numero')
+    # fechaAfiliacion = forms.DateField(widget=forms.DateInput(attrs={'type': 'date'}))
+    fechaIngresoTrabajo = forms.DateField(
+        widget=forms.DateInput(attrs={'type': 'date'}),
+        validators=[validate_no_mayor_actual]
+    )
+
+    localidad_empresa = forms.ChoiceField(choices=LOCALIDADES_CHUBUT, initial="TRELEW")
+
     class Meta:
         model = Persona
         fields = ['dni', 'cuil', 'nombre', 'apellido', 'fecha_nacimiento', 'celular', 'direccion', 'nacionalidad', 'mail', 'estado_civil']
@@ -54,10 +51,15 @@ class AfiliadoPersonaForm(forms.ModelForm):
 
 ########### Utilizado para el AFILIADO fliadosListView ##############################################
 class AfiliadoFilterForm(FiltrosForm):
-    persona__nombre = forms.CharField(required=False)
-    persona__dni = forms.CharField(required=False)
+    persona__dni = forms.CharField(required=False, label="Dni" )
+    persona__nombre = forms.CharField(required=False, label="Nombre")
     cuit_empleador = forms.CharField(required=False)
-
+    estado = forms.ChoiceField(
+        required=False,
+        choices=[('', '----------')] + list(AFILIADO_ESTADO),
+        widget=forms.Select(attrs={'class': 'form-control'}),
+    )
+    
 ########### Utilizado para el AFILIADO UPDATE ##############################################
 class AfiliadoUpdateForm(forms.ModelForm):
     sueldo = forms.CharField(
@@ -123,11 +125,6 @@ class AfiliadoUpdateForm(forms.ModelForm):
             raise forms.ValidationError('La fecha de nacimiento no puede estar en el futuro.')
         return fecha_nacimiento
     
-    def clean_sueldo(self):
-        # sueldo = self.cleaned_data['sueldo'].replace(',', '.')  # Elimina la coma
-        sueldo = self.cleaned_data['sueldo'].replace(',', '.')  # Elimina la coma
-        return decimal.Decimal(sueldo)
-    
     def clean_nombre(self):
         nombre = self.cleaned_data['nombre']
         if not nombre.isalpha():
@@ -165,9 +162,73 @@ class AfiliadoUpdateForm(forms.ModelForm):
     
 
 ########### FAMILIAR ##############################################
+class AfiliadoSelectForm(forms.Form):
+    class Meta:
+        model = Persona
+        fields = ['dni', 'cuil', 'nombre', 'apellido', 'fecha_nacimiento', 'celular', 'direccion', 'nacionalidad', 'mail', 'estado_civil']
+        widgets = {
+        'fecha_nacimiento': forms.DateInput(attrs={'type': 'date'}),
+        }
+
+    tipo = forms.ChoiceField(choices=TIPOS_RELACION_FAMILIAR)
+    dni = forms.CharField(
+        max_length=8,
+        help_text='Sin puntos',
+        validators=[
+            numeric_validator,
+            exact_length_8_validator,
+        ]
+    )
+    cuil = forms.CharField(
+        max_length=11,
+        help_text='Sin puntos y guiones',
+        validators=[
+            numeric_validator,
+            exact_length_11_validator,
+        ]
+    )
+    nombre = forms.CharField(max_length=30, validators=[text_validator])
+    apellido = forms.CharField(max_length=30, validators=[text_validator])
+    fecha_nacimiento = forms.DateField(
+        widget=forms.DateInput(attrs={'type': 'date'}),
+        validators=[
+            validate_no_mayor_actual
+        ]
+    )
+    celular = forms.CharField(
+        max_length=13,
+        validators=[
+            numeric_validator,
+            exact_length_10_validator,
+        ],
+        help_text='Ejemplo: 1234567632',
+    )
+    direccion = forms.CharField(max_length=50, validators=[text_and_numeric_validator], help_text='Calle y numero')
+    nacionalidad = forms.ChoiceField(choices=NACIONALIDADES, initial='AR')  # Establecer el valor predeterminado
+
+    mail = forms.EmailField(
+        max_length=50,
+        validators=[EmailValidator(message='Debe ser un correo válido.')],
+        help_text='Debe ser un correo válido.',
+    )
+
+    estado_civil = forms.ChoiceField(choices=ESTADO_CIVIL)
+
+    es_afiliado = forms.BooleanField(initial=False, required=False)
+    es_alumno = forms.BooleanField(initial=False, required=False)
+    es_profesor = forms.BooleanField(initial=False, required=False)
+    es_encargado = forms.BooleanField(initial=False, required=False)
+    es_grupo_familiar = forms.BooleanField(initial=False, required=False)
+
+    def __init__(self, *args, **kwargs):
+        super(AfiliadoSelectForm, self).__init__(*args, **kwargs)
+
+    def label_from_instance_with_strextra(self, obj):
+        return obj.__strextra__()
+    
 class GrupoFamiliarPersonaForm(forms.ModelForm):
 
-    tipo = forms.ChoiceField(choices=Familiar.TIPOS)
+    tipo = forms.ChoiceField(choices=TIPOS_RELACION_FAMILIAR)
 
     class Meta:
         model = Persona
@@ -178,8 +239,6 @@ class GrupoFamiliarPersonaForm(forms.ModelForm):
 
 ########### FAMILIAR ##############################################
 class GrupoFamiliarPersonaUpdateForm(forms.ModelForm):
-
-    tipo = forms.ChoiceField(choices=Familiar.TIPOS)
 
     class Meta:
         model = Persona
@@ -224,3 +283,9 @@ class GrupoFamiliarPersonaUpdateForm(forms.ModelForm):
                     help_text=getattr(self.instance.persona._meta.get_field(field_name), 'help_text', '')
                 )
             self.fields[field_name].widget.attrs['readonly'] = False  # P
+
+########### FILTER FORM FAMILIAR  ##############################################
+class RelacionFamiliarFilterForm(FiltrosForm):
+    familiar__persona__dni = forms.CharField(label='DNI del Familiar', required=False)
+    afiliado__persona__dni = forms.CharField(label='DNI del Afiliado', required=False)
+    tipo_relacion = forms.ChoiceField(choices=TIPOS_RELACION_FAMILIAR, required=False)

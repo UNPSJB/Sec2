@@ -1,4 +1,4 @@
-{% extends 'alta.html' %}
+{% extends 'app_cursos_alta.html' %}
 
 {% load crispy_forms_tags %}
 
@@ -55,7 +55,9 @@
         <div class="form-group">
           {{ form.fecha.label_tag }}
           <input type="datetime-local" name="fecha" required class="form-control" value="{{ form.fecha.value|default:'' }}" min="{{ current_date }}" />
-          <small class="form-text text-muted">{{ form.fecha.help_text }}</small>
+          {% include "error_campo.html" with field=form.fecha %}
+
+          {% comment %} <small class="form-text text-muted">{{ form.fecha.help_text }}</small> {% endcomment %}
         </div>
       </div>
       {% endif %}

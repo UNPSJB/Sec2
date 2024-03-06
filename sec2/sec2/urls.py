@@ -27,7 +27,6 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('', home, name="home"),
     path('home/', home, name="home"),
-    path("select2/", include("django_select2.urls")),
 
     #APLICACIONES
     path('home/app_afiliados/',include('apps.afiliados.urls')),
@@ -35,6 +34,11 @@ urlpatterns = [
     path('home/app_personas/',include('apps.personas.urls')),
     path('home/app_alquileres/',include('apps.alquileres.urls')),
     path('',include('apps.users.urls')),
+    path('select2/', include('django_select2.urls')),
+
+    
+
+
     # path('cursos/',include('apps.cursos.urls')),
     # path('alquileres/',include('apps.alquileres.urls')),
     # path('pagos/',include('apps.pagos.urls')),

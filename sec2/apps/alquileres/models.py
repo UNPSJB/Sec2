@@ -1,28 +1,77 @@
+import datetime
 from unittest.util import _MAX_LENGTH
 from django.db import models
 from apps.personas.models import *
 from apps.afiliados.models import *
+from utils.choices import LOCALIDADES_CHUBUT
+from apps.personas.models import Rol, Persona
 
 # Create your models here.
-class Salon(models.Model):
+
+class Servicio (models.Model):
     nombre = models.CharField(max_length=30)
-    localidad=models.CharField(max_length=50)
+
+    def __str__(self):
+        return f"{self.nombre}"
+    
+class Encargado (Rol):
+    TIPO=4
+
+   
+
+Rol.register(Encargado)
+
+class Salon(models.Model):
+    tipos_salon=[
+        ('polideportivo','Polideportivo'),
+        ('multiuso','Multiuso')
+    ]
+    nombre = models.CharField(max_length=30)
+    localidad= models.CharField(max_length =25,choices = LOCALIDADES_CHUBUT)
     direccion=models.CharField(max_length=50)
     capacidad=models.PositiveIntegerField(help_text="capacidad maxima del salon")
     encargado=models.ForeignKey(Persona, related_name="salon", on_delete=models.CASCADE)
     precio=models.DecimalField(help_text="costo del alquiler", max_digits=10, decimal_places=2)
     fecha_baja=models.DateTimeField(auto_now_add=True, null=True, blank=True)
-    #servicios [1..n]
-    #tipo
-
+    tipo_salon=models.CharField(max_length=25, choices=tipos_salon)
+    servicios=models.ManyToManyField(Servicio, blank=True) 
+    
+    def __str__(self):
+        return f"{self.nombre}"
+    
 
 class Alquiler(models.Model):
+    turnos=[
+        ('mañana','Mañana'),
+        ('noche','Noche')
+    ]
     afiliado=models.ForeignKey(Afiliado, related_name="alquileres", on_delete=models.CASCADE)
     salon=models.ForeignKey(Salon, related_name="alquileres", on_delete=models.CASCADE)
     fecha_solicitud=models.DateTimeField(auto_now_add=True, null=True, blank=True)
-    fecha_alquiler=models.DateTimeField(auto_now_add=True, null=True, blank=True)
-    #servicios[1..n]
+    fecha_alquiler=models.DateTimeField(null=True, blank=True) 
+    turno=models.CharField(max_length=50, choices=turnos) #verificar bien la forma de los turnos
+    seguro=models.DecimalField(help_text="costo del alquiler", max_digits=10, decimal_places=2)
+    lista_espera=models.ManyToManyField(Afiliado, blank=True)
+    #crear lista de espera para agregar afiliado interesado que solamente mostrara para el afiliado que esta en espera, el sistea no se encarga de la actulizacion del cliente de manera automatica a la hora actulizar el cliente que contrata el salon
+    #servicios[1..n] no se detallan los servicios "extras" que ofrece el sindicato porque solamente hace de nexo entre la empresa que lo ofrece y el afiliado
+
+    def __str__(self):
+        return f"{self.fecha_alquiler, self.turno, self.afiliado.persona, self.salon}"
+    
+    def verificar_existencia_alquiler(self, salon, fecha_alquiler, turno):
+        # Verificar si existe algún alquiler que cumple con las condiciones dadas
+        alquiler_existente = Alquiler.objects.filter(salon=salon, fecha_alquiler=fecha_alquiler, turno=turno).exists()
+        
+        # Devolver True si existe al menos un alquiler que cumple con las condiciones
+        return alquiler_existente
 
 class Pago_alquiler(models.Model):
     alquiler=models.ForeignKey(Alquiler, related_name="pagos", on_delete=models.CASCADE)
     fecha_pago=models.DateTimeField(auto_now_add=True, null=True, blank=True)
+    forma_pago=[
+        ('total','Total'),
+        ('cuota','Cuota')
+    ]
+    forma_pago = models.CharField(max_length=30, choices=forma_pago)
+    #agregar las dos formas de pago total(no importa si es contado o tarjeta) o cuota (no  se realiza en el sistema la forma de pago y como se actualiza)
+    #ver si el sistema entrega comprobante de pago

@@ -1,4 +1,4 @@
-{% extends 'alta_ventana_nueva.html' %}
+{% extends 'alta_gestion_afiliados.html' %}
 {% load crispy_forms_tags %}
 {% load static %}
 
@@ -9,15 +9,7 @@
       <div class="col-12">
         <div class="tab-content" id="form-tabs-content">
           {% comment %}SECCION 1{% endcomment %}
-          <div class="tab-pane fade show active">
-            <div class="col">
-                <div class="form-group">
-                  <label for="{{ form.tipo.id_for_label }}"> Seleccione el parentezco:</label>
-                  {{ form.tipo }}
-                </div>
-              </div>
-            </div>
-            {% include 'persona_alta.html' %}
+          {% include 'persona_alta.html' %}
           </div>
         </div>
       </div>

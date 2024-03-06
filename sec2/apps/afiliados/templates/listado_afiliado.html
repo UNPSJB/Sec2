@@ -10,7 +10,6 @@
 {% block dinamica %}
 <br>
   <h3 class="titulo">{{ titulo }}</h3>
-  <br />
   <div class="container">
     <div class="row">
       <div class="col-md-2" id="btn-new-afiliado"> <!-- Utiliza col-md-6 para que el botón esté a la izquierda en dispositivos medianos y grandes -->
@@ -26,11 +25,11 @@
 
   <div class="container-sm">
     <div class="table-responsive">
-
-    {% block tabla_listado %}
+      {% block tabla_listado %}
       {% endblock %}
     </div>
   </div>
+  {% include 'pagination.html' %} 
 </div>
 
 

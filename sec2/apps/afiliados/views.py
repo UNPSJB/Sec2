@@ -1,19 +1,20 @@
+import datetime
 from apps.afiliados.forms import Afiliado
 from django.template import loader
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.views.generic.edit import CreateView, DeleteView, UpdateView
-from django.contrib import messages
 from django.urls import reverse_lazy
-from datetime import datetime
-
-from apps.personas.forms import PersonaForm, PersonaUpdateForm  
-from .models import Afiliado, Familiar
+from apps.personas.forms import PersonaForm, PersonaUpdateForm
+from utils.funciones import mensaje_advertencia, mensaje_error, mensaje_exito  
+from .models import Afiliado, Familiar, RelacionFamiliar
 from .forms import *
 from sec2.utils import ListFilterView
 from django.db import transaction  # Agrega esta línea para importar el módulo transaction
 from django.urls import reverse
 from django.http import HttpResponseRedirect
+from django.http import FileResponse
+
 #CONSTANTE
 from utils.constants import *
 from datetime import date
@@ -34,6 +35,8 @@ class AfiliadoCreateView(CreateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['titulo'] = "Formulario de Afiliación"
+        personas = Persona.objects.all()
+        context['clientes'] = personas
         return context
 
     def form_valid(self, form):
@@ -41,7 +44,7 @@ class AfiliadoCreateView(CreateView):
         existing_person = Persona.objects.filter(dni=dni).first()
         
         if existing_person:
-            messages.error(self.request, f'{ICON_ERROR} ERROR: Ya existe una persona registrada en el sistema como {existing_person.obtenerRol()} con el mismo DNI.')
+            mensaje_error(self.request, f'{MSJ_PERSONA_EXISTE}')
             form = AfiliadoPersonaForm(self.request.POST)
             return self.render_to_response(self.get_context_data(form=form))
         else:
@@ -67,7 +70,6 @@ class AfiliadoCreateView(CreateView):
                 categoria_laboral=form.cleaned_data["categoria_laboral"].title(),
                 rama=form.cleaned_data["rama"].title(),
                 sueldo=form.cleaned_data["sueldo"],
-                # fechaAfiliacion=form.cleaned_data["fechaAfiliacion"],
                 fechaIngresoTrabajo=form.cleaned_data["fechaIngresoTrabajo"],
                 cuit_empleador=form.cleaned_data["cuit_empleador"],
                 localidad_empresa=form.cleaned_data["localidad_empresa"],
@@ -77,11 +79,17 @@ class AfiliadoCreateView(CreateView):
             )
             afiliado.save()
             detail_url = reverse('afiliados:afiliado_detalle', kwargs={'pk': afiliado.pk})
-            messages.success(self.request, f'{ICON_CHECK} Alta de afiliado exitosa!')
+            mensaje_exito(self.request, f'{MSJ_CORRECTO_ALTA_AFILIADO}')
             return redirect(detail_url)
 
     def form_invalid(self, form):
-        messages.warning(self.request, f'{ICON_TRIANGLE} Corrija los errores marcados.')
+        mensaje_advertencia(self.request, f'{ICON_TRIANGLE} {MSJ_CORRECTION}')
+        print("")
+        print("ERRORES DEL FORMULARIO")
+        for field, errors in form.errors.items():
+            for error in errors:
+                print(f"Error en el campo '{field}': {error}")
+        print("")
         return super().form_invalid(form)
 
 # ----------------------------- AFILIADO DETALLE ----------------------------------- #
@@ -91,72 +99,14 @@ class AfiliadoDetailView (DeleteView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        afiliado = self.object  # Access the Afiliado instance
         context['titulo'] = "Datos del afiliado"
         context['subtitulodetalle1'] = "Datos personales"
         context['subtitulodetalle2'] = "Datos de afiliación"
         context['tituloListado'] = "Dictados Incritos"
+        relacion_familiar_list = afiliado.relacionfamiliar_set.all()
+        context['relacion_familiar_list'] = relacion_familiar_list
         return context
-
-# ----------------------------- AFILIADO LIST ----------------------------------- #
-class AfliadosListView(ListFilterView):
-    model = Afiliado
-    filter_class = AfiliadoFilterForm
-    success_url = reverse_lazy('afiliados:afiliado_listar')
-    template_name = 'afiliados/afiliado_list.html'
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['titulo'] = "Listado de afiliados"
-        return context
-        
-    def get_queryset(self):
-        if self.request.GET.get('estado') is not None:
-            AfliadosListView.template_name = 'afiliado_list_aceptar.html'
-            return Afiliado.objects.filter(
-                estado__startswith = self.request.GET['estado']
-            )
-        return super().get_queryset()
-
-# ----------------------------- AFILIADO LIST PENDIENTES DE ACTIVACION -------------------------- #
-class AfliadosListPendienteView(ListFilterView):
-    model = Afiliado
-    filter_class = AfiliadoFilterForm
-    success_url = reverse_lazy('afiliados:afiliado_listar_pendiente')
-    template_name = 'afiliados/afiliado_list_pendiente.html'
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['titulo'] = "Listado de Afiliados Pendientes"
-        return context
-        
-    def get_queryset(self):
-        if self.request.GET.get('estado') is not None:
-            AfliadosListView.template_name = 'afiliado_list_aceptar.html'
-            return Afiliado.objects.filter(
-                estado__startswith = self.request.GET['estado']
-            )
-        return super().get_queryset()
-
-# ----------------------------- AFILIADO LIST INACTIVO -------------------------- #
-class AfliadosListActivoView(ListFilterView):
-    model = Afiliado
-    filter_class = AfiliadoFilterForm
-    success_url = reverse_lazy('afiliados:afiliado_listar_activos')
-    template_name = 'afiliados/afiliado_list_activos.html'
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['titulo'] = "Listado de Afiliados Activos"
-        return context
-        
-    def get_queryset(self):
-        if self.request.GET.get('estado') is not None:
-            AfliadosListView.template_name = 'afiliado_listar_activos.html'
-            return Afiliado.objects.filter(
-                estado__startswith = self.request.GET['estado']
-            )
-        return super().get_queryset()
-
 
 # ----------------------------- AFILIADO UPDATE ----------------------------------- #
 class AfiliadoUpdateView(UpdateView):
@@ -187,7 +137,7 @@ class AfiliadoUpdateView(UpdateView):
                     persona.save()
                     afiliado.save()
 
-                messages.success(self.request, f'{ICON_CHECK} Modificación exitosa!')
+                mensaje_exito(self.request, f'{MSJ_EXITO_MODIFICACION}')
 
                 # Redirige al usuario al detalle del afiliado
                 detail_url = reverse('afiliados:afiliado_detalle', kwargs={'pk': afiliado.pk})
@@ -195,48 +145,253 @@ class AfiliadoUpdateView(UpdateView):
             else:
                 # Si el formulario de la persona no es válido, maneja los errores adecuadamente
                 # Por ejemplo, podrías mostrar los errores en el formulario o tomar otra acción
-                messages.error(self.request, f'{ICON_ERROR} Error en la validación de datos de la persona.')
+                mensaje_error(self.request, f'{MSJ_ERROR_VALIDACION} ')
                 return self.render_to_response(self.get_context_data(form=persona_form))
 
         else:
-            messages.error(self.request, f'{ICON_ERROR} La persona no está registrada en el sistema.')
+            mensaje_error(self.request, f'{MSJ_PERSONA_NO_EXISTE} ')
             form = AfiliadoPersonaForm(self.request.POST)
             return self.render_to_response(self.get_context_data(form=form))
 
     def form_invalid(self, form):
-        messages.warning(self.request, f'{ICON_TRIANGLE} Corrija los errores marcados.')
+        mensaje_advertencia(self.request, f'{MSJ_CORRECTION}')
+        print("")
         for field, errors in form.errors.items():
             print(f"Campo: {field}, Errores: {', '.join(errors)}")
+        print("")
         return super().form_invalid(form)
+
+# ----------------------------- AFILIADO LISTADO ----------------------------------- #
+class AfliadosListView(ListFilterView):
+    model = Afiliado
+    filter_class = AfiliadoFilterForm
+    template_name = 'afiliados/afiliado_list.html'
+    paginate_by = MAXIMO_PAGINATOR
+    success_url = reverse_lazy('afiliados:afiliado_listar')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['titulo'] = "Listado de afiliados"
+        return context
+        
+    def get_queryset(self):
+        queryset = super().get_queryset()
+
+        if self.request.GET.get('estado') is not None:
+            AfliadosListView.template_name = 'afiliado_list_aceptar.html'
+            queryset = Afiliado.objects.filter(
+                estado__startswith=self.request.GET['estado']
+            )
+
+        # Apply additional filters from the form
+        form = AfiliadoFilterForm(self.request.GET)
+        if form.is_valid():
+            persona_dni = form.cleaned_data.get('persona__dni')
+            persona_nombre = form.cleaned_data.get('persona__nombre')
+            cuit_empleador = form.cleaned_data.get('cuit_empleador')
+            estado = form.cleaned_data.get('estado')
+
+            if persona_dni:
+                queryset = queryset.filter(persona__dni=persona_dni)
+            if persona_nombre:
+                queryset = queryset.filter(persona__nombre__icontains=persona_nombre)
+            if cuit_empleador:
+                queryset = queryset.filter(cuit_empleador=cuit_empleador)
+            if estado:
+                queryset = queryset.filter(estado=estado)
+        return queryset
+
 # ----------------------------- AFILIADO ACEPTAR ----------------------------------- #
-def afiliado_aceptar(request, pk):
-    afiliado = Afiliado.objects.get(pk=pk)
-    # Establecer la fecha de afiliación a la fecha actual
-    afiliado.fechaAfiliacion = date.today()
-    afiliado.estado = 2
-    afiliado.persona.es_afiliado = True
-    afiliado.persona.save()
-    afiliado.save()
-    messages.success(request, f'{ICON_CHECK} El afiliado ha sido aceptado.')
-    return redirect('afiliados:afiliado_listar')
+def afiliado_afiliar_desafiliar(request, pk, accion, origen):
+    afiliado = get_object_or_404(Afiliado, pk=pk)
 
-# ----------------------------- DESAFILIAR AFILIADO -----------------------------------
-def afiliado_desafiliar(request, pk):
-    a = Afiliado.objects.get(pk=pk)
-    fecha = datetime.now()
-    a.persona.desafiliar(a,fecha)
-    a.save()
-    messages.success(request, f'{ICON_CHECK} Se ha desafiliado.')
-    return redirect('afiliados:afiliado_listar')
+    if accion == 'afiliar':
+        afiliado.afiliar()
+        mensaje_exito(request, f'{MSJ_AFILIADO_AFILIADO} ')
+    elif accion == 'desafiliar':
+        afiliado.desafiliar()
+        mensaje_exito(request, f'{MSJ_AFILIADO_DESAFILIADO}')
 
-#---------- HTML PARA FUNCIONALIDADES PENDIENTES
-def funcionalidad_pendiente(request):
-    return render(request, 'funcionalidad_pendiente.html')
+    if origen == 'listadoAfiliado':
+        return redirect('afiliados:afiliado_listar')
+    elif origen == 'detalleAfiliado':
+        return redirect('afiliados:afiliado_detalle', pk=afiliado.pk)
+#------------------------------------------------------------------------------------------
+from io import BytesIO
+import io
+from reportlab.pdfgen import canvas
+from reportlab.pdfbase.ttfonts import TTFont
+from reportlab.pdfbase import pdfmetrics
+
+def confeccionarNota(request, pk):
+    afiliado = get_object_or_404(Afiliado, pk=pk)
+    buffer = generate_pdf(afiliado)
+    return FileResponse(buffer, as_attachment=True, filename="nota_detalle_afiliado.pdf")
+
+def generate_pdf(afiliado):
+
+    registrar_fuentes()
+
+    buffer = io.BytesIO()
+    pdf = canvas.Canvas(buffer)
+    # locale.setlocale(locale.LC_TIME, 'es_ES.utf-8')
+
+    establecer_fuente_titulo(pdf)
+    agregar_cabecera(pdf, afiliado)
+
+    if afiliado.familia.exists():
+        familiares = afiliado.familia.all()
+        agregar_detalle(pdf, 'FAMILIARES:', 545, familiares, afiliado)
+
+    agregar_pie_de_pagina(pdf)
+    agregar_firma_y_aclaracion(pdf)
+    # locale.setlocale(locale.LC_TIME, '')
+
+    pdf.showPage()
+    pdf.save()
+
+    buffer.seek(0)
+    return buffer
+
+def registrar_fuentes():
+    pdfmetrics.registerFont(TTFont('Calibri', 'calibri.ttf'))
+    pdfmetrics.registerFont(TTFont('TituloFont', 'times.ttf'))
+    pdfmetrics.registerFont(TTFont('Times-Italic', 'timesi.ttf'))
+    pdfmetrics.registerFont(TTFont('Times-Bold', 'timesbd.ttf'))
+
+def establecer_fuente_titulo(pdf):
+    pdf.setFont('Times-Bold', 14)
+    pdf.drawCentredString(300, 770, "Sindicato de Empleado de Comercio 2")
+    pdf.drawCentredString(300, 745, "Acuse de afiliación")
+
+def agregar_linea(pdf, y_position):
+    pdf.setStrokeColorRGB(0.6, 0.6, 0.6)
+    pdf.line(100, y_position, 520, y_position)
+    pdf.setStrokeColorRGB(0, 0, 0)
+
+def agregar_cabecera(pdf, afiliado):
+    agregar_linea(pdf, 715)
+    pdf.setFont("Calibri", 11)
+    pdf.drawRightString(295, 695, f'DNI:')
+    pdf.drawRightString(295, 675, f'Nombre:')
+    pdf.drawRightString(295, 655, f'Fecha de nacimiento:')
+    pdf.drawRightString(295, 635, f'Estado Civil:')
+    pdf.drawRightString(295, 615, f'Razon social:')    
+    pdf.drawRightString(295, 595, f'Categoría laboral:')
+    pdf.drawRightString(295, 575, f'Sueldo:')
+    pdf.drawRightString(295, 555, f'Cantidad a descontar:')
+    pdf.drawString(300, 695, f'{afiliado.persona.dni}')
+    pdf.drawString(300, 675, f'{afiliado.persona.nombre} {afiliado.persona.apellido}')
+    pdf.drawString(300, 655, f'{afiliado.persona.fecha_nacimiento.strftime("%Y-%m-%d")}')
+    pdf.drawString(300, 635, f'{afiliado.persona.estado_civil}')
+    pdf.drawString(300, 615, f'{afiliado.razon_social}')
+    pdf.drawString(300, 595, f'{afiliado.categoria_laboral}')
+    pdf.drawString(300, 575, f'${afiliado.sueldo}')
+    pdf.drawString(300, 555, f'${afiliado.valorCuota()}')
+
+def agregar_detalle(pdf, titulo, y_position, familiares, afiliado):
+    agregar_linea(pdf, y_position)
+
+    pdf.setFont("Times-Italic", 11)
+    pdf.drawCentredString(300, y_position - 20, titulo)
+    pdf.setFont("Calibri", 11)
+    
+    for idx, familiar in enumerate(familiares):
+        relacion = RelacionFamiliar.objects.get(afiliado=afiliado, familiar=familiar)
+        tipo_relacion = relacion.get_tipo_relacion_display()
+        # Detalle del familiar
+        pdf.drawRightString(295, y_position - 40 - (idx * 20), f'Tipo de Relación:')
+        pdf.drawRightString(295, y_position - 60 - (idx * 20), f'Dni:')
+        pdf.drawRightString(295, y_position - 80 - (idx * 20), f'Nombre:')
+
+        pdf.drawString(300, y_position - 40 - (idx * 20), f'{tipo_relacion}')
+        pdf.drawString(300, y_position - 60 - (idx * 20), f'{familiar.persona.dni}')
+        pdf.drawString(300, y_position - 80 - (idx * 20), f'{familiar.persona.nombre} {familiar.persona.apellido}')
+
+def agregar_pie_de_pagina(pdf):
+    pdf.setFont("Calibri", 11)
+    pdf.drawCentredString(300, 50, 'Sec2@gmail.com')
+
+def agregar_firma_y_aclaracion(pdf):
+    pdf.setFont("Times-Bold", 10)
+
+    # Firma
+    pdf.drawRightString(200, 105, 'Firma:')
+    pdf.line(200, 95, 350, 95) 
+
+    # Aclaración
+    pdf.drawRightString(200, 85, 'Nombre:')
+    pdf.line(200, 75, 350, 75)  # Línea para la aclaración
+
+
 
 def es_menor_de_edad(self, fecha_nacimiento):
     # Verificar si la fecha de nacimiento es menor de edad (menor de 18 años)
     hoy = date.today()
     return (hoy - fecha_nacimiento).days < 365 * 18
+
+def alta_familiar(request):
+    if request.method == 'POST':
+
+        form = AfiliadoSelectForm(request.POST)
+        if form.is_valid():
+            dni = form.cleaned_data["dni"]
+            existing_person = Persona.objects.filter(dni=dni).first()
+            if existing_person:
+                mensaje_error(request, f'{MSJ_PERSONA_EXISTE}')
+                form = AfiliadoSelectForm(request.POST)
+
+            else:
+                afiliado_seleccionado_id = request.POST.get('enc_cliente')
+                afiliado = get_object_or_404(Afiliado, pk=afiliado_seleccionado_id)
+                if afiliado.tiene_esposo() and form.cleaned_data["tipo"] == '1':
+                    mensaje_error(request, f'{MSJ_PERSONA_EXISTE}')
+                    form = AfiliadoSelectForm(request.POST)
+                else:
+                    if form.cleaned_data["tipo"] == '2' and not es_menor_de_edad(form.cleaned_data["fecha_nacimiento"]):
+                        mensaje_error(request, f'{MSJ_HIJO_MAYOR_EDAD}')
+                        form = AfiliadoSelectForm(request.POST)
+                    else:
+                        persona = Persona(
+                            dni=dni,
+                            cuil=form.cleaned_data["cuil"],
+                            nombre= form.cleaned_data["nombre"].title(),
+                            apellido=form.cleaned_data["apellido"].title(),
+                            fecha_nacimiento=form.cleaned_data["fecha_nacimiento"],
+                            mail=form.cleaned_data["mail"],
+                            celular=form.cleaned_data["celular"],
+                            estado_civil=form.cleaned_data["estado_civil"],
+                            nacionalidad=form.cleaned_data["nacionalidad"],
+                            direccion=form.cleaned_data["direccion"],
+                            es_grupo_familiar = True
+                        )
+                        persona.save()
+                        # Crear una instancia de Afiliado
+                        familiar = Familiar(
+                            persona = persona,
+                            tipo_relacion =form.cleaned_data["tipo"],
+                            tipo = Familiar.TIPO,
+                        )
+                        familiar.save()
+
+                        relacion = RelacionFamiliar(
+                            afiliado = afiliado,
+                            familiar = familiar,
+                        )
+                        relacion.save()
+                        mensaje_exito(request, f'{MSJ_FAMILIAR_CARGA_CORRECTA}')
+                        form = AfiliadoSelectForm(request.POST)
+    else:
+        afiliados = Afiliado.objects.all()
+        form = AfiliadoSelectForm()
+
+    context = {
+        'form': form,
+        'clientes': afiliados,
+        'titulo': 'Alta de Familiar',  # Replace with your desired title
+    }
+    return render(request, 'grupoFamiliar/grupo_familiar_alta_directa.html', context)
+
 
 # ----------------------------- CREACIÓN DE FAMILIAR -----------------------------
 class FamiliaCreateView(CreateView):
@@ -256,21 +411,20 @@ class FamiliaCreateView(CreateView):
         afiliado = get_object_or_404(Afiliado, pk=self.kwargs.get('pk'))
         existing_person = Persona.objects.filter(dni=dni).first()
         if existing_person:
-            messages.error(self.request, f'{ICON_ERROR} ERROR: Ya existe una persona registrada en el sistema como {existing_person.obtenerRol()} con el mismo DNI.')
+            mensaje_error(self.request, f'{MSJ_PERSONA_EXISTE}')
             form = GrupoFamiliarPersonaForm(self.request.POST)
             return self.render_to_response(self.get_context_data(form=form))
         else:
-            # Verificar si ya hay un familiar con el tipo "Esposo/a"
-            esposo_existente = afiliado.familia.filter(tipo=1).exists()
-            if esposo_existente and form.cleaned_data["tipo"] == '1':
-                messages.error(self.request, f'{ICON_ERROR} Ya existe un esposo/a para el afiliado asociado.')
+
+            if afiliado.tiene_esposo() and form.cleaned_data["tipo"] == '1':
+                mensaje_error(self.request, f'{MSJ_FAMILIAR_ESPOSA_EXISTE}')
                 form = GrupoFamiliarPersonaForm(self.request.POST)
                 # return self.render_to_response(self.get_context_data(form=form))
                 return self.form_invalid(form)
 
             # Verificar si es menor de edad cuando el tipo es 'Hijo/a'
             if form.cleaned_data["tipo"] == '2' and not es_menor_de_edad(self, form.cleaned_data["fecha_nacimiento"]):
-                messages.error(self.request, f'{ICON_ERROR} El Hijo/a debe ser menor de edad.')
+                mensaje_error(self.request, f'{MSJ_HIJO_MAYOR_EDAD}')
                 form = GrupoFamiliarPersonaForm(self.request.POST)
                 return self.form_invalid(form)
             
@@ -291,14 +445,18 @@ class FamiliaCreateView(CreateView):
 
             # Crear una instancia de Afiliado
             familiar = Familiar(
-                tipo =form.cleaned_data["tipo"],
-                persona = persona
+                persona = persona,
+                tipo_relacion =form.cleaned_data["tipo"],
+                tipo = Familiar.TIPO,
             )
             familiar.save()
-
-            afiliado.familia.add(familiar)
-
-            messages.success(self.request, f'{ICON_CHECK} Carga de familiar exitosa!')
+            
+            relacion = RelacionFamiliar(
+                afiliado = afiliado,
+                familiar = familiar,
+            )
+            relacion.save()
+            mensaje_exito(self.request, f'{MSJ_FAMILIAR_CARGA_CORRECTA}')
             detail_url = reverse('afiliados:afiliado_detalle', kwargs={'pk': afiliado.pk})
             return redirect(detail_url)
 
@@ -308,7 +466,7 @@ class FamiliaCreateView(CreateView):
 # ----------------------------- DETALLE DE FAMILIAR -----------------------------
 class FamiliarDetailView(DeleteView):
     model = Familiar
-    template_name = 'grupoFamiliar/grupo_familiar_detalle.html'
+    template_name = 'grupoFamiliar/grupo_familiar_detalle_afiliado.html'
 
     def get_object(self, queryset=None):
         afiliado_pk = self.kwargs.get('pk')
@@ -318,15 +476,22 @@ class FamiliarDetailView(DeleteView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        
+        ventana = self.kwargs.get('ventana')
+        context['nueva_ventana'] = ventana == 'nueva_ventana'
         familiar = self.object
         context['titulo'] = "Datos del familiar"
-        context['tituloListado'] = "Dictados Insciptos"
+        context['tituloListado'] = "Dictados Inscritos"
         context['afiliado'] = self.afiliado
+        context['familiar'] = familiar  # Agregar el objeto familiar al contexto
         return context
 
-class FamiliarDetailView_(DeleteView):
+
+
+
+class FamiliarDetailVentanaNuevaView_(DeleteView):
     model = Familiar
-    template_name = 'grupoFamiliar/grupo_familiar_detalle_.html'
+    template_name = 'grupoFamiliar/grupo_familiar_detalle_nueva_ventana.html'
 
     def get_object(self, queryset=None):
         familiar_pk = self.kwargs.get('familiar_pk')
@@ -342,6 +507,8 @@ class FamiliarDetailView_(DeleteView):
 
         context['afiliado'] = afiliado
         return context
+    
+
 # ----------------------------- UPDATE DE FAMILIAR -----------------------------
 class FamiliarUpdateView(UpdateView):
     model = Familiar
@@ -356,6 +523,8 @@ class FamiliarUpdateView(UpdateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        ventana = self.kwargs.get('ventana')
+        context['nueva_ventana'] = ventana == 'nueva_ventana'
         context['titulo'] = "Modicacion de Familiar"
         return context
     
@@ -375,21 +544,20 @@ class FamiliarUpdateView(UpdateView):
                 # Obtengo el objeto Familiar asociado al afiliado y la persona existente
                 familiar = get_object_or_404(Familiar, afiliado=afiliado, persona=existing_person)
 
-                if form.cleaned_data["tipo"] == '1' and not familiar.tipo == 1:
+                # if form.cleaned_data["tipo"] == '1' and not familiar.tipo == 1:
                     # Verificar si ya hay un familiar con el tipo "Esposo/a"
-                    esposo_existente = afiliado.familia.filter(tipo=1).exists()
-                    if esposo_existente:
-                        messages.error(self.request, f'{ICON_ERROR} Ya existe un esposo/a para el afiliado asociado.')
-                        form = GrupoFamiliarPersonaForm(self.request.POST)
+                    # esposo_existente = afiliado.familia.filter(tipo=1).exists()
+                    # if esposo_existente:
+                        # mensaje_error(self.request, f'{MSJ_FAMILIAR_ESPOSA_EXISTE}')
+                        # form = GrupoFamiliarPersonaForm(self.request.POST)
                         # return self.render_to_response(self.get_context_data(form=form))
-                        return self.form_invalid(form)
+                        # return self.form_invalid(form)
 
                 # Verificar si es menor de edad cuando el tipo es 'Hijo/a'
-                if form.cleaned_data["tipo"] == '2' and not es_menor_de_edad(self,form.cleaned_data["fecha_nacimiento"]):
-                    messages.error(self.request, f'{ICON_ERROR} El Hijo/a debe ser menor de edad.')
-                    form = GrupoFamiliarPersonaForm(self.request.POST)
-                    return self.form_invalid(form)
-            
+                # if form.cleaned_data["tipo"] == '2' and not es_menor_de_edad(self,form.cleaned_data["fecha_nacimiento"]):
+                    # mensaje_error(self.request, f'{MSJ_HIJO_MAYOR_EDAD}')
+                    # form = GrupoFamiliarPersonaForm(self.request.POST)
+                    # return self.form_invalid(form)
 
                 familiar = form.save(commit=False)
                 # Utiliza el formulario personalizado para validar los datos de la persona
@@ -400,27 +568,28 @@ class FamiliarUpdateView(UpdateView):
                     # Utiliza una transacción para garantizar la integridad de los datos
                     with transaction.atomic():
                         persona.save()
-                        familiar.tipo = form.cleaned_data["tipo"]
+                        # familiar.tipo = form.cleaned_data["tipo"]
+
                         familiar.save()
 
-                    messages.success(self.request, f'{ICON_CHECK} Modificación de familiar exitosa!')
+                    mensaje_exito(self.request, f'{MSJ_EXITO_MODIFICACION}')
                     afiliado_pk = self.kwargs.get('pk')
 
                     # Redirige al detalle del familiar en lugar del detalle del afiliado
                     familiar_pk = self.kwargs.get('familiar_pk')
-                    familiar_detail_url = reverse('afiliados:familiar_detalle', kwargs={'pk': afiliado_pk, 'familiar_pk': familiar_pk})
+                    familiar_detail_url = reverse('afiliados:familiar_detalle', kwargs={'pk': afiliado_pk, 'familiar_pk': familiar_pk, 'ventana':'misma_ventana'})
 
                     # Agrega un pequeño script de JavaScript para cerrar la ventana y recargar la página
                     return HttpResponseRedirect(familiar_detail_url)
                 else: 
-                    messages.error(self.request, f'{ICON_ERROR} Error en la validación de datos de la persona.')
+                    mensaje_error(self.request, f'{MSJ_ERROR_VALIDACION}')
                     return self.render_to_response(self.get_context_data(form=persona_form))
             else:
                 # El afiliado no tiene al familiar
-                messages.error(self.request, f'{ICON_ERROR} El afiliado no tiene a este familiar.')
+                mensaje_error(self.request, f'{MSJ_AFILIADO_NO_FAMILIAR}')
                 return self.render_to_response(self.get_context_data(form=form))
         else:
-            messages.error(self.request, f'{ICON_ERROR} La persona no está registrada en el sistema.')
+            mensaje_error(self.request, f'{MSJ_PERSONA_NO_EXISTE}')
             form = GrupoFamiliarPersonaUpdateForm(self.request.POST)
             return self.render_to_response(self.get_context_data(form=form))
     
@@ -465,14 +634,14 @@ class FamiliarUpdateView_(UpdateView):
                     # Verificar si ya hay un familiar con el tipo "Esposo/a"
                     esposo_existente = afiliado.familia.filter(tipo=1).exists()
                     if esposo_existente:
-                        messages.error(self.request, f'{ICON_ERROR} Ya existe un esposo/a para el afiliado asociado.')
+                        mensaje_error(self.request, f'{MSJ_FAMILIAR_ESPOSA_EXISTE}')
                         form = GrupoFamiliarPersonaForm(self.request.POST)
                         # return self.render_to_response(self.get_context_data(form=form))
                         return self.form_invalid(form)
 
                 # Verificar si es menor de edad cuando el tipo es 'Hijo/a'
                 if form.cleaned_data["tipo"] == '2' and not es_menor_de_edad(self,form.cleaned_data["fecha_nacimiento"]):
-                    messages.error(self.request, f'{ICON_ERROR} El Hijo/a debe ser menor de edad.')
+                    mensaje_error(self.request, f'{MSJ_HIJO_MAYOR_EDAD}')
                     form = GrupoFamiliarPersonaForm(self.request.POST)
                     return self.form_invalid(form)
             
@@ -489,7 +658,7 @@ class FamiliarUpdateView_(UpdateView):
                         familiar.tipo = form.cleaned_data["tipo"]
                         familiar.save()
 
-                    messages.success(self.request, f'{ICON_CHECK} Modificación de familiar exitosa!')
+                    mensaje_exito(self.request, f'{MSJ_EXITO_MODIFICACION}')
                     afiliado_pk = self.kwargs.get('pk')
 
                     # Redirige al detalle del familiar en lugar del detalle del afiliado
@@ -499,26 +668,55 @@ class FamiliarUpdateView_(UpdateView):
                     # Agrega un pequeño script de JavaScript para cerrar la ventana y recargar la página
                     return HttpResponseRedirect(familiar_detail_url)
                 else: 
-                    messages.error(self.request, f'{ICON_ERROR} Error en la validación de datos de la persona.')
+                    mensaje_error(self.request, f'{MSJ_ERROR_VALIDACION}')
                     return self.render_to_response(self.get_context_data(form=persona_form))
             else:
                 # El afiliado no tiene al familiar
-                messages.error(self.request, f'{ICON_ERROR} El afiliado no tiene a este familiar.')
+                mensaje_error(self.request, f'{MSJ_AFILIADO_NO_FAMILIAR}')
                 return self.render_to_response(self.get_context_data(form=form))
         else:
-            messages.error(self.request, f'{ICON_ERROR} La persona no está registrada en el sistema.')
+            mensaje_error(self.request, f'{MSJ_PERSONA_NO_EXISTE}')
             form = GrupoFamiliarPersonaUpdateForm(self.request.POST)
             return self.render_to_response(self.get_context_data(form=form))
         
+# -----------------------------  LIST ----------------------------------- #
+class RelacionFamiliarListView(ListFilterView):
+    model = RelacionFamiliar
+    filter_class = RelacionFamiliarFilterForm
+    template_name = 'relacion_familiar_listar.html'
+    paginate_by = MAXIMO_PAGINATOR
+    success_url = reverse_lazy('afiliados:afiliado_listar')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['titulo'] = "Grupo Familiar"
+        return context
+        
+    def get_queryset(self):
+        queryset = super().get_queryset()
+
+        familiar_dni = self.request.GET.get('familiar__persona__dni')
+        afiliado_dni = self.request.GET.get('afiliado__persona__dni')
+        tipo_relacion = self.request.GET.get('tipo_relacion')
+
+        if familiar_dni:
+            queryset = queryset.filter(familiar__persona__dni=familiar_dni)
+
+        if afiliado_dni:
+            queryset = queryset.filter(afiliado__persona__dni=afiliado_dni)
+
+        if tipo_relacion:
+            queryset = queryset.filter(tipo_relacion=tipo_relacion)
+
+        return queryset
+
 # ----------------------------- FAMILIAR ELIMINAR -----------------------------------
 def familiar_eliminar(request, pk, familiar_pk):
     # Obtener el objeto Familiar
     familiar = get_object_or_404(Familiar, pk=familiar_pk)
     familiar.activo = False
-
-    # print(familiar)
-    # fecha = datetime.now()
-    # familiar.persona.desafiliar(familiar,fecha)
     familiar.save()
-    messages.success(request, f'{ICON_CHECK} Se ha desafiliado.')
+    mensaje_advertencia(request, f'{MSJ_FAMILIAR_ELIMINADO}')
     return redirect('afiliados:afiliado_listar')
+
+

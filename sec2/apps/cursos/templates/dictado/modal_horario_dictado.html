@@ -1,0 +1,63 @@
+<table class="table table-sm table-hover" style="width: 40%;">
+    <thead>
+      <tr>
+        <th>Día</th>
+        <th>Desde</th>
+        <th>Hasta</th>
+        <th>Lugar asignado</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for horario in horarios %}
+      <tr>
+        <td>{{ horario.get_dia_semana_display }}</td>
+        <td>{{ horario.hora_inicio }} hrs.</td>
+        <td>{{ horario.hora_fin }} hrs.</td>
+        <td>
+          {% if horario.reserva %}
+          {{ horario.reserva.aula }}
+          {% else %}
+          Sin reserva
+          {% endif %}
+        </td>
+        
+        {% if not horario.reserva %}
+        <td class="text-end">
+          {% if hay_reserva %}
+          <a href="{% url 'cursos:asignar_aula' curso_pk=horario.dictado.curso.pk dictado_pk=horario.dictado.pk horario_id=horario.pk %}" class="btn btn-primary btn-sm btn-detalle">
+            <i class="fa-solid fa-door-open"></i>Reservar Aula
+          </a>
+          {% else %}
+              <button type="button" class="btn btn-primary btn-sm btn-detalle" data-bs-toggle="modal" data-bs-target="#exampleModal{{ horario.pk }}">
+                  <i class="fa-solid fa-door-open"></i>Reservar Aula
+              </button>
+          {% endif %}
+        </td>
+      {% endif %}
+      </tr>
+      <!-- Modal -->
+      {% if not horario.reserva %}
+      <div class="modal fade" id="exampleModal{{ horario.pk }}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h1 class="modal-title fs-5" id="exampleModalLabel">Reserva de aula</h1>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              <p>¿Desea reservar aulas? Una vez hecha una reserva no podrá generar más horarios.</p>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary btn-sm " data-bs-dismiss="modal">Cancelar</button>
+              <a href="{% url 'cursos:asignar_aula' curso_pk=horario.dictado.curso.pk dictado_pk=horario.dictado.pk horario_id=horario.pk %}" class="btn btn-primary btn-sm">
+                <i class="fa-solid fa-door-open"></i> Reservar
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+      {% endif %}
+      {% endfor %}
+    </tbody>
+  </table>

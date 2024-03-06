@@ -5,6 +5,8 @@
 {% block formulario %}
   <form method="post">
     {% csrf_token %}
+
+
     <div class="row">
       <div class="col-12">
         <div class="tab-content" id="form-tabs-content">
@@ -12,93 +14,9 @@
           <div id="section1" class="tab-pane fade show active">
             {% include 'persona_alta.html' %}
           </div>
-
           {% comment %}SECCION 2{% endcomment %}
-
           <div id="section2" class="tab-pane fade">
-            <div class="row">
-              <div class="col">
-                <div class="form-group">
-                  <label for="{{ form.razon_social.id_for_label }}">Razón Social:</label>
-                  {{ form.razon_social }}
-                  {% include "error_campo.html" with field=form.razon_social %}
-                </div>
-              </div>
-
-              <div class="col">
-                <div class="form-group">
-                  <label for="{{ form.categoria_laboral.id_for_label }}">Categoría Laboral:</label>
-                  {{ form.categoria_laboral }}
-                  {% include "error_campo.html" with field=form.categoria_laboral %}
-                </div>
-              </div>
-            </div>
-
-            <div class="row">
-              <div class="col">
-                <div class="form-group">
-                  <label for="{{ form.rama.id_for_label }}">Rama:</label>
-                  {{ form.rama }}
-                  {% include "error_campo.html" with field=form.rama %}
-                </div>
-              </div>
-              <div class="col">
-                <div class="row">
-                  <div class="col">
-                    <div class="form-group">
-                      <label for="{{ form.sueldo.id_for_label }}">Sueldo:</label>
-                      <input type="text" name="sueldo" required class="form-control" value="{{ form.initial.sueldo }}" />
-
-                      {% include "error_campo.html" with field=form.sueldo %}
-                    </div>
-                  </div>
-                  
-                  <div class="col">
-                    <div class="form-group">
-                      <label for="{{ form.horaJornada.id_for_label }}">Hora de Jornada:</label>
-                      <input type="number" name="horaJornada" step="1" min="1" max="49" required class="form-control" value="{{ form.horaJornada.value|default:'' }}" />
-                      {% include "error_campo.html" with field=form.horaJornada %}
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-            
-            <div class="row">
-              <div class="col">
-                <div class="form-group">
-                  <label for="{{ form.fechaIngresoTrabajo.id_for_label }}">Fecha de Ingreso al Trabajo:</label>
-                  {{ form.fechaIngresoTrabajo }}
-                  {% include "error_campo.html" with field=form.fechaIngresoTrabajo %}
-                </div>
-              </div>
-              <div class="col">
-                <div class="form-group">
-                  <label for="{{ form.localidad_empresa.id_for_label }}">Localidad de la Empresa:</label>
-                  {{ form.localidad_empresa }}
-                  {% include "error_campo.html" with field=form.localidad_empresa %}
-                </div>
-              </div>
-            </div>
-
-
-            <div class="row">
-              <div class="col">
-                <div class="form-group">
-                  <label for="{{ form.cuit_empleador.id_for_label }}">CUIT del Empleador:</label>
-                  {{ form.cuit_empleador }}
-                  {% include "error_campo.html" with field=form.cuit_empleador %}
-                </div>
-              </div>
-              
-              <div class="col">
-                <div class="form-group">
-                  <label for="{{ form.domicilio_empresa.id_for_label }}">Domicilio de la Empresa:</label>
-                  {{ form.domicilio_empresa }}
-                  {% include "error_campo.html" with field=form.domicilio_empresa %}
-                </div>
-              </div>
-            </div>
+            {% include 'afiliados/datos_afiliado_alta.html' %}
           </div>
         </div>
       </div>
@@ -116,7 +34,7 @@
   </form>
 {% endblock %}
 
-{% block extrajs_intermedia %}
+{% block extrajs_intermedia_00 %}
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <script src="{% static 'js/afiliado_formulario.js' %}"></script>
 {% endblock %}

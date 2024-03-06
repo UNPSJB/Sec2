@@ -4,7 +4,7 @@ from django.shortcuts import render, redirect
 from django.views.generic import DetailView
 from sec2.utils import ListFilterView
 from django.contrib import messages
-from ..models import AsistenciaProfesor, Clase, Dictado, Aula, Horario, Profesor, Reserva, Titular
+from ..models import Clase, Dictado, Aula, Horario, Profesor, Reserva, Titular
 from ..forms.clase_forms import *
 from django.urls import reverse
 from django.shortcuts import get_object_or_404
@@ -44,34 +44,38 @@ class ClaseDetailView(DetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        
+        clase = self.object #El objeto clase
         dictado = get_object_or_404(Dictado, id=self.kwargs.get("dictado_pk"))
-        clase = Clase.objects.get(id=self.kwargs.get("clase_pk"))
-        
-        # Obtener la lista de alumnos inscritos en el dictado
-        alumnos_inscritos = dictado.alumnos.all()
-        
-        alumnos_asistieron = clase.asistencia.all()
 
-        # Obtener los titulares asociados al dictado de la clase
-        titulares = Titular.objects.filter(dictado=dictado).select_related('profesor')
-
-        # Obtener los profesores de AsistenciaProfesor que son titulares y tienen la clase
-        profesores_asistieron = AsistenciaProfesor.objects.filter(clase=clase).values_list('profesor__id', flat=True)
-
-
-        print("profesores_asistieron")
-        print(profesores_asistieron)
-
-        context["dictado"] = dictado
         context["clase"] = clase
+        context["dictado"] = dictado
         context["titulo"] = "Detalle de clase"
         context["tituloListado"] = "Asistencia"
         context["tituloListado1"] = "Alumnos"
         context["tituloListado2"] = "Profesor"
-        context["alumnos_inscritos"] = alumnos_inscritos
-        context["alumnos_asistieron"] = alumnos_asistieron
-        context["profesores_asistieron"] = profesores_asistieron
+
+        # Obtener la lista de inscritos en el dictado
+        afiliados_inscritos = dictado.afiliados.all()
+        familiares_inscritos = dictado.familiares.all()
+        profesores_inscritos = dictado.profesores_dictados_inscriptos.all()
+        alumnos_inscritos = dictado.alumnos.all()
+        # Combino todos los objetos en una lista
+        todos_inscritos = list(afiliados_inscritos) + list(profesores_inscritos) + list(alumnos_inscritos)  
+        # todos_inscritos = list(afiliados_inscritos) + list(familiares_inscritos) + list(profesores_inscritos) + list(alumnos_inscritos)        
+        context["inscritos"] = todos_inscritos
+
+        alumnos_asistieron = clase.asistencia.all()
+        alumnos_asistieron_personas = alumnos_asistieron.values_list('persona', flat=True)
+        context["lista_asistencia"] = alumnos_asistieron_personas
+
+        # Obtener los titulares asociados al dictado de la clase
+        titulares = Titular.objects.filter(dictado=dictado).select_related('profesor')
         context["titulares"] = titulares
+        titulares_asistieron = clase.asistencia_profesor.all()
+        titulares_asistieron_personas = titulares_asistieron.values_list('persona', flat=True)
+        context["lista_asistencia_titular"] = titulares_asistieron_personas
+
         return context
 
     def post(self, request, *args, **kwargs):

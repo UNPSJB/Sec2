@@ -26,81 +26,65 @@
           </thead>
           <tbody>
             {% for inscrito_listaEspera in todos_inscritos_listaEspera %}
-              <tr>
-                <td>{{ forloop.counter }}</td>
-                <td>{{ inscrito_listaEspera.persona.dni }}</td>
-                <td>{{ inscrito_listaEspera.persona.apellido }} {{ inscrito_listaEspera.persona.nombre }}</td>
-
-                {% if inscrito_listaEspera.persona.es_afiliado %}
-                <td>Afiliado</td>
-                <td class="text-end">
-                  {% if hay_cupo %}
-                  <button class="btn btn-success btn-sm btn-detalle" data-bs-toggle="modal" data-bs-target="#modal_inscribir_listaEspera_{{ inscrito_listaEspera.persona.pk }}">
-                    Inscribir
-                  </button>
-                  {% endif %}
-                  <button class="btn btn-danger btn-sm btn-detalle" data-bs-toggle="modal" data-bs-target="#modal_eliminar_sacar_lista_espera_{{ inscrito_listaEspera.persona.pk }}">
-                    Eliminar
-                  </button>
-                </td>
-                {% include 'dictado/modal_confirm_sacar_lista_espera.html' %}
-                {% include 'dictado/modal_confirm_inscribir_lista_espera.html' %}
-                
-                {% elif inscrito_listaEspera.persona.es_grupo_familiar %}
-                <td>Familiar</td>
-                <td class="text-end">
-                {% if hay_cupo %}
-                <button class="btn btn-success btn-sm btn-detalle" data-bs-toggle="modal" data-bs-target="#modal_inscribir_listaEspera_{{ inscrito_listaEspera.persona.pk }}">
-                  Inscribir
-                </button>
-                {% endif %}
-                  <button class="btn btn-danger btn-sm btn-detalle" data-bs-toggle="modal" data-bs-target="#modal_eliminar_sacar_lista_espera_{{ inscrito_listaEspera.persona.pk }}">
-                    Eliminar
-                  </button>
-                </td>
-                {% elif inscrito_listaEspera.persona.es_profesor %}
-                <td>Profesor</td>
-                {% elif inscrito_listaEspera.persona.es_alumno %}
-                <td>Alumno</td>
-                {% endif %}
-              </tr>
+                <tr>
+                    <td>{{ forloop.counter }}</td>
+                    <td>{{ inscrito_listaEspera.persona.dni }}</td>
+                    <td>{{ inscrito_listaEspera.persona.apellido }} {{ inscrito_listaEspera.persona.nombre }}</td>
+                    {% with tipo_persona=inscrito_listaEspera.persona.es_afiliado|yesno:"Afiliado," %}
+                    {% with tipo_persona_grupo_familiar=inscrito_listaEspera.persona.es_grupo_familiar|yesno:"Familiar," %}
+                    {% with tipo_persona_profesor=inscrito_listaEspera.persona.es_profesor|yesno:"Profesor," %}
+                    {% with tipo_persona_es_alumno=inscrito_listaEspera.persona.es_alumno|yesno:"Alumno," %}
+                    
+                    <td>
+                      {{ tipo_persona }}
+                      {{ tipo_persona_grupo_familiar }} 
+                      {{ tipo_persona_profesor }}
+                      
+                      {% if not tipo_persona and not tipo_persona_grupo_familiar and not tipo_persona_profesor %}
+                      {{ tipo_persona_es_alumno }}
+                      {% endif %}
+                    </td>
+                    
+                    <td class="text-end">
+                      {% if hay_cupo %}
+                      <button class="btn btn-success btn-sm btn-detalle" data-bs-toggle="modal"
+                        data-bs-target="#modal_inscribir_sacar_lista_espera_{{ inscrito_listaEspera.persona.pk }}"
+                        data-tipo="{{ tipo_persona|default:'' }}{{ tipo_persona_grupo_familiar|default:'' }}{{ tipo_persona_profesor|default:'' }}{{ tipo_persona_es_alumno|default:'' }}">
+                        Inscribir
+                      </button>
+                      {% endif %}
+                      <button class="btn btn-danger btn-sm btn-detalle" data-bs-toggle="modal"
+                        data-bs-target="#modal_eliminar_sacar_lista_espera_{{ inscrito_listaEspera.persona.pk }}"
+                        data-tipo="{{ tipo_persona|default:'' }}{{ tipo_persona_grupo_familiar|default:'' }}{{ tipo_persona_profesor|default:'' }}{{ tipo_persona_es_alumno|default:'' }}">
+                        Eliminar
+                      </button>
+                    </td>
+                    {% endwith %}
+                    {% endwith %}
+                    {% endwith %}
+                    {% endwith %}
+                    {% include "dictado/modal_confirm_sacar_lista_espera.html" with tipo=tipo_persona %}
+                    {% include "dictado/modal_confirm_inscribir_lista_espera.html" with tipo=tipo_persona %}
+                  </tr>
             {% endfor %}
-          </tbody>
+        </tbody>
         </table>
       {% else %}
         <p>No hay alumnos inscriptos.</p>
       {% endif %}
     </div>
-    <button type="button" class="btn btn-sm btn-secondary" onclick="cerrarVentana()">Cerrar</button>
+    <div class="d-flex justify-content-between">
+      <a href="{% url 'cursos:verificar_persona' curso_pk=curso_pk dictado_pk=dictado.pk %}" 
+         class="btn btn-primary btn-sm">
+          <i class="fa-regular fa-pen-to-square"></i> Inscribir
+      </a>
+      <div class="ml-auto">
+          <button type="button" class="btn btn-sm btn-secondary" onclick="cerrarVentana()">Cerrar</button>
+      </div>
   </div>
+  </div>
+  {% endblock %}
 
-
-  <script>
-    function cerrarVentana() {
-      window.close();
-    }
-    function gestionListaEsperaAfiliado(accion, curso_pk, dictado_pk, persona_pk) {
-      var url = "{% url 'cursos:afiliado_gestion_lista_espera' curso_pk=9999 dictado_pk=9999 persona_pk=8888 accion='placeholder' %}"
-        .replace('9999', curso_pk)
-        .replace('9999', dictado_pk)
-        .replace('8888', persona_pk)
-        .replace('placeholder', accion);  // Reemplazar la acción dinámicamente
-        
-      window.location.href = url;
-    }
-
-  function gestionListaEsperaGrupoFamiliar(accion, curso_pk, dictado_pk, persona_pk) {
-    var url = "{% url 'cursos:grupoFamiliar_gestion_lista_espera' curso_pk=9999 dictado_pk=9999 persona_pk=8888 accion='placeholder' %}"
-        .replace('9999', curso_pk)
-        .replace('9999', dictado_pk)
-        .replace('8888', persona_pk)
-        .replace('placeholder', accion);  // Reemplazar la acción dinámicamente
-        
-    window.location.href = url;
-  }
-
-    
-  </script>
-
-
-{% endblock %}
+  {% block extrajs %}
+  <script src="{% static 'Libs/js/cerrar_ventana.js' %}"></script>
+  {% endblock %}

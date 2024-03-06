@@ -3,7 +3,6 @@ from django.forms import ModelForm, modelformset_factory, ValidationError, BaseF
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit
 from django import forms
-from django_select2 import forms as s2forms
 
 class PersonaForm(ModelForm):
     class Meta:
@@ -28,6 +27,12 @@ class PersonaUpdateForm(ModelForm):
         
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+
+
+from django import forms
+from dal import autocomplete  # Asegúrate de tener django-autocomplete-light instalado
+from tkinter.ttk import Widget
+from django_select2 import forms as s2forms
 
 class PersonaWidget(s2forms.ModelSelect2Widget):
     search_fields = [

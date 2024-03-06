@@ -12,32 +12,26 @@
     <link href="{% static 'Libs/fontawesome-free-6.4.2-web/fontawesome-free-6.4.2-web/css/all.min.css' %}" rel="stylesheet" type="text/css" />
     <link href="{% static 'Libs/fontawesome-free-6.4.2-web/fontawesome-free-6.4.2-web/css/brands.css' %}" rel="stylesheet" type="text/css" />
     <link href="{% static 'Libs/fontawesome-free-6.4.2-web/fontawesome-free-6.4.2-web/css/solid.css' %}" rel="stylesheet" />
-
     <!-- Icono de la pestaña del navegador desde archivos estáticos -->
     <link rel="icon" type="image/x-icon" href="{% static 'images/logo.png' %}" />
-
-    <!-- Contenido adicional de hojas de estilo que se puede sobrescribir en plantillas secundarias -->
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
     {% block extracss %}
-
     {% endblock %}
   </head>
   <body>
     <!-- Contenido principal de la página que se puede sobrescribir en plantillas secundarias -->
     {% block container %}
-
     {% endblock %}
 
     <!-- Enlaces a scripts JavaScript -->
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="{% static 'Libs/bootstrap-5.3.1-dist/js/bootstrap.bundle.min.js' %}"></script>
     <!-- <script src="http://localhost:35729/livereload.js"></script> -->
     <script src="{% static 'Libs/js/jquery.min.js' %}"></script>
     <script src="{% static 'Libs/js/popper.min.js' %}"></script>
     <script src="{% static 'Libs/js/main.js' %}"></script>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 
-    <!-- Scripts JavaScript adicionales que se pueden sobrescribir en plantillas secundarias -->
     {% block extrajs %}
-
     {% endblock %}
   </body>
 </html>

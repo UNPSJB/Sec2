@@ -8,43 +8,38 @@
 {% endblock %}
 
 {% block tabla_listado %}
-  <table class="table table-sm table-hover">
-    <thead>
+<table class="table table-sm table-hover">
+  <thead>
       <tr>
-        <th scope="col">Dni</th>
-        <th scope="col">Apellido</th>
-        <th scope="col">Nombre</th>
-        <th scope="col">CUIT empleador</th>
-        <th scope="col">Estado</th>
-        <th scope="col"></th>
+        <th>#</th>
+        {% include 'tabla_persona_cabecera.html' %}
+        <th class="text-center">Estado</th>
+        <th></th>
       </tr>
     </thead>
     <tbody>
-      {% for afiliado in object_list %}
+      {% for afiliado in page_obj %}
         <tr>
-          <td>{{ afiliado.persona.dni }}</td>
-          <td>{{ afiliado.persona.apellido }}</td>
-          <td>{{ afiliado.persona.nombre }}</td>
-          <td>{{ afiliado.cuit_empleador }}</td>
-          <td>
-            {% if afiliado.estado == 1 %}PENDIENTE{% endif %}
-            {% if afiliado.estado == 2 %}ACTIVO{% endif %}
-            {% if afiliado.estado == 3 %}INACTIVO{% endif %}
+          <td class="negrita"> {{ page_obj.start_index|add:forloop.counter0 }}</td>
+          {% include 'tabla_persona_cuerpo.html' with persona=afiliado.persona %}
+          <td class="text-center">
+            {% if afiliado.estado == 1 %}<i class="fa-solid fa-circle-exclamation" style="color: #FF8000;"></i>{% endif %}
+            {% if afiliado.estado == 2 %}<i class="fa-regular fa-circle-check" style="color: #008f00;"></i>{% endif %}
+            {% if afiliado.estado == 3 %}<i class="fa-solid fa-circle-minus" style="color: #a80000;"></i>{% endif %}
           </td>
+
           <td class="text-end">
             {% if afiliado.estado == 1 %}
               <button type="button" class="btn btn-success btn-sm btn-detalle" data-bs-toggle="modal" data-bs-target="#modal_afiliar_{{ afiliado.pk }}"><i class="fa-regular fa-circle-down"></i> Afiliar</button>
-              {% include 'modal_confirm_alta.html' with object=afiliado %}
-            {% endif %}
-            
-            {% if afiliado.estado == 2 %}
+              {% include 'modal_confirm_alta.html' with object=afiliado detalleAfiliadoParam='listadoAfiliado' %}
+              {% elif afiliado.estado == 2 %}
               <button type="button" class="btn btn-danger btn-sm btn-detalle" data-bs-toggle="modal" data-bs-target="#modal_desafiliar_{{ afiliado.pk }}"><i class="fa-regular fa-circle-down"></i> Desafiliar</button>
-              {% include 'modal_confirm_baja.html' with object=afiliado %}
+              {% include 'modal_confirm_baja.html' with object=afiliado detalleAfiliadoParam='listadoAfiliado'%}
             {% endif %}
-            <a href="{% url 'afiliados:afiliado_detalle' afiliado.pk %}" class="btn btn-primary btn-detalle"><i class="fa-regular fa-eye"></i> Detalle</a>            
+            <a href="{% url 'afiliados:afiliado_detalle' afiliado.pk %}" class="btn btn-primary btn-sm btn-detalle"><i class="fa-regular fa-eye"></i> Detalle</a>            
           </td>
         </tr>
       {% endfor %}
     </tbody>
-  </table>
+</table>
 {% endblock %}

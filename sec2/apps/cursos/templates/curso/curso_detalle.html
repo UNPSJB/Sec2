@@ -55,9 +55,7 @@
 
   <div class="row">
     <div class="col-md-2">
-      <p>
-        <strong>Descripción:</strong>
-      </p>
+      <p class="negrita">Descripción:</p>
     </div>
     <div class="col-md-4">
       <p>{{ curso.descripcion }}</p>
@@ -75,9 +73,7 @@
   {% if curso.area == 2 %}
     <div class="row">
       <div class="col-md-2">
-        <p>
-          <strong>Certificado Médico:</strong>
-        </p>
+        <p class="negrita">Certificado Médico:</p>
       </div>
 
       {% if curso.requiere_certificado_medico %}
@@ -96,7 +92,7 @@
     
     {% if curso.area != 2 %}  
     <div class="col-md-2">
-      <p><strong>Equip. Informatico</strong></p>
+      <p class="negrita">Equip. Informatico</p>
     </div>
     <div class="col-md-4">
       <p>
@@ -136,35 +132,9 @@
 {% endblock %}
 
 {% block listado_asociado %}
-{% if dictados %}
 <div class="container-sm">
+  
   <h3 class="subtitulo">{{ tituloListado }}</h3>
-  <table class="table table-sm table-hover">
-    <thead>
-      <tr>
-        <th>#</th>
-        <th>Fecha Inicio</th>
-        <th>Cupo</th>
-        <th>Desc</th>
-        <th>Duración</th>
-        <th></th>
-      </tr>
-    </thead>
-    <tbody>
-      {% for dictado in dictados %}
-      <tr>
-        <td>{{ forloop.counter }}</td>
-        <td>{{ dictado.fecha }}</td>
-        <td>0/{{ dictado.cupo }}</td>
-        <td>{{ dictado.descuento }} %</td>
-        <td>{{ dictado.modulos_por_clase }} hrs</td>
-        <td class="text-end">
-          <a href="{% url 'cursos:dictado_detalle' curso_pk=curso.pk dictado_pk=dictado.pk %}" class="btn btn-primary btn-detalle btn-sm"><i class="fa-regular fa-eye"></i> Detalle</a>
-        </td>
-      </tr>
-      {% endfor %}
-    </tbody>
-  </table>
   
   {% if tiene_dictados %}
   <a href="{% url 'cursos:dictado_crear' pk=object.pk %}" class="btn btn-primary btn-sm btn-detalle"><i class="fa-regular fa-plus"></i> Nuevo Dictado</a>
@@ -172,7 +142,35 @@
   <button type="button" class="btn btn-primary btn-sm btn-detalle" data-bs-toggle="modal" data-bs-target="#exampleModal"><i class="fa-regular fa-plus"></i> Nuevo Dictado</button>
   {% include 'curso/modal_primer_dictado.html' %}
   {% endif %}
+  <table class="table table-sm table-hover">
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>Fecha Inicio</th>
+        <th class="text-center">Cupo</th>
+        <th>Desc</th>
+        <th>Duración</th>
+        <th>Estado</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for dictado in dictados %}
+      <tr>
+        <td class="negrita"> {{ dictados.start_index|add:forloop.counter0 }}</td>
+        <td>{{ dictado.fecha }}</td>
+        <td class="text-center">{{ dictado.cupo }}</td>
+        <td>{{ dictado.descuento }} %</td>
+        <td>{{ dictado.modulos_por_clase }} hrs</td>
+        <td>{{ dictado.get_estado_display }} </td>
+        <td class="text-end">
+          <a href="{% url 'cursos:dictado_detalle' curso_pk=curso.pk dictado_pk=dictado.pk %}" class="btn btn-primary btn-detalle btn-sm"><i class="fa-regular fa-eye"></i> Detalle</a>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% include 'pagination.html' with page_obj=dictados %}
 </div>
-{% endif %}
 
 {% endblock %}

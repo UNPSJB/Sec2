@@ -14,22 +14,25 @@
 
 {% block container %}
   <div id="wrapper">
+    {% if not nueva_ventana %}
     <div id="sidebar">
       {% block nav_lateral %}
         {% include 'nav_afiliado.html' %}
       {% endblock %}
-
+      
       <!-- Este div se mostrará al final del #sidebar -->
       <div id="messages-container">
         {% include 'message.html' %}
       </div>
     </div>
-
+    {% endif %}
     <div id="content">
-      {% block nav_top %}
-        {% include 'nav_top.html' %}
-      {% endblock %}
-      
+      {% if not nueva_ventana %}
+        {% block nav_top %}
+          {% comment %} {% include 'nav_top.html' %} {% endcomment %}
+        {% endblock %}
+      {% endif %}
+
       {% block dinamica %}
         {% include 'index.html' %}
       {% endblock %}
@@ -39,11 +42,12 @@
 
 {% block extrajs %}
   <script src="{% static 'Libs/js/home_afiliado.js' %}"></script>
-
+  
+  {{ buscador.media.js }}
+  
+  <script type="text/javascript">
+    $('.django-select2').on("change", () => console.log("hola"));
+  </script>
   {% block extrajs_intermedia %}
   {% endblock %}
-  {% comment %} {{ buscador.media.js }}
-  <script type="text/javascript">
-  $('.django-select2').on("change", () => console.log("hola")); 
-  </script>  {% endcomment %}
 {% endblock %}

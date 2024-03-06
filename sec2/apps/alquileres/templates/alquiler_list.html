@@ -1,0 +1,124 @@
+{% extends 'home_alquiler.html' %}
+{% load crispy_forms_tags %}
+
+{% load static %}
+
+{% block extracss_intermedia %}
+  <link href="{% static 'css/listado.css' %}" rel="stylesheet" />
+  <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.10/index.global.min.js'></script>
+    <script>
+
+      document.addEventListener('DOMContentLoaded', function() {
+        var calendarEl = document.getElementById('calendar');
+        var calendar = new FullCalendar.Calendar(calendarEl, {
+          initialView: 'dayGridMonth'
+        });
+        calendar.render();
+      });
+
+    </script>
+{% endblock %}
+
+{% block dinamica %}
+
+<br>
+  <h3 class="titulo">{{ titulo }}</h3>
+
+  <br />
+  
+  <div class="container-sm" id='calendar'></div>
+
+
+  <div class="container-sm">
+    <div class="table-responsive">
+
+    {% block tabla_listado %}
+    <table class="table table-sm table-hover">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th scope="col">salon</th>
+            <th scope="col">fecha_alquiler</th>
+            <th scope="col">turno</th>
+            <th scope="col">Capacidad</th>
+            <th scope="col">afiliado</th>
+            <th scope="col">Precio</th>
+            <th scope="col"></th>
+          </tr>
+        </thead>
+    
+        <tbody>
+          {% for Alquiler in object_list %}
+            <tr class="bg-transition fila-personalizada">
+              <td>{{ forloop.counter }}</td>
+              <td>{{ Alquiler.salon }}</td>
+              <td>{{ Alquiler.fecha_alquiler }}</td>
+              <td>{{ Alquiler.turno }}</td>
+              <td>{{ Alquiler.salon.capacidad }}</td>
+              <td>{{ Alquiler.afiliado }}</td>
+              <td>{{ Alquiler.salon.precio }}</td>
+              
+              {% comment %} <td>
+                <a href="{% url 'cursos:curso_detalle' curso.pk %}" class="btn btn-primary btn-detalle"><i class="fa-regular fa-eye"></i> Detalle</a>
+              </td>{% endcomment %}
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    {% endblock %}
+    </div>
+  </div>
+
+
+  <div class="container ">
+    <div class="row row-cols-1 row-cols-sm-2 row-cols-md-1">
+      <div class="col" id="btn-new-alquiler">
+        <a href="{% url 'alquiler:alquiler_crear' %}" class="btn btn-primary"><i class="fa-solid fa-plus"></i> Nuevo</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% block nav_lateral_filtro %}
+    {% include 'nav_filtro.html' %}
+  {% endblock %}
+  {% block extrajs %}
+        <script>
+        conectarBotonesAModal('.btn-eliminar')
+        </script>
+
+        <script src="{% static 'libs/fullcalendar/main.js' %}"> </script>
+        <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.10/locales/es.js'></script>
+
+        <script>
+            // Paso 1: Inicializar el calendario
+            document.addEventListener('DOMContentLoaded', function() {
+                var calendarEl = document.getElementById('calendar');
+                var calendar = new FullCalendar.Calendar(calendarEl, {
+                    // Paso 2: Configurar opciones
+                    timeZone: 'UTC', // Zona horaria local
+                    locale: 'es',
+                    buttonText: {
+                      today: 'Hoy'
+                    },
+
+                    initialView: 'dayGridMonth', // Vista inicial del calendario
+                    // Paso 3: Definir eventos
+                    events: [ 
+                        {% for alquiler in object_list %}
+                            {
+                            title: "{{alquiler.salon}}",
+                            start: "{{alquiler.fecha_alquiler | date:'c'}}",
+                            url: '/home/app_alquileres/alquiler/{{alquiler.pk}}',
+                            //url: '/ordenes/ordenesTurnos/listarTurnos/detalleTurno/{{orden.pk}}',
+                           // classNames: '{{orden.get_class_dot}}',
+                            },
+                        {% endfor %}
+                    ]
+                });
+                // Paso 4: Renderizar el calendario
+                calendar.render();
+            });
+        </script>
+    {% endblock %}
+{% endblock %}

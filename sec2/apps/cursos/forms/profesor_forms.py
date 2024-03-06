@@ -3,15 +3,20 @@ from django import forms
 from django.forms import ValidationError
 from apps.personas.forms import PersonaForm,PersonaUpdateForm
 from apps.personas.models import Persona
-from utils.constants import ESTADO_CIVIL, MAX_LENGTHS, NACIONALIDADES
+from utils.choices import *
+from utils.funciones import validate_no_mayor_actual
 from ..models import Actividad, Profesor
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Fieldset, Submit, HTML
 from sec2.utils import FiltrosForm
+from datetime import date
 
 ## ------------ FORMULARIO DE PROFESOR --------------
 class ProfesorPersonaForm(forms.ModelForm):
-    ejerce_desde = forms.DateField(widget=forms.DateInput(attrs={'type': 'date'}))
+    ejerce_desde = forms.DateField(
+        widget=forms.DateInput(attrs={'type': 'date'}),
+        validators=[validate_no_mayor_actual]
+    )
     
     actividades = forms.ModelMultipleChoiceField(
         queryset=Actividad.objects.all(),
@@ -25,6 +30,13 @@ class ProfesorPersonaForm(forms.ModelForm):
         widgets = {
             'fecha_nacimiento': forms.DateInput(attrs={'type': 'date'}),
         }
+    
+    def clean_fecha_nacimiento(self):
+        fecha_nacimiento = self.cleaned_data.get('fecha_nacimiento')
+        edad = date.today().year - fecha_nacimiento.year
+        if edad < 18 or edad >= 100:
+            raise forms.ValidationError("Debe ser mayor de 18 años y menor de 100 años.")
+        return fecha_nacimiento
 
 ########### PROFESOR UPDATE ##############################################
 class ProfesorUpdateForm(forms.ModelForm):
@@ -115,7 +127,6 @@ class FormularioProfesor(forms.ModelForm):
         return self.cleaned_data['dni']
 
     def clean_cuil(self):
-        print("ESTOY EN EL CLEAN CUIL")
         self.persona = Persona.objects.filter(dni=self.cleaned_data['cuil']).first()
         if self.persona is not None and self.persona.es_profesor:
             raise ValidationError("Ya existe un Profesor activo con ese cuil")
@@ -128,7 +139,6 @@ class FormularioProfesor(forms.ModelForm):
         return valid and personaForm.is_valid() and profesorForm.is_valid()
     
     # def save(self, commit=False):
-    #     print("ESTOY EN EL SAVE")
     #     if self.persona is None:
     #         personaForm = PersonaForm(data=self.cleaned_data)
     #         # self.persona = personaForm.save()
@@ -148,7 +158,7 @@ FormularioProfesor.base_fields.update(ProfesorForm.base_fields)
 class ProfesorFilterForm(FiltrosForm):
     nombre = forms.CharField(required=False)
     actividades = forms.ModelChoiceField(
-        queryset=Actividad.objects.all(),
+        queryset=Actividad.objects.all().order_by('nombre'),  # Ordenar por el campo 'nombre'
         required=False,
         empty_label="--------------",  # Texto para la opción vacía
     )

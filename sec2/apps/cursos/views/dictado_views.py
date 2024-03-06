@@ -85,19 +85,21 @@ class DictadoCreateView(CreateView):
 ##--------------- DICTADO DETALLE --------------------------------
 from decimal import Decimal, getcontext
 import math
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
 class DictadoDetailView(DetailView):
     model = Dictado
     template_name = 'dictado/dictado_detail.html'
+    paginate_by = MAXIMO_PAGINATOR
     
     def get_object(self, queryset=None):
         curso_pk = self.kwargs.get('curso_pk')
         dictado_pk = self.kwargs.get('dictado_pk')
-        print(f'curso_pk: {curso_pk}, dictado_pk: {dictado_pk}')
         return Dictado.objects.get(curso__pk=curso_pk, pk=dictado_pk)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        
         dictado = self.object  # El objeto de dictado obtenido de la vista
         
         context['titulo'] = "Detalle del dictado"
@@ -132,6 +134,18 @@ class DictadoDetailView(DetailView):
         context['todos_los_horarios_con_aula'] = todos_los_horarios_con_aula
         # Obtener todas las clases asociadas al dictado a través de los horarios
         clases = Clase.objects.filter(reserva__horario__dictado=dictado).order_by('reserva__fecha')
+        
+         # Configurar la paginación
+        paginator = Paginator(clases, self.paginate_by)
+        page = self.request.GET.get('page')
+
+        try:
+            clases = paginator.page(page)
+        except PageNotAnInteger:
+            clases = paginator.page(1)
+        except EmptyPage:
+            clases = paginator.page(paginator.num_pages)
+        
         context['clases'] = clases
 
         # OBTENGO A TODOS MIS ALUMNOS INSCRITOS(Alumnos, Afiliado, GrupoFamiliar, Profeosres como alumno)
@@ -141,7 +155,8 @@ class DictadoDetailView(DetailView):
         alumnos_inscritos = Alumno.objects.filter(dictados=dictado)
         
         # Combino todos los objetos en una lista
-        todos_inscritos = list(afiliado_inscritos) + list(familiares_inscritos) + list(profesores_inscritos) + list(alumnos_inscritos)
+        todos_inscritos = list(afiliado_inscritos) + list(profesores_inscritos) + list(alumnos_inscritos)
+        # todos_inscritos = list(afiliado_inscritos) + list(familiares_inscritos) + list(profesores_inscritos) + list(alumnos_inscritos)
 
         # Ordeno la lista por DNI y Apellido
         todos_inscritos_sorted = sorted(todos_inscritos, key=lambda x: (x.persona.dni, x.persona.apellido))
@@ -278,12 +293,10 @@ class BuscarPersonaView(View):
 
     def get(self, request, *args, **kwargs):
         dni = request.GET.get('dni', '')
-        print("----------------------------------------------",dni)
         try:
             # FILTRA EL PRIMERO QUE ENCUENTRA POR QUE LO GUARDA DOS VECES EN LA BASE
             persona = Persona.objects.filter(dni=dni).first()
             if persona is not None:
-                print("---------------SI EXISTE----------------------------:", persona)
                 persona_data = {
                     'pk': persona.pk,
                     'dni': persona.dni,
@@ -305,7 +318,6 @@ class BuscarPersonaView(View):
 
                 return JsonResponse({'persona': persona_data})
             else:
-                print("--------------PERSONA NO EXISTE--------------------------------",dni)
                 return JsonResponse({'persona': None})
         except Persona.DoesNotExist:
             return JsonResponse({'persona': None})
@@ -352,13 +364,16 @@ class VerificarInscripcionView(View):
         inscritosEspera_ids.extend(list(familiares_inscritos_listaEspera.values_list('persona__pk', flat=True)))
         inscritosEspera_ids.extend(list(profesores_inscritos_listaEspera.values_list('persona__pk', flat=True)))
         inscritosEspera_ids.extend(list(alumnos_inscritos_listaEspera.values_list('persona__pk', flat=True)))
-
+        
+        # personas = Persona.objects.all()
+        
         context = {
             'titulo': 'Incripción',
             'curso_pk': curso_pk,
             'dictado_pk': dictado_pk,
             'hay_cupo': hay_cupo,
             'inscritos_ids': inscritos_ids,
+            # 'personas' : personas,
             'inscritosEspera_ids': inscritosEspera_ids,
 
         }
@@ -411,10 +426,7 @@ def listaEspera(request, curso_pk, dictado_pk ):
     
     # Combino todos los objetos en una lista
     todos_inscritos_listaEspera = list(afiliado_inscritos_listaEspera) + list(familiares_inscritos_listaEspera) + list(profesores_inscritos_listaEspera) + list(alumnos_inscritos_listaEspera)
-    
     hay_cupo = total_inscritos < dictado.cupo
-    print("HAY CUPO")
-    print(hay_cupo)
     titulo = 'Lista de espera'
 
     context = {
@@ -427,164 +439,245 @@ def listaEspera(request, curso_pk, dictado_pk ):
     }
     return render(request, 'dictado/dictado_lista_espera.html', context)
 
+# ----------- GESTION DE LISTA DE ESPERA
+from django.urls import reverse
+from django.urls import reverse
+from django.http import HttpResponseRedirect
 
-def sacarListaEspera(request, curso_pk, dictado_pk, alumno_pk):
-    # Obtener el objeto Dictado
-    dictado = Dictado.objects.get(id=dictado_pk)
-
-    # Obtener el objeto Alumno en lista de espera
-    alumno = get_object_or_404(Alumno, pk=alumno_pk, lista_espera=dictado)
-
-    alumno.lista_espera.remove(dictado)
-    alumno.dictados.add(dictado)
-    messages.success(request, f'{ICON_CHECK} Alumno dado de alta correctamente en el dictado.')
-    
-    return redirect(reverse('cursos:dictado_lista_espera', kwargs={'curso_pk': curso_pk, 'dictado_pk': dictado_pk}))
-
-
-# ----------------- INSCRIPCION PARA EL AFILIADO -----------------
-def inscribirAfiliado(request, curso_pk, dictado_pk, persona_pk):
-
+def gestionListaEspera(request, curso_pk, dictado_pk, persona_pk, tipo, accion):
     dictado = get_object_or_404(Dictado, curso__pk=curso_pk, pk=dictado_pk)
-    afiliado = get_object_or_404(Afiliado, persona__pk=persona_pk)
 
-    afiliado.dictados.add(dictado)
-    afiliado.persona.es_alumno = True
-    afiliado.persona.save()
-    afiliado.save()
-    
-    messages.success(request, f'{ICON_CHECK} Afiliado inscrito al curso exitosamente!. Cierre la ventana y recargue el detalle del dictado')
-    return redirect(reverse('cursos:verificar_persona', kwargs={'curso_pk': curso_pk, 'dictado_pk': dictado_pk}))
-
-# ----------------- INSCRIPCION PARA EL GRUPO FAMILIAR -----------------
-def inscribirFamiliar(request, curso_pk, dictado_pk, persona_pk):
-    dictado = get_object_or_404(Dictado, curso__pk=curso_pk, pk=dictado_pk)
-    familiar = get_object_or_404(Familiar, persona__pk=persona_pk)
-
-    familiar.dictados.add(dictado)
-    familiar.persona.es_alumno = True
-    familiar.persona.save()
-    familiar.save()
-    
-    messages.success(request, f'{ICON_CHECK} Familiar inscrito al curso exitosamente!. Cierre la ventana y recargue el detalle del dictado')
-    return redirect(reverse('cursos:verificar_persona', kwargs={'curso_pk': curso_pk, 'dictado_pk': dictado_pk}))
-
-# ----------------- INSCRIPCION PARA EL PROFESOR COMO ALUMNO -----------------
-def inscribirProfesor(request, curso_pk, dictado_pk, persona_pk):
-    dictado = get_object_or_404(Dictado, curso__pk=curso_pk, pk=dictado_pk)
-    profesor = get_object_or_404(Profesor, persona__pk=persona_pk)
-    
-    # Verificar si existe un Titular con ese Profesor y ese Dictado
-    titular_existente = Titular.objects.filter(profesor=profesor, dictado=dictado).exists()
-    
-    if titular_existente:
-        messages.error(request, f'{ICON_ERROR} Error: El profesor a inscribir es titular del dictado.')
+    if tipo == 'Afiliado':
+        persona = get_object_or_404(Afiliado, persona__pk=persona_pk)
+    elif tipo == 'Familiar':
+        persona = get_object_or_404(Familiar, persona__pk=persona_pk)
+    elif tipo == 'Profesor':
+        persona = get_object_or_404(Profesor, persona__pk=persona_pk)
+    elif tipo == 'Alumno':
+        persona = get_object_or_404(Alumno, persona__pk=persona_pk)
+    elif tipo == 'AlumnoNuevo':
+        pass
     else:
-        profesor.dictados_inscriptos.add(dictado)
-        profesor.persona.es_alumno = True
-        profesor.persona.save()
-        profesor.save()
-        messages.success(request, f'{ICON_CHECK} Profesor inscrito al curso exitosamente!. Cierre la ventana y recargue el detalle del dictado')
+        raise Http404("Tipo de persona no válido")
 
-    return redirect(reverse('cursos:verificar_persona', kwargs={'curso_pk': curso_pk, 'dictado_pk': dictado_pk}))
-
-# ----------------- INSCRIPCION PARA EL ALUMNO YA EXISTENTE-----------------
-def inscribirAlumno(request, curso_pk, dictado_pk, persona_pk):
-    dictado = get_object_or_404(Dictado, curso__pk=curso_pk, pk=dictado_pk)
-    alumno = get_object_or_404(Alumno, persona__pk=persona_pk)
-    print(alumno)
-    alumno.dictados.add(dictado)
-    alumno.save()
-    messages.success(request, f'{ICON_CHECK} Alumno inscrito al curso exitosamente!. Cierre la ventana y recargue el detalle del dictado')
-    return redirect(reverse('cursos:verificar_persona', kwargs={'curso_pk': curso_pk, 'dictado_pk': dictado_pk}))
-
-# ----------------- INSCRIPCION PARA EL AFILIADO -----------------
-def agregarListaEsperaAfiliado(request, curso_pk, dictado_pk, persona_pk):
-
-    dictado = get_object_or_404(Dictado, curso__pk=curso_pk, pk=dictado_pk)
-    afiliado = get_object_or_404(Afiliado, persona__pk=persona_pk)
-
-    afiliado.lista_espera.add(dictado)
-    afiliado.save()
-    
-    messages.success(request, f'{ICON_CHECK} Afiliado agregado a la lista de espera exitosamente!. Cierre la ventana y recargue el detalle del dictado')
-    return redirect(reverse('cursos:verificar_persona', kwargs={'curso_pk': curso_pk, 'dictado_pk': dictado_pk}))
-
-# ----------------- INSCRIPCION PARA EL GRUPO FAMILIAR -----------------
-def agregarListaEsperaFamiliar(request, curso_pk, dictado_pk, persona_pk):
-    dictado = get_object_or_404(Dictado, curso__pk=curso_pk, pk=dictado_pk)
-    familiar = get_object_or_404(Familiar, persona__pk=persona_pk)
-
-    familiar.lista_espera.add(dictado)
-    familiar.save()
-    
-    messages.success(request, f'{ICON_CHECK} Familiar agregado a la lista de espera exitosamente!. Cierre la ventana y recargue el detalle del dictado')
-    return redirect(reverse('cursos:verificar_persona', kwargs={'curso_pk': curso_pk, 'dictado_pk': dictado_pk}))
-
-# ----------------- INSCRIPCION PARA EL GRUPO FAMILIAR -----------------
-def agregarListaEsperaProfesor(request, curso_pk, dictado_pk, persona_pk):
-    dictado = get_object_or_404(Dictado, curso__pk=curso_pk, pk=dictado_pk)
-    profesor = get_object_or_404(Profesor, persona__pk=persona_pk)
-    
-    # Verificar si existe un Titular con ese Profesor y ese Dictado
-    titular_existente = Titular.objects.filter(profesor=profesor, dictado=dictado).exists()
-    
-    if titular_existente:
-        messages.error(request, f'{ICON_ERROR} Error: El profesor a inscribir es titular del dictado.')
-    else:
-        profesor.lista_espera.add(dictado)
-        profesor.save()
-        messages.success(request, f'{ICON_CHECK} Profesor agregado a la lista de espera exitosamente!. Cierre la ventana y recargue el detalle del dictado')
-
-    return redirect(reverse('cursos:verificar_persona', kwargs={'curso_pk': curso_pk, 'dictado_pk': dictado_pk}))
-
-# ----------------- INSCRIPCION PARA EL ALUMNO YA EXISTENTE-----------------
-def agregarListaEsperaAlumno(request, curso_pk, dictado_pk, persona_pk):
-    dictado = get_object_or_404(Dictado, curso__pk=curso_pk, pk=dictado_pk)
-    alumno = get_object_or_404(Alumno, persona__pk=persona_pk)
-
-    alumno.lista_espera.add(dictado)
-    alumno.save()
-
-    messages.success(request, f'{ICON_CHECK} Alumno agregado a la lista de espera exitosamente!. Cierre la ventana y recargue el detalle del dictado')
-    return redirect(reverse('cursos:verificar_persona', kwargs={'curso_pk': curso_pk, 'dictado_pk': dictado_pk}))
-
-###################### GESTIÓN DE LISTA DE ESPERA DE AFIIADO
-def gestionListaEsperaAfiliado(request, curso_pk, dictado_pk, persona_pk, accion):
-    
-    dictado = get_object_or_404(Dictado, curso__pk=curso_pk, pk=dictado_pk)
-    afiliado = get_object_or_404(Afiliado, persona__pk=persona_pk)
-    
     if accion == 'inscribir':
-        # Sacar el dictado de la lista de espera del afiliado
-        afiliado.lista_espera.remove(dictado)
-        afiliado.dictados.add(dictado)
-        afiliado.persona.es_alumno = True
-        afiliado.persona.save()
-        messages.success(request, f'{ICON_CHECK} Afiliado inscrito al curso exitosamente!. Cierre la ventana y recargue el detalle del dictado')
+        persona.lista_espera.remove(dictado)
+        
+        if tipo == 'Profesor':
+            persona.dictados_inscriptos.add(dictado)
+        else:
+            persona.dictados.add(dictado)
 
+        persona.persona.es_alumno = True
+        persona.persona.save()
+        messages.success(request, f'{ICON_CHECK} {tipo} inscrito al curso exitosamente!. Cierre la ventana y recargue el detalle del dictado')
+    
+    elif accion == 'inscribir_alumno_nuevo':
+        url = reverse('cursos:alumno_nuevo_lista_espera', kwargs={'curso_pk': curso_pk, 'dictado_pk': dictado_pk})
+        return HttpResponseRedirect(url)
+    
     elif accion == 'quitar':
-        afiliado.lista_espera.remove(dictado)
-        messages.success(request, f'{ICON_CHECK} Afiliado sacado de la lista de espera ')
-    afiliado.save()
+        persona.lista_espera.remove(dictado)
+        messages.success(request, f'{ICON_CHECK} {tipo} sacado de la lista de espera ')
+    
+    elif accion == 'agregar_lista':
+        if tipo == 'Profesor':
+             # Verificar si existe un Titular con ese Profesor y ese Dictado
+            titular_existente = Titular.objects.filter(profesor=persona, dictado=dictado).exists()   
+            if titular_existente:
+                messages.error(request, f'{ICON_ERROR} Error: El profesor a inscribir es titular del dictado.')
+                return redirect('cursos:verificar_persona', curso_pk=curso_pk, dictado_pk=dictado_pk)
+
+        messages.success(request, f'{ICON_CHECK} {tipo} agregado a la lista de espera. Cierre la ventana y recargue el detalle del dictado')
+        persona.lista_espera.add(dictado)
+        persona.save()
+        return redirect('cursos:verificar_persona', curso_pk=curso_pk, dictado_pk=dictado_pk)
+    
+    persona.save()
     return redirect('cursos:dictado_lista_espera', curso_pk=curso_pk, dictado_pk=dictado_pk)
 
-###################### GESTIÓN DE LISTA DE ESPERA DE GRUPO FAMILIAR
-def gestionListaEsperaGrupoFamiliar(request, curso_pk, dictado_pk, persona_pk, accion):
-    
-    dictado = get_object_or_404(Dictado, curso__pk=curso_pk, pk=dictado_pk)
-    afiliado = get_object_or_404(Afiliado, persona__pk=persona_pk)
-    
-    if accion == 'inscribir':
-        # Sacar el dictado de la lista de espera del afiliado
-        afiliado.lista_espera.remove(dictado)
-        afiliado.dictados.add(dictado)
-        afiliado.persona.es_alumno = True
-        afiliado.persona.save()
-        messages.success(request, f'{ICON_CHECK} Afiliado inscrito al curso exitosamente!. Cierre la ventana y recargue el detalle del dictado')
 
-    elif accion == 'quitar':
-        afiliado.lista_espera.remove(dictado)
-        messages.success(request, f'{ICON_CHECK} Afiliado sacado de la lista de espera ')
-    afiliado.save()
-    return redirect('cursos:dictado_lista_espera', curso_pk=curso_pk, dictado_pk=dictado_pk)
+# ----------- GESTION DE INSCRIPCION
+def gestionInscripcion(request, curso_pk, dictado_pk, persona_pk, tipo, accion):
+    dictado = get_object_or_404(Dictado, curso__pk=curso_pk, pk=dictado_pk)
+
+    if tipo == 'Afiliado':
+        persona = get_object_or_404(Afiliado, persona__pk=persona_pk)
+    elif tipo == 'Familiar':
+        persona = get_object_or_404(Familiar, persona__pk=persona_pk)
+    elif tipo == 'Profesor':
+        persona = get_object_or_404(Profesor, persona__pk=persona_pk)
+    elif tipo == 'Alumno':
+        persona = get_object_or_404(Alumno, persona__pk=persona_pk)
+    elif tipo == 'AlumnoNuevo':
+        pass
+    else:
+        raise Http404("Tipo de persona no válido")
+
+    if accion == 'inscribir':
+        if tipo == 'Profesor':
+            titular_existente = Titular.objects.filter(profesor=persona, dictado=dictado).exists()      
+            if titular_existente:
+                messages.error(request, f'{ICON_ERROR} Error: El profesor a inscribir es titular del dictado.')
+                return redirect('cursos:verificar_persona', curso_pk=curso_pk, dictado_pk=dictado_pk)
+            persona.dictados_inscriptos.add(dictado)
+        else:
+            persona.dictados.add(dictado)
+
+        persona.persona.es_alumno = True
+        persona.persona.save()                
+        persona.save()
+        messages.success(request, f'{ICON_CHECK} {tipo} inscrito al curso exitosamente!. Cierre la ventana y recargue el detalle del dictado')
+        return redirect('cursos:verificar_persona', curso_pk=curso_pk, dictado_pk=dictado_pk)
+    
+    elif accion == 'inscribir_alumno_nuevo':
+        url = reverse('cursos:alumno_nuevo_inscribir', kwargs={'curso_pk': curso_pk, 'dictado_pk': dictado_pk})
+        return HttpResponseRedirect(url)
+    
+    elif accion == 'desinscribir':
+
+        if tipo == 'Profesor':
+            persona.dictados_inscriptos.remove(dictado)
+            if not persona.dictados_inscriptos.exists():
+                persona.persona.es_alumno = False
+                persona.save()
+        else:
+            persona.dictados.remove(dictado)
+            if not persona.dictados.exists():
+                persona.persona.es_alumno = False
+                persona.save()
+        
+        persona.persona.save()                
+        persona.save()
+        messages.success(request, f'{ICON_CHECK} {tipo} ha sido desincrito del curso.')
+        return redirect('cursos:dictado_detalle', curso_pk=dictado.curso.pk, dictado_pk=dictado.pk)
+    
+def finalizarDictado(request, curso_pk, dictado_pk):
+    # OBTENEMOS EL DICTADO
+    dictado = get_object_or_404(Dictado, pk=dictado_pk)
+
+    # OBTENER TODAS LAS CLASES ASOCIADAS AL DICTADO
+    clases_del_dictado = Clase.objects.filter(reserva__horario__dictado=dictado)
+    
+    # OBTENER LA ÚLTIMA CLASE CON ASISTENCIA TOMADA
+    ultima_clase_con_asistencia = Clase.objects.filter(
+        reserva__horario__dictado=dictado,
+        asistencia_tomada=True
+    ).order_by('-reserva__fecha').first()
+
+    print("ULTIMA CLASE")
+    print(ultima_clase_con_asistencia)
+
+    #OBTENEMOS LA FECHA QUE SE REALIZO LA CLASE
+    fecha = ultima_clase_con_asistencia.reserva.fecha
+    #Le asignamos la fecha de fin a mi dictado
+    dictado.fecha_fin = fecha
+    dictado.estado = 3
+
+    #OBTENEMOS TODAS LAS CLASES QUE NO SE HAN TOMADO ASISTENCIA
+    clases_sin_asistencia = clases_del_dictado.filter(asistencia_tomada=False)
+
+    # ELIMINAR LA RESERVA DE LAS CLASES SIN ASISTENCIA
+    for clase_sin_asistencia in clases_sin_asistencia:
+        reserva = clase_sin_asistencia.reserva
+        reserva.delete()
+
+    # BORRAR LAS CLASES SIN ASISTENCIA
+    clases_sin_asistencia.delete()
+
+    dictado.save()
+
+    messages.success(request, f'{ICON_CHECK} Dictado finalizado con exito!')
+    return redirect('cursos:dictado_detalle', curso_pk=curso_pk, dictado_pk=dictado_pk)
+
+
+from django.http import FileResponse
+from io import BytesIO
+import io
+from reportlab.pdfgen import canvas
+from reportlab.pdfbase.ttfonts import TTFont
+from reportlab.pdfbase import pdfmetrics
+from reportlab.lib.pagesizes import letter, landscape
+
+import locale
+
+def generate_pdf(dictado, persona, porcentaje_asistencia):
+    buffer = BytesIO()
+
+    # Configurar el tamaño del documento PDF como horizontal
+    p = canvas.Canvas(buffer, pagesize=landscape(letter))
+
+    # Configurar el título y el contenido del certificado
+    titulo = f"Certificado de Asistencia"
+
+    # Configurar la posición y el estilo del texto en el PDF
+    p.setFont("Helvetica-Bold", 46)
+    p.drawCentredString(400, 510, titulo)
+
+    contenido = f"Certificamos que\n\n{persona.nombre} {persona.apellido}\n\nParticipó del curso {dictado.curso.nombre}, organizado por el SEC 2.\nEl mismo se llevó a cabo en la localidad de Trelew desde  al ."
+    
+    p.setFont("Helvetica", 40)
+    contenido = f"Certificamos que"
+    p.drawCentredString(400, 450, contenido)
+    
+    p.setFont("Helvetica", 35)
+    contenido = f"{persona.nombre.upper()} {persona.apellido.upper()}."
+    p.drawCentredString(400, 390, contenido)
+    
+    p.setStrokeColorRGB(0.6, 0.6, 0.6)
+    p.line(100, 380, 700 ,380)
+    p.setStrokeColorRGB(0, 0, 0)
+
+    p.setFont("Helvetica", 20)
+    contenido = f"Participó del curso {dictado.curso.nombre}, organizado por el SEC 2. El mismo se"
+    p.drawString(100, 340, contenido)
+    
+    locale.setlocale(locale.LC_TIME, 'es_ES.UTF-8')
+    # Obtener la fecha en el formato deseado
+    fecha_str = dictado.fecha.strftime("%d de %B del %Y")
+    
+    contenido = f"llevó a cabo en la localidad de Trelew del {fecha_str}"
+    p.drawString(100, 310, contenido)
+
+    fecha_fin_str = dictado.fecha_fin.strftime("%d de %B del %Y")
+    contenido = f"al {fecha_fin_str}. Cumpliendo con un porcentaje de"
+    p.drawString(100, 280, contenido)
+
+    contenido = f"asistencia del {porcentaje_asistencia}% "
+    p.drawString(100, 250, contenido)
+    
+    p.setStrokeColorRGB(0.6, 0.6, 0.6)
+    p.line(150, 100, 300 ,100)
+    p.setStrokeColorRGB(0, 0, 0)
+    
+    p.setFont("Helvetica", 12)
+    contenido = f"Firma y aclaración"
+    p.drawString(175, 85, contenido)
+    # Guardar el PDF en el buffer
+    p.showPage()
+    p.save()
+
+    buffer.seek(0)
+    return buffer
+
+
+def generarPDF_Afiliado(request, dictado_pk, persona_pk):
+    persona = get_object_or_404(Persona, pk=persona_pk)
+    dictado = get_object_or_404(Dictado, pk=dictado_pk)
+
+    # Obtener las clases del dictado
+    clases = Clase.objects.filter(reserva__horario__dictado=dictado)
+
+    # Contar las clases a las que asistió el alumno
+    clases_asistidas = clases.filter(asistencia__persona=persona)
+
+    # Calcular el porcentaje de asistencia
+    porcentaje_asistencia = round((clases_asistidas.count() / clases.count()) * 100)
+    print(porcentaje_asistencia)
+    # Verificar si el alumno cumple con el 80% de asistencia
+    # if porcentaje_asistencia >= 80:
+    buffer = generate_pdf(dictado, persona, porcentaje_asistencia)
+    return FileResponse(buffer, as_attachment=True, filename="certifiado.pdf")
+    # else:
+        # Puedes manejar aquí el caso en el que el alumno no cumple con el 80% de asistencia
+        # return HttpResponse("El alumno no cumple con el 80% de asistencia requerido.")

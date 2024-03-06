@@ -1,4 +1,4 @@
-{% extends 'alta.html' %}
+{% extends 'app_cursos_alta.html' %}
 {% load crispy_forms_tags %}
 {% load static %}
 
@@ -12,8 +12,13 @@
 
     <div class="row">
       <div class="col">
-        {{ form.actividad.label_tag }}
-        {{ form.actividad }}
+        <label>Actividad</label>
+        <select name="enc_cliente" id="enc_cliente">
+            <option value="{{ object.actividad.id }}">{{ object.actividad.nombre }}</option>
+            {% for actividad in actividades %}
+                <option value="{{ actividad.id }}" {% if actividad.id == object.actividad.id %}selected{% endif %}>{{ actividad.nombre }}</option>
+            {% endfor %}
+        </select>
       </div>
       <div class="col">
         <div class="form-group">

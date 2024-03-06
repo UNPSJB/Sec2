@@ -9,7 +9,7 @@
     <br>
     <select name="aula_seleccionada" id="aula_seleccionada">
       {% for aula in aulas_disponibles %}
-        <option value="{{ aula.id }}">{{ aula }}</option>
+        <option value="{{ aula.id }}">{{ aula }} | Capacidad: {{aula.capacidad}}</option>
       {% endfor %}
     </select>
 

@@ -3,6 +3,7 @@ from django.http import HttpResponse
 from apps.personas.models import Rol
 from utils.constants import *
 from utils.choices import *
+from utils.funciones import validate_no_mayor_actual
 from utils.regularexpressions import *
 from django.core.validators import MinValueValidator, MaxValueValidator
 
@@ -68,13 +69,10 @@ class Curso(models.Model):
     
     def get_tipo_curso(self):
         if self.es_convenio:
-            print("SOY CONVENIO")
             return 'convenio'
         elif self.requiere_certificado_medico:
-            print("SOY ACTIVIDAD")
             return 'actividad'
         else:
-            print("SOY SEC")
             return 'sec'
 
 #------------- DICTADO --------------------
@@ -85,7 +83,9 @@ class Dictado(models.Model):
     modulos_por_clase= models.PositiveIntegerField(help_text="Horas por clase")
     asistencia_obligatoria = models.BooleanField(default=False)
     periodo_pago=models.PositiveSmallIntegerField(choices=PERIODO_PAGO)
+    estado=models.PositiveSmallIntegerField(choices=ESTADO_DICTADO)
     fecha = models.DateTimeField(help_text="Seleccione la fecha de inicio")
+    fecha_fin = models.DateTimeField(null=True,blank=True )
     cupo = models.PositiveIntegerField(
         help_text="Máximo alumnos inscriptos",
         validators=[
@@ -100,7 +100,7 @@ class Dictado(models.Model):
             MaxValueValidator(100, message="El descuento no puede ser mayor que 100."),
         ]
     )
-    
+
 #------------- HORARIO --------------------
 from datetime import datetime, timedelta
 
@@ -165,30 +165,20 @@ class Alumno(Rol):
 
 Rol.register(Alumno)
 
-#------------- CLASE --------------------
-from django.shortcuts import get_object_or_404
-    
-def marcar_asistencia(request, clase_id, alumno_id):
-    clase = get_object_or_404(Clase, pk=clase_id)
-    alumno = get_object_or_404(Alumno, pk=alumno_id)
-
-    if alumno in clase.reserva.aula.curso.alumnos.all():  # Verifica que el alumno esté inscrito en el curso
-        clase.asistencia.add(alumno)
-        # Puedes realizar otras acciones aquí, como guardar el registro en la base de datos
-        return HttpResponse("Asistencia marcada correctamente.")
-    else:
-        return HttpResponse("Error: El alumno no está inscrito en este curso.")
-    
-
 #------------- PROFESOR --------------------
 class Profesor(Rol):
     # ForeignKey
     dictados = models.ManyToManyField(Dictado, through = "Titular", related_name="profesores", blank=True)
     TIPO = 2
-    ejerce_desde = models.DateField()
     actividades = models.ManyToManyField(Actividad, blank=True)
     dictados_inscriptos = models.ManyToManyField(Dictado, related_name="profesores_dictados_inscriptos", blank=True)
     lista_espera = models.ManyToManyField(Dictado, related_name='profesores_en_espera', blank=True)
+
+    ejerce_desde= models.DateField(
+        null=True,
+        blank=False,
+        validators=[validate_no_mayor_actual]
+    )
 
     def __str__(self):
         if self.persona_id and hasattr(self, 'persona'):
@@ -200,9 +190,40 @@ Rol.register(Profesor)
 #------------- CLASE --------------------
 class Clase(models.Model):
     reserva = models.ForeignKey(Reserva, related_name="clases", on_delete=models.CASCADE, null=True, blank=True)
-    asistencia = models.ManyToManyField(Alumno, related_name="clases_asistidas", blank=True)
+    #para que se procesa a tomar la asistencia de la siguiente clase
     asistencia_tomada = models.BooleanField(default=False)
-    asistencia_profesores = models.ManyToManyField(Profesor, through='AsistenciaProfesor', related_name='clases_asistidas', blank=True)
+    
+    # Agregar un campo para registrar la asistencia de diferentes roles
+    asistencia = models.ManyToManyField(Rol, related_name="asistencias", blank=True)
+    asistencia_profesor = models.ManyToManyField(Profesor, related_name="asistencias_titular", blank=True)
+
+    def marcar_asistencia(self, rol):
+        # Verificar que la asistencia no se haya tomado antes
+        if not self.asistencia_tomada:
+            self.asistencia.add(rol)
+            return True
+        else:
+            return False
+
+    def tomar_asistencia(self):
+        # Marcar la asistencia para la clase
+        self.asistencia_tomada = True
+        self.save()
+    
+    def tiene_asistencia(self, inscrito):
+        return inscrito in self.asistencia.all()
+
+from django.shortcuts import get_object_or_404
+    
+# Luego, podrías usar este método en tu vista para marcar la asistencia de un alumno, profesor, etc.
+def marcar_asistencia(request, clase_id, rol_id):
+    clase = get_object_or_404(Clase, pk=clase_id)
+    rol = get_object_or_404(Rol, pk=rol_id)
+
+    if clase.marcar_asistencia(rol):
+        return HttpResponse("Asistencia marcada correctamente.")
+    else:
+        return HttpResponse("Error: La asistencia ya ha sido tomada.")
 
 #------------- TITULAR --------------------
 class Titular(models.Model):
@@ -211,11 +232,17 @@ class Titular(models.Model):
     dictado= models.ForeignKey(Dictado, on_delete=models.CASCADE)
 
 #------------- ASISTENCIA PROFESOR --------------------
-class AsistenciaProfesor(models.Model):
-    # ForeignKey
-    profesor = models.ForeignKey(Profesor, on_delete=models.CASCADE)
-    clase = models.ForeignKey(Clase, on_delete=models.CASCADE)
-    asistio = models.BooleanField(default=False)
+# class AsistenciaProfesor(models.Model):
+#     profesor = models.ForeignKey(Profesor, on_delete=models.CASCADE)
+#     clase = models.ForeignKey(Clase, on_delete=models.CASCADE)
+#     asistio = models.BooleanField(default=False)
+
+
+# class AsistenciaAlumno(models.Model):
+#     alumno = models.ForeignKey(Alumno, on_delete=models.CASCADE)
+#     clase = models.ForeignKey(Clase, on_delete=models.CASCADE)
+#     asistio = models.BooleanField(default=False)
+
 
 
 # class Asistencia_profesor(models.Model):
