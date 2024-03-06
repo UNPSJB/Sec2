@@ -6,6 +6,7 @@ from utils.choices import ESTADO_CIVIL, NACIONALIDADES
 from utils.constants import *
 from utils.funciones import validate_no_mayor_actual
 from utils.regularexpressions import *
+from datetime import date
 
 class Persona(models.Model):
     dni = models.CharField(
@@ -65,6 +66,12 @@ class Persona(models.Model):
 
     def __str__(self):
         return f"{self.apellido} {self.nombre}"
+    
+    @property
+    def es_mayor_edad(self):
+        # Calcula la edad comparando la fecha de nacimiento con la fecha actual
+        edad = date.today().year - self.fecha_nacimiento.year - ((date.today().month, date.today().day) < (self.fecha_nacimiento.month, self.fecha_nacimiento.day))
+        return edad >= 18
     
     def obtenerTipo(self):
         if self.es_afiliado:
