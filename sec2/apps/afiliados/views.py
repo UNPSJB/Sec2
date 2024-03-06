@@ -17,8 +17,9 @@ from django.http import HttpResponseRedirect
 #CONSTANTE
 from utils.constants import *
 from datetime import date
+from django.contrib.auth.decorators import login_required
 
-# ----------------------------- AFILIADO VIEW ----------------------------------- #
+@login_required
 def index(request):
     template = loader.get_template('home.html')
     return HttpResponse(template.render())

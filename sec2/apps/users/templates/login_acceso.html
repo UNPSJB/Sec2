@@ -1,0 +1,213 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% load crispy_forms_tags %}
+
+{% block title %}
+  {{ title }}
+{% endblock %}
+
+{% block extracss %}
+  <link href="{% static 'Libs/css/login.css' %}" rel="stylesheet" />
+{% endblock %}
+
+{% block container %}
+  <div class="contenedor-login">
+    {% include 'message.html' %}
+    <main class="form-signin animate__animated animate__zoomIn">
+      <div id="icono-div">
+        <i id="icono" class="fa-regular fa-user"></i>
+        <br><br>
+        <h4> BIENVENIDO </h4>
+      </div>
+      <hr class="divider" />
+      <form id="login-form" align="center" method="post">
+        {% csrf_token %}
+        <input type="{{ form.username.widget.type }}" name="{{ form.username.name }}" placeholder="{{ form.username.label }}" {% if form.username.value %}value="{{ form.username.value }}"{% endif %} class="form-control text-center" required>
+        <br>
+        <div class="password-input-container">
+          <input type="password" 
+                 name="{{ form.password.name }}" 
+                 placeholder="{{ form.password.label }}" 
+                 {% if form.password.value %}value="{{ form.password.value }}"{% endif %}
+                 class="form-control text-center password-input" required>
+          <label class="password-toggle" onclick="togglePassword()">
+            <i id="password-icon" class="fa-solid fa-eye"></i>
+          </label>
+        </div>
+        <button type="submit" class="btn btn-primary " onclick="applyBlur()" style="margin-top: 20px; background-color: #00a0e3;"> Iniciar Sesión</button>
+      </form>
+
+      {% comment %} {% crispy form form.helper %}
+      {% comment %}cambiar nombre de boton{% endcomment %}
+    </main>
+  </div>
+  <br><br><br><br><br>
+  {% include 'footer.html' %}
+{% endblock %}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+{% comment %} {% extends 'base.html' %}
+{% load crispy_forms_tags %}
+{% block title %}
+  Iniciar Sesión | Mutuales
+{% endblock %} 
+{% block extra_css %}
+  {% load static %}
+  <style>
+
+    #background-container {
+      position: relative;
+      height: 100vh;
+      overflow: hidden;
+      background: url("{% static 'images/montaña.jpg' %}") no-repeat center center fixed;
+      background-size: cover;
+      transition: filter 0.9s ease-in-out, background 0.9s ease-in-out;
+    }
+
+    #background-container.blur-background::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: url("https://www.gratistodo.com/wp-content/uploads/2016/10/paisajes-oto%C3%B1o-wallpapers.jpg") no-repeat center center fixed;
+      background-size: cover;
+      filter: blur(10px); /* Ajusta el valor según sea necesario */
+    }
+
+    #welcome-message,
+    #login-form {
+      opacity: 1;
+      border-radius: 10px;
+      padding: 20px;
+      transition: opacity 0.9s ease-in-out;
+    }
+
+    #login-form {
+      opacity: 0;
+      pointer-events: none; /* Desactiva eventos del mouse cuando está oculto */
+      background-color: rgba(255, 255, 255, 0.4);
+      padding: 20px;
+      border-radius: 10px;
+      width: 300px;
+      text-align: center;
+    }
+
+    #welcome-message, 
+    #login-form {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+    }
+
+    button {
+      margin-top: 10px;
+    }
+
+    label{
+      margin-top: 5%;
+    }
+
+    #welcome-message{
+      background-color: rgba(236, 240, 241, 0.9);
+      width: 30%;
+      text-align: center;
+      padding-top: 35px;
+      padding-bottom: 35px;
+    }
+
+
+    h1{
+      margin-top: 0;
+      margin-bottom: 0;
+    }
+
+    img{
+      margin-top: 8%;
+      margin-bottom: 8%;
+    }
+    p{
+      margin-bottom: 0px;
+    }
+
+    #iniciar-session{
+      margin-bottom: 10px;
+    }
+
+  </style>
+{% endblock %}
+{% block container %}
+<div class="container-md" align="center">
+<div class="row justify-content-center">
+<div class="border p-3 mb-3 curso-form rounded-5">
+<div id="background-container">
+    <form id="login-form" method="post">
+    {% csrf_token %}
+    <h1 id="iniciar-session"> Iniciar Sessión </h1>
+    <input type="{{ form.username.widget.type }}" name="{{ form.username.name }}" placeholder="{{ form.username.label }}" {% if form.username.value %}value="{{ form.username.value }}"{% endif %} class="form-control text-center" required>
+    <br>
+    <div class="password-input-container">
+      <input type="password" 
+             name="{{ form.password.name }}" 
+             placeholder="{{ form.password.label }}" 
+             {% if form.password.value %}value="{{ form.password.value }}"{% endif %}
+             class="form-control text-center password-input" required>
+      <label class="password-toggle" onclick="togglePassword()">
+        <i id="password-icon" class="fa-solid fa-eye"></i>
+      </label>
+    </div>
+    <button type="submit" class="btn btn-primary " onclick="applyBlur()" style="margin-top: 20px; background-color: #00a0e3;"> Iniciar Sesión</button>
+  </form>
+</div>
+</div>
+</div>
+</div>
+  <script>
+    function showLoginForm() {
+      var welcomeMessage = document.getElementById("welcome-message");
+      var loginForm = document.getElementById("login-form");
+      var backgroundContainer = document.getElementById("background-container");
+
+      welcomeMessage.style.opacity = "0";
+      loginForm.style.opacity = "1";
+      loginForm.style.pointerEvents = "auto";
+      backgroundContainer.classList.add('blur-background');
+    }
+
+    function togglePassword() {
+      var passwordInput = document.querySelector(".password-input");
+      passwordInput.type = passwordInput.type === "password" ? "text" : "password";
+    }
+
+    function togglePassword() {
+      var passwordInput = document.querySelector(".password-input");
+      var passwordIcon = document.getElementById("password-icon");
+  
+      if (passwordInput.type === "password") {
+        passwordInput.type = "text";
+        passwordIcon.className = "fa-solid fa-eye-slash";
+      } else {
+        passwordInput.type = "password";
+        passwordIcon.className = "fa-solid fa-eye";
+      }
+    }
+  </script>
+{% endblock %}
+ {% endcomment %}
+
+

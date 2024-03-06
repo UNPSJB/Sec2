@@ -17,6 +17,10 @@ from django.contrib.messages import constants as messages
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+LOGIN_URL = '/login/'
+# [SECRET_KEY = config('SECRET_KEY', default='')]
+# DEBUG = config('DEBUG', default=False, cast=bool)
+LOGIN_REDIRECT_URL = 'home'
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.1/howto/deployment/checklist/
@@ -44,6 +48,7 @@ INSTALLED_APPS = [
     'apps.alquileres',
     'apps.cursos',
     'apps.pagos',
+    'apps.users',
     "crispy_forms",
     "crispy_bootstrap5",
     "django_extensions",
