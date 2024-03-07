@@ -1,65 +1,32 @@
-{% extends 'home_alquiler.html' %}
+{% extends 'app_alquiler_listado.html' %}
 {% load crispy_forms_tags %}
 
 {% load static %}
 
-{% block extracss_intermedia %}
-  <link href="{% static 'css/listado.css' %}" rel="stylesheet" />
+{% block botones %}
+<a href="{% url 'alquiler:encargado_alta' %}" class="btn btn-primary btn-sm  btn-detalle"><i class="fa-solid fa-plus"></i> Nuevo</a>
 {% endblock %}
 
-{% block dinamica %}
-<br>
-  <h3 class="titulo">{{ titulo }}</h3>
-
-  <br />
-
-  <div class="container-sm">
-    <div class="table-responsive">
-
-    {% block tabla_listado %}
-    <table class="table table-sm table-hover">
-        <thead>
-          <tr>
-            <th>#</th>
-            <th scope="col">Dni</th>
-            <th scope="col">Apellido</th>
-            <th scope="col">Nombre</th>
-            <th scope="col">Fecha nacimiento</th>
-            <th scope="col"></th>
-          </tr>
-        </thead>
-    
-        <tbody>
-          {% for Salon in object_list %}
-            <tr class="bg-transition fila-personalizada">
-                <td>{{ Encargado.persona.dni }}</td>
-                <td>{{ Encargado.persona.apellido }}</td>
-                <td>{{ Encargado.persona.nombre }}</td>
-                <td>{{ Encargado.persona.fecha_nacimiento }}</td>
-              
-                {% comment %}<td>
-                <a href="{% url 'cursos:curso_detalle' curso.pk %}" class="btn btn-primary btn-detalle"><i class="fa-regular fa-eye"></i> Detalle</a>
-              </td>{% endcomment %}
-            </tr>
-          {% endfor %}
-        </tbody>
-      </table>
-    {% endblock %}
-    </div>
-  </div>
-
-
-  <div class="container ">
-    <div class="row row-cols-1 row-cols-sm-2 row-cols-md-1">
-      <div class="col" id="btn-new-encargado">
-        <a href="{% url 'alquiler:encargado_alta' %}" class="btn btn-primary"><i class="fa-solid fa-plus"></i> Nuevo</a>
-      </div>
-    </div>
-  </div>
-</div>
-
-{% block nav_lateral_filtro %}
-    {% include 'nav_filtro.html' %}
-  {% endblock %}
+{% block tabla_listado %}
+<table class="table table-sm table-hover">
+  <thead>
+    <tr>
+      <th>#</th>
+      {% include 'tabla_persona_cabecera.html' %}
+      <th></th>
+    </tr>
+  </thead>
+    <tbody>
+      {% for encargado in page_obj %}
+        <tr>
+          <td class="negrita"> {{ page_obj.start_index|add:forloop.counter0 }}</td>
+          {% include 'tabla_persona_cuerpo.html' with persona=encargado.persona %}
+          <td class="text-center">
+            <a href="{% url 'alquiler:encargado_detalle' encargado.pk %}" class="btn btn-primary btn-sm btn-detalle"><i class="fa-regular fa-eye"></i> Detalle</a>
+          </td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
 {% endblock %}
 

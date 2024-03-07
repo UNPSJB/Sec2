@@ -1,6 +1,9 @@
 # --------- CONSTANTES PARA LOS ROLES -----------
 ROL_TIPO_AFILIADO = 1
 ROL_TIPO_FAMILIAR = 2
+ROL_TIPO_ALUMNO = 3
+ROL_TIPO_PROFESOR = 4
+ROL_TIPO_ENCARGADO = 5
 
 # -------------- ICONOS ------------------------------------------
 ICON_ERROR = '<i class="fa-solid fa-x fa-beat-fade"></i>'
@@ -45,6 +48,17 @@ MSJ_AULA_EXITO_BAJA = ' La Actividad se se eliminó correctamente!.'
 #MENSAJE ESPECIFIOC PARA PROFESOR
 MSJ_CORRECTO_ALTA_PROFESOR = 'Profesor dado de alta con éxito!'
 
+
+# MENSAJE ESPECIFICO PARA ENCARGADO
+MSJ_CORRECTO_ALTA_AFILIADO = 'Alta de encargado exitoso!'
+
+
+# MENSAJE ESPECIFICO PARA SERVICIO
+MSJ_SERVICIO_ALTA_EXITOSA = 'Servicio creado con exito!.'
+
+
+# MENSAJE ESPECIFICO PARA AFILIADO
+MSJ_CORRECTO_ALTA_SALON = 'Salon dado de alta con exito!'
 #---------------- MENSAJES DE DJANGO MESSAGE --------------------
 MAXIMO_PAGINATOR = 10
 

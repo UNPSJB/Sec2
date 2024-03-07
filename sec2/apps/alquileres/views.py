@@ -7,7 +7,10 @@ from django.views.generic.edit import CreateView, DeleteView, UpdateView
 from django.views.generic import DetailView
 from django.contrib import messages
 from django.urls import reverse_lazy
-from datetime import datetime  
+from datetime import datetime
+from django.views.generic import DetailView, ListView
+
+from utils.funciones import mensaje_advertencia, mensaje_exito  
 from .models import Alquiler, Salon, Servicio, Encargado, Afiliado, Pago_alquiler
 from .forms import *
 from sec2.utils import ListFilterView
@@ -30,8 +33,7 @@ class EncargadoCreateView(CreateView):
     form_class = EncargadorForm
     template_name = 'encargado_form.html'
     success_url = reverse_lazy('alquiler:encargado_listar')
-    title = "Formulario Alta de Encargado"  # Agrega un título
-
+    title = "Alta de encargado"
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -39,7 +41,6 @@ class EncargadoCreateView(CreateView):
         # Verificar si hay alguna actividad
         return context
 
-    
     def form_valid(self, form):
         dni = form.cleaned_data["dni"]
         existing_person = Persona.objects.filter(dni=dni).first()
@@ -49,7 +50,7 @@ class EncargadoCreateView(CreateView):
             form = EncargadorForm(self.request.POST)
             return self.render_to_response(self.get_context_data(form=form))
         else:
-            encargado = Persona(
+            persona = Persona(
                 dni=dni,
                 cuil=form.cleaned_data["cuil"],
                 nombre=form.cleaned_data["nombre"],
@@ -60,49 +61,150 @@ class EncargadoCreateView(CreateView):
                 estado_civil=form.cleaned_data["estado_civil"],
                 nacionalidad=form.cleaned_data["nacionalidad"],
                 direccion=form.cleaned_data["direccion"],
+                es_encargado = True
             )
-            encargado.save
-
-            messages.success(self.request, f'{ICON_CHECK} Alta de encargado exitosa!')
+            persona.save()
+            encargado = Encargado(
+                persona=persona,
+                tipo = Encargado.TIPO
+            
+            )
+            encargado.save()
+            mensaje_exito(self.request, f'{MSJ_CORRECTO_ALTA_AFILIADO}')
             return redirect('alquiler:encargado_listar')
-
 
     def form_invalid(self, form):
         messages.warning(self.request, '<i class="fa-solid fa-triangle-exclamation fa-flip"></i> Por favor, corrija los errores a continuación.')
         return super().form_invalid(form)
 
+from django.db.models import Q
+
 # ----------------------------- LISTADO DE ENCARGADO  ----------------------------------- #
 class EncargadoListView(ListFilterView):
     model = Encargado
-    paginate_by = 100
     filter_class = EncargadoFilterForm
-    success_url = reverse_lazy('alquiler:encargado_listar')
     template_name = 'encargado_listar.html'
+    paginate_by = MAXIMO_PAGINATOR
+    success_url = reverse_lazy('alquiler:encargado_listar')
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['titulo'] = "Listado de Encargados"
+        context['titulo'] = "Encargados"
         return context
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        form = EncargadoFilterForm(self.request.GET)
+        if form.is_valid():
+            persona_dni = form.cleaned_data.get('persona__dni')
+            persona_apellido = form.cleaned_data.get('persona__apellido')
+
+            if persona_dni:
+                queryset = queryset.filter(persona__dni=persona_dni)
+            if persona_apellido:
+                queryset = queryset.filter(persona__apellido=persona_apellido)
+        return queryset
 
     def get_success_url(self):
         if self.request.POST['submit'] == "Guardar y Crear Encargado":
             return reverse_lazy('alquiler:encargado_alta', args=[self.object.pk])
-        return super().get_success_url()       
+        return super().get_success_url()
 
+
+class EncargadoDetailView(DetailView):
+    model = Encargado
+    template_name = 'encargado_detalle.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['titulo'] = "Detalle del Encargado"
+        return context
+
+
+class EncargadoUpdateView(UpdateView):
+    model = Encargado
+    form_class = EncargadoUpdateForm
+    template_name = 'encargado_form.html'  
+    success_url = reverse_lazy('cursos:profesor_listado')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['titulo'] = "Modificar Profesor"
+        return context
+
+    def form_valid(self, form):
+        mensaje_exito(self.request, f'{MSJ_EXITO_MODIFICACION}')
+        return super().form_valid(form)
+
+    def form_invalid(self, form):
+        messages.add_message(self.request, messages.ERROR, form.errors)
+        return super().form_invalid(form)
 
 # ----------------------------- CREATE DE SERVICIO  ----------------------------------- #
-class servicioCreateView(CreateView):
+class GestionServicioView(CreateView, ListView):
+    model = Servicio
+    template_name = 'gestion_servicio.html'  
+    form_class = ServiciorForm
+    paginate_by = MAXIMO_PAGINATOR
+    context_object_name = 'servicios'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['titulo'] = "Gestión de Servicio"
+        context['form'] = self.get_form()
+        context['filtros'] = ServicioFilterForm()
+        return context
+
+    def get_success_url(self):
+        return reverse_lazy('alquiler:gestion_servicio')
+    
+    def form_valid(self, form):
+        form.instance.nombre = form.cleaned_data['nombre'].title()
+        mensaje_exito(self.request, f'{MSJ_SERVICIO_ALTA_EXITOSA}')
+        return super().form_valid(form)
+    
+    def form_invalid(self, form):
+        mensaje_advertencia(self.request, f'{MSJ_TIPO_NUMERO_EXISTE}')
+        return redirect('cursos:gestion_servicio')
+    
+    def get(self, request, *args, **kwargs):
+        self.object_list = self.get_queryset()
+        return super().get(request, *args, **kwargs)
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+
+        # Obtener los filtros del formulario
+        filter_form = ServicioFilterForm(self.request.GET)
+        if filter_form.is_valid():
+            nombre_filter = filter_form.cleaned_data.get('nombre')
+            if nombre_filter:
+                queryset = queryset.filter(nombre__icontains=nombre_filter)
+        return queryset.order_by('nombre')
+
+
+
+class ServicioDetailView(DetailView):
+    model = Servicio
+    template_name = "servicio_detalle.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['titulo'] = 'Detalle de Servicio'
+        return context
+    
+
+class ServicioCreateView(CreateView):
     model = Servicio
     form_class = ServiciorForm
     template_name = 'Servicio_form.html'
-    success_url = reverse_lazy('alquiler:Servicio_form')
+    success_url = reverse_lazy('alquiler:gestion_servicio')
     title = "Formulario Alta de Servicio"  # Agrega un título
 
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['titulo'] = self.title  # Agrega el título al contexto
-        # Verificar si hay alguna actividad
+        context['titulo'] = self.title
         return context
 
     
@@ -116,7 +218,27 @@ class servicioCreateView(CreateView):
         return super().form_invalid(form)
     
     
+class ServicioUpdateView(UpdateView):
+    model = Servicio
+    form_class = ServiciorForm
+    template_name = 'Servicio_form.html'
+    success_url = reverse_lazy('alquiler:gestion_servicio')
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['titulo'] = "Modificar Servicio"
+        return context
+
+    def form_valid(self, form):
+        actividad = form.save()
+        mensaje_exito(self.request, f'{MSJ_EXITO_MODIFICACION}')
+        return redirect('alquiler:gestion_servicio')
+
+    def form_invalid(self, form):
+        mensaje_advertencia(self.request, f'{MSJ_NOMBRE_EXISTE}')
+        for field, errors in form.errors.items():
+            print(f"Campo: {field}, Errores: {', '.join(errors)}")
+        return super().form_invalid(form)
 
 # ----------------------------- LISTADO DE SERVICIO  ----------------------------------- #
 class ServiciosListView(ListFilterView):
@@ -136,33 +258,28 @@ class ServiciosListView(ListFilterView):
             return reverse_lazy('alquiler:servicio_crear', args=[self.object.pk])
         return super().get_success_url()            
 
-
 # ----------------------------- CREATE DE SALON  ----------------------------------- #
-
 class SalonCreateView(CreateView):
     model = Salon
     form_class = SalonrForm
     template_name = 'salon_form.html'
-    success_url = reverse_lazy('alquiler:salon_listar')
-    title = "Formulario Alta de Salon"  # Agrega un título
-
+    success_url = reverse_lazy('alquiler:salon_crear')
+    title = "Formulario de Salon"
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['titulo'] = self.title  # Agrega el título al contexto
-        # Verificar si hay alguna actividad
+        context['titulo'] = self.title
+        context['servicios'] = Servicio.objects.all()
         return context
 
-    
     def form_valid(self, form):
-        messages.success(self.request, f'{ICON_CHECK} Alta de salon exitosa!')
+        mensaje_exito(self.request, f'{MSJ_CORRECTO_ALTA_SALON}')
         return super().form_valid(form)
 
-
     def form_invalid(self, form):
-        messages.warning(self.request, '<i class="fa-solid fa-triangle-exclamation fa-flip"></i> Por favor, corrija los errores a continuación.')
+        mensaje_advertencia(self.request, f'{ICON_TRIANGLE} {MSJ_CORRECTION}')
         return super().form_invalid(form)
-    
+
 # ----------------------------- DETAIL DE SALON  ----------------------------------- #
 class SalonDetailView(DetailView):
     model = Salon
@@ -177,14 +294,14 @@ class SalonDetailView(DetailView):
 # ----------------------------- LIST DE SALON  ----------------------------------- #
 class SalonesListView(ListFilterView):
     model = Salon
-    paginate_by = 100
     filter_class = SalonFilterForm
-    success_url = reverse_lazy('alquiler:salon_listar')
     template_name = 'salon_list.html'
+    paginate_by = MAXIMO_PAGINATOR
+    success_url = reverse_lazy('alquiler:salon_listar')
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['titulo'] = "Listado de Salones"
+        context['titulo'] = "Salones"
         return context
 
     def get_success_url(self):

@@ -144,7 +144,7 @@ class Alumno(Rol):
     dictados = models.ManyToManyField(Dictado, related_name="alumnos", blank=True)
     lista_espera = models.ManyToManyField('Dictado', related_name='alumnos_en_espera', blank=True)
 
-    TIPO = 3
+    TIPO = ROL_TIPO_ALUMNO
     def agregar_dictado(self, dictado):
         if dictado.cupo > dictado.alumnos.count():
             self.dictados.add(dictado)
@@ -169,7 +169,7 @@ Rol.register(Alumno)
 class Profesor(Rol):
     # ForeignKey
     dictados = models.ManyToManyField(Dictado, through = "Titular", related_name="profesores", blank=True)
-    TIPO = 2
+    TIPO = ROL_TIPO_PROFESOR
     actividades = models.ManyToManyField(Actividad, blank=True)
     dictados_inscriptos = models.ManyToManyField(Dictado, related_name="profesores_dictados_inscriptos", blank=True)
     lista_espera = models.ManyToManyField(Dictado, related_name='profesores_en_espera', blank=True)

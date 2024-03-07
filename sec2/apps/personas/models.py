@@ -90,6 +90,9 @@ class Rol(models.Model):
         0: ROL DE ORIGEN
         1: AFILIADO
         2: GRUPO FAMILIAR
+        3: ALUMNO
+        4: PROFESO
+        5: ENCARGADO
     """
     TIPO = 0
     TIPOS = []

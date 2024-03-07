@@ -50,7 +50,7 @@ class AlumnoCreateView(CreateView):
             messages.error(self.request, f'La persona ya está registrada en el sistema.')
             form = AlumnoPersonaForm(self.request.POST)
             return super().form_invalid(form)
-        else:
+        else:            
             # La instancia de Alumno no existe, crear una nueva instancia
             persona = Persona(
                 dni=dni,

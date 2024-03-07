@@ -1,69 +1,43 @@
-{% extends 'home_alquiler.html' %}
-{% load crispy_forms_tags %}
+{% extends 'app_alquiler_listado.html' %}
 
+{% load crispy_forms_tags %}
 {% load static %}
 
-{% block extracss_intermedia %}
-  <link href="{% static 'css/listado.css' %}" rel="stylesheet" />
+{% block botones %}
+<a href="{% url 'afiliados:afiliado_crear' %}" class="btn btn-primary btn-sm  btn-detalle"><i class="fa-solid fa-plus"></i> Nuevo</a>
+
 {% endblock %}
 
-{% block dinamica %}
-<br>
-  <h3 class="titulo">{{ titulo }}</h3>
-
-  <br />
-
-  <div class="container-sm">
-    <div class="table-responsive">
-
-    {% block tabla_listado %}
-    <table class="table table-sm table-hover">
-        <thead>
-          <tr>
-            <th>#</th>
-            <th scope="col">Nombre</th>
-            <th scope="col">Localidad</th>
-            <th scope="col">Direccion</th>
-            <th scope="col">Capacidad</th>
-            <th scope="col">Encargado</th>
-            <th scope="col">Precio</th>
-            <th scope="col"></th>
-          </tr>
-        </thead>
-    
-        <tbody>
-          {% for Salon in object_list %}
-            <tr class="bg-transition fila-personalizada">
-              <td>{{ forloop.counter }}</td>
-              <td>{{ Salon.nombre }}</td>
-              <td>{{ Salon.localidad }}</td>
-              <td>{{ Salon.direccion }}</td>
-              <td>{{ Salon.capacidad }}</td>
-              <td>{{ Salon.encargado }}</td>
-              <td>{{ Salon.precio }}</td>
-              
+{% block tabla_listado %}
+<table class="table table-sm table-hover">
+  <thead>
+    <tr>
+      <th>#</th>
+      <th scope="col">Nombre</th>
+      <th scope="col">Localidad</th>
+      <th scope="col">Direccion</th>
+      <th scope="col">Capacidad</th>
+      <th scope="col">Encargado</th>
+      <th scope="col">Precio</th>
+      <th scope="col"></th>
+    </tr>
+  </thead>
+  
+  <tbody>
+    {% for Salon in object_list %}
+      <tr class="bg-transition fila-personalizada">
+        <td>{{ forloop.counter }}</td>
+        <td>{{ Salon.nombre }}</td>
+        <td>{{ Salon.localidad }}</td>
+        <td>{{ Salon.direccion }}</td>
+        <td>{{ Salon.capacidad }}</td>
+        <td>{{ Salon.encargado }}</td>
+        <td>{{ Salon.precio }}</td>
               {% comment %} <td>
                 <a href="{% url 'cursos:curso_detalle' curso.pk %}" class="btn btn-primary btn-detalle"><i class="fa-regular fa-eye"></i> Detalle</a>
               </td>{% endcomment %}
-            </tr>
-          {% endfor %}
-        </tbody>
-      </table>
-    {% endblock %}
-    </div>
-  </div>
-
-
-  <div class="container ">
-    <div class="row row-cols-1 row-cols-sm-2 row-cols-md-1">
-      <div class="col" id="btn-new-afiliado">
-        <a href="{% url 'afiliados:afiliado_crear' %}" class="btn btn-primary"><i class="fa-solid fa-plus"></i> Nuevo</a>
-      </div>
-    </div>
-  </div>
-</div>
-
-{% block nav_lateral_filtro %}
-    {% include 'nav_filtro.html' %}
-  {% endblock %}
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table>
 {% endblock %}

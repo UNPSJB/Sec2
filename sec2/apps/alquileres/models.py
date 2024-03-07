@@ -15,25 +15,26 @@ class Servicio (models.Model):
         return f"{self.nombre}"
     
 class Encargado (Rol):
-    TIPO=4
+    TIPO=ROL_TIPO_ENCARGADO
 
-   
+    def __str__(self):
+        return f"{self.persona.dni} | {self.persona.nombre} {self.persona.apellido}"
 
 Rol.register(Encargado)
 
 class Salon(models.Model):
     tipos_salon=[
-        ('polideportivo','Polideportivo'),
-        ('multiuso','Multiuso')
+        (1,'Polideportivo'),
+        (2,'Multiuso')
     ]
     nombre = models.CharField(max_length=30)
     localidad= models.CharField(max_length =25,choices = LOCALIDADES_CHUBUT)
     direccion=models.CharField(max_length=50)
     capacidad=models.PositiveIntegerField(help_text="capacidad maxima del salon")
-    encargado=models.ForeignKey(Persona, related_name="salon", on_delete=models.CASCADE)
+    encargado=models.ForeignKey(Encargado, related_name="salon", on_delete=models.CASCADE)
     precio=models.DecimalField(help_text="costo del alquiler", max_digits=10, decimal_places=2)
     fecha_baja=models.DateTimeField(auto_now_add=True, null=True, blank=True)
-    tipo_salon=models.CharField(max_length=25, choices=tipos_salon)
+    tipo_salon = models.PositiveSmallIntegerField(choices=tipos_salon)
     servicios=models.ManyToManyField(Servicio, blank=True) 
     
     def __str__(self):

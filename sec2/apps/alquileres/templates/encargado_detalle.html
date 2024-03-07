@@ -1,0 +1,14 @@
+{% extends 'detalle_listado.html' %}
+
+{% load crispy_forms_tags %}
+{% load static %}
+
+{% block detalle %}
+{% include "persona_detalle.html" with persona=encargado.persona %}
+{% endblock %}
+
+{% block botones %}
+<div class="col d-flex justify-content-center">
+    <a href="{% url 'alquiler:encargado_editar' encargado.pk %}" class="btn btn-primary btn-sm btn-detalle"><i class="fa-regular fa-pen-to-square"></i> Modificar</a>
+</div>
+{% endblock %}

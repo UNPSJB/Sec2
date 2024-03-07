@@ -6,10 +6,7 @@
   <link href="{% static 'Libs/css/home.css' %}" rel="stylesheet" />
   <link href="{% static 'Libs/css/nav_top.css' %}" rel="stylesheet" />
   {% block extracss_intermedia %}
-
   {% endblock %}
-  <!-- Herramienta para buscar en el "navegador" -->
-  {% comment %} {{ buscador.media.css }} {% endcomment %}
 {% endblock %}
 
 {% block container %}
@@ -27,7 +24,7 @@
 
     <div id="content">
       {% block nav_top %}
-        {% include 'nav_top.html' %}
+        {% comment %} {% include 'nav_top.html' %} {% endcomment %}
       {% endblock %}
       {% block dinamica %}
         {% include 'index.html' %}
@@ -37,10 +34,7 @@
 {% endblock %}
 
 {% block extrajs %}
-  {% comment %}Creado para que los mensajes de desvanezcan{% endcomment %}
   {% comment %} <script src="{% static 'Libs/js/home_afiliado.js' %}"></script> {% endcomment %}
-
   {% block extrajs_intermedia %}
-
   {% endblock %}
 {% endblock %}

@@ -17,7 +17,6 @@
       <div class="col-md-6">
         <div class="form-group">
           <label for="{{ form.localidad.id_for_label }}">Localidad:</label>
-          <br />
           {{ form.localidad }}
         </div>
       </div>
@@ -25,8 +24,7 @@
     <div class="row">
       <div class="col">
         <div class="form-group">
-          <label for="{{ form.direccion.id_for_label }}">direccion:</label>
-          <br />
+          <label for="{{ form.direccion.id_for_label }}">Dirección:</label>
           {{ form.direccion }}
           <small class="error-text" style="color: red;">{{ form.direccion.error }}</small>
         </div>
@@ -45,7 +43,6 @@
         <div class="form-group">
           {{ form.encargado.label_tag }}
           {{ form.encargado }}
-          <small class="error-text" style="color: red;">{{ form.encargado.error }}</small>
         </div>
       </div>
       <div class="col">
@@ -68,7 +65,6 @@
       <div class="col">
         <div class="form-group">
           <label for="{{ form.servicios.id_for_label }}">Servicios:</label>
-          {{ form.servicios.label_tag }}
           {{ form.servicios }}
           <small class="error-text" style="color: red;">{{ form.servicios.error }}</small>
         </div>

@@ -7,16 +7,25 @@ app_name="alquiler"
 
 urlpatterns = [
     path('',index, name="index"),
-##--------------- SERVICIOS y ENCARGADO--------------------------------
-    path('crearServicio/',servicioCreateView.as_view(), name="servicio_crear"),
-    path('mostrarServicios/',ServiciosListView.as_view(), name="servicio_listar"),
-    path('altaEncargado/',EncargadoCreateView.as_view(), name="encargado_alta"),
-    path('mostrarEncargados/',EncargadoListView.as_view(), name="encargado_listar"),
+    
+    # ENCARGADO
+    path('encargados/listado',EncargadoListView.as_view(), name="encargado_listar"),
+    path('encargados/encargado/crear/',EncargadoCreateView.as_view(), name="encargado_alta"),
+    path('encargados/encargado/<int:pk>', EncargadoDetailView.as_view(), name="encargado_detalle"),
+    path('encargados/encargado/<int:pk>/editar', EncargadoUpdateView.as_view(), name="encargado_editar"),
+
+    #SERVICIO
+    path('servicios/', GestionServicioView.as_view(), name="gestion_servicio"),
+    path('servicio/servicio/<int:pk>/', ServicioDetailView.as_view(), name='servicio_detalle'),
+    # path('servicios/serviio/crearServicio/',ServicioCreateView.as_view(), name="servicio_crear"),
+    path('aulas/aula/<int:pk>/editar', ServicioUpdateView.as_view(), name="servicio_editar"),
+
 ##--------------- SALON--------------------------------
+    path('salones/listado',SalonesListView.as_view(), name="salon_listar"),
     path('crear/',SalonCreateView.as_view(), name="salon_crear"),
+
     path('salon/<int:pk>',SalonDetailView.as_view(), name="Salon"),
     path('modificar/<int:pk>', SalonUpdateView.as_view(), name="salon_actualizar"),
-    path('mostrar/',SalonesListView.as_view(), name="salon_listar"),
 
 
 ##--------------- ALQUILER--------------------------------

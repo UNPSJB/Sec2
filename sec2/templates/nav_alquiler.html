@@ -1,9 +1,12 @@
 {% load static %}
 
 {% block extracss %}
-  <link href="{% static 'Libs/css/nav_principal.css' %}" rel="stylesheet" />
-  <link href="{% static 'Libs/css/nav_salon.css' %}" rel="stylesheet" /> 
+<link href="{% static 'Libs/css/nav_principal.css' %}" rel="stylesheet" />
+{% comment %} <link href="{% static 'Libs/css/nav_salon.css' %}" rel="stylesheet" />  {% endcomment %}
+<link href="{% static 'Libs/css/nav_curso.css' %}" rel="stylesheet" />
+
 {% endblock %}
+
 
 <div class="menu" id="menu_afiliado_principal">
   <br />
@@ -15,22 +18,29 @@
   </ul>
 </div>
 <hr>
+
 <div class="menu">
-  <!-- Botón desplegable para Salon -->
-  <button class="submenu-toggle" data-submenu="alquiler">Salon <i class="fa-solid fa-caret-down"></i></button>
-  <ul class="submenu" id="salon-submenu">
+  <!-- Botón desplegable para Curso -->
+  <button class="submenu-toggle" data-submenu="curso">Encargado <i class="fa-solid fa-caret-down"></i></button>
+  <ul class="submenu" id="curso-submenu">
     <li>
       <a href="{% url 'alquiler:encargado_alta' %}"><i class="fa-solid fa-plus item-subMenu"></i> Alta de encargado</a>
     </li>
     <li>
       <a href="{% url 'alquiler:encargado_listar' %}"><i class="fa-solid fa-list item-subMenu"></i> Lista de encargados</a>
     </li>
-    <li>
-      <a href="{% url 'alquiler:servicio_crear' %}"><i class="fa-solid fa-plus item-subMenu"></i> Crear servicio</a>
-    </li>
-    <li>
-      <a href="{% url 'alquiler:servicio_listar' %}"><i class="fa-solid fa-list item-subMenu"></i> Lista de servicio</a>
-    </li>
+  </ul>
+</div>
+<hr>
+
+{% comment %} BOTON DE SERVICIO {% endcomment %}
+<a class="enlace" id="enlaceActividad" href="{% url 'alquiler:gestion_servicio' %}"> Servicio</a>
+<hr>
+
+<div class="menu">
+  <!-- Botón desplegable para Salon -->
+  <button class="submenu-toggle" data-submenu="profesor">Salon <i class="fa-solid fa-caret-down"></i></button>
+  <ul class="submenu" id="curso-submenu">
     <li>
       <a href="{% url 'alquiler:salon_crear' %}"><i class="fa-solid fa-plus item-subMenu"></i> Crear salon</a>
     </li>
@@ -38,67 +48,30 @@
       <a href="{% url 'alquiler:salon_listar' %}"><i class="fa-solid fa-list item-subMenu"></i> Lista de salones</a>
     </li>
   </ul>
-  <button class="submenu-toggle" data-submenu="alquiler">Alquiler <i class="fa-solid fa-caret-down"></i></button>
-  <ul class="submenu" id="salon-submenu">
-    {% comment %} <li>
-      <a href="{% url 'alquiler:alquiler_crear' %}"><i class="fa-solid fa-plus item-subMenu"></i> Alquilar</a>
-    </li>{% endcomment %}
-    <li>
-      <a href="{% url 'alquiler:alquiler_listar' %}"><i class="fa-solid fa-list item-subMenu"></i> Alquilar</a>
-    </li>
-  </ul>
-</div>
-{% comment %}<hr>
-<div class="menu">
-   Botón desplegable para Actividades
-  <button class="submenu-toggle" data-submenu="actividades">Actividades <i class="fa-solid fa-caret-down"></i></button>
-  <ul class="submenu" id="actividades-submenu">
-    <li>
-      <a href="{% url 'cursos:actividad_crear' %}"><i class="fa-solid fa-plus item-subMenu"></i> Alta de actividades</a>
-    </li>
-    <li>
-      <a href="{% url 'cursos:actividad_listado' %}"><i class="fa-solid fa-list item-subMenu"></i> Lista de actividades</a>
-    </li>
-  </ul>
-  
-</div>
-<hr>{% endcomment %}
-
- {% comment %}<div class="menu">
-  Botón desplegable para Profesor
-  <button class="submenu-toggle" data-submenu="profesor">Profesor <i class="fa-solid fa-caret-down"></i></button>
-  <ul class="submenu" id="profesor-submenu">
-    <li>
-      <a href="{% url 'cursos:profesor_crear' %}"><i class="fa-solid fa-plus item-subMenu"></i> Alta de profesor</a>
-    </li>
-    <li>
-      <a href="{% url 'cursos:profesores' %}"><i class="fa-solid fa-list item-subMenu"></i> Lista de profesores</a>
-    </li>
-  </ul>
-  
-</div>
-<hr>{% endcomment %}
-
-{% comment %}<div class="menu">
-   Botón desplegable para Aulas 
-  <button class="submenu-toggle" data-submenu="aulas">Aulas<i class="fa-solid fa-caret-down"></i></button>
-  <ul class="submenu" id="aulas-submenu">
-    <li>
-      <a href="{% url 'cursos:aula_crear' %}"><i class="fa-solid fa-plus item-subMenu"></i> Crear aula</a>
-    </li>
-    <li>
-      <a href="{% url 'cursos:aulas' %}"><i class="fa-solid fa-list item-subMenu"></i> Lista de aulas</a>
-    </li>
-  </ul>
-  
 </div>
 <hr>
 
+  
 <div class="menu">
+
+<button class="submenu-toggle" data-submenu="profesor">Alquiler <i class="fa-solid fa-caret-down"></i></button>
+  <ul class="submenu" id="profesor-submenu">
+    <li>
+      <a href="{% url 'alquiler:alquiler_crear' %}"><i class="fa-solid fa-plus item-subMenu"></i> Alquilar</a>
+    </li>
+    <li>
+      <a href="{% url 'alquiler:alquiler_listar' %}"><i class="fa-solid fa-list item-subMenu"></i> Alquilar</a>
+
+    </li>
+  </ul>
+</div>
+    {% comment %} <li>
+
+{% comment %} <div class="menu">
   <!-- Botón desplegable para Pago -->
   <button class="submenu-toggle" data-submenu="pago">Pago <i class="fa-solid fa-caret-down"></i></button>
   <ul class="submenu" id="pago-submenu">
-    <li>
+    <li> {% endcomment %}
       {% comment %} <a href="{% url 'cursos:pago_alumno' %}"><i class="fa-solid fa-sack-dollar item-subMenu"></i> Pago de alumnos</a> 
     </li>
   </ul>

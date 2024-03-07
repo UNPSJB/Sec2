@@ -11,20 +11,19 @@ from apps.personas.forms import BuscadorPersonasForm
 from django.contrib.auth.decorators import login_required
     
 
-# @login_required
-# def home(request):
-    
-#     return render(request, 'home.html', {'buscador': BuscadorPersonasForm() })
-# =======
-def home(request):
-    """chequear si algun grupo gamiliar que sea hijo es mayor de edad"""
-    relaciones_tipo_2 = RelacionFamiliar.objects.filter(tipo_relacion=2)
-    
-    for relacion in relaciones_tipo_2:
-        
-        if relacion.familiar.persona.es_mayor_edad: 
-            mensaje_advertencia(request, f"Atencion! El familiar con el DNI: {relacion.familiar.persona.dni} es mayor de edad"  )
+@login_required
+def home(request):    
+    return render(request, 'home.html', {'buscador': BuscadorPersonasForm() })
 
-    personas = Persona.objects.all()
-    return render(request, 'home.html', {'clientes': personas})
+# def home(request):
+#     """chequear si algun grupo gamiliar que sea hijo es mayor de edad"""
+#     relaciones_tipo_2 = RelacionFamiliar.objects.filter(tipo_relacion=2)
+    
+#     for relacion in relaciones_tipo_2:
+        
+#         if relacion.familiar.persona.es_mayor_edad: 
+#             mensaje_advertencia(request, f"Atencion! El familiar con el DNI: {relacion.familiar.persona.dni} es mayor de edad"  )
+
+#     personas = Persona.objects.all()
+#     return render(request, 'home.html', {'clientes': personas})
 
