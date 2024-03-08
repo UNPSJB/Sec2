@@ -22,10 +22,10 @@ MSJ_ERROR_ELIMINAR = 'Ocurrió un error al intentar eliminar la actividad.'
 
 # MENSAJE ESPECIFICO DE PERSONA
 MSJ_PERSONA_NO_EXISTE = 'La persona no está registrada en el sistema.'
-MSJ_PERSONA_EXISTE = 'Ya existe una persona registrada en el sistema con el mismo DNI.'
+MSJ_PERSONA_EXISTE = 'Ya existe una persona activa registrada en el sistema con el mismo DNI.'
 
 #MENSAJES ESPECIFICOS AFILIADO
-MSJ_AFILIADO_DESAFILIADO = 'Se ha desafiliado.'
+MSJ_AFILIADO_DESAFILIADO = 'Se ha desafiliado al afiliado y a los familiares del mismo.'
 MSJ_CORRECTO_ALTA_AFILIADO = 'Alta de afiliado exitosa!'
 MSJ_AFILIADO_AFILIADO = 'El afiliado ha sido aceptado.'
 MSJ_AFILIADO_NO_FAMILIAR = 'El afiliado no tiene a este familiar.'
@@ -50,7 +50,7 @@ MSJ_CORRECTO_ALTA_PROFESOR = 'Profesor dado de alta con éxito!'
 
 
 # MENSAJE ESPECIFICO PARA ENCARGADO
-MSJ_CORRECTO_ALTA_AFILIADO = 'Alta de encargado exitoso!'
+MSJ_CORRECTO_ALTA_ENCARGADO = 'Alta de encargado exitoso!'
 
 
 # MENSAJE ESPECIFICO PARA SERVICIO

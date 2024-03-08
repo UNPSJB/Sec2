@@ -94,12 +94,14 @@ class Rol(models.Model):
         4: PROFESO
         5: ENCARGADO
     """
-    TIPO = 0
+    TIPO = 1
     TIPOS = []
     persona = models.ForeignKey(Persona, related_name="roles", on_delete=models.CASCADE)
     tipo = models.PositiveSmallIntegerField(choices=TIPOS)
-    desde = models.DateTimeField(auto_now_add=True)
     hasta = models.DateTimeField(null=True, blank=True)
+    #se cambio de atributo para que se mueste en el chango
+    desde = models.DateTimeField(null=True, blank=True)
+    # desde = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return f"{self.__class__.__name__} {self.id}"

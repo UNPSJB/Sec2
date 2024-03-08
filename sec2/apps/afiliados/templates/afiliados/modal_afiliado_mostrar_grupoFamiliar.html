@@ -23,7 +23,7 @@
               
               {% for relacion_familiar in relacion_familiar_list %}
               <tr>
-                  <td>{{ forloop.counter }}</td>
+                  <td class="negrita">{{ forloop.counter }}</td>
                   <td>{{ relacion_familiar.familiar.persona.dni }}</td>
                   <td>{{ relacion_familiar.get_tipo_relacion_display }}</td>
                   <td>{{ relacion_familiar.familiar.persona.apellido }}</td>

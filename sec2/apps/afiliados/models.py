@@ -6,6 +6,7 @@ from utils.constants import *
 from utils.funciones import validate_no_mayor_actual
 from utils.regularexpressions import *
 from datetime import date
+from django.utils import timezone
 
 # -------------------- FAMILIAR ------------------
 class Familiar(Rol):
@@ -60,7 +61,7 @@ class Afiliado(Rol):
         return f"{self.persona.dni} | {self.persona}"
     
     def tiene_esposo(self):
-        esposo_existente = self.familia.filter(tipo_relacion=1).exists()
+        esposo_existente = self.familia.filter(relacionfamiliar__tipo_relacion=1).exists()
         return esposo_existente
     
     """una vez activado al afiliado pondra a los familiares en estado de activo"""
@@ -70,10 +71,11 @@ class Afiliado(Rol):
             familiar.activo = True
             familiar.save()
     
-    def desactivar_familiares(self):
+    def dar_de_baja_familiares(self):
         familiares = self.familia.all()
         for familiar in familiares:
             familiar.activo = False
+            familiar.hasta = timezone.now()
             familiar.save()
 
     def valorCuota(self):
@@ -92,9 +94,10 @@ class Afiliado(Rol):
         self.hasta = date.today()
         self.estado = 3
         self.persona.es_afiliado = False
-        self.desactivar_familiares()
+        self.dar_de_baja_familiares()
         self.persona.save()
         self.save()
+
 Rol.register(Afiliado)
 
 # -------------------- RELACION FAMILIAR-AFILIADO ------------------

@@ -62,18 +62,6 @@ class AfiliadoFilterForm(FiltrosForm):
     
 ########### Utilizado para el AFILIADO UPDATE ##############################################
 class AfiliadoUpdateForm(forms.ModelForm):
-    sueldo = forms.CharField(
-        max_length=12,  # Ajusta según tus necesidades
-        validators=[
-            RegexValidator(
-                regex=r'^\d{1,3}(,\d{3})*(\,\d{1,2})?$',
-                message='Ingrese un sueldo válido (tiene que tener un "," y hasta dos decimales).',
-                code='invalid_sueldo_format',
-            ),
-        ],
-        required=True,
-    )
-        
     class Meta:
         model = Afiliado
         fields = '__all__'
@@ -196,7 +184,7 @@ class AfiliadoSelectForm(forms.Form):
         ]
     )
     celular = forms.CharField(
-        max_length=13,
+        max_length=10,
         validators=[
             numeric_validator,
             exact_length_10_validator,

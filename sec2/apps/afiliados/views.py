@@ -6,6 +6,7 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.views.generic.edit import CreateView, DeleteView, UpdateView
 from django.urls import reverse_lazy
 from apps.personas.forms import PersonaForm, PersonaUpdateForm
+from apps.personas.models import Rol
 from utils.funciones import mensaje_advertencia, mensaje_error, mensaje_exito  
 from .models import Afiliado, Familiar, RelacionFamiliar
 from .forms import *
@@ -25,6 +26,11 @@ def index(request):
     template = loader.get_template('home.html')
     return HttpResponse(template.render())
 
+def existe_persona_activa(self, dni):
+    existing_person = Rol.objects.filter(persona__dni=dni).first()
+    return  existing_person and existing_person.hasta is None
+
+
 # ----------------------------- AFILIADO CREATE ----------------------------------- #
 class AfiliadoCreateView(CreateView):
     model = Persona
@@ -41,9 +47,8 @@ class AfiliadoCreateView(CreateView):
 
     def form_valid(self, form):
         dni = form.cleaned_data["dni"]
-        existing_person = Persona.objects.filter(dni=dni).first()
-        
-        if existing_person:
+
+        if existe_persona_activa(self, dni):
             mensaje_error(self.request, f'{MSJ_PERSONA_EXISTE}')
             form = AfiliadoPersonaForm(self.request.POST)
             return self.render_to_response(self.get_context_data(form=form))
@@ -62,6 +67,8 @@ class AfiliadoCreateView(CreateView):
                 es_afiliado = True
             )
             persona.save()
+    
+            current_datetime = timezone.now()
 
             # Crear una instancia de Afiliado
             afiliado = Afiliado(
@@ -76,6 +83,7 @@ class AfiliadoCreateView(CreateView):
                 domicilio_empresa=form.cleaned_data["domicilio_empresa"].title(),
                 horaJornada=form.cleaned_data["horaJornada"],
                 tipo = Afiliado.TIPO,
+                desde = current_datetime
             )
             afiliado.save()
             detail_url = reverse('afiliados:afiliado_detalle', kwargs={'pk': afiliado.pk})
@@ -104,7 +112,8 @@ class AfiliadoDetailView (DeleteView):
         context['subtitulodetalle1'] = "Datos personales"
         context['subtitulodetalle2'] = "Datos de afiliación"
         context['tituloListado'] = "Dictados Incritos"
-        relacion_familiar_list = afiliado.relacionfamiliar_set.all()
+        relacion_familiar_list = afiliado.relacionfamiliar_set.all().order_by('familiar__persona__dni')
+
         context['relacion_familiar_list'] = relacion_familiar_list
         return context
 
@@ -336,8 +345,7 @@ def alta_familiar(request):
         form = AfiliadoSelectForm(request.POST)
         if form.is_valid():
             dni = form.cleaned_data["dni"]
-            existing_person = Persona.objects.filter(dni=dni).first()
-            if existing_person:
+            if existe_persona_activa(request, dni):
                 mensaje_error(request, f'{MSJ_PERSONA_EXISTE}')
                 form = AfiliadoSelectForm(request.POST)
 
@@ -366,28 +374,31 @@ def alta_familiar(request):
                             es_grupo_familiar = True
                         )
                         persona.save()
-                        # Crear una instancia de Afiliado
+                        
+                        activo = True if afiliado.estado == 2 else False
                         familiar = Familiar(
-                            persona = persona,
-                            tipo_relacion =form.cleaned_data["tipo"],
-                            tipo = Familiar.TIPO,
+                            persona=persona,
+                            activo=activo,
+                            tipo=Familiar.TIPO,
+                            desde = timezone.now()
                         )
                         familiar.save()
 
                         relacion = RelacionFamiliar(
                             afiliado = afiliado,
                             familiar = familiar,
+                            tipo_relacion =form.cleaned_data["tipo"],
                         )
                         relacion.save()
                         mensaje_exito(request, f'{MSJ_FAMILIAR_CARGA_CORRECTA}')
                         form = AfiliadoSelectForm(request.POST)
     else:
-        afiliados = Afiliado.objects.all()
+        afiliados_pendientes_activos = Afiliado.objects.filter(estado__in=[1, 2])
         form = AfiliadoSelectForm()
 
     context = {
         'form': form,
-        'clientes': afiliados,
+        'clientes': Afiliado.objects.filter(estado__in=[1, 2]),
         'titulo': 'Alta de Familiar',  # Replace with your desired title
     }
     return render(request, 'grupoFamiliar/grupo_familiar_alta_directa.html', context)
@@ -409,13 +420,15 @@ class FamiliaCreateView(CreateView):
         dni = form.cleaned_data["dni"]
 
         afiliado = get_object_or_404(Afiliado, pk=self.kwargs.get('pk'))
-        existing_person = Persona.objects.filter(dni=dni).first()
-        if existing_person:
+        existing_person = Rol.objects.filter(persona__dni=dni).first()
+        
+        print(existing_person)
+        # Si existe la persona y no tiene fecha hasta (esta activa)
+        if existing_person and existing_person.hasta is None:
             mensaje_error(self.request, f'{MSJ_PERSONA_EXISTE}')
             form = GrupoFamiliarPersonaForm(self.request.POST)
             return self.render_to_response(self.get_context_data(form=form))
         else:
-
             if afiliado.tiene_esposo() and form.cleaned_data["tipo"] == '1':
                 mensaje_error(self.request, f'{MSJ_FAMILIAR_ESPOSA_EXISTE}')
                 form = GrupoFamiliarPersonaForm(self.request.POST)
@@ -443,17 +456,20 @@ class FamiliaCreateView(CreateView):
             )
             persona.save()
 
-            # Crear una instancia de Afiliado
+            activo = True if afiliado.estado == 2 else False
             familiar = Familiar(
-                persona = persona,
-                tipo_relacion =form.cleaned_data["tipo"],
-                tipo = Familiar.TIPO,
+                persona=persona,
+                activo=activo,
+                tipo=Familiar.TIPO,
+                desde = timezone.now()
+
             )
             familiar.save()
             
             relacion = RelacionFamiliar(
                 afiliado = afiliado,
                 familiar = familiar,
+                tipo_relacion =form.cleaned_data["tipo"],
             )
             relacion.save()
             mensaje_exito(self.request, f'{MSJ_FAMILIAR_CARGA_CORRECTA}')
