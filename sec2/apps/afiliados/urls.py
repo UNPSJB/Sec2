@@ -35,5 +35,6 @@ urlpatterns = [
     # path('afiliado/grupoFamiliar/familia/<int:familiar_pk>', FamiliarDetailVentanaNuevaView_.as_view(), name="familiar_detalle_"),
 
     #GENERAR PDF
-    path('afiliados/afiliado/<int:pk>/generarnota', confeccionarNota ,name="confeccionar_nota"),
+    path('pago/afiliado/cuotas', PagoCuotaCreateView.as_view() ,name="pagar_cuota_sindical"),
+
 ]

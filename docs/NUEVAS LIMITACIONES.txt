@@ -1,0 +1,4 @@
+NUEVAS LIMITACIONES
+El sistema se limita a dar de baja de forma automatica a los familiares que son tipo Hijos cuando en la fecha actual son mayores de edad (solamente informara de forma automática)
+El sistema se limita a controlar el monto de la cuota a pagar del afiliado en caso de aumento o disminución de sueldo.
+

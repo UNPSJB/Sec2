@@ -52,7 +52,7 @@ class Afiliado(Rol):
     dictados = models.ManyToManyField(Dictado, related_name="afiliados", blank=True)
     lista_espera = models.ManyToManyField(Dictado, related_name='afiliados_en_espera', blank=True)
     familia = models.ManyToManyField(Familiar, through='RelacionFamiliar', blank=True)
-
+    
     def __str__(self):
         return f" Tipo: {self.TIPO} Razon social: {self.razon_social} CUIT:{self.cuit_empleador}"
     
@@ -108,3 +108,10 @@ class RelacionFamiliar(models.Model):
 
     def __str__(self):
         return f"Relación: {self.get_tipo_relacion_display()}"
+
+# -------------------- PAGO DE CUOTA ------------------
+class PagoCuota(models.Model):
+    afiliado = models.ForeignKey(Afiliado, on_delete=models.CASCADE, related_name='pagos_cuotas')
+    monto = models.DecimalField(max_digits=10, decimal_places=2, validators=[MinValueValidator(0, 'El monto debe ser un valor positivo.')])
+    pdf_transferencia = models.FileField(upload_to='transferencias/', null=True, blank=True)
+    fecha_pago = models.DateField(default=timezone.now)

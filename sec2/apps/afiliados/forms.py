@@ -2,7 +2,7 @@ import decimal
 
 from utils.choices import AFILIADO_ESTADO, ESTADO_CIVIL, LOCALIDADES_CHUBUT, MAX_LENGTHS, NACIONALIDADES, TIPOS_RELACION_FAMILIAR
 from utils.funciones import validate_no_mayor_actual
-from .models import Afiliado, Familiar
+from .models import Afiliado, Familiar, PagoCuota
 from apps.personas.models import Persona
 from sec2.utils import FiltrosForm
 from datetime import date
@@ -277,3 +277,48 @@ class RelacionFamiliarFilterForm(FiltrosForm):
     familiar__persona__dni = forms.CharField(label='DNI del Familiar', required=False)
     afiliado__persona__dni = forms.CharField(label='DNI del Afiliado', required=False)
     tipo_relacion = forms.ChoiceField(choices=TIPOS_RELACION_FAMILIAR, required=False)
+
+
+class PagoCuotaForm(forms.ModelForm):
+
+    cuit_empleador = forms.CharField(max_length=11, validators=[numeric_validator], help_text='Cuit sin puntos y guiones. Ej: 01234567899')
+
+    class Meta:
+        model = PagoCuota
+        fields = '__all__'
+        exclude = ['afiliado']
+
+        # Add custom validation for the 'monto' field
+        def clean_monto(self):
+            monto = self.cleaned_data['monto']
+            if monto <= 0:
+                raise forms.ValidationError('El monto debe ser mayor que cero.')
+            return monto
+
+        # Add custom validation for the 'fecha_pago' field
+        def clean_fecha_pago(self):
+            fecha_pago = self.cleaned_data['fecha_pago']
+            today = timezone.now().date()
+
+            if fecha_pago >= today:
+                raise forms.ValidationError('La fecha de pago debe ser anterior a la fecha actual.')
+
+            return fecha_pago
+        def clean_pdf_transferencia(self):
+            pdf_transferencia = self.cleaned_data.get('pdf_transferencia')
+            if pdf_transferencia is None:
+                return pdf_transferencia  # Return the original cleaned data if no PDF file is provided
+
+            # Optionally, you can add additional validation for the PDF file if needed
+            # For example, check the file size, type, etc.
+
+            return pdf_transferencia
+        # Add custom widgets for specific fields
+        widgets = {
+            'monto': forms.NumberInput(attrs={'class': 'form-control'}),
+            'pdf_transferencia': forms.FileInput(attrs={'accept': 'application/pdf'}),
+            'fecha_pago': forms.DateInput(attrs={'type': 'date'}),
+        }
+
+        def __init__(self, *args, **kwargs):
+           super().__init__(*args, **kwargs)

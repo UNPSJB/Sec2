@@ -8,7 +8,7 @@ from django.urls import reverse_lazy
 from apps.personas.forms import PersonaForm, PersonaUpdateForm
 from apps.personas.models import Rol
 from utils.funciones import mensaje_advertencia, mensaje_error, mensaje_exito  
-from .models import Afiliado, Familiar, RelacionFamiliar
+from .models import Afiliado, Familiar, PagoCuota, RelacionFamiliar
 from .forms import *
 from sec2.utils import ListFilterView
 from django.db import transaction  # Agrega esta línea para importar el módulo transaction
@@ -736,3 +736,37 @@ def familiar_eliminar(request, pk, familiar_pk):
     return redirect('afiliados:afiliado_listar')
 
 
+class PagoCuotaCreateView(CreateView):
+    model = PagoCuota
+    form_class = PagoCuotaForm
+    template_name = 'pago/pago_cuota_sindical.html'
+    success_url = reverse_lazy('afiliados:pagar_cuota_sindical')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        roles_sin_fecha_hasta = Rol.objects.filter(hasta__isnull=True)
+        personas = Persona.objects.filter(roles__in=roles_sin_fecha_hasta)
+        afiliados = Afiliado.objects.filter(persona__in=personas)
+
+        context['titulo'] = "Cuota Sindical"
+        context['afiliados'] = afiliados
+
+        return context
+    
+    def form_valid(self, form):
+        # Set the afiliado field before saving the form
+        afiliado_id = self.request.POST.get('enc_afiliado')
+        form.instance.afiliado_id = afiliado_id
+        form.save()
+        mensaje_exito(self.request, f'{MSJ_CORRECTO_ALTA_AFILIADO}')
+        return super().form_valid(form)
+    
+    def form_invalid(self, form):
+        mensaje_advertencia(self.request, f'{MSJ_CORRECTION}')
+        print("")
+        print("ERRORES DEL FORMULARIO")
+        for field, errors in form.errors.items():
+            for error in errors:
+                print(f"Error en el campo '{field}': {error}")
+        print("")
+        return super().form_invalid(form)
