@@ -253,7 +253,8 @@ AFILIADO_ESTADO = (
         (1, "Pendiente"),
         (2, "Activo"),
         (3, "Inactivo"),
-        (3, "Dado de baja"),
+        (4, "Dado de baja"),
+        (5, "Moroso"),
     )
 
 TIPOS_RELACION_FAMILIAR = (

@@ -18,7 +18,7 @@ from django.http import FileResponse
 
 #CONSTANTE
 from utils.constants import *
-from datetime import date
+
 from django.contrib.auth.decorators import login_required
 
 @login_required
@@ -739,6 +739,8 @@ def familiar_eliminar(request, pk, familiar_pk):
     mensaje_advertencia(request, f'{MSJ_FAMILIAR_ELIMINADO}')
     return redirect('afiliados:afiliado_listar')
 
+from dateutil.relativedelta import relativedelta
+from datetime import datetime
 
 class PagoCuotaCreateView(CreateView):
     model = PagoCuota
@@ -754,48 +756,70 @@ class PagoCuotaCreateView(CreateView):
         
         # Obtener todos los cuit_empleador únicos de los afiliados con sus respectivas razones sociales
         empleadores = Afiliado.objects.filter(
-            estado=1,  # Ajusta esto según tu lógica de filtrado
+            estado__in=[1, 2],  # Filtrar por estados 1 o 2
             cuit_empleador__isnull=False
         ).values('cuit_empleador', 'razon_social').distinct()
-        
+
         context['titulo'] = "Cuota Sindical"
         context['afiliados'] = afiliados
         context['empleadores'] = empleadores
-
         return context
     
     def form_valid(self, form):
         afiliado_id = self.request.POST.get('enc_afiliado')
         cuit_empleador = self.request.POST.get('enc_cuit')
 
-        if afiliado_id != '0' and cuit_empleador != '0': 
+        if afiliado_id != '0' and cuit_empleador != '0':
             pdf = self.request.POST.get('pdf_transferencia')
 
             afiliado = get_object_or_404(Afiliado, pk=afiliado_id)
+            existe_cuotas = PagoCuota.objects.filter(afiliado=afiliado).exists()
+            
+            #Si es la primer cuota
+            if not existe_cuotas:
+            
+                if afiliado.cuit_empleador == cuit_empleador:
+                    form.instance.afiliado_id = afiliado_id
+                    form.instance.pdf_transferencia = pdf
+                    form.save()
 
-            if afiliado.cuit_empleador == cuit_empleador:
-                form.instance.afiliado_id = afiliado_id
-                form.instance.pdf_transferencia = pdf
-                form.save()
+                    # Si esta en estado de "pendiente" se lo afilia porque ya realizo la primer cuota
+                    if afiliado.estado == 1:
+                        afiliado.afiliar()
+                        afiliado.save()
+                        mensaje_exito(self.request, f'{MSJ_CORRECTO_PAGO_REALIZADO} y {MSJ_CORRECTO_ALTA_AFILIADO}')
+                    else:
+                        mensaje_exito(self.request, f'{MSJ_CORRECTO_PAGO_REALIZADO} ')
 
-                # Si esta en estado de "pendiente" se lo afilia porque ya realizo la primer cuota
-                if afiliado.estado == 1:
-                    afiliado.afiliar()
-                    afiliado.save()
-                    mensaje_exito(self.request, f'{MSJ_CORRECTO_PAGO_REALIZADO} y {MSJ_CORRECTO_ALTA_AFILIADO}')
+                    return super().form_valid(form)
                 else:
-                    mensaje_exito(self.request, f'{MSJ_CORRECTO_PAGO_REALIZADO} ')
-
-                return super().form_valid(form)
+                    mensaje_error(self.request, f'{MSJ_CUIT_INVALIDO}')
+                    return super().form_invalid(form)
+                
             else:
-                mensaje_error(self.request, f'{MSJ_CUIT_INVALIDO}')
-                return super().form_invalid(form)
+                print("INICIO DE MI ELSE")
+                ultima_cuota = PagoCuota.objects.filter(afiliado=afiliado).latest('fecha_pago')
+
+                # Obtén la fecha y hora actuales
+                fecha_actual = datetime.now().date()  # Convierte a objeto date
+
+                # Calcula la fecha hace dos meses
+                fecha_dos_meses_atras = fecha_actual - relativedelta(months=2)
+
+                if ultima_cuota.fecha_pago < fecha_dos_meses_atras:
+                    mensaje_advertencia(self.request, f'El afiliado tiene cuotas vencidas. comunicarse con soporte')
+                    return super().form_invalid(form)
+                else:
+                    # Mi ultima cuota es menos de dos meses
+                    form.instance.afiliado_id = afiliado_id
+                    form.instance.pdf_transferencia = pdf
+                    form.save()
+                    mensaje_exito(self.request, f'{MSJ_CORRECTO_PAGO_REALIZADO}')
+                    return super().form_valid(form)
         else:
             mensaje_advertencia(self.request, f'Seleccione la empresa y al afiliado')
             return super().form_invalid(form)
 
-
-    
     def form_invalid(self, form):
         mensaje_advertencia(self.request, f'{MSJ_CORRECTION}')
         print("")
