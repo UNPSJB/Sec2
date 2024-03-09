@@ -8,6 +8,8 @@
             {% if afiliado.estado == 1 %}  <span class="pending-status">PENDIENTE</span>
             {% elif afiliado.estado == 2 %} <span class="active-status">ACTIVO</span>
             {% elif afiliado.estado == 3 %} <span class="inactive-status">INACTIVO</span>
+            {% elif afiliado.estado == 4 %} <span class="inactive-status">DADO DE BAJA</span>
+            {% elif afiliado.estado == 5 %} <span class="moroso-status">MOROSO</span>
             {% endif %}
         </p>
     </div>

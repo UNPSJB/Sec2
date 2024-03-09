@@ -1,11 +1,8 @@
-import decimal
-
 from utils.choices import AFILIADO_ESTADO, ESTADO_CIVIL, LOCALIDADES_CHUBUT, MAX_LENGTHS, NACIONALIDADES, TIPOS_RELACION_FAMILIAR
 from utils.funciones import validate_no_mayor_actual
 from .models import Afiliado, Familiar, PagoCuota
 from apps.personas.models import Persona
 from sec2.utils import FiltrosForm
-from datetime import date
 from utils.regularexpressions import *
 from utils.constants import *
 from django import forms
@@ -13,6 +10,10 @@ from django.utils import timezone
 import re
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.core.validators import EmailValidator
+from django import forms
+
+import datetime
+from datetime import date
 
 # ---------- Utilizado para el AFILIADO CRATE VIEW 
 class AfiliadoPersonaForm(forms.ModelForm):
@@ -311,3 +312,9 @@ class PagoCuotaForm(forms.ModelForm):
         # Opcionalmente, puedes agregar validaciones adicionales para el archivo PDF si es necesario.
         # Por ejemplo, verificar el tamaño del archivo, el tipo, etc.
         return pdf_transferencia
+    
+########### FILTER FORM FAMILIAR  ##############################################
+class PagoCuotarFilterForm(FiltrosForm):
+    afiliado__persona__dni = forms.CharField(label='DNI del Afiliado', required=False)
+    afiliado__cuit_empleador = forms.CharField(label='Cuit del empleador', required=False)
+    

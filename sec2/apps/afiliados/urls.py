@@ -37,6 +37,8 @@ urlpatterns = [
     #GENERAR PDF
     path('pago/afiliado/afiliado/<int:pk>/generarnota', confeccionarNota ,name="confeccionar_nota"),
     path('pago/afiliado/cuotas', PagoCuotaCreateView.as_view() ,name="pagar_cuota_sindical"),
+    path('pago/listado', PagoCuotaListView.as_view() ,name="pago_cuota_listado"),
+    path('pago/afiliado/actualizar', cuota_sindical_actualizar_estado ,name="actualizar_estado"),
 
 
 ]

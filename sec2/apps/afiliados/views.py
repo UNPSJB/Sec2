@@ -741,6 +741,7 @@ def familiar_eliminar(request, pk, familiar_pk):
 
 from dateutil.relativedelta import relativedelta
 from datetime import datetime
+from django.db.models import Q
 
 class PagoCuotaCreateView(CreateView):
     model = PagoCuota
@@ -750,13 +751,19 @@ class PagoCuotaCreateView(CreateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        
+        # Filtrar roles sin fecha de finalización
         roles_sin_fecha_hasta = Rol.objects.filter(hasta__isnull=True)
+        
+        # Obtener personas asociadas a los roles sin fecha de finalización
         personas = Persona.objects.filter(roles__in=roles_sin_fecha_hasta)
+        
+        # Obtener afiliados asociados a las personas obtenidas
         afiliados = Afiliado.objects.filter(persona__in=personas)
         
         # Obtener todos los cuit_empleador únicos de los afiliados con sus respectivas razones sociales
         empleadores = Afiliado.objects.filter(
-            estado__in=[1, 2],  # Filtrar por estados 1 o 2
+            Q(estado=1) | Q(estado=2) | Q(estado=5),  # Filtrar por estados 1 o 2
             cuit_empleador__isnull=False
         ).values('cuit_empleador', 'razon_social').distinct()
 
@@ -769,59 +776,55 @@ class PagoCuotaCreateView(CreateView):
         afiliado_id = self.request.POST.get('enc_afiliado')
         cuit_empleador = self.request.POST.get('enc_cuit')
 
-        if afiliado_id != '0' and cuit_empleador != '0':
-            pdf = self.request.POST.get('pdf_transferencia')
+        if afiliado_id == '0' or cuit_empleador == '0':
+            mensaje_advertencia(self.request, f'Seleccione la empresa y al afiliado')
+            return super().form_invalid(form)
 
-            afiliado = get_object_or_404(Afiliado, pk=afiliado_id)
-            existe_cuotas = PagoCuota.objects.filter(afiliado=afiliado).exists()
-            
-            #Si es la primer cuota
-            if not existe_cuotas:
-            
-                if afiliado.cuit_empleador == cuit_empleador:
-                    form.instance.afiliado_id = afiliado_id
-                    form.instance.pdf_transferencia = pdf
-                    form.save()
+        pdf = self.request.POST.get('pdf_transferencia')
+        afiliado = get_object_or_404(Afiliado, pk=afiliado_id)
 
-                    # Si esta en estado de "pendiente" se lo afilia porque ya realizo la primer cuota
-                    if afiliado.estado == 1:
-                        afiliado.afiliar()
-                        afiliado.save()
-                        mensaje_exito(self.request, f'{MSJ_CORRECTO_PAGO_REALIZADO} y {MSJ_CORRECTO_ALTA_AFILIADO}')
-                    else:
-                        mensaje_exito(self.request, f'{MSJ_CORRECTO_PAGO_REALIZADO} ')
+        if afiliado.cuit_empleador != cuit_empleador:
+            mensaje_error(self.request, f'{MSJ_CUIT_INVALIDO}')
+            return super().form_invalid(form)
 
-                    return super().form_valid(form)
-                else:
-                    mensaje_error(self.request, f'{MSJ_CUIT_INVALIDO}')
-                    return super().form_invalid(form)
-                
+        existe_cuotas = PagoCuota.objects.filter(afiliado=afiliado).exists()
+
+        if not existe_cuotas:
+            form.instance.afiliado_id = afiliado_id
+            form.instance.pdf_transferencia = pdf
+            form.save()
+
+            if afiliado.estado == 1:
+                afiliado.afiliar()
+                afiliado.save()
+                mensaje_exito(self.request, f'{MSJ_CORRECTO_PAGO_REALIZADO} y {MSJ_CORRECTO_ALTA_AFILIADO}')
             else:
-                print("INICIO DE MI ELSE")
-                ultima_cuota = PagoCuota.objects.filter(afiliado=afiliado).latest('fecha_pago')
+                mensaje_exito(self.request, f'{MSJ_CORRECTO_PAGO_REALIZADO}')
+        else:
+            ultima_cuota = PagoCuota.objects.filter(afiliado=afiliado).latest('fecha_pago')
+            fecha_actual = datetime.now().date()
+            fecha_dos_meses_atras = fecha_actual - relativedelta(months=2)
 
-                # Obtén la fecha y hora actuales
-                fecha_actual = datetime.now().date()  # Convierte a objeto date
+            if ultima_cuota.fecha_pago < fecha_dos_meses_atras and afiliado.estado != 5:
 
-                # Calcula la fecha hace dos meses
-                fecha_dos_meses_atras = fecha_actual - relativedelta(months=2)
+                mensaje_advertencia(self.request, 'El afiliado tiene cuotas vencidas. Comuníquese con soporte')
+                return super().form_invalid(form)
+            else:
+                fecha_mes_anterior = fecha_actual - relativedelta(months=1)
 
-                if ultima_cuota.fecha_pago < fecha_dos_meses_atras:
-                    mensaje_advertencia(self.request, f'El afiliado tiene cuotas vencidas. comunicarse con soporte')
-                    return super().form_invalid(form)
-                else:
-                    # Mi ultima cuota es menos de dos meses
+                if fecha_mes_anterior.month == ultima_cuota.fecha_pago.month:
                     form.instance.afiliado_id = afiliado_id
                     form.instance.pdf_transferencia = pdf
                     form.save()
                     mensaje_exito(self.request, f'{MSJ_CORRECTO_PAGO_REALIZADO}')
                     return super().form_valid(form)
-        else:
-            mensaje_advertencia(self.request, f'Seleccione la empresa y al afiliado')
-            return super().form_invalid(form)
+                else: 
+                    mensaje_advertencia(self.request, 'Al afiliado le falta pagar el mes anterior')
+                    return super().form_invalid(form)
+
 
     def form_invalid(self, form):
-        mensaje_advertencia(self.request, f'{MSJ_CORRECTION}')
+        mensaje_advertencia(self.request, MSJ_CORRECTION)
         print("")
         print("ERRORES DEL FORMULARIO")
         for field, errors in form.errors.items():
@@ -829,3 +832,59 @@ class PagoCuotaCreateView(CreateView):
                 print(f"Error en el campo '{field}': {error}")
         print("")
         return super().form_invalid(form)
+
+class PagoCuotaListView(ListFilterView):
+    model = PagoCuota
+    filter_class = PagoCuotarFilterForm
+    template_name = 'pago/pago_cuota_listado.html'
+    paginate_by = MAXIMO_PAGINATOR
+    success_url = reverse_lazy('afiliados:afiliado_listar')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['titulo'] = "Pago de Cuota"
+        return context
+        
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        afiliado_dni = self.request.GET.get('afiliado__persona__dni')
+        cuit_empleador = self.request.GET.get('afiliado__cuit_empleador')  # Add this line
+
+        if afiliado_dni:
+            queryset = queryset.filter(afiliado__persona__dni=afiliado_dni)
+
+        if cuit_empleador:
+            # Use Q objects to perform OR filtering on afiliado__cuit_empleador and familiar__cuit_empleador
+            queryset = queryset.filter(Q(afiliado__cuit_empleador=cuit_empleador))
+        
+        return queryset
+    
+def cuota_sindical_actualizar_estado(request):
+    # Obtener todos los afiliados que están vinculados a través de sus cuotas
+    afiliados_vinculados = Afiliado.objects.filter(pagos_cuotas__isnull=False).distinct()
+
+    # Fecha actual y fecha dos meses atrás
+    fecha_actual = datetime.now().date()
+    fecha_dos_meses_atras = fecha_actual - relativedelta(months=2)
+
+    print(fecha_actual)
+    print(fecha_dos_meses_atras)
+
+    for afiliado in afiliados_vinculados:
+        print("")
+        ultima_cuota = PagoCuota.objects.filter(afiliado=afiliado).latest('fecha_pago')
+        print("ULTIMA CUOTA", ultima_cuota)
+        if ultima_cuota.fecha_pago < fecha_dos_meses_atras:
+            if afiliado.estado == 2:
+                #se lo marca como Moroso
+                afiliado.estado = 5
+        else:
+            if afiliado.estado == 5:
+                #se vuelve a marcar como activo
+                afiliado.estado = 2
+        
+        afiliado.save()
+    
+    mensaje_exito(request, f'Estados de los afiliados actualizados')
+    return redirect('afiliados:pago_cuota_listado')
+
