@@ -25,15 +25,20 @@
 </div>
 
 <div class="col d-flex justify-content-center">
-  <button type="button" class="btn btn-info btn-sm" data-bs-toggle="modal" data-bs-target="#exampleModal">
+  <button type="button" class="btn btn-info btn-sm" data-bs-toggle="modal" data-bs-target="#modalGrupoFamiliar">
     <i class="fas fa-users"></i>
     Grupo Familiar
   </button>
   {% include "afiliados/modal_afiliado_mostrar_grupoFamiliar.html" with relacion_familiar_list=relacion_familiar_list%}
-
 </div>
 
-
+<div class="col d-flex justify-content-center">
+<button type="button" class="btn btn-warning btn-sm" data-bs-toggle="modal" data-bs-target="#modalCuotas  ">
+  <i class="fa-solid fa-credit-card"></i>
+  Cuotas
+</button>
+{% include "afiliados/modal_estado_cuotas.html" with cuotas=cuotas%}
+</div>
 
 <div class="col d-flex justify-content-end">
   {% if afiliado.estado == 1 %}

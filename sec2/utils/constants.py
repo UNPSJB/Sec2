@@ -30,6 +30,7 @@ MSJ_CORRECTO_ALTA_AFILIADO = 'Alta de afiliado exitosa!'
 MSJ_AFILIADO_AFILIADO = 'El afiliado ha sido aceptado.'
 MSJ_AFILIADO_NO_FAMILIAR = 'El afiliado no tiene a este familiar.'
 
+
 #MENSAJES ESPECIFICOS FAMILIAR
 MSJ_FAMILIAR_CARGA_CORRECTA = 'Carga de familiar exitosa!'
 MSJ_FAMILIAR_ELIMINADO = 'Familiar dado de baja.'
@@ -59,6 +60,11 @@ MSJ_SERVICIO_ALTA_EXITOSA = 'Servicio creado con exito!.'
 
 # MENSAJE ESPECIFICO PARA AFILIADO
 MSJ_CORRECTO_ALTA_SALON = 'Salon dado de alta con exito!'
+
+#MENSAJE ESPECIFICO PARA PAGO
+MSJ_CORRECTO_PAGO_REALIZADO = 'Pago registrado correctamente'
+MSJ_CUIT_INVALIDO = 'El afiliado no tiene asociado el cuit empresarial ingresado'
+
 #---------------- MENSAJES DE DJANGO MESSAGE --------------------
 MAXIMO_PAGINATOR = 10
 

@@ -8,11 +8,17 @@
 
     <div class="row">
         <div class="col">
-            <label for="{{ form.cuit_empleador.id_for_label }}">Cuit del empleador:</label>
-            {{form.cuit_empleador}}
-            {% include "error_campo.html" with field=form.cuit_empleador %}
+            <label>Seleccione al empleador:</label>
+            <div class="form-group">
+                <select name="enc_cuit" id="enc_cuit">
+                    <option value="0"> --------------- </option>
+                    {% for empleador in empleadores %}
+                        <option value="{{ empleador.cuit_empleador }}">{{ empleador.cuit_empleador }} - {{ empleador.razon_social }}</option>
+                    {% endfor %}
+                </select>
+            </div>
         </div>
-        
+
         <div class="col">
             <label>Seleccione al afiliado:</label>
             <div class="form-group">
@@ -25,8 +31,6 @@
               </div>
         </div>
     </div>
-
-    <br>
 
     <div class="row">
         <div class="col">
@@ -70,6 +74,10 @@
 <script>
   $(function () {
     $("#enc_afiliado").select2();
+  });
+
+  $(function () {
+    $("#enc_cuit").select2();
   });
 </script>
 

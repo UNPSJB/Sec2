@@ -112,9 +112,13 @@ class AfiliadoDetailView (DeleteView):
         context['subtitulodetalle1'] = "Datos personales"
         context['subtitulodetalle2'] = "Datos de afiliación"
         context['tituloListado'] = "Dictados Incritos"
-        relacion_familiar_list = afiliado.relacionfamiliar_set.all().order_by('familiar__persona__dni')
 
+        relacion_familiar_list = afiliado.relacionfamiliar_set.all().order_by('familiar__persona__dni')
         context['relacion_familiar_list'] = relacion_familiar_list
+
+        cuotas = PagoCuota.objects.filter(afiliado=afiliado)
+        context['cuotas'] = cuotas
+
         return context
 
 # ----------------------------- AFILIADO UPDATE ----------------------------------- #
@@ -747,19 +751,50 @@ class PagoCuotaCreateView(CreateView):
         roles_sin_fecha_hasta = Rol.objects.filter(hasta__isnull=True)
         personas = Persona.objects.filter(roles__in=roles_sin_fecha_hasta)
         afiliados = Afiliado.objects.filter(persona__in=personas)
-
+        
+        # Obtener todos los cuit_empleador únicos de los afiliados con sus respectivas razones sociales
+        empleadores = Afiliado.objects.filter(
+            estado=1,  # Ajusta esto según tu lógica de filtrado
+            cuit_empleador__isnull=False
+        ).values('cuit_empleador', 'razon_social').distinct()
+        
         context['titulo'] = "Cuota Sindical"
         context['afiliados'] = afiliados
+        context['empleadores'] = empleadores
 
         return context
     
     def form_valid(self, form):
-        # Set the afiliado field before saving the form
         afiliado_id = self.request.POST.get('enc_afiliado')
-        form.instance.afiliado_id = afiliado_id
-        form.save()
-        mensaje_exito(self.request, f'{MSJ_CORRECTO_ALTA_AFILIADO}')
-        return super().form_valid(form)
+        cuit_empleador = self.request.POST.get('enc_cuit')
+
+        if afiliado_id != '0' and cuit_empleador != '0': 
+            pdf = self.request.POST.get('pdf_transferencia')
+
+            afiliado = get_object_or_404(Afiliado, pk=afiliado_id)
+
+            if afiliado.cuit_empleador == cuit_empleador:
+                form.instance.afiliado_id = afiliado_id
+                form.instance.pdf_transferencia = pdf
+                form.save()
+
+                # Si esta en estado de "pendiente" se lo afilia porque ya realizo la primer cuota
+                if afiliado.estado == 1:
+                    afiliado.afiliar()
+                    afiliado.save()
+                    mensaje_exito(self.request, f'{MSJ_CORRECTO_PAGO_REALIZADO} y {MSJ_CORRECTO_ALTA_AFILIADO}')
+                else:
+                    mensaje_exito(self.request, f'{MSJ_CORRECTO_PAGO_REALIZADO} ')
+
+                return super().form_valid(form)
+            else:
+                mensaje_error(self.request, f'{MSJ_CUIT_INVALIDO}')
+                return super().form_invalid(form)
+        else:
+            mensaje_advertencia(self.request, f'Seleccione la empresa y al afiliado')
+            return super().form_invalid(form)
+
+
     
     def form_invalid(self, form):
         mensaje_advertencia(self.request, f'{MSJ_CORRECTION}')

@@ -280,45 +280,34 @@ class RelacionFamiliarFilterForm(FiltrosForm):
 
 
 class PagoCuotaForm(forms.ModelForm):
-
-    cuit_empleador = forms.CharField(max_length=11, validators=[numeric_validator], help_text='Cuit sin puntos y guiones. Ej: 01234567899')
-
     class Meta:
         model = PagoCuota
         fields = '__all__'
         exclude = ['afiliado']
-
-        # Add custom validation for the 'monto' field
-        def clean_monto(self):
-            monto = self.cleaned_data['monto']
-            if monto <= 0:
-                raise forms.ValidationError('El monto debe ser mayor que cero.')
-            return monto
-
-        # Add custom validation for the 'fecha_pago' field
-        def clean_fecha_pago(self):
-            fecha_pago = self.cleaned_data['fecha_pago']
-            today = timezone.now().date()
-
-            if fecha_pago >= today:
-                raise forms.ValidationError('La fecha de pago debe ser anterior a la fecha actual.')
-
-            return fecha_pago
-        def clean_pdf_transferencia(self):
-            pdf_transferencia = self.cleaned_data.get('pdf_transferencia')
-            if pdf_transferencia is None:
-                return pdf_transferencia  # Return the original cleaned data if no PDF file is provided
-
-            # Optionally, you can add additional validation for the PDF file if needed
-            # For example, check the file size, type, etc.
-
-            return pdf_transferencia
-        # Add custom widgets for specific fields
         widgets = {
             'monto': forms.NumberInput(attrs={'class': 'form-control'}),
             'pdf_transferencia': forms.FileInput(attrs={'accept': 'application/pdf'}),
             'fecha_pago': forms.DateInput(attrs={'type': 'date'}),
         }
 
-        def __init__(self, *args, **kwargs):
-           super().__init__(*args, **kwargs)
+    def clean_monto(self):
+        monto = self.cleaned_data['monto']
+        if monto <= 0:
+            raise forms.ValidationError('El monto debe ser mayor que cero.')
+        return monto
+
+    def clean_fecha_pago(self):
+        fecha_pago = self.cleaned_data.get('fecha_pago')
+        today = timezone.now().date()
+        if fecha_pago is not None and fecha_pago > today:
+            raise forms.ValidationError('La fecha de pago no puede ser superior a la fecha actual.')
+        return fecha_pago
+
+    def clean_pdf_transferencia(self):
+        pdf_transferencia = self.cleaned_data.get('pdf_transferencia')
+        if pdf_transferencia is None:
+            return pdf_transferencia  # Return the original cleaned data if no PDF file is provided
+
+        # Opcionalmente, puedes agregar validaciones adicionales para el archivo PDF si es necesario.
+        # Por ejemplo, verificar el tamaño del archivo, el tipo, etc.
+        return pdf_transferencia
