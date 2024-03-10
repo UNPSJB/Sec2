@@ -73,7 +73,15 @@ MSJ_ALUMNO_POTENCIA_ELIMINADO = 'Alumno potencial borrado del sistema.'
 
 MSJ_RECARGA_PAGINA = 'Recargue la pagina del detalle del curso para poder visualizar.'
 MSJ_HORARIO_ELIMINADO = 'Horario eliminado con exito.'
+MSJ_HORARIO_RESERVA_AULA_ASIGNADA = 'El horario ya tiene una reserva con aula asignada.'
 
+
+
+MSJ_HORARIO_ERROR_ANTES = 'No se puede asignar un horario antes de la fecha de inicio estipulada.'
+MSJ_HORARIO_ERROR_HORARIO_ANTES = 'No se puede crear un horario antes del primer horario.'
+MSJ_HORARIO_EXISTE_RANGO = 'Ya existe un horario el mismo día dentro del rango de horario.'
+MSJ_HORARIO_NUEVO ='Nuevo horario generado exitosamente!'
+MSJ_HORARIO_HORA_FIN_EXISTE_RANGO = 'La hora de finalización del horario se superpone con otro horario existente.'
 
 #---------------- MENSAJES DE DJANGO MESSAGE --------------------
 MAXIMO_PAGINATOR = 10

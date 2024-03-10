@@ -112,7 +112,7 @@ class DictadoDetailView(DetailView):
         context['curso'] = curso
 
         # Obtener todos los horarios asociados al dictado
-        horarios = dictado.horarios.all()
+        horarios = dictado.horarios.all().order_by('dia_semana', 'hora_inicio')
         context['horarios'] = horarios
 
         # Obtener el nombre del profesor asociado al dictado
@@ -193,19 +193,19 @@ class DictadoDetailView(DetailView):
                 context['costo_parcial'] = f"${result} AR por {dictado.get_periodo_pago_display()}"
             else:
                 # PERIODO DE PAGO POR MES
-                if existen_clases:
-                    # Obtén las fechas de la primera y última clase
-                    primera_fecha_clase = clases.first().reserva.fecha
-                    ultima_fecha_clase = clases.last().reserva.fecha
-                    # Calcula la diferencia de tiempo entre la primera y última fecha de clases
-                    diferencia_tiempo = ultima_fecha_clase - primera_fecha_clase
-                    # Calcula el número de meses
-                    meses_transcurridos = round(diferencia_tiempo.days / 30)  # Suponiendo 30 días por mes para simplificar
-                    # Realiza el cálculo del costo basado en el número de meses
-                    result = round(curso.costo / meses_transcurridos, 2)
-                    context['costo_parcial'] = f"${result} AR por {dictado.get_periodo_pago_display()}"
-                else:
-                    context['costo_parcial'] = 'Primero tiene generar las clases'
+                # if not existen_clases:
+                #     # Obtén las fechas de la primera y última clase
+                #     primera_fecha_clase = clases.first().reserva.fecha
+                #     ultima_fecha_clase = clases.last().reserva.fecha
+                #     # Calcula la diferencia de tiempo entre la primera y última fecha de clases
+                #     diferencia_tiempo = ultima_fecha_clase - primera_fecha_clase
+                #     # Calcula el número de meses
+                #     meses_transcurridos = round(diferencia_tiempo.days / 30)  # Suponiendo 30 días por mes para simplificar
+                #     # Realiza el cálculo del costo basado en el número de meses
+                #     result = round(curso.costo / meses_transcurridos, 2)
+                #     context['costo_parcial'] = f"${result} AR por {dictado.get_periodo_pago_display()}"
+                # else:
+                context['costo_parcial'] = 'Primero tiene generar las clases'
         return context
 
     def get_reserva(self, horario):

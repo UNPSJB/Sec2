@@ -42,7 +42,11 @@ class HorarioCreateView(CreateView):
     
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        dictado_id = self.kwargs["dictado_pk"]
+        dictado = get_object_or_404(Dictado, pk=dictado_id)
         context["titulo"] = "Nuevo horario"
+        context["dictado"] = dictado
+        
         return context
 
     def form_valid(self, form):
@@ -50,42 +54,44 @@ class HorarioCreateView(CreateView):
         dictado_id = self.kwargs["dictado_pk"]
         dictado = get_object_or_404(Dictado, pk=dictado_id)
 
-        # Obtener la hora de inicio del formulario
+        # Dia se la semana y hora de inicio
+        dia_semana_form = form.cleaned_data['dia_semana']
         hora_inicio_form = form.cleaned_data['hora_inicio']
 
-        # Obtener el día de la semana del formulario
-        dia_semana_form = form.cleaned_data['dia_semana']
-
-        # Calcular la hora de fin utilizando la función calcular_hora_fin de la clase Horario
+        # Hora fin calculada
         hora_fin_calculada = Horario().calcular_hora_fin(hora_inicio_form, dictado.modulos_por_clase)
-
-        # Obtener todos los horarios para el dictado y el mismo día de la semana
-        horarios_existente = Horario.objects.filter(dictado=dictado, dia_semana=dia_semana_form)
 
         # Obtén el primer horario del dictado con es_primer_horario=True
         primer_horario = Horario.objects.filter(dictado=dictado, es_primer_horario=True).first()
-        if primer_horario is not None:
-            # Si el día de la semana es mayor, lanza el error de que no se puede
-            #generar un horario antes que el de la fecha de inicio estipulada
-            if dia_semana_form < primer_horario.dictado.fecha.weekday():
-                messages.warning(self.request, f'{ICON_TRIANGLE} No se puede asignar un horario antes de la fecha de inicio estipulada')
+
+        # Si el día de la semana es mayor, lanza el error de que no se puede
+        if dia_semana_form < primer_horario.dictado.fecha.weekday():
+            mensaje_error(self.request, f'{MSJ_HORARIO_ERROR_ANTES}')
+            return self.form_invalid(form)
+            
+        elif dia_semana_form == primer_horario.dictado.fecha.weekday():
+            # Si es el mismo dia pero con un horario antes
+            # Verifica si el nuevo horario se encuentra antes del primer horario
+            if form.instance.hora_inicio < primer_horario.hora_inicio:
+                mensaje_error(self.request, f'{MSJ_HORARIO_ERROR_HORARIO_ANTES}')
                 return self.form_invalid(form)
-            elif dia_semana_form == primer_horario.dictado.fecha.weekday():
-                # Verifica si el nuevo horario se encuentra antes del primer horario
-                if form.instance.hora_inicio < primer_horario.hora_inicio:
-                    messages.warning(self.request, f'{ICON_TRIANGLE} No se puede crear un horario antes del primer horario.')
-                    return self.form_invalid(form)
-                # Verificar si la hora de inicio está dentro del rango de algún horario existente
-                for horario in horarios_existente:
-                    if horario.hora_inicio is not None and horario.hora_fin is not None:
-                        # Permitir que la hora de inicio sea igual a la hora de fin
-                        if horario.hora_inicio <= hora_inicio_form < horario.hora_fin:
-                            messages.warning(self.request, f'{ICON_TRIANGLE} Ya existe un horario el mismo día dentro del rango de horario.')
-                            return self.form_invalid(form)
-                        # Verificar si la hora_fin_calculada está dentro del rango de algún horario existente
-                        if horario.hora_inicio < hora_fin_calculada <= horario.hora_fin:
-                            messages.warning(self.request, f'{ICON_TRIANGLE} La hora de finalización del horario se superpone con otro horario existente.')
-                            return self.form_invalid(form)
+
+        # Horario existente en el dia de la semana del dictado
+        horarios_existente = Horario.objects.filter(dictado=dictado, dia_semana=dia_semana_form)
+
+        if horarios_existente.exists():
+            # Existen horarios para el dictado y el mismo día de la semana
+            # Verificar si la hora de inicio está dentro del rango de algún horario existente
+            for horario in horarios_existente:
+                if horario.hora_inicio is not None and horario.hora_fin is not None:
+                    # Permitir que la hora de inicio sea igual a la hora de fin
+                    if horario.hora_inicio <= hora_inicio_form < horario.hora_fin:
+                        mensaje_error(self.request, f'{MSJ_HORARIO_EXISTE_RANGO} ')
+                        return self.form_invalid(form)
+                    # Verificar si la hora_fin_calculada está dentro del rango de algún horario existente
+                    if horario.hora_inicio < hora_fin_calculada <= horario.hora_fin:
+                        mensaje_error(self.request, f'{MSJ_HORARIO_HORA_FIN_EXISTE_RANGO}')
+                        return self.form_invalid(form)
 
         # Asignar el valor calculado a la hora_fin del formulario
         form.instance.hora_fin = hora_fin_calculada
@@ -94,8 +100,13 @@ class HorarioCreateView(CreateView):
         form.instance.dictado = dictado
         # Guarda la clase para obtener el ID asignado
         response = super().form_valid(form)
-        messages.success(self.request, f'{ICON_CHECK} Nuevo horario generado exitosamente!')
+        mensaje_exito(self.request, f'{MSJ_HORARIO_NUEVO}')
         return response
+   
+    def form_invalid(self, form):
+        messages.warning(self.request, f'{ICON_TRIANGLE} {MSJ_CORRECTION}')
+        context = self.get_context_data()
+        return self.render_to_response(context)
 
 def eliminarHorario(request, curso_pk, dictado_pk, horario_pk):
     # Obtener el horario y dictado asociado
@@ -201,9 +212,10 @@ def asignar_aula(request, curso_pk, dictado_pk, horario_id):
         reserva_existente = Reserva.objects.filter(horario=horario).first()
 
         if reserva_existente:
-            return HttpResponse("El horario ya tiene una reserva con aula asignada.")
+            mensaje_error(request, f'{MSJ_HORARIO_RESERVA_AULA_ASIGNADA}')
+            return redirect(reverse('cursos:dictado_detalle', kwargs={'curso_pk': curso_pk, 'dictado_pk': dictado_pk}))
         
-        return render(request, 'dictado/asignar_aula.html', {'aulas_disponibles': aulas_disponibles_en_rango, 'titulo' : titulo})
+        return render(request, 'dictado/asignar_aula.html', {'aulas_disponibles': aulas_disponibles_en_rango, 'titulo' : titulo, 'curso_pk':curso_pk, 'dictado_pk':dictado_pk,'horario_id':horario_id})
 
 #-------------- CALCULA LA FECHA DE INICIO ----------------------------------
 def calcular_fecha_inicio(horario):
