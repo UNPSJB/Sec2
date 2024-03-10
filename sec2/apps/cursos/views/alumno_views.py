@@ -151,7 +151,7 @@ class AlumnoListaEsperaCreateView(CreateView):
             dictados_seleccionados = form.cleaned_data.get("dictados", [])
         
             # No hay cupo, poner al alumno en lista de espera
-            alumno.lista_espera.add(dictado)
+            # alumno.lista_espera.add(dictado)
 
             detail_url = reverse('cursos:verificar_persona', kwargs={'curso_pk': curso_pk, 'dictado_pk': dictado_pk})
             messages.success(self.request, f'{ICON_CHECK} Alumno agregado a la lista de espera. Cierre la ventana y recargue el detalle del dictado')

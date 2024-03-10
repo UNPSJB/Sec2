@@ -13,7 +13,7 @@ class Familiar(Rol):
     TIPO = ROL_TIPO_FAMILIAR  # Define un valor único para el tipo de rol de Familiar
     activo = models.BooleanField(default=False)  # Agregamos el campo "activo" con valor predeterminado True
     dictados = models.ManyToManyField(Dictado, related_name="familiares", blank=True)
-    lista_espera = models.ManyToManyField(Dictado, related_name='familiares_en_espera', blank=True)
+    # lista_espera = models.ManyToManyField(Dictado, related_name='familiares_en_espera', blank=True)
     
     def __str__(self):
         return f"Activo: {self.activo}"
@@ -50,7 +50,7 @@ class Afiliado(Rol):
     )
 
     dictados = models.ManyToManyField(Dictado, related_name="afiliados", blank=True)
-    lista_espera = models.ManyToManyField(Dictado, related_name='afiliados_en_espera', blank=True)
+    # lista_espera = models.ManyToManyField(Dictado, related_name='afiliados_en_espera', blank=True)
     familia = models.ManyToManyField(Familiar, through='RelacionFamiliar', blank=True)
     
     def __str__(self):

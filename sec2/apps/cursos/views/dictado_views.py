@@ -1,11 +1,13 @@
+import json
 from django.views import View
 from django.views.generic import DetailView
 from django.views.generic.edit import CreateView, UpdateView
 from apps.afiliados.models import Afiliado, Familiar
 from apps.personas.forms import PersonaForm
 
-from apps.personas.models import Persona
-from ..models import Actividad, Alumno, Clase, Curso, Dictado, Titular, Horario, Reserva
+from apps.personas.models import Persona, Rol
+from utils.funciones import mensaje_advertencia, mensaje_exito
+from ..models import Actividad, Alumno, Clase, Curso, Dictado, ListaEspera, Titular, Horario, Reserva
 from utils.constants import *
 from django.urls import reverse
 from ..forms.dictado_forms import *
@@ -292,91 +294,112 @@ from django.http import Http404, HttpResponse, JsonResponse
 class BuscarPersonaView(View):
 
     def get(self, request, *args, **kwargs):
-        dni = request.GET.get('dni', '')
+        id_rol = request.GET.get('id_rol', '')
+        print("ID ROL: ",id_rol)
         try:
             # FILTRA EL PRIMERO QUE ENCUENTRA POR QUE LO GUARDA DOS VECES EN LA BASE
-            persona = Persona.objects.filter(dni=dni).first()
-            if persona is not None:
-                persona_data = {
-                    'pk': persona.pk,
-                    'dni': persona.dni,
-                    'cuil': persona.cuil,
-                    'nombre': persona.nombre,
-                    'apellido': persona.apellido,
-                    'fecha_nacimiento': persona.fecha_nacimiento,
-                    'celular': persona.celular,
-                    'direccion': persona.direccion,
-                    'nacionalidad': persona.nacionalidad,
-                    'mail': persona.mail,
-                    'estado_civil': persona.estado_civil,
-                    'es_afiliado': persona.es_afiliado,
-                    'es_alumno': persona.es_alumno,
-                    'es_profesor': persona.es_profesor,
-                    'es_encargado': persona.es_encargado,
-                    'es_grupo_familiar': persona.es_grupo_familiar,
-                }
+            rol = Rol.objects.filter(pk=id_rol).first()
+            tipo_rol = rol.obtenerTipo()
 
-                return JsonResponse({'persona': persona_data})
+            if rol is not None:
+                rol_data = {
+                    'pk': rol.pk,
+                    'tipo_rol': tipo_rol,
+                    'tipo': rol.tipo,
+                    'persona': {
+                        'pk': rol.persona.pk,
+                        'dni': rol.persona.dni,
+                        'cuil': rol.persona.cuil,
+                        'nombre': rol.persona.nombre,
+                        'apellido': rol.persona.apellido,
+                        'fecha_nacimiento': rol.persona.fecha_nacimiento,
+                        'celular': rol.persona.celular,
+                        'direccion': rol.persona.direccion,
+                        'nacionalidad': rol.persona.nacionalidad,
+                        'mail': rol.persona.mail,
+                        'estado_civil': rol.persona.estado_civil,
+                        'es_afiliado': rol.persona.es_afiliado,
+                        'es_alumno': rol.persona.es_alumno,
+                        'es_profesor': rol.persona.es_profesor,
+                        'es_encargado': rol.persona.es_encargado,
+                        'es_grupo_familiar': rol.persona.es_grupo_familiar,
+                    },
+                }
+                return JsonResponse({'rol': rol_data})
             else:
-                return JsonResponse({'persona': None})
+                return JsonResponse({'rol': None})
         except Persona.DoesNotExist:
-            return JsonResponse({'persona': None})
+            return JsonResponse({'rol': None})
 
 
 class VerificarInscripcionView(View):
-    template_name = 'dictado/dictado_inscripcion.html'  # La plantilla que mostrará el formulario de inscripción
+    template_name = 'curso/curso_inscripcion.html'  # La plantilla que mostrará el formulario de inscripción
 
     def get(self, request, *args, **kwargs):
         curso_pk = kwargs.get('curso_pk')
-        dictado_pk = kwargs.get('dictado_pk')
-        # Obtener el objeto Dictado o devolver un error 404 si no existe
-        dictado = get_object_or_404(Dictado, curso__pk=curso_pk, pk=dictado_pk)
+        # Filtrar roles sin fecha de finalización (hasta)
+        roles_sin_fecha_hasta = Rol.objects.filter(hasta__isnull=True)
 
-        # OBTENGO A TODOS MIS ALUMNOS (Alumnos, Afiliado, GrupoFamiliar, Profeosres como alumno)
-        afiliado_inscritos = Afiliado.objects.filter(dictados=dictado)
-        familiares_inscritos = Familiar.objects.filter(dictados=dictado)    
-        profesores_inscritos = Profesor.objects.filter(dictados_inscriptos=dictado)
-        alumnos_inscritos = Alumno.objects.filter(dictados=dictado)
-
-        afiliado_inscritos_listaEspera = Afiliado.objects.filter(lista_espera=dictado)
-        familiares_inscritos_listaEspera = Familiar.objects.filter(lista_espera=dictado)    
-        profesores_inscritos_listaEspera = Profesor.objects.filter(lista_espera=dictado)
-        alumnos_inscritos_listaEspera = Alumno.objects.filter(lista_espera=dictado)
-        
-        # Calculo la suma total de inscritos
-        total_inscritos = (
-            afiliado_inscritos.count() +
-            familiares_inscritos.count() +
-            profesores_inscritos.count() +
-            alumnos_inscritos.count()
-        )
-        hay_cupo = total_inscritos < dictado.cupo
-
-        inscritos_ids = []
-        # Agrega los IDs de afiliados, familiares, profesores, alumno
-        inscritos_ids.extend(list(afiliado_inscritos.values_list('persona__pk', flat=True)))
-        inscritos_ids.extend(list(familiares_inscritos.values_list('persona__pk', flat=True)))
-        inscritos_ids.extend(list(profesores_inscritos.values_list('persona__pk', flat=True)))
-        inscritos_ids.extend(list(alumnos_inscritos.values_list('persona__pk', flat=True)))
+        curso = get_object_or_404(Curso, pk=curso_pk)
 
         inscritosEspera_ids = []
-        inscritosEspera_ids.extend(list(afiliado_inscritos_listaEspera.values_list('persona__pk', flat=True)))
-        inscritosEspera_ids.extend(list(familiares_inscritos_listaEspera.values_list('persona__pk', flat=True)))
-        inscritosEspera_ids.extend(list(profesores_inscritos_listaEspera.values_list('persona__pk', flat=True)))
-        inscritosEspera_ids.extend(list(alumnos_inscritos_listaEspera.values_list('persona__pk', flat=True)))
+        inscritosEspera_ids = ListaEspera.objects.filter(curso=curso).values_list('rol_id', flat=True)
+
+
+        # dictado_pk = kwargs.get('dictado_pk')
+        # Obtener el objeto Dictado o devolver un error 404 si no existe
+        # dictado = get_object_or_404(Dictado, curso__pk=curso_pk, pk=dictado_pk)
+
+        # OBTENGO A TODOS MIS ALUMNOS (Alumnos, Afiliado, GrupoFamiliar, Profeosres como alumno)
+        # afiliado_inscritos = Afiliado.objects.filter(dictados=dictado)
+        # familiares_inscritos = Familiar.objects.filter(dictados=dictado)    
+        # profesores_inscritos = Profesor.objects.filter(dictados_inscriptos=dictado)
+        # alumnos_inscritos = Alumno.objects.filter(dictados=dictado)
+
+        # afiliado_inscritos_listaEspera = Afiliado.objects.filter(lista_espera=dictado)
+        # familiares_inscritos_listaEspera = Familiar.objects.filter(lista_espera=dictado)    
+        # profesores_inscritos_listaEspera = Profesor.objects.filter(lista_espera=dictado)
+        # alumnos_inscritos_listaEspera = Alumno.objects.filter(lista_espera=dictado)
+        
+        # Calculo la suma total de inscritos
+        # total_inscritos = (
+        #     afiliado_inscritos.count() +
+        #     familiares_inscritos.count() +
+        #     profesores_inscritos.count() +
+        #     alumnos_inscritos.count()
+        # )
+        # hay_cupo = total_inscritos < dictado.cupo
+
+        # inscritos_ids = []
+        # Agrega los IDs de afiliados, familiares, profesores, alumno
+        # inscritos_ids.extend(list(afiliado_inscritos.values_list('persona__pk', flat=True)))
+        # inscritos_ids.extend(list(familiares_inscritos.values_list('persona__pk', flat=True)))
+        # inscritos_ids.extend(list(profesores_inscritos.values_list('persona__pk', flat=True)))
+        # inscritos_ids.extend(list(alumnos_inscritos.values_list('persona__pk', flat=True)))
+
+        # inscritosEspera_ids = []
+        # inscritosEspera_ids.extend(list(afiliado_inscritos_listaEspera.values_list('persona__pk', flat=True)))
+        # inscritosEspera_ids.extend(list(familiares_inscritos_listaEspera.values_list('persona__pk', flat=True)))
+        # inscritosEspera_ids.extend(list(profesores_inscritos_listaEspera.values_list('persona__pk', flat=True)))
+        # inscritosEspera_ids.extend(list(alumnos_inscritos_listaEspera.values_list('persona__pk', flat=True)))
         
         # personas = Persona.objects.all()
         
+        print("INSCRITOS EN ESPERA: ", inscritosEspera_ids)
+        total_en_espera = inscritosEspera_ids.count()
+        print("INSCRITOS EN ESPERA: ", total_en_espera)
+                
         context = {
-            'titulo': 'Incripción',
+            'titulo': 'Inscripción',
             'curso_pk': curso_pk,
-            'dictado_pk': dictado_pk,
-            'hay_cupo': hay_cupo,
-            'inscritos_ids': inscritos_ids,
-            # 'personas' : personas,
+            'roles': roles_sin_fecha_hasta,
+            'total_en_espera': total_en_espera,
             'inscritosEspera_ids': inscritosEspera_ids,
-
         }
+
+        # Convierte inscritosEsperaIds a una cadena JSON para pasarlo a JavaScript
+        context['inscritosEsperaIds_json'] = json.dumps(list(inscritosEspera_ids))
+
         return render(request, self.template_name, context)
 
     def post(self, request, *args, **kwargs):
@@ -419,19 +442,19 @@ def listaEspera(request, curso_pk, dictado_pk ):
         alumnos_inscritos.count()
     )
     # OBTENGO A TODOS MIS PERSONAS EN LISTA DE ESPERA(Alumnos, Afiliado, GrupoFamiliar, Profeosres como alumno)
-    afiliado_inscritos_listaEspera = Afiliado.objects.filter(lista_espera=dictado)
-    familiares_inscritos_listaEspera = Familiar.objects.filter(lista_espera=dictado)    
-    profesores_inscritos_listaEspera = Profesor.objects.filter(lista_espera=dictado)
-    alumnos_inscritos_listaEspera = Alumno.objects.filter(lista_espera=dictado)
+    # afiliado_inscritos_listaEspera = Afiliado.objects.filter(lista_espera=dictado)
+    # familiares_inscritos_listaEspera = Familiar.objects.filter(lista_espera=dictado)    
+    # profesores_inscritos_listaEspera = Profesor.objects.filter(lista_espera=dictado)
+    # alumnos_inscritos_listaEspera = Alumno.objects.filter(lista_espera=dictado)
     
     # Combino todos los objetos en una lista
-    todos_inscritos_listaEspera = list(afiliado_inscritos_listaEspera) + list(familiares_inscritos_listaEspera) + list(profesores_inscritos_listaEspera) + list(alumnos_inscritos_listaEspera)
+    # todos_inscritos_listaEspera = list(afiliado_inscritos_listaEspera) + list(familiares_inscritos_listaEspera) + list(profesores_inscritos_listaEspera) + list(alumnos_inscritos_listaEspera)
     hay_cupo = total_inscritos < dictado.cupo
     titulo = 'Lista de espera'
 
     context = {
         'dictado': dictado,
-        'todos_inscritos_listaEspera': todos_inscritos_listaEspera,
+        # 'todos_inscritos_listaEspera': todos_inscritos_listaEspera,
         'titulo': titulo,
         'hay_cupo': hay_cupo,
         'curso_pk': curso_pk,
@@ -444,24 +467,57 @@ from django.urls import reverse
 from django.urls import reverse
 from django.http import HttpResponseRedirect
 
-def gestionListaEspera(request, curso_pk, dictado_pk, persona_pk, tipo, accion):
-    dictado = get_object_or_404(Dictado, curso__pk=curso_pk, pk=dictado_pk)
+def gestionListaEspera(request, pk, rol_pk, accion):
+    curso = get_object_or_404(Curso, pk=pk)
+    rol = get_object_or_404(Rol, pk=rol_pk)
+    
+    print(curso)
+    print(rol)
 
-    if tipo == 'Afiliado':
-        persona = get_object_or_404(Afiliado, persona__pk=persona_pk)
-    elif tipo == 'Familiar':
-        persona = get_object_or_404(Familiar, persona__pk=persona_pk)
-    elif tipo == 'Profesor':
-        persona = get_object_or_404(Profesor, persona__pk=persona_pk)
-    elif tipo == 'Alumno':
-        persona = get_object_or_404(Alumno, persona__pk=persona_pk)
-    elif tipo == 'AlumnoNuevo':
-        pass
-    else:
-        raise Http404("Tipo de persona no válido")
+    if accion == 'agregar_lista':
+        print("Estoy en agregar lista - if")
+        # Verifica si el rol aún no está en ListaEspera para el Curso dado
+        if not ListaEspera.objects.filter(curso=curso, rol=rol).exists():
+            # Crea una nueva instancia de ListaEspera y la guarda
+            lista_espera_instance = ListaEspera(curso=curso, rol=rol)
+            lista_espera_instance.save()
+            curso.lista_espera.add(lista_espera_instance)
+            curso.save
+            mensaje_exito(request, f'{MSJ_LISTAESPERA_AGREGADO}')
+            return redirect('cursos:verificar_persona', curso_pk=pk)
+
+    elif accion == 'quitar_lista' : 
+        # Busca la instancia de ListaEspera relacionada con el Curso y el Rol
+        lista_espera_instance = ListaEspera.objects.get(curso=curso, rol=rol)
+        
+        # Elimina la instancia de ListaEspera
+        lista_espera_instance.delete()
+
+        # Quítala del campo lista_espera del modelo Curso
+        curso.lista_espera.remove(lista_espera_instance)
+        curso.save()
+        mensaje_exito(request, f'{MSJ_LISTAESPERA_ELIMINADO}')
+        return redirect('cursos:curso_lista_espera', pk=pk)
+
+
+
+    # dictado = get_object_or_404(Dictado, curso__pk=curso_pk, pk=dictado_pk)
+
+    # if tipo == 'Afiliado':
+    #     persona = get_object_or_404(Afiliado, persona__pk=persona_pk)
+    # elif tipo == 'Familiar':
+    #     persona = get_object_or_404(Familiar, persona__pk=persona_pk)
+    # elif tipo == 'Profesor':
+    #     persona = get_object_or_404(Profesor, persona__pk=persona_pk)
+    # elif tipo == 'Alumno':
+    #     persona = get_object_or_404(Alumno, persona__pk=persona_pk)
+    # elif tipo == 'AlumnoNuevo':
+    #     pass
+    # else:
+    #     raise Http404("Tipo de persona no válido")
 
     if accion == 'inscribir':
-        persona.lista_espera.remove(dictado)
+        # persona.lista_espera.remove(dictado)
         
         if tipo == 'Profesor':
             persona.dictados_inscriptos.add(dictado)
@@ -477,7 +533,7 @@ def gestionListaEspera(request, curso_pk, dictado_pk, persona_pk, tipo, accion):
         return HttpResponseRedirect(url)
     
     elif accion == 'quitar':
-        persona.lista_espera.remove(dictado)
+        # persona.lista_espera.remove(dictado)
         messages.success(request, f'{ICON_CHECK} {tipo} sacado de la lista de espera ')
     
     elif accion == 'agregar_lista':
@@ -489,7 +545,7 @@ def gestionListaEspera(request, curso_pk, dictado_pk, persona_pk, tipo, accion):
                 return redirect('cursos:verificar_persona', curso_pk=curso_pk, dictado_pk=dictado_pk)
 
         messages.success(request, f'{ICON_CHECK} {tipo} agregado a la lista de espera. Cierre la ventana y recargue el detalle del dictado')
-        persona.lista_espera.add(dictado)
+        # persona.lista_espera.add(dictado)
         persona.save()
         return redirect('cursos:verificar_persona', curso_pk=curso_pk, dictado_pk=dictado_pk)
     

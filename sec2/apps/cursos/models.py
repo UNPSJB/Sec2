@@ -34,11 +34,18 @@ class Aula(models.Model):
         if self.tipo == 'normal':
             return 'Aula {}'.format(self.numero)
         return 'Computación {}'.format(self.numero)
+
+#------------- LISTA DE ESPERA --------------------
+class ListaEspera(models.Model):
+    curso = models.ForeignKey('Curso', on_delete=models.CASCADE, related_name='inscritos_lista_espera')
+    rol = models.ForeignKey(Rol, on_delete=models.CASCADE)
+    fechaInscripcion = models.DateTimeField(auto_now_add=True)
     
 #------------- CURSO --------------------
 class Curso(models.Model):
     # ForeignKey
     actividad = models.ForeignKey(Actividad, on_delete=models.SET_NULL, blank=True, null=True)
+    lista_espera = models.ManyToManyField(ListaEspera, blank=True, related_name='cursos_en_lista_espera')  # Change the related_name here
 
     area = models.PositiveSmallIntegerField(choices=AREAS, blank=True, null=True)
     requiere_certificado_medico = models.BooleanField(default=False)
@@ -63,7 +70,13 @@ class Curso(models.Model):
         null=True,    # Also set null to True if you want to allow NULL values in the database
         default=0     # Set the default value to 0
     )
-    
+    cupo = models.PositiveIntegerField(
+        help_text="Máximo alumnos inscriptos",
+        validators=[
+            MinValueValidator(1, message="Valor mínimo permitido es 1."),
+            MaxValueValidator(100, message="Valor máximo es 100."),
+        ]
+    ) 
     def __str__(self):
         return f"{self.nombre}"
     
@@ -142,7 +155,7 @@ class Reserva(models.Model):
 class Alumno(Rol):
     # ForeignKey
     dictados = models.ManyToManyField(Dictado, related_name="alumnos", blank=True)
-    lista_espera = models.ManyToManyField('Dictado', related_name='alumnos_en_espera', blank=True)
+    # lista_espera = models.ManyToManyField('Dictado', related_name='alumnos_en_espera', blank=True)
 
     TIPO = ROL_TIPO_ALUMNO
     def agregar_dictado(self, dictado):
@@ -150,11 +163,12 @@ class Alumno(Rol):
             self.dictados.add(dictado)
             return True
         else:
-            self.lista_espera.add(dictado)
+            # self.lista_espera.add(dictado)
             return False
     
     def esta_inscripto_o_en_espera(self, dictado):
-        return dictado in self.dictados.all() or dictado in self.lista_espera.all()
+        return dictado in self.dictados.all() 
+    # or dictado in self.lista_espera.all()
 
     def esta_inscrito_en_dictado(self, dictado_pk):
         """
@@ -172,7 +186,7 @@ class Profesor(Rol):
     TIPO = ROL_TIPO_PROFESOR
     actividades = models.ManyToManyField(Actividad, blank=True)
     dictados_inscriptos = models.ManyToManyField(Dictado, related_name="profesores_dictados_inscriptos", blank=True)
-    lista_espera = models.ManyToManyField(Dictado, related_name='profesores_en_espera', blank=True)
+    # lista_espera = models.ManyToManyField(Dictado, related_name='profesores_en_espera', blank=True)
 
     ejerce_desde= models.DateField(
         null=True,

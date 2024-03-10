@@ -1,6 +1,7 @@
 from django.shortcuts import get_object_or_404, redirect
 from apps.cursos.forms.actividad_forms import ActividadForm
 from apps.cursos.models import Curso
+from apps.personas.models import Persona, Rol
 from ..forms.curso_forms import *
 from django.views.generic.edit import CreateView, UpdateView
 from django.views.generic import DetailView
@@ -8,6 +9,7 @@ from django.urls import reverse_lazy
 from django.contrib import messages
 from sec2.utils import ListFilterView
 from django.urls import reverse_lazy
+from django.shortcuts import render
 
 #--------------- CREATE DE CURSOS--------------------------------
 class CursoCreateView(CreateView):
@@ -108,6 +110,8 @@ class CursoDetailView(DetailView):
 
         # Obtener todos los dictados asociados al curso junto con los horarios
         dictados = curso.dictado_set.prefetch_related('horarios').all()
+        
+        context['tiene_dictados'] = dictados.exists()
 
         # Configurar la paginación
         paginator = Paginator(dictados, self.paginate_by)
@@ -121,7 +125,6 @@ class CursoDetailView(DetailView):
             dictados = paginator.page(paginator.num_pages)
 
         context['dictados'] = dictados
-        context['tiene_dictados'] = paginator.num_pages > 0  # Verificar si hay dictados asociados
 
         return context
 
@@ -186,8 +189,6 @@ class CursoUpdateView(UpdateView):
             context['titulo'] = "Modificar Curso5"
         
         context['actividades'] = Actividad.objects.all().order_by('nombre')
-        print("AASDASDASD")
-        print(self.object.actividad.id)
         return context
 
     def get_form_kwargs(self):
@@ -230,6 +231,50 @@ class CursoUpdateView(UpdateView):
             self.template_name = 'curso/seleccion_tipo_curso.html'
 
         return super().form_invalid(form)
+
+def cursoListaEspera(request, pk):
+    # Obtener el objeto Dictado
+    curso = Curso.objects.get(id=pk)
+
+    titulo = f'Inscritos en espera para {curso.nombre}'
+
+    # Obtener la lista de espera ordenada por tipo y fecha de inscripción
+    lista_espera = ListaEspera.objects.filter(curso=curso).order_by('rol__tipo', 'fechaInscripcion')
+
+    # OBTENGO A TODOS MIS ALUMNOS (Alumnos, Afiliado, GrupoFamiliar, Profeosres como alumno)
+    # afiliado_inscritos = Afiliado.objects.filter(dictados=dictado)
+    # familiares_inscritos = Familiar.objects.filter(dictados=dictado)    
+    # profesores_inscritos = Profesor.objects.filter(dictados_inscriptos=dictado)
+    # alumnos_inscritos = Alumno.objects.filter(dictados=dictado)
+    # Calculo la suma total de inscritos
+    # total_inscritos = (
+    #     afiliado_inscritos.count() +
+    #     familiares_inscritos.count() +
+    #     profesores_inscritos.count() +
+    #     alumnos_inscritos.count()
+    # )
+    # OBTENGO A TODOS MIS PERSONAS EN LISTA DE ESPERA(Alumnos, Afiliado, GrupoFamiliar, Profeosres como alumno)
+    # afiliado_inscritos_listaEspera = Afiliado.objects.filter(lista_espera=dictado)
+    # familiares_inscritos_listaEspera = Familiar.objects.filter(lista_espera=dictado)    
+    # profesores_inscritos_listaEspera = Profesor.objects.filter(lista_espera=dictado)
+    # alumnos_inscritos_listaEspera = Alumno.objects.filter(lista_espera=dictado)
+    
+    # Combino todos los objetos en una lista
+    # todos_inscritos_listaEspera = list(afiliado_inscritos_listaEspera) + list(familiares_inscritos_listaEspera) + list(profesores_inscritos_listaEspera) + list(alumnos_inscritos_listaEspera)
+    # hay_cupo = total_inscritos < dictado.cupo
+
+    context = {
+        'curso': curso,
+        # 'todos_inscritos_listaEspera': todos_inscritos_listaEspera,
+        'titulo': titulo,
+        'lista_espera': lista_espera,
+
+        # 'hay_cupo': hay_cupo,
+        'curso_pk': pk,
+
+    }
+    return render(request, 'curso/curso_lista_espera.html', context)
+
 
 ##--------------- CURSO ELIMINAR --------------------------------
 def curso_eliminar(request, pk):

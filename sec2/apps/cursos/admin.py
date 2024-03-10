@@ -1,5 +1,7 @@
 from django.contrib import admin
-from .models import Actividad, Alumno, Clase, Curso, Aula, Dictado, Horario, Reserva, Profesor, Titular
+
+from apps.cursos.forms.curso_forms import ListaEsperaAdminForm
+from .models import Actividad, Alumno, Clase, Curso, Aula, Dictado, Horario, ListaEspera, Reserva, Profesor, Titular
 
 class AulaAdmin(admin.ModelAdmin):
     list_display = ('numero', 'tipo', 'capacidad')
@@ -32,3 +34,11 @@ admin.site.register(Actividad, ActividadAdmin)
 admin.site.register(Alumno)
 admin.site.register(Profesor)
 admin.site.register(Titular)
+
+class ListaEsperaAdmin(admin.ModelAdmin):
+    form = ListaEsperaAdminForm
+    list_display = ('curso', 'rol', 'fechaInscripcion')
+    # Agrega otras configuraciones del modelo ListaEsperaAdmin según tus necesidades
+
+# Registra el modelo ListaEspera con la configuración personalizada en el panel de administración
+admin.site.register(ListaEspera, ListaEsperaAdmin)

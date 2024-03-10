@@ -1,5 +1,6 @@
+from datetime import timezone
 from django import forms
-from ..models import Actividad, Curso
+from ..models import Actividad, Curso, ListaEspera
 from utils.constants import *
 from utils.choices import *
 from sec2.utils import FiltrosForm
@@ -20,9 +21,15 @@ class CursoForm(forms.ModelForm):
     def clean_nombre(self):
         nombre = self.cleaned_data['nombre']
         nombre_lower = nombre.lower()  # Convertir a minúsculas
-        existe_curso = Curso.objects.filter(nombre__iexact=nombre_lower).exists()
+
+        # Exclude the current instance from the queryset (assuming instance is available in the form)
+        curso_id = self.instance.id if self.instance else None
+
+        existe_curso = Curso.objects.filter(nombre__iexact=nombre_lower).exclude(id=curso_id).exists()
+
         if existe_curso:
             raise forms.ValidationError('El nombre del curso ya existe. Por favor, elige otro nombre.')
+
         return nombre
     
     def __init__(self, *args, **kwargs):
@@ -82,3 +89,13 @@ class CursoFilterForm(FiltrosForm):
         except (ValueError, TypeError):
             # Si no se puede convertir a un número, devuelve None
             return None
+        
+
+class ListaEsperaAdminForm(forms.ModelForm):
+    class Meta:
+        model = ListaEspera
+        fields = '__all__'
+
+    def clean_fechaInscripcion(self):
+        # Devuelve la fecha y hora actual
+        return timezone.now()

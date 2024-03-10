@@ -65,6 +65,13 @@ MSJ_CORRECTO_ALTA_SALON = 'Salon dado de alta con exito!'
 MSJ_CORRECTO_PAGO_REALIZADO = 'Pago registrado correctamente'
 MSJ_CUIT_INVALIDO = 'El afiliado no tiene asociado el cuit empresarial ingresado'
 
+
+
+MSJ_LISTAESPERA_AGREGADO = 'La persona ha sido agrega a la lista de espera correctamente.'
+MSJ_LISTAESPERA_ELIMINADO = 'La persona ha sido quitara a la lista de espera correctamente.'
+
+MSJ_RECARGA_PAGINA = 'Recargue la pagina del detalle del curso para poder visualizar.'
+
 #---------------- MENSAJES DE DJANGO MESSAGE --------------------
 MAXIMO_PAGINATOR = 10
 

@@ -114,9 +114,23 @@
     </div>
     {% endif %}
   </div>
+
+
+  <div class="row">
+    <div class="col-md-2">
+      <p>
+        <strong>Cupo:</strong>
+      </p>
+    </div>
+    <div class="col-md-4">
+      <p>{{ curso.cupo }} participantes maximo</p>
+    </div>
+  </div>
+
 {% endblock %}
 
 {% block botones %}
+
 
 {% if not tiene_dictados %}
 <div class="col d-flex justify-content-center"> 
@@ -125,6 +139,16 @@
   </a>
 </div>
 {% endif %}
+
+<div class="col d-flex justify-content-center"> 
+  <a href="{% url 'cursos:curso_lista_espera' curso.pk %}" 
+  class="btn btn-warning btn-sm btn-detalle" 
+  onclick="window.open(this.href, '_blank', 'width=600,height=400'); return false;">
+  <i class="fa-solid fa-list"></i>
+  Lista de espera
+  </a>
+</div>
+
 <div class="col d-flex justify-content-end">
   <button type="button" class="btn btn-danger btn-sm btn-detalle" data-bs-toggle="modal" data-bs-target="#exampleModal_eliminar"><i class="fa-regular fa-circle-down"></i> Dar de Baja</button>
   {% include 'curso/modal_confirm_baja.html' %}
