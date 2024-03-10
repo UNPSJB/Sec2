@@ -5,7 +5,7 @@ from django.views.generic import DetailView
 from sec2.utils import ListFilterView
 from django.contrib import messages
 
-from utils.funciones import mensaje_error
+from utils.funciones import mensaje_error, mensaje_exito
 from ..models import Dictado, Horario, Aula, Reserva
 from ..forms.clase_forms import *
 from ..forms.horario_forms import *
@@ -96,6 +96,16 @@ class HorarioCreateView(CreateView):
         response = super().form_valid(form)
         messages.success(self.request, f'{ICON_CHECK} Nuevo horario generado exitosamente!')
         return response
+
+def eliminarHorario(request, curso_pk, dictado_pk, horario_pk):
+    # Obtener el horario y dictado asociado
+    horario = get_object_or_404(Horario, id=horario_pk)
+    try:
+        horario.delete()
+        mensaje_exito(request, f'{MSJ_HORARIO_ELIMINADO}')
+    except Exception as e:
+        messages.error(request, 'Ocurrió un error al intentar eliminar el horario.')
+    return redirect('cursos:dictado_detalle', curso_pk=curso_pk, dictado_pk=dictado_pk)
 
 #-------------- ASIGNAR UN AULA ----------------------------------
 def asignar_aula(request, curso_pk, dictado_pk, horario_id):

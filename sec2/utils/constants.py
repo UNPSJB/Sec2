@@ -72,6 +72,8 @@ MSJ_LISTAESPERA_ELIMINADO = 'La persona ha sido quitara a la lista de espera cor
 MSJ_ALUMNO_POTENCIA_ELIMINADO = 'Alumno potencial borrado del sistema.'
 
 MSJ_RECARGA_PAGINA = 'Recargue la pagina del detalle del curso para poder visualizar.'
+MSJ_HORARIO_ELIMINADO = 'Horario eliminado con exito.'
+
 
 #---------------- MENSAJES DE DJANGO MESSAGE --------------------
 MAXIMO_PAGINATOR = 10

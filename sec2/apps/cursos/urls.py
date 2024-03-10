@@ -63,6 +63,8 @@ urlpatterns = [
 
     # HORARIO (accedido desde dictado)
     path('curso/<int:curso_pk>/dictados/dictado/<int:dictado_pk>/horarios/horario/crear/', HorarioCreateView.as_view(), name='horario_crear'),
+    path('curso/<int:curso_pk>/dictados/dictado/<int:dictado_pk>/horarios/horario/<int:horario_pk>/elminar', eliminarHorario, name='horario_eliminar'),
+
 
     # ASIGNACIÓN DE AULA (accedido desde el horario)
     path('curso/<int:curso_pk>/dictados/dictado/<int:dictado_pk>/horarios/horario/<int:horario_id>/vincularAula/', asignar_aula, name='asignar_aula'),

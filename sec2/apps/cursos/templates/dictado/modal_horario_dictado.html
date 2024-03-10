@@ -24,6 +24,13 @@
         
         {% if not horario.reserva %}
         <td class="text-end">
+
+          {% if not hay_reserva and not horario.es_primer_horario%}
+          <a href="{% url 'cursos:horario_eliminar' curso_pk=horario.dictado.curso.pk dictado_pk=horario.dictado.pk horario_pk=horario.pk %}" class="btn btn-outline-danger btn-sm btn-detalle">
+            Eliminar
+          </a>
+          {% endif %}
+
           {% if hay_reserva %}
           <a href="{% url 'cursos:asignar_aula' curso_pk=horario.dictado.curso.pk dictado_pk=horario.dictado.pk horario_id=horario.pk %}" class="btn btn-outline-success btn-sm btn-detalle">
             <i class="fa-solid fa-door-open"></i>Reservar Aula
@@ -46,7 +53,7 @@
               <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-              <p>¿Desea reservar aulas? Una vez hecha una reserva no podrá generar más horarios.</p>
+              <p>¿Desea reservar aulas? Una vez hecha una reserva no podrá generar más horarios ni eliminar horarios.</p>
             </div>
             <div class="modal-footer">
               <button type="button" class="btn btn-secondary btn-sm " data-bs-dismiss="modal">Cancelar</button>
