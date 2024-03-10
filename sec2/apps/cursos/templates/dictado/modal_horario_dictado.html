@@ -4,7 +4,7 @@
         <th>Día</th>
         <th>Desde</th>
         <th>Hasta</th>
-        <th>Lugar asignado</th>
+        <th>Lugar</th>
         <th></th>
       </tr>
     </thead>
@@ -25,11 +25,11 @@
         {% if not horario.reserva %}
         <td class="text-end">
           {% if hay_reserva %}
-          <a href="{% url 'cursos:asignar_aula' curso_pk=horario.dictado.curso.pk dictado_pk=horario.dictado.pk horario_id=horario.pk %}" class="btn btn-primary btn-sm btn-detalle">
+          <a href="{% url 'cursos:asignar_aula' curso_pk=horario.dictado.curso.pk dictado_pk=horario.dictado.pk horario_id=horario.pk %}" class="btn btn-outline-success btn-sm btn-detalle">
             <i class="fa-solid fa-door-open"></i>Reservar Aula
           </a>
           {% else %}
-              <button type="button" class="btn btn-primary btn-sm btn-detalle" data-bs-toggle="modal" data-bs-target="#exampleModal{{ horario.pk }}">
+              <button type="button" class="btn btn-outline-success btn-sm btn-detalle" data-bs-toggle="modal" data-bs-target="#exampleModal{{ horario.pk }}">
                   <i class="fa-solid fa-door-open"></i>Reservar Aula
               </button>
           {% endif %}
@@ -50,7 +50,7 @@
             </div>
             <div class="modal-footer">
               <button type="button" class="btn btn-secondary btn-sm " data-bs-dismiss="modal">Cancelar</button>
-              <a href="{% url 'cursos:asignar_aula' curso_pk=horario.dictado.curso.pk dictado_pk=horario.dictado.pk horario_id=horario.pk %}" class="btn btn-primary btn-sm">
+              <a href="{% url 'cursos:asignar_aula' curso_pk=horario.dictado.curso.pk dictado_pk=horario.dictado.pk horario_id=horario.pk %}" class="btn btn-success btn-sm">
                 <i class="fa-solid fa-door-open"></i> Reservar
               </a>
             </div>

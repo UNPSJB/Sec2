@@ -138,6 +138,8 @@ class DictadoDetailView(DetailView):
         # Obtener todas las clases asociadas al dictado a través de los horarios
         clases = Clase.objects.filter(reserva__horario__dictado=dictado).order_by('reserva__fecha')
         
+        existen_clases =  clases.exists()
+
          # Configurar la paginación
         paginator = Paginator(clases, self.paginate_by)
         page = self.request.GET.get('page')
@@ -191,7 +193,7 @@ class DictadoDetailView(DetailView):
                 context['costo_parcial'] = f"${result} AR por {dictado.get_periodo_pago_display()}"
             else:
                 # PERIODO DE PAGO POR MES
-                if clases.exists():
+                if existen_clases:
                     # Obtén las fechas de la primera y última clase
                     primera_fecha_clase = clases.first().reserva.fecha
                     ultima_fecha_clase = clases.last().reserva.fecha

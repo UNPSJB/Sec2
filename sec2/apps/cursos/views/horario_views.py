@@ -4,6 +4,8 @@ from django.shortcuts import render, redirect
 from django.views.generic import DetailView
 from sec2.utils import ListFilterView
 from django.contrib import messages
+
+from utils.funciones import mensaje_error
 from ..models import Dictado, Horario, Aula, Reserva
 from ..forms.clase_forms import *
 from ..forms.horario_forms import *
@@ -97,6 +99,7 @@ class HorarioCreateView(CreateView):
 
 #-------------- ASIGNAR UN AULA ----------------------------------
 def asignar_aula(request, curso_pk, dictado_pk, horario_id):
+    
     titulo = 'Asignación de aula'
     
     # Obtener el horario y dictado asociado
@@ -133,7 +136,8 @@ def asignar_aula(request, curso_pk, dictado_pk, horario_id):
     aulas_disponibles_con_capacidad = aulas_libres.filter(capacidad__gte=dictado.cupo)
 
     if not aulas_disponibles_con_capacidad.exists():
-        return HttpResponse("No hay aulas disponibles.")
+        mensaje_error(request, f'{MSJ_AULA_CAPACIDAD_NO_EXISTE}')
+        return redirect(reverse('cursos:dictado_detalle', kwargs={'curso_pk': curso_pk, 'dictado_pk': dictado_pk}))
     
     modulos_totales = horario.dictado.curso.modulos_totales
     modulos_por_clase = horario.dictado.modulos_por_clase

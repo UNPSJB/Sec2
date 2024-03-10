@@ -44,7 +44,7 @@ MSJ_ACTIVIDAD_EXITO_BAJA = ' La actividad se se eliminó correctamente!.'
 #MENSAJE ESPECIFICO PARA AULAS
 MSJ_AULA_ALTA_EXITOSA = 'Alta de Actividad exitosa!.'
 MSJ_AULA_EXITO_BAJA = ' La Actividad se se eliminó correctamente!.'
-
+MSJ_AULA_CAPACIDAD_NO_EXISTE = 'No existen o faltan aulas para la capacidad deseada'
 
 #MENSAJE ESPECIFIOC PARA PROFESOR
 MSJ_CORRECTO_ALTA_PROFESOR = 'Profesor dado de alta con éxito!'
