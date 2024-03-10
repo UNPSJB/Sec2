@@ -67,7 +67,7 @@ class ProfesorCreateView(CreateView):
             return redirect(detail_url)
 
     def form_invalid(self, form):
-        mensaje_advertencia(self.request, f'{ICON_TRIANGLE} {MSJ_CORRECTION}')
+        mensaje_advertencia(self.request, f'{MSJ_CORRECTION}')
         return super().form_invalid(form)
 
 ## ------------------ DETALLE DE PROFESOR ------------------

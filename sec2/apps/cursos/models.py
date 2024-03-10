@@ -96,7 +96,7 @@ class Dictado(models.Model):
     modulos_por_clase= models.PositiveIntegerField(help_text="Horas por clase")
     asistencia_obligatoria = models.BooleanField(default=False)
     periodo_pago=models.PositiveSmallIntegerField(choices=PERIODO_PAGO)
-    estado=models.PositiveSmallIntegerField(choices=ESTADO_DICTADO)
+    estado = models.PositiveSmallIntegerField(choices=ESTADO_DICTADO, default=1)
     fecha = models.DateTimeField(help_text="Seleccione la fecha de inicio")
     fecha_fin = models.DateTimeField(null=True,blank=True )
     cupo = models.PositiveIntegerField(

@@ -80,6 +80,7 @@ class DictadoCreateView(CreateView):
 
     def form_invalid(self, form):
         messages.warning(self.request, f'{ICON_TRIANGLE} {MSJ_CORRECTION}')
+        print("ESTOY AQUIII")
         context = self.get_context_data()
         print("Errores del formulario:", form.errors)
         return self.render_to_response(context)
