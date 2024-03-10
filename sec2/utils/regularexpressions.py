@@ -54,8 +54,8 @@ text_validator = RegexValidator(
 )
 
 text_and_numeric_validator = RegexValidator(
-    regex=r'^[A-Za-z0-9\sñÑ]+$',
-    message=f'Sin caracteres especiales.',
+    regex=r'^[A-Za-z0-9\sñÑáéíóúÁÉÍÓÚ]+$',
+    message='Solo se permiten letras, números y espacios, con o sin tildes.',
     code='invalid_text'
 )
 

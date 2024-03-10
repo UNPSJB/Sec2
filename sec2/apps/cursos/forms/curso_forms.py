@@ -57,7 +57,7 @@ class CursoFilterForm(FiltrosForm):
         widget=forms.Select(attrs={'class': 'form-control'})
     )
     actividad = forms.ModelChoiceField(
-        queryset=Actividad.objects.all(),
+        queryset=Actividad.objects.all().order_by('nombre'),
         label='Actividad',
         required=False,
         widget=forms.Select(attrs={'class': 'form-control'})

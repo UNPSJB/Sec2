@@ -47,8 +47,8 @@ class Curso(models.Model):
     modulos_totales= models.PositiveIntegerField(help_text="Horas totales del curso")    
     nombre = models.CharField(
         max_length=50,
-        validators=[text_and_numeric_validator],  # Añade tu validador personalizado si es necesario
-        help_text="Sin caracteres especiales."
+        validators=[text_and_numeric_validator],
+        help_text="Solo se permiten letras, números y espacios, con o sin tildes."
     )
     descripcion = models.CharField(
         max_length=255,

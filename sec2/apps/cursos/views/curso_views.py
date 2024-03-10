@@ -13,7 +13,7 @@ from django.urls import reverse_lazy
 class CursoCreateView(CreateView):
     model = Curso
     form_class = CursoForm
-    success_url = reverse_lazy('cursos:index')
+    success_url = reverse_lazy('cursos:curso_crear')
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -103,7 +103,7 @@ class CursoDetailView(DetailView):
         context = super().get_context_data(**kwargs)
         curso = self.object  # El objeto de curso obtenido de la vista
 
-        context['titulo'] = f"Curso: {self.object.nombre}"
+        context['titulo'] = f"{self.object.nombre}"
         context['tituloListado'] = 'Dictados Asociados'
 
         # Obtener todos los dictados asociados al curso junto con los horarios

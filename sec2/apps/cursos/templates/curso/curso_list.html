@@ -12,8 +12,8 @@
     <thead>
       <tr>
         <th>#</th>
-        <th>Act</th>
         <th>Área</th>
+        <th>Act</th>
         <th>Nombre</th>
         <th>Tipo</th>
         <th>Modulos</th>
@@ -26,8 +26,8 @@
       {% for curso in object_list %}
         <tr class="bg-transition fila-personalizada">
           <td class="negrita"> {{ page_obj.start_index|add:forloop.counter0 }}</td>
-          <td>{{ curso.actividad }}</td>
           <td>{{ curso.get_area_display }}</td>
+          <td>{{ curso.actividad }}</td>
           <td>{{ curso.nombre }}</td>
           <td>
             {% if curso.es_convenio %}
