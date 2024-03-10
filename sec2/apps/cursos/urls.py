@@ -43,7 +43,10 @@ urlpatterns = [
     path('cursos/curso/<int:pk>/eliminar', curso_eliminar, name="curso_eliminar"),
     path('cursos/curso/<int:pk>/listaespera', cursoListaEspera, name="curso_lista_espera"),
     path('cursos/curso/<int:pk>/listaespera/rol/<int:rol_pk>/<str:accion>/', gestionListaEspera, name="gestion_lista_espera"),
-
+    
+    # GESTION DE LISTA DE ESPERA
+    path('cursos/curso/<int:pk>/listaespera/alumnopotencial/inscribir', AlumnoPotencialCreateView.as_view(), name="alumno_nuevo_lista_espera"),
+    
 
 
     ## VERIFICAR Y BUSCAR PERSONA ANTES DE PROCEDER A LA INSCRIPCION
@@ -78,9 +81,7 @@ urlpatterns = [
     #ALUMNNOS POR CURSO
     path('cursos/curso/<int:curso_pk>/dictados/dictado/<int:dictado_pk>/Alumnos', AlumnosEnDictadoList.as_view(), name="alumno_inscripto"),
 
-    # GESTION DE LISTA DE ESPERA
-    path('cursos/curso/<int:curso_pk>/dictados/dictado/<int:dictado_pk>/AlumnoNuevo/inscribirListaEspera', AlumnoListaEsperaCreateView.as_view(), name="alumno_nuevo_lista_espera"),
-    
+
     # GESTION DE INSCRIPCION
     path('cursos/curso/<int:curso_pk>/dictados/dictado/<int:dictado_pk>/<str:tipo>/<int:persona_pk>/Incripcion/<str:accion>/', gestionInscripcion, name="gestion_inscripcion"),
     path('cursos/curso/<int:curso_pk>/dictados/dictado/<int:dictado_pk>/AlumnoNuevo/inscribir', AlumnoCreateView.as_view(), name="alumno_nuevo_inscribir"),

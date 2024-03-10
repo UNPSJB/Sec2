@@ -26,7 +26,13 @@
       <i class="fa-solid fa-list"></i>
       Lista de espera
       </a>
-      
+
+
+      <a href="{% url 'cursos:gestion_lista_espera' pk=curso_pk rol_pk=9999 accion='inscribir_alumno_potencial' %}" 
+      class="btn btn-primary btn-sm btn-detalle" >
+      <i class="fa-solid fa-plus"></i> Nuevo interesado
+      </a> 
+
       <div class="d-flex">
           <button type="button" class="btn btn-sm btn-secondary ml-2" onclick="cerrarVentana()">Cerrar</button>
       </div>
@@ -102,7 +108,7 @@ function mostrarResultados(rol) {
     // PERSONA ENCONTRADA
     if (rol) {
       resultadosDiv.innerHTML = mostrarInformacion(rol.persona);
-      resultadosDiv.innerHTML += ` <p>Rol principal: ${rol.tipo_rol}.</p>`;
+      resultadosDiv.innerHTML += ` <p>Rol principal: ${rol.tipo_rol} .</p>`;
       //resultadosDiv.innerHTML += `<p>Rol secundario:</p>`;
       //resultadosDiv.innerHTML += mostrarTipoPersona(rol.tipo, rol.persona);
       
@@ -139,12 +145,17 @@ function mostrarResultados(rol) {
       .replace('9999', pk)
       .replace('8888', rol_pk)
       .replace('placeholder', accion);  // Reemplazar la acción dinámicamente
-    window.location.href = url;
+    alert(url)
+      window.location.href = url;
+
   }
 
 
-
-    // Función que devuelve el estado de inscripción
+  function gestionListaEsperaAlumnoNuevo(accion, curso_pk, persona_pk) {
+    gestionListaEspera(accion, curso_pk, 9999999999);
+  }
+    
+  // Función que devuelve el estado de inscripción
     function existeEnListaEspera(rol) {
       console.log("inscritosEsperaIds:", inscritosEsperaIds);
       console.log("persona.pk:", rol.pk);

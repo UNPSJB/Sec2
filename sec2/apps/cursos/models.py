@@ -156,6 +156,9 @@ class Alumno(Rol):
     # ForeignKey
     dictados = models.ManyToManyField(Dictado, related_name="alumnos", blank=True)
     # lista_espera = models.ManyToManyField('Dictado', related_name='alumnos_en_espera', blank=True)
+    
+    # Si realmente es un alumno o solo un interesado en algun curso
+    es_potencial = models.BooleanField(default=True) 
 
     TIPO = ROL_TIPO_ALUMNO
     def agregar_dictado(self, dictado):

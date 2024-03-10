@@ -469,88 +469,88 @@ from django.http import HttpResponseRedirect
 
 def gestionListaEspera(request, pk, rol_pk, accion):
     curso = get_object_or_404(Curso, pk=pk)
-    rol = get_object_or_404(Rol, pk=rol_pk)
     
-    print(curso)
-    print(rol)
+    if accion == 'inscribir_alumno_potencial':
+        # Redirige a la vista correspondiente para inscribir al alumno potencial
+        url = reverse('cursos:alumno_nuevo_lista_espera', kwargs={'pk': pk})
+        return HttpResponseRedirect(url)
+
+    rol = get_object_or_404(Rol, pk=rol_pk)
 
     if accion == 'agregar_lista':
-        print("Estoy en agregar lista - if")
         # Verifica si el rol aún no está en ListaEspera para el Curso dado
         if not ListaEspera.objects.filter(curso=curso, rol=rol).exists():
             # Crea una nueva instancia de ListaEspera y la guarda
             lista_espera_instance = ListaEspera(curso=curso, rol=rol)
             lista_espera_instance.save()
             curso.lista_espera.add(lista_espera_instance)
-            curso.save
+            curso.save()
             mensaje_exito(request, f'{MSJ_LISTAESPERA_AGREGADO}')
-            return redirect('cursos:verificar_persona', curso_pk=pk)
+        return redirect('cursos:verificar_persona', curso_pk=pk)
 
-    elif accion == 'quitar_lista' : 
+    elif accion == 'quitar_lista':
         # Busca la instancia de ListaEspera relacionada con el Curso y el Rol
         lista_espera_instance = ListaEspera.objects.get(curso=curso, rol=rol)
-        
-        # Elimina la instancia de ListaEspera
-        lista_espera_instance.delete()
 
-        # Quítala del campo lista_espera del modelo Curso
-        curso.lista_espera.remove(lista_espera_instance)
-        curso.save()
+        # Si tiene rol como alumno
+        if lista_espera_instance.rol.tipo == 3: 
+            alumno = get_object_or_404(Alumno, persona__pk=lista_espera_instance.rol.persona.pk)
+            
+            # Cuenta en cuántas listas de espera está mi alumno potencial
+            cantidad_listas_espera = ListaEspera.objects.filter(rol=rol).count()
+
+            lista_espera_instance.delete()
+            curso.lista_espera.remove(lista_espera_instance)
+            curso.save()
+
+            if cantidad_listas_espera == 1 and alumno.es_potencial:
+                alumno.delete()
+                mensaje_exito(request, f'{MSJ_ALUMNO_POTENCIA_ELIMINADO}')
+        else:
+            # Elimina la instancia de ListaEspera
+            lista_espera_instance.delete()
+            # Quítala del campo lista_espera del modelo Curso
+            curso.lista_espera.remove(lista_espera_instance)
+            curso.save()
+
         mensaje_exito(request, f'{MSJ_LISTAESPERA_ELIMINADO}')
         return redirect('cursos:curso_lista_espera', pk=pk)
-
-
-
-    # dictado = get_object_or_404(Dictado, curso__pk=curso_pk, pk=dictado_pk)
-
-    # if tipo == 'Afiliado':
-    #     persona = get_object_or_404(Afiliado, persona__pk=persona_pk)
-    # elif tipo == 'Familiar':
-    #     persona = get_object_or_404(Familiar, persona__pk=persona_pk)
-    # elif tipo == 'Profesor':
-    #     persona = get_object_or_404(Profesor, persona__pk=persona_pk)
-    # elif tipo == 'Alumno':
-    #     persona = get_object_or_404(Alumno, persona__pk=persona_pk)
-    # elif tipo == 'AlumnoNuevo':
-    #     pass
-    # else:
-    #     raise Http404("Tipo de persona no válido")
-
-    if accion == 'inscribir':
-        # persona.lista_espera.remove(dictado)
+    
+    # if accion == 'inscribir':
+    #     # persona.lista_espera.remove(dictado)
         
-        if tipo == 'Profesor':
-            persona.dictados_inscriptos.add(dictado)
-        else:
-            persona.dictados.add(dictado)
+    #     if tipo == 'Profesor':
+    #         persona.dictados_inscriptos.add(dictado)
+    #     else:
+    #         persona.dictados.add(dictado)
 
-        persona.persona.es_alumno = True
-        persona.persona.save()
-        messages.success(request, f'{ICON_CHECK} {tipo} inscrito al curso exitosamente!. Cierre la ventana y recargue el detalle del dictado')
+    #     persona.persona.es_alumno = True
+    #     persona.persona.save()
+    #     messages.success(request, f'{ICON_CHECK} {tipo} inscrito al curso exitosamente!. Cierre la ventana y recargue el detalle del dictado')
     
-    elif accion == 'inscribir_alumno_nuevo':
-        url = reverse('cursos:alumno_nuevo_lista_espera', kwargs={'curso_pk': curso_pk, 'dictado_pk': dictado_pk})
-        return HttpResponseRedirect(url)
+    # elif accion == 'inscribir_alumno_nuevo':
+    #     url = reverse('cursos:alumno_nuevo_lista_espera', kwargs={'curso_pk': curso_pk, 'dictado_pk': dictado_pk})
+    #     return HttpResponseRedirect(url)
     
-    elif accion == 'quitar':
-        # persona.lista_espera.remove(dictado)
-        messages.success(request, f'{ICON_CHECK} {tipo} sacado de la lista de espera ')
+    # elif accion == 'quitar':
+    #     # persona.lista_espera.remove(dictado)
+    #     messages.success(request, f'{ICON_CHECK} {tipo} sacado de la lista de espera ')
     
-    elif accion == 'agregar_lista':
-        if tipo == 'Profesor':
-             # Verificar si existe un Titular con ese Profesor y ese Dictado
-            titular_existente = Titular.objects.filter(profesor=persona, dictado=dictado).exists()   
-            if titular_existente:
-                messages.error(request, f'{ICON_ERROR} Error: El profesor a inscribir es titular del dictado.')
-                return redirect('cursos:verificar_persona', curso_pk=curso_pk, dictado_pk=dictado_pk)
+    # elif accion == 'agregar_lista':
+    #     if tipo == 'Profesor':
+    #          # Verificar si existe un Titular con ese Profesor y ese Dictado
+    #         titular_existente = Titular.objects.filter(profesor=persona, dictado=dictado).exists()   
+    #         if titular_existente:
+    #             messages.error(request, f'{ICON_ERROR} Error: El profesor a inscribir es titular del dictado.')
+    #             return redirect('cursos:verificar_persona', curso_pk=curso_pk, dictado_pk=dictado_pk)
 
-        messages.success(request, f'{ICON_CHECK} {tipo} agregado a la lista de espera. Cierre la ventana y recargue el detalle del dictado')
-        # persona.lista_espera.add(dictado)
-        persona.save()
-        return redirect('cursos:verificar_persona', curso_pk=curso_pk, dictado_pk=dictado_pk)
+    #     messages.success(request, f'{ICON_CHECK} {tipo} agregado a la lista de espera. Cierre la ventana y recargue el detalle del dictado')
+    #     # persona.lista_espera.add(dictado)
+    #     persona.save()
+    #     return redirect('cursos:verificar_persona', curso_pk=curso_pk, dictado_pk=dictado_pk)
     
-    persona.save()
-    return redirect('cursos:dictado_lista_espera', curso_pk=curso_pk, dictado_pk=dictado_pk)
+    # persona.save()
+    # return redirect('cursos:dictado_lista_espera', curso_pk=curso_pk, dictado_pk=dictado_pk)
 
 
 # ----------- GESTION DE INSCRIPCION

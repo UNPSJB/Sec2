@@ -111,12 +111,13 @@ class Rol(models.Model):
             return 'Afiliado'
         elif self.tipo == 2: 
             return 'Familiar'
-        elif self.tipo == 3: 
+        elif self.tipo == 3:
             return 'Alumno'
         elif self.tipo == 4: 
             return 'Profesor'
         elif self.tipo == 5: 
-            return 'Encargado'        
+            return 'Encargado'
+
     # def save(self, *args, **kwargs):
     #     if self.pk is None:
     #         self.tipo = self.__class__.TIPO

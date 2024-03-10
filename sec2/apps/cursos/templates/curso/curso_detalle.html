@@ -142,10 +142,10 @@
 
 <div class="col d-flex justify-content-center"> 
   <a href="{% url 'cursos:curso_lista_espera' curso.pk %}" 
-  class="btn btn-warning btn-sm btn-detalle" 
-  onclick="window.open(this.href, '_blank', 'width=600,height=400'); return false;">
-  <i class="fa-solid fa-list"></i>
-  Lista de espera
+    class="btn btn-warning btn-sm btn-detalle" 
+    onclick="openOrFocusWindow(this.href, 'Lista de espera', 600, 400); return false;">
+    <i class="fa-solid fa-list"></i>
+    Lista de espera
   </a>
 </div>
 
@@ -196,5 +196,21 @@
   </table>
   {% include 'pagination.html' with page_obj=dictados %}
 </div>
+
+
+<script>
+  var listaEsperaWindow = null;
+
+  function openOrFocusWindow(url, name, width, height) {
+    // Verifica si la ventana ya está abierta
+    if (listaEsperaWindow && !listaEsperaWindow.closed) {
+      // Si está abierta, enfócala
+      listaEsperaWindow.focus();
+    } else {
+      // Si no está abierta, abre una nueva ventana
+      listaEsperaWindow = window.open(url, name, 'width=' + width + ',height=' + height);
+    }
+  }
+</script>
 
 {% endblock %}
