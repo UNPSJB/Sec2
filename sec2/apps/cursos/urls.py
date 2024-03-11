@@ -46,13 +46,10 @@ urlpatterns = [
     
     # GESTION DE LISTA DE ESPERA
     path('cursos/curso/<int:pk>/listaespera/alumnopotencial/inscribir', AlumnoPotencialCreateView.as_view(), name="alumno_nuevo_lista_espera"),
-    
-
 
     ## VERIFICAR Y BUSCAR PERSONA ANTES DE PROCEDER A LA INSCRIPCION
     path('cursos/curso/<int:curso_pk>/verificarpersona', VerificarInscripcionView.as_view(), name="verificar_persona"),
     path('buscar-persona/', BuscarPersonaView.as_view(), name='buscar_persona'),
-
 
     # DICTADOS (accedido desde cursos)
     path('cursos/curso/<int:pk>/dictados/dictado/crear', DictadoCreateView.as_view(), name="dictado_crear"),
@@ -64,7 +61,6 @@ urlpatterns = [
     # HORARIO (accedido desde dictado)
     path('curso/<int:curso_pk>/dictados/dictado/<int:dictado_pk>/horarios/horario/crear/', HorarioCreateView.as_view(), name='horario_crear'),
     path('curso/<int:curso_pk>/dictados/dictado/<int:dictado_pk>/horarios/horario/<int:horario_pk>/elminar', eliminarHorario, name='horario_eliminar'),
-
 
     # ASIGNACIÓN DE AULA (accedido desde el horario)
     path('curso/<int:curso_pk>/dictados/dictado/<int:dictado_pk>/horarios/horario/<int:horario_id>/vincularAula/', asignar_aula, name='asignar_aula'),

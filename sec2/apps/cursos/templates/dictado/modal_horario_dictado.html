@@ -1,9 +1,8 @@
-<table class="table table-sm table-hover" style="width: 40%;">
+<table class="table table-sm table-hover" style="width: 45%;">
     <thead>
       <tr>
         <th>Día</th>
-        <th>Desde</th>
-        <th>Hasta</th>
+        <th>Horario</th>
         <th>Lugar</th>
         <th></th>
       </tr>
@@ -12,13 +11,12 @@
       {% for horario in horarios %}
       <tr>
         <td>{{ horario.get_dia_semana_display }}</td>
-        <td>{{ horario.hora_inicio }} hrs.</td>
-        <td>{{ horario.hora_fin }} hrs.</td>
+        <td>{{ horario.hora_inicio }} a {{ horario.hora_fin }} hrs.</td>
         <td>
           {% if horario.reserva %}
           {{ horario.reserva.aula }}
           {% else %}
-          Sin reserva
+          Sin asignar
           {% endif %}
         </td>
         

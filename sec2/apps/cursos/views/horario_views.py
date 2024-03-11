@@ -120,10 +120,10 @@ def eliminarHorario(request, curso_pk, dictado_pk, horario_pk):
 
 #-------------- ASIGNAR UN AULA ----------------------------------
 def asignar_aula(request, curso_pk, dictado_pk, horario_id):
-    
+
     titulo = 'Asignación de aula'
-    
-    # Obtener el horario y dictado asociado
+
+    # Obtengo el horario y dictado asociado
     horario = get_object_or_404(Horario, id=horario_id)
     dictado = horario.dictado
 
@@ -131,13 +131,61 @@ def asignar_aula(request, curso_pk, dictado_pk, horario_id):
     hora_inicio = horario.hora_inicio
     hora_fin = horario.hora_fin
 
-    reservas = Reserva.objects.all()
-  
+    # Obtener la fecha de inicio y fin del rango de fechas
+    if horario.es_primer_horario: 
+        fecha_inicio = horario.dictado.fecha
+    else:
+        fecha_inicio = calcular_fecha_inicio(horario)
+
+    #obtengo la decha de inicio y fecha de fin del horario
+    modulos_totales = horario.dictado.curso.modulos_totales
+    modulos_por_clase = horario.dictado.modulos_por_clase
+    cantidad_clases = modulos_totales / modulos_por_clase
+
+    horarios_relacionados = Horario.objects.filter(dictado=dictado)
+
+    clases_por_dictado = cantidad_clases / horarios_relacionados.count()
+
+    clases_por_dictado_redondeado = math.ceil(clases_por_dictado)
+    clases_por_dictado_redondeado = clases_por_dictado_redondeado - 1
+    fecha_fin = fecha_inicio + timedelta(days=(7 * clases_por_dictado_redondeado ))
+    
+    print("COSITAS PARA AULAS SUPERPUESTAS")
+    print(clases_por_dictado_redondeado)
+    print(fecha_inicio)
+    print(fecha_fin)
+    print(hora_inicio)
+    print(hora_fin)
+    print("FIN")
+
     # Obtener las reservas que se superponen con el horario actual
     reservas_superpuestas = Reserva.objects.filter(
-        Q(fecha=dictado.fecha) &
-        Q(horario__hora_inicio__lt=hora_fin, horario__hora_fin__gt=hora_inicio)
+        Q(fecha__range=[fecha_inicio, fecha_fin]) |
+        Q(fecha__exact=fecha_inicio) |
+        Q(fecha__exact=fecha_fin),
+        Q(horario__hora_fin__gt=hora_inicio, horario__hora_inicio__lt=hora_fin)
     )
+    
+    fecha_actual = fecha_inicio
+    reservas_en_fecha = []
+
+    while fecha_actual <= fecha_fin:
+        reservas = Reserva.objects.filter(fecha=fecha_actual)
+        if reservas.exists():
+            for reserva in reservas:
+                # Verificar superposición de horarios
+                if (
+                    reserva.horario.hora_inicio < hora_fin and
+                    reserva.horario.hora_fin > hora_inicio
+                ):
+                    print("Superposición con la reserva:")
+                    print("HORARIO INICIO:", reserva.horario.hora_inicio)
+                    print("HORARIO FIN:", reserva.horario.hora_fin)
+                    reservas_en_fecha.append(reserva)  # Agregar a la lista si hay superposición
+
+        fecha_actual += timedelta(days=7)  # Incrementar la fecha en una semana
+    
+    print("RESERVAS EN FECHA", reservas_en_fecha)
 
     # Obtener todas las aulas filtradas por tipo
     necesita_equipamento_informatico = horario.dictado.curso.requiere_equipamiento_informatico
@@ -147,14 +195,25 @@ def asignar_aula(request, curso_pk, dictado_pk, horario_id):
     else:
         todas_aulas = Aula.objects.filter(tipo='normal')
 
+    # Convertir la lista en un queryset
+    reservas_en_fecha_queryset = Reserva.objects.filter(id__in=[reserva.id for reserva in reservas_en_fecha])
+    
     # Obtener las aulas ocupadas en el horario actual
-    aulas_ocupadas = reservas_superpuestas.values_list('aula', flat=True)
+    aulas_ocupadas = reservas_en_fecha_queryset.values_list('aula', flat=True)
+    # Obtener las aulas ocupadas en el horario actual
+    # aulas_ocupadas = reservas_en_fecha.values_list('aula', flat=True)
+
+    print("RESEVAS EN FECHA", aulas_ocupadas)
+
+    print("AULAS OCUPADAS  ", aulas_ocupadas)
 
     # Obtener las aulas que no están ocupadas
     aulas_libres = todas_aulas.exclude(id__in=aulas_ocupadas)
+    print("AULAS LIBRES", aulas_libres)
 
     # Obtener las aulas disponibles que tienen capacidad para el cupo del dictado
     aulas_disponibles_con_capacidad = aulas_libres.filter(capacidad__gte=dictado.cupo)
+    print("AULAS DISPONIBLES CON CAPACIDAD", aulas_disponibles_con_capacidad)
 
     if not aulas_disponibles_con_capacidad.exists():
         mensaje_error(request, f'{MSJ_AULA_CAPACIDAD_NO_EXISTE}')
@@ -186,6 +245,7 @@ def asignar_aula(request, curso_pk, dictado_pk, horario_id):
         reservas__horario__hora_inicio__lt=horario.hora_fin,
         reservas__horario__hora_fin__gt=horario.hora_inicio
     )
+    print("AULAS EN RANGO", aulas_disponibles_en_rango)
 
     if request.method == 'POST':
         aula_seleccionada_id = request.POST.get('aula_seleccionada')
@@ -215,7 +275,7 @@ def asignar_aula(request, curso_pk, dictado_pk, horario_id):
             mensaje_error(request, f'{MSJ_HORARIO_RESERVA_AULA_ASIGNADA}')
             return redirect(reverse('cursos:dictado_detalle', kwargs={'curso_pk': curso_pk, 'dictado_pk': dictado_pk}))
         
-        return render(request, 'dictado/asignar_aula.html', {'aulas_disponibles': aulas_disponibles_en_rango, 'titulo' : titulo, 'curso_pk':curso_pk, 'dictado_pk':dictado_pk,'horario_id':horario_id})
+        return render(request, 'dictado/asignar_aula.html', {'aulas_disponibles': aulas_disponibles_con_capacidad, 'titulo' : titulo, 'curso_pk':curso_pk, 'dictado_pk':dictado_pk,'horario_id':horario_id})
 
 #-------------- CALCULA LA FECHA DE INICIO ----------------------------------
 def calcular_fecha_inicio(horario):

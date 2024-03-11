@@ -148,7 +148,6 @@ class Reserva(models.Model):
     # ForeignKey
     horario = models.ForeignKey(Horario, related_name="reservass", on_delete=models.CASCADE, null=True, blank=True)
     aula = models.ForeignKey(Aula, related_name="reservas", on_delete=models.CASCADE, null=True, blank=True)
-    
     fecha = models.DateField()
 
 #------------- ALUMNO --------------------
