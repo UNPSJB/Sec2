@@ -8,45 +8,51 @@
 {% endblock %}
 
 {% block container %}
-  <br />
-  <h3 class="titulo">{{ titulo }}</h3>
-  <div class="container">
-    {% include 'message.html' %}
-    <div class="row justify-content-center">
-
-      {% if lista_espera %}
+<br />
+<h3 class="titulo">{{ titulo }}</h3>
+<div class="container">
+  {% include 'message.html' %}
+  <div class="row justify-content-center">
+    {% if lista_espera %}
       <table class="table table-sm table-hover">
-          <thead>
-            <tr>
-              <th>#</th>
-              <th>Rol</th>
-              <th>Fecha</th>
-              {% include 'tabla_persona_cabecera.html' %}
-              <th>Celular</th>
-              <th></th>
-            </tr>
-          </thead>
-          <tbody>
-            {% for lista in lista_espera %}
-            <tr>
-              <td class="negrita">{{ forloop.counter }}</td>
-              <td>{{ lista.rol.obtenerTipo }}</td>
-              <td>{{ lista.fechaInscripcion|date:"y/m/d" }} </td>
-              {% include 'tabla_persona_cuerpo.html' with persona=lista.rol.persona %}
-              <td>{{ lista.rol.persona.celular }}</td>
-
-              <td class="text-end">
-                <button class="btn btn-danger btn-sm btn-detalle" data-bs-toggle="modal"
-                data-bs-target="#modal_eliminar_sacar_lista_espera_{{ lista.pk }}"
-                >
-                Eliminar
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Rol</th>
+            <th>Fecha</th>
+            {% include 'tabla_persona_cabecera.html' %}
+            <th>Celular</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for lista in lista_espera %}
+          <tr>
+            <td class="negrita">{{ forloop.counter }}</td>
+            <td>{{ lista.rol.obtenerTipo }}</td>
+            <td>{{ lista.fechaInscripcion|date:"y/m/d" }} </td>
+            {% include 'tabla_persona_cuerpo.html' with persona=lista.rol.persona %}
+            <td>{{ lista.rol.persona.celular }}</td>
+            
+            <td class="text-end">
+              {% if dictados %}
+              <button class="btn btn-success btn-sm btn-detalle" data-bs-toggle="modal"
+              data-bs-target="#modal_inscribir_sacar_incribir_dictado{{ lista.pk }}">
+              Inscribir
               </button>
-              </td>
-
-
-              {% with tipo_persona=inscrito_listaEspera.persona.es_afiliado|yesno:"Afiliado," %}
-              {% with tipo_persona_grupo_familiar=inscrito_listaEspera.persona.es_grupo_familiar|yesno:"Familiar," %}
-              {% with tipo_persona_profesor=inscrito_listaEspera.persona.es_profesor|yesno:"Profesor," %}
+              {% endif %}
+            
+              
+              <button class="btn btn-danger btn-sm btn-detalle" data-bs-toggle="modal"
+              data-bs-target="#modal_eliminar_sacar_lista_espera_{{ lista.pk }}">
+              Eliminar
+              </button>
+            </td>
+          
+          
+          {% with tipo_persona=inscrito_listaEspera.persona.es_afiliado|yesno:"Afiliado," %}
+          {% with tipo_persona_grupo_familiar=inscrito_listaEspera.persona.es_grupo_familiar|yesno:"Familiar," %}
+          {% with tipo_persona_profesor=inscrito_listaEspera.persona.es_profesor|yesno:"Profesor," %}
               {% with tipo_persona_es_alumno=inscrito_listaEspera.persona.es_alumno|yesno:"Alumno," %}
               <td>
               {{ tipo_persona }}
@@ -74,10 +80,7 @@
                 {% endwith %}
 
                 {% include "curso/modal_confirm_sacar_lista_espera.html"  %}
-
-
-
-                {% comment %} {% include "dictado/modal_confirm_inscribir_lista_espera.html" with tipo=tipo_persona %} {% endcomment %}
+                {% include "curso/modal_confirm_inscribir_lista_espera.html" with tipo=tipo_persona %}
               </tr>
         {% endfor %}
         </tbody>
@@ -96,6 +99,7 @@
       </div>
   </div>
   </div>
+
   {% endblock %}
 
   {% block extrajs %}

@@ -68,7 +68,10 @@ MSJ_CUIT_INVALIDO = 'El afiliado no tiene asociado el cuit empresarial ingresado
 
 
 MSJ_LISTAESPERA_AGREGADO = 'La persona ha sido agrega a la lista de espera correctamente.'
-MSJ_LISTAESPERA_ELIMINADO = 'La persona ha sido quitara a la lista de espera correctamente.'
+MSJ_LISTAESPERA_ELIMINADO = 'La persona ha sido quitada de la lista de espera correctamente.'
+MSJ_LISTAESPERA_ELIMINADO_AGREGADO_DICTADO = 'La persona ha sido quitada de la lista y agregada al dictado.'
+
+
 MSJ_ALUMNO_POTENCIA_ELIMINADO = 'Alumno potencial borrado del sistema.'
 
 MSJ_RECARGA_PAGINA = 'Recargue la pagina del detalle del curso para poder visualizar.'

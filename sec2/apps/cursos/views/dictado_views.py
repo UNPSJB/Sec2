@@ -160,8 +160,8 @@ class DictadoDetailView(DetailView):
         alumnos_inscritos = Alumno.objects.filter(dictados=dictado)
         
         # Combino todos los objetos en una lista
-        todos_inscritos = list(afiliado_inscritos) + list(profesores_inscritos) + list(alumnos_inscritos)
-        # todos_inscritos = list(afiliado_inscritos) + list(familiares_inscritos) + list(profesores_inscritos) + list(alumnos_inscritos)
+        # todos_inscritos = list(afiliado_inscritos) + list(profesores_inscritos) + list(alumnos_inscritos)
+        todos_inscritos = list(afiliado_inscritos) + list(familiares_inscritos) + list(profesores_inscritos) + list(alumnos_inscritos)
 
         # Ordeno la lista por DNI y Apellido
         todos_inscritos_sorted = sorted(todos_inscritos, key=lambda x: (x.persona.dni, x.persona.apellido))
@@ -479,6 +479,39 @@ def gestionListaEspera(request, pk, rol_pk, accion):
         return HttpResponseRedirect(url)
 
     rol = get_object_or_404(Rol, pk=rol_pk)
+
+    if accion == 'incorporar_dictado':
+        # Obtén el valor de dictado_id del formulario
+        dictado_pk = request.POST.get('dictado_pk')
+        dictado = get_object_or_404(Dictado, pk=dictado_pk)
+        
+        if rol.tipo == 1: 
+            persona = get_object_or_404(Afiliado, persona__pk=rol.persona.pk)
+        elif rol.tipo == 2: 
+            persona = get_object_or_404(Familiar, persona__pk=rol.persona.pk)
+
+        elif rol.tipo == 3:
+            persona = get_object_or_404(Alumno, persona__pk=rol.persona.pk)
+            persona.es_potencial = False
+            persona.save
+        elif rol.tipo == 4: 
+            persona = get_object_or_404(Profesor, persona__pk=rol.persona.pk)
+        elif rol.tipo == 5: 
+            # [FALTA: CREAR AL ENCARGADO]
+            persona = get_object_or_404(Profesor, persona__pk=rol.persona.pk)
+        
+        persona.dictados.add(dictado)
+        persona.persona.es_alumno = True
+        persona.persona.save()                
+        persona.save()
+
+        lista_espera_instance = ListaEspera.objects.get(curso=curso, rol=rol)
+        lista_espera_instance.delete()
+        curso.lista_espera.remove(lista_espera_instance)
+        curso.save()
+
+        mensaje_exito(request, f'{MSJ_LISTAESPERA_ELIMINADO_AGREGADO_DICTADO}')
+        return redirect('cursos:curso_lista_espera', pk=pk)
 
     if accion == 'agregar_lista':
         # Verifica si el rol aún no está en ListaEspera para el Curso dado

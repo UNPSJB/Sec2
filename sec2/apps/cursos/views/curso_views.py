@@ -1,6 +1,6 @@
 from django.shortcuts import get_object_or_404, redirect
 from apps.cursos.forms.actividad_forms import ActividadForm
-from apps.cursos.models import Curso
+from apps.cursos.models import Curso, Dictado
 from apps.personas.models import Persona, Rol
 from ..forms.curso_forms import *
 from django.views.generic.edit import CreateView, UpdateView
@@ -235,6 +235,7 @@ class CursoUpdateView(UpdateView):
 def cursoListaEspera(request, pk):
     # Obtener el objeto Dictado
     curso = Curso.objects.get(id=pk)
+    dictados = Dictado.objects.all().filter(curso=curso)
 
     titulo = f'Inscritos en espera para {curso.nombre}'
 
@@ -265,6 +266,7 @@ def cursoListaEspera(request, pk):
 
     context = {
         'curso': curso,
+        'dictados': dictados,
         # 'todos_inscritos_listaEspera': todos_inscritos_listaEspera,
         'titulo': titulo,
         'lista_espera': lista_espera,

@@ -83,11 +83,19 @@
 {% endblock %}
 
 {% block botones %}
-  {% comment %} <div class="col d-flex justify-content-center">
-    <a href="{% url 'cursos:dictado_editar' curso_pk=curso.pk dictado_pk=dictado.pk %}" class="btn btn-primary btn-sm btn-detalle"><i class="fa-regular fa-pen-to-square"></i> Modificar</a>
-  </div> {% endcomment %}
+<div class="col d-flex">
+  <a href="{% url 'cursos:curso_detalle' pk=dictado.curso.pk %}" class="btn btn-secondary btn-detalle">
+    <i class="fa-solid fa-arrow-left"></i> Volver curso
+  </a>
+</div>
+
+<div class="col d-flex">
+    {% comment %} <a href="{% url 'cursos:dictado_editar' curso_pk=curso.pk dictado_pk=dictado.pk %}" class="btn btn-primary btn-sm btn-detalle"><i class="fa-regular fa-pen-to-square"></i> Modificar</a> {% endcomment %}
+</div>
   
-  <div class="col d-flex justify-content-center">
+
+
+  <div class="col d-flex">
     <button type="button" class="btn btn-info btn-sm btn-detalle" data-bs-toggle="modal" data-bs-target="#exampleModal">
       <i class="fa-solid fa-list"></i>
       Alumnos
@@ -104,7 +112,7 @@
 
     {% elif todos_los_horarios_con_aula %}
       {% if not clases %}
-      <a href="{% url 'cursos:generar_clases' curso_pk=curso.pk dictado_id=dictado.pk %}" class="btn btn-primary btn-detalle">
+      <a href="{% url 'cursos:generar_clases' curso_pk=curso.pk dictado_id=dictado.pk %}" class="btn btn-outline-success btn-detalle">
         <i class="fa-solid fa-plus"></i> Generar Clases
       </a>
       {% elif not dictado.estado == 3 %}
@@ -113,6 +121,9 @@
       </a>
       {% endif %}
     {% endif %}
+    
+
+
   </div>
 
 

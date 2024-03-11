@@ -50,12 +50,12 @@
         <div class="modal-footer">
 
           {% if not dictado.estado == 3 %}
-          <a href="{% url 'cursos:dictado_lista_espera' curso_pk=dictado.curso.pk dictado_pk=dictado.pk %}" 
+          {% comment %} <a href="{% url 'cursos:curso_lista_espera' curso_pk=dictado.curso.pk dictado_pk=dictado.pk %}" 
           class="btn btn-warning btn-sm " 
           onclick="window.open(this.href, '_blank', 'width=600,height=400'); return false;">
           <i class="fa-solid fa-list"></i>
           Lista de espera
-          </a>
+          </a> {% endcomment %}
 
           {% comment %} <a href="{% url 'cursos:verificar_persona' curso_pk=dictado.curso.pk dictado_pk=dictado.pk %}" 
           class="btn btn-primary btn-sm " 
