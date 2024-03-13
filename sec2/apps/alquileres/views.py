@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import get_object_or_404, render
 from apps.alquileres.forms import *
 from django.template import loader
 from django.http import HttpResponse
@@ -9,6 +9,7 @@ from django.contrib import messages
 from django.urls import reverse_lazy
 from datetime import datetime
 from django.views.generic import DetailView, ListView
+from apps.personas.models import Rol
 
 from utils.funciones import mensaje_advertencia, mensaje_exito  
 from .models import Alquiler, Salon, Servicio, Encargado, Afiliado, Pago_alquiler
@@ -201,22 +202,18 @@ class ServicioCreateView(CreateView):
     success_url = reverse_lazy('alquiler:gestion_servicio')
     title = "Formulario Alta de Servicio"  # Agrega un título
 
-
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['titulo'] = self.title
         return context
-
     
     def form_valid(self, form):
         messages.success(self.request, f'{ICON_CHECK} Alta de servicio exitosa!')
         return super().form_valid(form)
 
-
     def form_invalid(self, form):
         messages.warning(self.request, '<i class="fa-solid fa-triangle-exclamation fa-flip"></i> Por favor, corrija los errores a continuación.')
         return super().form_invalid(form)
-    
     
 class ServicioUpdateView(UpdateView):
     model = Servicio
@@ -270,14 +267,29 @@ class SalonCreateView(CreateView):
         context = super().get_context_data(**kwargs)
         context['titulo'] = self.title
         context['servicios'] = Servicio.objects.all()
+        
+        #Rol de encargado que no tienen fecha fin
+        encargados = Rol.objects.all().filter(tipo=ROL_TIPO_ENCARGADO, hasta__isnull=True)
+        context['encargados'] = encargados
         return context
 
     def form_valid(self, form):
+        encargado_id = self.request.POST.get('enc_encargado')
+        if encargado_id == '0':
+            mensaje_advertencia(self.request, f'Seleccione al encargado')
+            return super().form_invalid(form)
+        
+        rol = get_object_or_404(Encargado, persona=encargado_id)
+        encargado = get_object_or_404(Encargado, persona=rol.persona)
+        
+        form.instance.encargado = encargado
+        form.save()
+
         mensaje_exito(self.request, f'{MSJ_CORRECTO_ALTA_SALON}')
         return super().form_valid(form)
 
     def form_invalid(self, form):
-        mensaje_advertencia(self.request, f'{ICON_TRIANGLE} {MSJ_CORRECTION}')
+        mensaje_advertencia(self.request, f'{MSJ_CORRECTION}')
         return super().form_invalid(form)
 
 # ----------------------------- DETAIL DE SALON  ----------------------------------- #

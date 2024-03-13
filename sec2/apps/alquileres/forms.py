@@ -99,7 +99,7 @@ class ServicioFilterForm(FiltrosForm):
 class SalonrForm(forms.ModelForm):
     class Meta:
         model = Salon
-        fields = ('nombre', 'localidad', 'direccion', 'capacidad', 'encargado', 'precio','tipo_salon','servicios')
+        fields = ('nombre', 'localidad', 'direccion', 'capacidad', 'precio','tipo_salon','servicios')
         widgets = {
             'nombre': forms.TextInput(attrs={'class': 'form-control form-control-user', 'placeholder': 'Eje: PasaRatos'}),
             'direccion': forms.TextInput(attrs={'class': 'form-control form-control-user', 'placeholder': 'Eje: Pedro Pascal 150'}),
