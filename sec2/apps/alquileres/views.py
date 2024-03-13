@@ -357,6 +357,7 @@ class AlquilerCreateView(CreateView):
         fecha = form.cleaned_data["fecha_alquiler"]
         turno = form.cleaned_data["turno"]
         alquiler = Alquiler.objects.first()
+        print("ALQUILER EXISTENTE", alquiler)
         if alquiler.verificar_existencia_alquiler(salon, fecha, turno):
             #el alquiler ya existe
             messages.error(self.request, f'{ICON_ERROR} Ya existía un alquiler del salón {salon} en la fecha {fecha} en el turno {turno}.')

@@ -31,7 +31,7 @@ class DictadoForm(forms.ModelForm):
             raise forms.ValidationError('Los minutos deben ser 00 o 30.')
 
         # Verificar el rango de horas entre las 9 am y las 8 pm (20:00)
-        if not (9 <= fecha.hour < 20):
+        if not (9 <= fecha.hour < 21):
             raise forms.ValidationError('La hora debe estar entre las 9 am y las 8 pm.')
         return fecha
 

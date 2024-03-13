@@ -48,23 +48,6 @@
               Eliminar
               </button>
             </td>
-          
-          
-          {% with tipo_persona=inscrito_listaEspera.persona.es_afiliado|yesno:"Afiliado," %}
-          {% with tipo_persona_grupo_familiar=inscrito_listaEspera.persona.es_grupo_familiar|yesno:"Familiar," %}
-          {% with tipo_persona_profesor=inscrito_listaEspera.persona.es_profesor|yesno:"Profesor," %}
-              {% with tipo_persona_es_alumno=inscrito_listaEspera.persona.es_alumno|yesno:"Alumno," %}
-              <td>
-              {{ tipo_persona }}
-              {{ tipo_persona_grupo_familiar }} 
-              {{ tipo_persona_profesor }}
-              {% if not tipo_persona and not tipo_persona_grupo_familiar and not tipo_persona_profesor %}
-              {{ tipo_persona_es_alumno }}
-              {% endif %}
-              </td>
-
-
-
               <td class="text-end">
                 {% if hay_cupo %}
                 <button class="btn btn-success btn-sm btn-detalle" data-bs-toggle="modal"
@@ -74,10 +57,6 @@
                   </button>
                   {% endif %}
                 </td>
-                {% endwith %}
-                {% endwith %}
-                {% endwith %}
-                {% endwith %}
 
                 {% include "curso/modal_confirm_sacar_lista_espera.html"  %}
                 {% include "curso/modal_confirm_inscribir_lista_espera.html" with tipo=tipo_persona %}

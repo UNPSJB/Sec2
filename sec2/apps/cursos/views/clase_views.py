@@ -61,8 +61,8 @@ class ClaseDetailView(DetailView):
         profesores_inscritos = dictado.profesores_dictados_inscriptos.all()
         alumnos_inscritos = dictado.alumnos.all()
         # Combino todos los objetos en una lista
-        todos_inscritos = list(afiliados_inscritos) + list(profesores_inscritos) + list(alumnos_inscritos)  
-        # todos_inscritos = list(afiliados_inscritos) + list(familiares_inscritos) + list(profesores_inscritos) + list(alumnos_inscritos)        
+        # todos_inscritos = list(afiliados_inscritos) + list(profesores_inscritos) + list(alumnos_inscritos)  
+        todos_inscritos = list(afiliados_inscritos) + list(familiares_inscritos) + list(profesores_inscritos) + list(alumnos_inscritos)        
         context["inscritos"] = todos_inscritos
 
         alumnos_asistieron = clase.asistencia.all()

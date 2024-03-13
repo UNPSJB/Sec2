@@ -230,8 +230,8 @@ def marcar_asistencia(request, clase_id):
         profesor_asistencia_inscripto = Profesor.objects.filter(id__in=alumnos_asistencia_ids)
         
         #unifico mis objetos en una lista: FALTA LA ASISTENCIA DEL FAMILIAR
-        # lista_asistencia = list(alumnos_asistencia) + list(afiliado_asistencia) + list(familiar_asistencia) + list(profesor_asistencia_inscripto)        
-        lista_asistencia = list(alumnos_asistencia) + list(afiliado_asistencia) +  list(profesor_asistencia_inscripto)        
+        lista_asistencia = list(alumnos_asistencia) + list(afiliado_asistencia) + list(familiar_asistencia) + list(profesor_asistencia_inscripto)        
+        # lista_asistencia = list(alumnos_asistencia) + list(afiliado_asistencia) +  list(profesor_asistencia_inscripto)        
         clase.asistencia.set(lista_asistencia)
 
         # ------------- ASISTENCIA PARA PROFESOR(ES)

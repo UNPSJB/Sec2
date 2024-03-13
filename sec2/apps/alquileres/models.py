@@ -61,10 +61,14 @@ class Alquiler(models.Model):
     
     def verificar_existencia_alquiler(self, salon, fecha_alquiler, turno):
         # Verificar si existe algún alquiler que cumple con las condiciones dadas
+        print("ALQUILER EXISTENTE")
         alquiler_existente = Alquiler.objects.filter(salon=salon, fecha_alquiler=fecha_alquiler, turno=turno).exists()
-        
+        print("")
+        print("")
+        print("")
+        print(alquiler_existente)
         # Devolver True si existe al menos un alquiler que cumple con las condiciones
-        return alquiler_existente
+        return True
 
 class Pago_alquiler(models.Model):
     alquiler=models.ForeignKey(Alquiler, related_name="pagos", on_delete=models.CASCADE)

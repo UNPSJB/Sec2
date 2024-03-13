@@ -235,7 +235,7 @@ class CursoUpdateView(UpdateView):
 def cursoListaEspera(request, pk):
     # Obtener el objeto Dictado
     curso = Curso.objects.get(id=pk)
-    dictados = Dictado.objects.all().filter(curso=curso)
+    dictados = Dictado.objects.all().filter(curso=curso, estado__lt=3).order_by('estado')
 
     titulo = f'Inscritos en espera para {curso.nombre}'
 

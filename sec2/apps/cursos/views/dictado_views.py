@@ -393,7 +393,7 @@ class VerificarInscripcionView(View):
         print("INSCRITOS EN ESPERA: ", total_en_espera)
                 
         context = {
-            'titulo': 'Inscripción',
+            'titulo': 'Incorporación a la lista de espera',
             'curso_pk': curso_pk,
             'roles': roles_sin_fecha_hasta,
             'total_en_espera': total_en_espera,
@@ -705,8 +705,6 @@ def generate_pdf(dictado, persona, porcentaje_asistencia):
     # Configurar la posición y el estilo del texto en el PDF
     p.setFont("Helvetica-Bold", 46)
     p.drawCentredString(400, 510, titulo)
-
-    contenido = f"Certificamos que\n\n{persona.nombre} {persona.apellido}\n\nParticipó del curso {dictado.curso.nombre}, organizado por el SEC 2.\nEl mismo se llevó a cabo en la localidad de Trelew desde  al ."
     
     p.setFont("Helvetica", 40)
     contenido = f"Certificamos que"
@@ -721,14 +719,14 @@ def generate_pdf(dictado, persona, porcentaje_asistencia):
     p.setStrokeColorRGB(0, 0, 0)
 
     p.setFont("Helvetica", 20)
-    contenido = f"Participó del curso {dictado.curso.nombre}, organizado por el SEC 2. El mismo se"
+    contenido = f"Participó del curso {dictado.curso.nombre}, organizado por el SEC 2. El"
     p.drawString(100, 340, contenido)
     
     locale.setlocale(locale.LC_TIME, 'es_ES.UTF-8')
     # Obtener la fecha en el formato deseado
     fecha_str = dictado.fecha.strftime("%d de %B del %Y")
     
-    contenido = f"llevó a cabo en la localidad de Trelew del {fecha_str}"
+    contenido = f"mismo se llevó a cabo en la localidad de Trelew del {fecha_str}"
     p.drawString(100, 310, contenido)
 
     fecha_fin_str = dictado.fecha_fin.strftime("%d de %B del %Y")
