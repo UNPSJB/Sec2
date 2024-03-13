@@ -348,18 +348,34 @@ class VerificarInscripcionView(View):
         inscritosEspera_ids = []
         inscritosEspera_ids = ListaEspera.objects.filter(curso=curso).values_list('rol_id', flat=True)
 
+        incritosEnDictado_dni = []
+        dictados = Dictado.objects.all().filter(curso=curso, estado__lt=3).order_by('estado')
 
-        # dictado_pk = kwargs.get('dictado_pk')
-        # Obtener el objeto Dictado o devolver un error 404 si no existe
-        # dictado = get_object_or_404(Dictado, curso__pk=curso_pk, pk=dictado_pk)
+        for dictado in dictados:
+            # OBTENGO A TODOS MIS ALUMNOS (Alumnos, Afiliado, GrupoFamiliar, Profesores como alumno)
+            afiliado_inscritos = Afiliado.objects.filter(dictados=dictado)
+            familiares_inscritos = Familiar.objects.filter(dictados=dictado)    
+            profesores_inscritos = Profesor.objects.filter(dictados_inscriptos=dictado)
+            alumnos_inscritos = Alumno.objects.filter(dictados=dictado)
 
-        # OBTENGO A TODOS MIS ALUMNOS (Alumnos, Afiliado, GrupoFamiliar, Profeosres como alumno)
-        # afiliado_inscritos = Afiliado.objects.filter(dictados=dictado)
-        # familiares_inscritos = Familiar.objects.filter(dictados=dictado)    
-        # profesores_inscritos = Profesor.objects.filter(dictados_inscriptos=dictado)
-        # alumnos_inscritos = Alumno.objects.filter(dictados=dictado)
+            # Agregar a la lista
+            incritosEnDictado_dni.extend(afiliado_inscritos.values_list('persona__pk', flat=True))
+            incritosEnDictado_dni.extend(familiares_inscritos.values_list('persona__pk', flat=True))
+            incritosEnDictado_dni.extend(profesores_inscritos.values_list('persona__pk', flat=True))
+            incritosEnDictado_dni.extend(alumnos_inscritos.values_list('persona__pk', flat=True))
 
-        # afiliado_inscritos_listaEspera = Afiliado.objects.filter(lista_espera=dictado)
+
+        # Obtener roles asociados a los inscritos en los dictados
+        rolesEnDictado_ids = Rol.objects.filter(persona__pk__in=incritosEnDictado_dni).values_list('id', flat=True)
+
+        print("")
+        print("")
+        print("")
+        print("")
+        print("ROLES IDS")
+        print(rolesEnDictado_ids)
+        # Obtener todos los roles
+
         # familiares_inscritos_listaEspera = Familiar.objects.filter(lista_espera=dictado)    
         # profesores_inscritos_listaEspera = Profesor.objects.filter(lista_espera=dictado)
         # alumnos_inscritos_listaEspera = Alumno.objects.filter(lista_espera=dictado)
@@ -396,12 +412,14 @@ class VerificarInscripcionView(View):
             'titulo': 'Incorporación a la lista de espera',
             'curso_pk': curso_pk,
             'roles': roles_sin_fecha_hasta,
+            'rolesEnDictado_ids': rolesEnDictado_ids,  # Asegúrate de que esté definida correctamente aquí
             'total_en_espera': total_en_espera,
             'inscritosEspera_ids': inscritosEspera_ids,
         }
 
         # Convierte inscritosEsperaIds a una cadena JSON para pasarlo a JavaScript
         context['inscritosEsperaIds_json'] = json.dumps(list(inscritosEspera_ids))
+        context['inscritosEnDictadoIds_json'] = json.dumps(list(rolesEnDictado_ids))
 
         return render(request, self.template_name, context)
 

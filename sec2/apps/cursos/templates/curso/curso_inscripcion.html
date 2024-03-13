@@ -50,6 +50,7 @@
 <script>
   var busquedaRealizada = false
   var inscritosEsperaIds = {{ inscritosEsperaIds_json|safe }}
+  var inscritosEnDictadoIds = {{ inscritosEnDictadoIds_json|safe }}
 
   $(function () {
     $("#enc_roles").select2();
@@ -118,7 +119,12 @@ function mostrarResultados(rol) {
       if (total_en_espera !== 0){
         //ya existen inscritos
         if (!existeEnListaEspera(rol)) {
-          resultadosDiv.innerHTML += mostrarBotonListaEspera(rol, 'Agregar a la lista de espera');
+
+          if (!existeEnDictadoActivo(rol)){
+            resultadosDiv.innerHTML += mostrarBotonListaEspera(rol, 'Agregar a la lista de espera');
+          }else{
+            resultadosDiv.innerHTML += `<p>La persona ya existe inscrita en uno de los dictados activos.</p>`;
+          }
         }else{
           resultadosDiv.innerHTML += `<p>La persona ya existe en la lista de espera.</p>`;
         }
@@ -161,6 +167,14 @@ function mostrarResultados(rol) {
       var estaAsociada = inscritosEsperaIds.includes(rol.pk);
       return estaAsociada;
     }
+
+    function existeEnDictadoActivo(rol) {
+      console.log("inscritosEnDictadoIds:", inscritosEnDictadoIds);
+      console.log("persona.pk:", rol.pk);
+      // Verificar si la persona está asociada a algún afiliado
+      var estaAsociada = inscritosEnDictadoIds.includes(rol.pk);
+      return estaAsociada;
+  }
 
 
 </script>
