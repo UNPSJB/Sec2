@@ -2,6 +2,7 @@ from django.shortcuts import get_object_or_404, redirect
 from apps.cursos.forms.actividad_forms import ActividadForm
 from apps.cursos.models import Curso, Dictado
 from apps.personas.models import Persona, Rol
+from utils.funciones import mensaje_error, mensaje_exito
 from ..forms.curso_forms import *
 from django.views.generic.edit import CreateView, UpdateView
 from django.views.generic import DetailView
@@ -278,12 +279,31 @@ def cursoListaEspera(request, pk):
     return render(request, 'curso/curso_lista_espera.html', context)
 
 
+from django.utils import timezone
+
 ##--------------- CURSO ELIMINAR --------------------------------
 def curso_eliminar(request, pk):
     curso = get_object_or_404(Curso, pk=pk)
+
     try:
-        curso.delete()
-        messages.success(request, f'{ICON_CHECK} El curso se eliminó correctamente!')
+        if dictadosFinalizados(curso):
+            curso.fechaBaja = timezone.now()
+            curso.save()
+            mensaje_exito(request, f'El curso ha sido deshabilitado con exito')
+        else:
+            mensaje_error(request, f'No se puede eliminar el curso porque tiene dictados que no han finalizado')
+
     except Exception as e:
         messages.error(request, 'Ocurrió un error al intentar eliminar el aula.')
     return redirect('cursos:curso_listado') 
+
+
+def dictadosFinalizados(curso):
+    dictados = Dictado.objects.all().filter(curso=curso)
+    print(dictados)
+    for dictado in dictados:
+        print(dictado.estado)
+        if not dictado.estado == 3:
+            return False
+    
+    return True

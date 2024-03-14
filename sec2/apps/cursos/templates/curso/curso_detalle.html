@@ -125,11 +125,25 @@
     <div class="col-md-4">
       <p>{{ curso.cupo }} participantes maximo</p>
     </div>
+
+    {% if curso.fechaBaja %}
+
+    <div class="col-md-2">
+      <p>
+        <strong>Fecha de Baja:</strong>
+      </p>
+    </div>
+    <div class="col-md-4">
+      <p>{{ curso.fechaBaja }}</p>
+    </div>
+    {% endif %}
+
   </div>
 
 {% endblock %}
 
 {% block botones %}
+{% if not curso.fechaBaja %}
 
 
 {% if not tiene_dictados %}
@@ -153,6 +167,8 @@
   <button type="button" class="btn btn-danger btn-sm btn-detalle" data-bs-toggle="modal" data-bs-target="#exampleModal_eliminar"><i class="fa-regular fa-circle-down"></i> Dar de Baja</button>
   {% include 'curso/modal_confirm_baja.html' %}
 </div>
+{% endif  %}
+
 {% endblock %}
 
 {% block listado_asociado %}
@@ -160,12 +176,17 @@
   
   <h3 class="subtitulo">{{ tituloListado }}</h3>
   
+  {% if not curso.fechaBaja %}
+
   {% if tiene_dictados %}
   <a href="{% url 'cursos:dictado_crear' pk=object.pk %}" class="btn btn-primary btn-sm btn-detalle"><i class="fa-regular fa-plus"></i> Nuevo Dictado</a>
   {% else %}
   <button type="button" class="btn btn-primary btn-sm btn-detalle" data-bs-toggle="modal" data-bs-target="#exampleModal"><i class="fa-regular fa-plus"></i> Nuevo Dictado</button>
   {% include 'curso/modal_primer_dictado.html' %}
   {% endif %}
+
+  {% endif %}
+
   <table class="table table-sm table-hover">
     <thead>
       <tr>

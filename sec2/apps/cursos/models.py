@@ -76,7 +76,14 @@ class Curso(models.Model):
             MinValueValidator(1, message="Valor mínimo permitido es 1."),
             MaxValueValidator(100, message="Valor máximo es 100."),
         ]
-    ) 
+    )
+    
+    fechaBaja= models.DateField(
+        null=True,
+        blank=False,
+    )
+
+    
     def __str__(self):
         return f"{self.nombre}"
     
