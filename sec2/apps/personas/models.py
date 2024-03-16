@@ -18,6 +18,7 @@ class Persona(models.Model):
             ),
             is_numeric,  # Validador personalizado para verificar si es un número
         ],
+        blank=False
     )
     cuil = models.CharField(
         max_length=11,
