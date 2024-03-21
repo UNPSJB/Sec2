@@ -360,11 +360,17 @@ def alta_familiar(request):
                     mensaje_error(request, f'{MSJ_PERSONA_EXISTE}')
                     form = AfiliadoSelectForm(request.POST)
                 else:
-                    print("FECHA DE NACIMIENTOS")
-                    print(form.cleaned_data["fecha_nacimiento"])
                     if form.cleaned_data["tipo"] == '2' and not es_menor_de_edad(request,form.cleaned_data["fecha_nacimiento"]):
                         mensaje_error(request, f'{MSJ_HIJO_MAYOR_EDAD}')
                         form = AfiliadoSelectForm(request.POST)
+                        context = {
+                            'form': form,
+                            'clientes': Afiliado.objects.filter(estado__in=[1, 2]),
+                            'titulo': 'Alta de Familiar',  # Replace with your desired title
+                        }
+                        return render(request, 'grupoFamiliar/grupo_familiar_alta_directa.html', context)
+
+
                     else:
                         persona = Persona(
                             dni=dni,
