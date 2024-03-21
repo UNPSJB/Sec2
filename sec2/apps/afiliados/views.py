@@ -360,7 +360,9 @@ def alta_familiar(request):
                     mensaje_error(request, f'{MSJ_PERSONA_EXISTE}')
                     form = AfiliadoSelectForm(request.POST)
                 else:
-                    if form.cleaned_data["tipo"] == '2' and not es_menor_de_edad(form.cleaned_data["fecha_nacimiento"]):
+                    print("FECHA DE NACIMIENTOS")
+                    print(form.cleaned_data["fecha_nacimiento"])
+                    if form.cleaned_data["tipo"] == '2' and not es_menor_de_edad(request,form.cleaned_data["fecha_nacimiento"]):
                         mensaje_error(request, f'{MSJ_HIJO_MAYOR_EDAD}')
                         form = AfiliadoSelectForm(request.POST)
                     else:
