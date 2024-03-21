@@ -1,6 +1,6 @@
 from datetime import timezone
 from django import forms
-from ..models import Actividad, Curso, ListaEspera
+from ..models import Actividad, Curso, ListaEspera, PagoProfesor
 from utils.constants import *
 from utils.choices import *
 from sec2.utils import FiltrosForm
@@ -10,7 +10,7 @@ class CursoForm(forms.ModelForm):
     class Meta:
         model = Curso
         fields = '__all__'
-        exclude= ['es_convenio', 'actividad' ]
+        exclude= ['es_convenio', 'actividad', 'cupo', 'fechaBaja']
 
     area = forms.ChoiceField(
         choices=[('', '---------')] + AREAS,  # Agrega el valor por defecto a las opciones de AREAS
@@ -99,3 +99,16 @@ class ListaEsperaAdminForm(forms.ModelForm):
     def clean_fechaInscripcion(self):
         # Devuelve la fecha y hora actual
         return timezone.now()
+    
+
+
+
+class PagoProfesorForm(forms.ModelForm):
+    class Meta:
+        model = PagoProfesor
+        fields = '__all__'
+        exclude = ['profesor', 'desde']
+        widgets = {
+            'monto': forms.NumberInput(attrs={'class': 'form-control'}),
+            'fecha_pago': forms.DateInput(attrs={'type': 'date'}),
+        }

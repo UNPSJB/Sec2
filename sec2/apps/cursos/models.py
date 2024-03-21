@@ -75,7 +75,8 @@ class Curso(models.Model):
         validators=[
             MinValueValidator(1, message="Valor mínimo permitido es 1."),
             MaxValueValidator(100, message="Valor máximo es 100."),
-        ]
+        ],
+        null=True,
     )
     
     fechaBaja= models.DateField(
@@ -254,34 +255,14 @@ class Titular(models.Model):
     profesor = models.ForeignKey(Profesor, on_delete=models.CASCADE)
     dictado= models.ForeignKey(Dictado, on_delete=models.CASCADE)
 
-#------------- ASISTENCIA PROFESOR --------------------
-# class AsistenciaProfesor(models.Model):
-#     profesor = models.ForeignKey(Profesor, on_delete=models.CASCADE)
-#     clase = models.ForeignKey(Clase, on_delete=models.CASCADE)
-#     asistio = models.BooleanField(default=False)
-
-
-# class AsistenciaAlumno(models.Model):
-#     alumno = models.ForeignKey(Alumno, on_delete=models.CASCADE)
-#     clase = models.ForeignKey(Clase, on_delete=models.CASCADE)
-#     asistio = models.BooleanField(default=False)
-
-
+class PagoProfesor(models.Model):
+    profesor = models.ForeignKey(Profesor, on_delete=models.CASCADE, related_name='pagos_profesor')
+    monto = models.DecimalField(max_digits=10, decimal_places=2, validators=[MinValueValidator(0, 'El monto debe ser un valor positivo.')])
+    desde = models.DateTimeField(auto_now_add=True)
 
 # class Asistencia_profesor(models.Model):
 #     fecha_asistencia_profesor = models.DateTimeField(auto_now_add=True)
 #     titular = models.ForeignKey(Titular, related_name="asistencia_profesor", on_delete=models.CASCADE)
-
-# class Pago_profesor(models.Model):
-#     fecha_pago_profesor = models.DateField()
-#     titular = models.ForeignKey(Titular, related_name="pagos", on_delete=models.CASCADE)
-#     monto= models.DecimalField(help_text="Monto pagado", max_digits=10, decimal_places=2)
-
-# class Asistencia_alumno(models.Model):
-#     alumno = models.ForeignKey(Alumno, related_name="asistencia", on_delete=models.CASCADE)
-#     dictado = models.ForeignKey(Dictado, on_delete=models.CASCADE)
-#     fecha_asistencia_alumno = models.DateTimeField(auto_now_add=True)
-    
 
 # class Pago_alumno(models.Model):
 #     alumno = models.ForeignKey(Alumno, related_name="pago", on_delete=models.CASCADE)
