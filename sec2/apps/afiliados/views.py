@@ -788,7 +788,6 @@ class PagoCuotaCreateView(CreateView):
             return super().form_invalid(form)
 
         existe_cuotas = PagoCuota.objects.filter(afiliado=afiliado).exists()
-
         if not existe_cuotas:
             form.instance.afiliado_id = afiliado_id
             form.instance.pdf_transferencia = pdf
@@ -798,6 +797,8 @@ class PagoCuotaCreateView(CreateView):
                 afiliado.afiliar()
                 afiliado.save()
                 mensaje_exito(self.request, f'{MSJ_CORRECTO_PAGO_REALIZADO} y {MSJ_CORRECTO_ALTA_AFILIADO}')
+                return super().form_valid(form)
+
             else:
                 mensaje_exito(self.request, f'{MSJ_CORRECTO_PAGO_REALIZADO}')
         else:
@@ -806,13 +807,15 @@ class PagoCuotaCreateView(CreateView):
             fecha_dos_meses_atras = fecha_actual - relativedelta(months=2)
 
             if ultima_cuota.fecha_pago < fecha_dos_meses_atras and afiliado.estado != 5:
-
                 mensaje_advertencia(self.request, 'El afiliado tiene cuotas vencidas. Comuníquese con soporte')
                 return super().form_invalid(form)
             else:
                 fecha_mes_anterior = fecha_actual - relativedelta(months=1)
 
-                if fecha_mes_anterior.month == ultima_cuota.fecha_pago.month:
+                ## FALTA REALIZARLE EL SEGUIMIENTO PARA SABER SI TIENE CUOTAS VENCIDAS
+
+                # FALTA PREGUNTAR SI LA ULTIMA DEL MES ANTENIOR ESTA PAGADA
+                if fecha_actual.month == ultima_cuota.fecha_pago.month:
                     form.instance.afiliado_id = afiliado_id
                     form.instance.pdf_transferencia = pdf
                     form.save()
