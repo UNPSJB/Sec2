@@ -43,7 +43,7 @@
 <div class="col d-flex justify-content-end">
   {% if afiliado.estado == 1 %}
   <button type="button" class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#modal_afiliar_{{ afiliado.pk }}">
-    <i class="fa-regular fa-circle-down"></i> Afiliar
+    <i class="fa-regular fa-circle-down"></i> Aceptar
   </button>
   {% include 'modal_confirm_alta.html' with object=afiliado detalleAfiliadoParam='detalleAfiliado' %}
   {% endif %}
