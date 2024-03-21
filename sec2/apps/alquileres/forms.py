@@ -150,6 +150,10 @@ class AlquilerFilterForm(FiltrosForm):
 
 # ----------------------------- PAGO ----------------------------------- #
 class PagoForm(forms.ModelForm):
+    forma_pago = forms.ChoiceField(choices=[('total', 'Total'), ('cuota', 'Cuota')])
+    alquiler = forms.ChoiceField(choices=[])
+   
+
     class Meta:
         model = Pago_alquiler
         fields = ('forma_pago', 'alquiler')
@@ -160,8 +164,20 @@ class PagoForm(forms.ModelForm):
             
        }
     
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        alquileres_sin_pagos = Pago_alquiler.alquileres_sin_pago()
+        choices = [(alquiler.id, f'{alquiler.afiliado.persona.nombre} - {alquiler.salon.nombre} - {alquiler.fecha_alquiler.strftime("%d/%m/%Y")} - {alquiler.turno}') for alquiler in alquileres_sin_pagos]
+        self.fields['alquiler'].choices = choices
+
+    def clean_alquiler(self):
+        alquiler_id = self.cleaned_data['alquiler']
+        try:
+            alquiler = Alquiler.objects.get(pk=alquiler_id)
+            return alquiler
+        except Alquiler.DoesNotExist:
+            raise forms.ValidationError("El alquiler seleccionado no es válido.")
         
 class AlquilerFilterForm(FiltrosForm):
     alquiler_salon_nombre = forms.CharField(required=False)

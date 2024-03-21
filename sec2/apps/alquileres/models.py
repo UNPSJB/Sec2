@@ -5,6 +5,7 @@ from apps.personas.models import *
 from apps.afiliados.models import *
 from utils.choices import LOCALIDADES_CHUBUT
 from apps.personas.models import Rol, Persona
+from django.db.models import Count
 
 # Create your models here.
 
@@ -61,14 +62,9 @@ class Alquiler(models.Model):
     
     def verificar_existencia_alquiler(self, salon, fecha_alquiler, turno):
         # Verificar si existe algún alquiler que cumple con las condiciones dadas
-        print("ALQUILER EXISTENTE")
         alquiler_existente = Alquiler.objects.filter(salon=salon, fecha_alquiler=fecha_alquiler, turno=turno).exists()
-        print("")
-        print("")
-        print("")
-        print(alquiler_existente)
-        # Devolver True si existe al menos un alquiler que cumple con las condiciones
-        return True
+       # Devolver True si existe al menos un alquiler que cumple con las condiciones
+        return alquiler_existente
 
 class Pago_alquiler(models.Model):
     alquiler=models.ForeignKey(Alquiler, related_name="pagos", on_delete=models.CASCADE)
@@ -80,3 +76,8 @@ class Pago_alquiler(models.Model):
     forma_pago = models.CharField(max_length=30, choices=forma_pago)
     #agregar las dos formas de pago total(no importa si es contado o tarjeta) o cuota (no  se realiza en el sistema la forma de pago y como se actualiza)
     #ver si el sistema entrega comprobante de pago
+
+    def alquileres_sin_pago():
+    # Obtener todos los alquileres que no tienen ningún pago asociado
+        alquileres_sin_pagos = Alquiler.objects.annotate(num_pagos=Count('pagos')).filter(num_pagos=0)
+        return alquileres_sin_pagos

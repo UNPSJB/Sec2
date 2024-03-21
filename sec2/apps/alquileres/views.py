@@ -370,74 +370,25 @@ class AlquilerCreateView(CreateView):
         turno = form.cleaned_data["turno"]
         alquiler = Alquiler.objects.first()
         print("ALQUILER EXISTENTE", alquiler)
-        if alquiler.verificar_existencia_alquiler(salon, fecha, turno):
-            #el alquiler ya existe
-            messages.error(self.request, f'{ICON_ERROR} Ya existía un alquiler del salón {salon} en la fecha {fecha} en el turno {turno}.')
-            return self.render_to_response(self.get_context_data(form=form))
-        else:
-            #el alquiler no exite y se puede alquilar. Guardar el nuevo alquiler
-            alquiler = Alquiler(
-                afiliado=form.cleaned_data["afiliado"],
-                salon=salon, 
-                fecha_solicitud=datetime.now(),
-                fecha_alquiler=fecha, 
-                turno=turno,
-                seguro = form.cleaned_data["seguro"],
-                )
-            alquiler.save()
-            
-            pago = Pago_alquiler( 
-                alquiler=alquiler,
-                fecha_pago=form.cleaned_data["fecha_pago"],
-                forma_pago=form.cleaned_data["forma_pago"],
-                )
-            pago.save()
-            #messages.success(self.request, f'{ICON_CHECK} Alquiler exitosa!')
-            #return super().form_valid(form)
-         
-        # Redireccionar a la vista del detalle del salón con mensaje de éxito
-        messages.success(self.request, f'{ICON_CHECK} Alquiler creado con éxito!')
-        return super().form_valid(form)
-
-
+        if alquiler is not None:
+            if alquiler.verificar_existencia_alquiler(salon, fecha, turno):
+                #el alquiler ya existe
+                messages.error(self.request, f'{ICON_ERROR} Ya existía un alquiler del salón {salon} en la fecha {fecha} en el turno {turno}.')
+                return self.render_to_response(self.get_context_data(form=form))
+            else:
+                #el alquiler no exite y se puede alquilar. Guardar el nuevo alquiler
+                messages.success(self.request, f'{ICON_CHECK} Alquiler exitosa!')
+                return super().form_valid(form)
+        else: 
+            # es el primer alquiler y se guarda
+            messages.success(self.request, f'{ICON_CHECK} Alquiler creado con éxito!')
+            return super().form_valid(form)
+        
     def form_invalid(self, form):
         messages.warning(self.request, '<i class="fa-solid fa-triangle-exclamation fa-flip"></i> Por favor, corrija los errores a continuación.')
         return super().form_invalid(form)
     
 
-
-def buscar_fechas_disponibles(request): 
-    if request.method == 'POST':
-        # Se obtienen los valores de afiliado y salón del formulario POST
-        afiliado_id = request.POST['afiliado']
-        salon_id = request.POST['salon']
-        
-        # Se obtienen las instancias de Afiliado y Salon a partir de los IDs
-        afiliado = Afiliado.objects.get(id=afiliado_id)
-        salon = Salon.objects.get(id=salon_id)
-        
-        # Se obtiene la fecha actual
-        hoy = timezone.now().date()
-        
-        # Se filtran los alquileres del salón seleccionado y se ordenan por fecha de inicio
-        alquileres = Alquiler.objects.filter(salon=salon, fecha_alquiler__isnull=True).order_by('fecha_inicio')
-        
-        # Lista para almacenar los alquileres disponibles
-        available_alquileres = []
-
-        for alquiler in alquileres:
-            if alquiler.fecha_fin < hoy:
-                continue
-            elif alquiler.fecha_inicio <= hoy < alquiler.fecha_fin:
-                available_alquileres.append(alquiler)
-            else:
-                break
-        
-        # Se renderiza la plantilla con la información recopilada
-        return render(request, 'buscar_fechas_disponibles.html', {'afiliados': Afiliado.objects.all(), 'salones': Salon.objects.all(), 'afiliado': afiliado, 'salon': salon, 'available_dates': available_dates})
-    else:
-        # Se renderiza la plantilla con la lista completa de afiliados y salones si no se ha enviado un formulario POST
-        return render(request, 'buscar_fechas_disponibles.html', {'afiliados': Afiliado.objects.all(), 'salones': Salon.objects.all()})
 
 # ----------------------------- LIST DE ALQUILER  ----------------------------------- #
 class AlquilieresListView(ListFilterView):
@@ -478,13 +429,15 @@ class PagoAlquilerCreateView(CreateView):
     model = Pago_alquiler
     form_class = PagoForm
     template_name = 'pago_form.html'
-    success_url = reverse_lazy('alquiler:alquiler_list.html')
+    success_url = reverse_lazy('alquiler:alquiler_listar')
     title = "Formulario Alta de Pago"  # Agrega un título
 
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['titulo'] = self.title  # Agrega el título al contexto
+        alquileres_sin_pagos = Pago_alquiler.alquileres_sin_pago  # Obtener todos los alquileres sin pago
+        context['alquileres_sin_pagos'] = alquileres_sin_pagos  # Pasarlos al contexto
         # Verificar si hay alguna actividad
         return context
 
