@@ -1,8 +1,8 @@
 from django.shortcuts import get_object_or_404, redirect
 from apps.cursos.forms.actividad_forms import ActividadForm
-from apps.cursos.models import Curso, Dictado
+from apps.cursos.models import Curso, Dictado, PagoProfesor, Profesor
 from apps.personas.models import Persona, Rol
-from utils.funciones import mensaje_error, mensaje_exito
+from utils.funciones import mensaje_advertencia, mensaje_error, mensaje_exito
 from ..forms.curso_forms import *
 from django.views.generic.edit import CreateView, UpdateView
 from django.views.generic import DetailView
@@ -305,5 +305,50 @@ def dictadosFinalizados(curso):
         print(dictado.estado)
         if not dictado.estado == 3:
             return False
-    
     return True
+
+
+class PagoProfesorCreateView(CreateView):
+    model = PagoProfesor
+    form_class = PagoProfesorForm
+    template_name = 'pago/pago_profesor.html'
+    success_url = reverse_lazy('cursos:pago_profesor')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        roles_sin_fecha_hasta = Rol.objects.filter(hasta__isnull=True)
+        
+        # Obtener personas asociadas a los roles sin fecha de finalización
+        personas = Persona.objects.filter(roles__in=roles_sin_fecha_hasta)
+        
+        # Obtener profesor asociados a las personas obtenidas
+        profesores = Profesor.objects.filter(persona__in=personas)
+        context['profesores'] = profesores
+
+        context['titulo'] = "Comprobante de pago"
+        
+        return context
+
+    def form_valid(self, form):
+        enc_profesor = self.request.POST.get('enc_profesor')
+        
+        if enc_profesor == '0':
+            mensaje_advertencia(self.request, f'Seleccione al profesor')
+            return super().form_invalid(form)
+
+        form.instance.profesor_id = enc_profesor
+        form.save()
+        mensaje_exito(self.request, f'{MSJ_CORRECTO_PAGO_REALIZADO}')
+        return super().form_invalid(form)
+
+
+    def form_invalid(self, form):
+        mensaje_advertencia(self.request, MSJ_CORRECTION)
+        print("")
+        print("ERRORES DEL FORMULARIO")
+        for field, errors in form.errors.items():
+            for error in errors:
+                print(f"Error en el campo '{field}': {error}")
+        print("")
+        return super().form_invalid(form)
+    

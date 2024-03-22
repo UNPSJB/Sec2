@@ -532,7 +532,6 @@ def gestionListaEspera(request, pk, rol_pk, accion):
         return redirect('cursos:curso_lista_espera', pk=pk)
 
     if accion == 'agregar_lista':
-        # Verifica si el rol aún no está en ListaEspera para el Curso dado
         if not ListaEspera.objects.filter(curso=curso, rol=rol).exists():
             # Crea una nueva instancia de ListaEspera y la guarda
             lista_espera_instance = ListaEspera(curso=curso, rol=rol)

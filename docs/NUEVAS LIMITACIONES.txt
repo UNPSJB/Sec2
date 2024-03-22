@@ -4,3 +4,6 @@ El sistema se limita a dar de baja de forma automatica a los familiares que son 
 #LIMITE DEL SISTEMA PARA PAGO DE CUOTA SINDICAL
 El sistema se limita a controlar el monto de la cuota a pagar del afiliado en caso de aumento o disminución de sueldo.
 El sistema se limita a controlar la fecha de pago en caso de efectuarse dos pagos en un mismo mes. Una fecha por mes
+
+#LIMITE DEL SISTEMA PARA EL PAGO DEL PROFESOR
+El sistema se limita a controlar el monto a pagar por profesor. Solo generará los datos ingresados por el usuario
