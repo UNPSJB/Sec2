@@ -23,9 +23,8 @@ urlpatterns = [
     
     #PRINCIPALES
     
-    # path('', home, name="login"),
+    path('', home, name="login"),
     path('admin/', admin.site.urls),
-    path('', home, name="home"),
     path('home/', home, name="home"),
 
     #APLICACIONES

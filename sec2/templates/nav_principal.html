@@ -6,28 +6,54 @@
   <link href="{% static 'Libs/css/nav_curso.css' %}" rel="stylesheet" />
 {% endblock %}
 
+
 <div class="menu" id="menu_principal">
-  <br />
+  <span class="bi bi-person"></span>
+  <i class="fa-regular fa-user"></i> Hola, {{ user }}
+  <br/><br/>
   <h3 class="titulo-menu">SEC 2</h3>
   <ul class="menu">
+    {% if 'permission_gestion_afiliado' in permisos %}
     <li>
       <a href="#" id="mostrarMenuAfiliado">
         <i class="fa-solid fa-person-dress"></i>
         Gestión de Afiliados</a>
     </li>
+    {% endif %}
+    {% if 'permission_gestion_curso' in permisos %}
     <li>
       <a href="#" id="mostrarMenuCurso">
         <i class="fa-solid fa-graduation-cap"></i> 
         Gestión de Cursos</a>
     </li>
+    {% endif %}
+    {%if 'permission_gestion_alquiler' in permisos %}
     <li>
       <a href="#" id="mostrarMenuSalon">
         <i class="fa-solid fa-person-shelter"></i>
          Gestión de Salon</a>
     </li>
-  </ul>
-</div>
+    {% endif %}
+    {% if 'permission_gestion_usuario' in permisos %}
+    <li>
+      <a href="{% url 'users:user_register' %}" id="mostrarMenuSalon">
+        <i class="fa-solid fa-users-gear"></i>
+         Gestión de Usuarios</a>
+    </li>
+    {% endif %}
 
+ 
+  </ul>
+  
+
+
+</br></br></br>
+    <div class="btn-group">
+            <a class="btn btn-light" href="{% url 'users:cerrar_session' %}">
+              <i class="fa-solid fa-lock"></i>
+              Cerrar Sesión</a>
+    </div>
+  </div>
 <div id="menu_afiliado_principal" style="display: none;">
   <!-- Menú Afiliados -->
   {% include 'nav_afiliado.html' %}

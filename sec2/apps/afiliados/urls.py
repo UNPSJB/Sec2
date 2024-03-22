@@ -1,10 +1,9 @@
 # Importaciones del sistema
 from django.urls import path
-
 # Importaciones locales
-from .views import *
-from . import views
 from apps.afiliados.views import *
+from django.contrib.auth.decorators import login_required, permission_required
+
 
 
 app_name = "afiliados"

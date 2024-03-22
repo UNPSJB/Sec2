@@ -17,6 +17,8 @@ from django.http import HttpResponseRedirect
 from django.utils import timezone
 #CONSTANTE
 from utils.constants import *
+from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
+from django.contrib.auth.decorators import permission_required , login_required
 
 # Create your views here.
 # ----------------------------- ALQUILER VIEW ----------------------------------- #
@@ -91,12 +93,15 @@ class EncargadoListView(ListFilterView):
 
 
 # ----------------------------- CREATE DE SERVICIO  ----------------------------------- #
-class servicioCreateView(CreateView):
+class servicioCreateView(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
     model = Servicio
     form_class = ServiciorForm
     template_name = 'Servicio_form.html'
     success_url = reverse_lazy('alquiler:Servicio_form')
     title = "Formulario Alta de Servicio"  # Agrega un título
+    @login_required(login_url='/login/')
+    @permission_required('alquileres.permission_gestion_alquiler', raise_exception=True)
+
 
 
     def get_context_data(self, **kwargs):

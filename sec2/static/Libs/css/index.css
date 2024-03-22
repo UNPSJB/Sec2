@@ -12,3 +12,12 @@
     margin-right: auto;
     margin-top: 10%;
 }
+
+
+.cuadrado-background {
+    /* opacity: 1; */
+    background-color: rgba(255, 255, 255, 0.7);
+    width: 50%;
+    border-radius: 10px;
+    padding: 15px;
+}

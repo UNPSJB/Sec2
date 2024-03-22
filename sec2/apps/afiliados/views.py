@@ -14,23 +14,34 @@ from django.db import transaction  # Agrega esta línea para importar el módulo
 from django.urls import reverse
 from django.http import HttpResponseRedirect
 from django.http import FileResponse
+from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
+from django.contrib.auth.decorators import permission_required , login_required 
+from io import BytesIO
+import io
+from reportlab.pdfgen import canvas
+from reportlab.pdfbase.ttfonts import TTFont
+from reportlab.pdfbase import pdfmetrics
 
 #CONSTANTE
 from utils.constants import *
 from datetime import date
 from django.contrib.auth.decorators import login_required
 
-@login_required
+@login_required(login_url='/login/')
 def index(request):
     template = loader.get_template('home.html')
     return HttpResponse(template.render())
 
 # ----------------------------- AFILIADO CREATE ----------------------------------- #
-class AfiliadoCreateView(CreateView):
+class AfiliadoCreateView(LoginRequiredMixin,PermissionRequiredMixin,CreateView):
     model = Persona
     form_class = AfiliadoPersonaForm #utiliza un formulario unificado
     template_name = 'afiliados/afiliado_formulario.html'
     success_url = reverse_lazy('afiliados:afiliado_crear')
+    login_url = '/login/'
+    permission_required = "afiliados.permission_gestion_afiliado"
+    
+
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -93,9 +104,11 @@ class AfiliadoCreateView(CreateView):
         return super().form_invalid(form)
 
 # ----------------------------- AFILIADO DETALLE ----------------------------------- #
-class AfiliadoDetailView (DeleteView):
+class AfiliadoDetailView (LoginRequiredMixin , PermissionRequiredMixin ,DeleteView):
     model = Afiliado
     template_name = 'afiliados/afiliado_detalle.html'
+    login_url = '/login/'
+    permission_required = "afiliados.permission_gestion_afiliado"
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -109,11 +122,13 @@ class AfiliadoDetailView (DeleteView):
         return context
 
 # ----------------------------- AFILIADO UPDATE ----------------------------------- #
-class AfiliadoUpdateView(UpdateView):
+class AfiliadoUpdateView(LoginRequiredMixin, PermissionRequiredMixin ,UpdateView):
     model = Afiliado
     form_class = AfiliadoUpdateForm
     template_name = 'afiliados/afiliado_formulario.html'
     success_url = reverse_lazy('afiliados:afiliado_listar')
+    login_url = '/login/'
+    permission_required = "afiliados.permission_gestion_afiliado"
     
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -162,12 +177,14 @@ class AfiliadoUpdateView(UpdateView):
         return super().form_invalid(form)
 
 # ----------------------------- AFILIADO LISTADO ----------------------------------- #
-class AfliadosListView(ListFilterView):
+class AfliadosListView(LoginRequiredMixin, PermissionRequiredMixin,ListFilterView):
     model = Afiliado
     filter_class = AfiliadoFilterForm
     template_name = 'afiliados/afiliado_list.html'
     paginate_by = MAXIMO_PAGINATOR
     success_url = reverse_lazy('afiliados:afiliado_listar')
+    login_url = '/login/'
+    permission_required = "afiliados.permission_gestion_afiliado"
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -202,6 +219,8 @@ class AfliadosListView(ListFilterView):
         return queryset
 
 # ----------------------------- AFILIADO ACEPTAR ----------------------------------- #
+@permission_required('afiliados.permission_gestion_afiliado', raise_exception=True)
+@login_required(login_url='/login/')
 def afiliado_afiliar_desafiliar(request, pk, accion, origen):
     afiliado = get_object_or_404(Afiliado, pk=pk)
 
@@ -217,12 +236,12 @@ def afiliado_afiliar_desafiliar(request, pk, accion, origen):
     elif origen == 'detalleAfiliado':
         return redirect('afiliados:afiliado_detalle', pk=afiliado.pk)
 #------------------------------------------------------------------------------------------
-from io import BytesIO
-import io
-from reportlab.pdfgen import canvas
-from reportlab.pdfbase.ttfonts import TTFont
-from reportlab.pdfbase import pdfmetrics
 
+
+
+
+@login_required(login_url='/login/')
+@permission_required('afiliados.permission_gestion_afiliado', raise_exception=True)
 def confeccionarNota(request, pk):
     afiliado = get_object_or_404(Afiliado, pk=pk)
     buffer = generate_pdf(afiliado)
@@ -330,6 +349,9 @@ def es_menor_de_edad(self, fecha_nacimiento):
     hoy = date.today()
     return (hoy - fecha_nacimiento).days < 365 * 18
 
+
+@permission_required('afiliados.permission_gestion_afiliado', raise_exception=True)
+@login_required(login_url='/login/')
 def alta_familiar(request):
     if request.method == 'POST':
 
@@ -394,11 +416,12 @@ def alta_familiar(request):
 
 
 # ----------------------------- CREACIÓN DE FAMILIAR -----------------------------
-class FamiliaCreateView(CreateView):
+class FamiliaCreateView(LoginRequiredMixin,PermissionRequiredMixin, CreateView):
     model = Familiar
     form_class = GrupoFamiliarPersonaForm #utiliza un formulario unificado
     template_name = 'grupoFamiliar/grupo_familiar_alta.html'
     success_url = reverse_lazy('afiliados:afiliado_crear')
+    
     
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -464,9 +487,13 @@ class FamiliaCreateView(CreateView):
         return super().form_invalid(form)
     
 # ----------------------------- DETALLE DE FAMILIAR -----------------------------
-class FamiliarDetailView(DeleteView):
+
+class FamiliarDetailView(LoginRequiredMixin,PermissionRequiredMixin,DeleteView):
     model = Familiar
     template_name = 'grupoFamiliar/grupo_familiar_detalle_afiliado.html'
+    login_url = '/login/'
+    permission_required = "afiliados.permission_gestion_afiliado"
+
 
     def get_object(self, queryset=None):
         afiliado_pk = self.kwargs.get('pk')
@@ -680,12 +707,14 @@ class FamiliarUpdateView_(UpdateView):
             return self.render_to_response(self.get_context_data(form=form))
         
 # -----------------------------  LIST ----------------------------------- #
-class RelacionFamiliarListView(ListFilterView):
+class RelacionFamiliarListView(LoginRequiredMixin,PermissionRequiredMixin, ListFilterView):
     model = RelacionFamiliar
     filter_class = RelacionFamiliarFilterForm
     template_name = 'relacion_familiar_listar.html'
     paginate_by = MAXIMO_PAGINATOR
     success_url = reverse_lazy('afiliados:afiliado_listar')
+    login_url = '/login/'
+    permission_required = "afiliados.permission_gestion_afiliado"
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -711,6 +740,8 @@ class RelacionFamiliarListView(ListFilterView):
         return queryset
 
 # ----------------------------- FAMILIAR ELIMINAR -----------------------------------
+@permission_required('afiliados.permission_gestion_afiliado')
+@login_required(login_url='/login/')
 def familiar_eliminar(request, pk, familiar_pk):
     # Obtener el objeto Familiar
     familiar = get_object_or_404(Familiar, pk=familiar_pk)
