@@ -2,6 +2,7 @@ from django import forms
 from django.forms import ValidationError
 from apps.personas.forms import PersonaForm,PersonaUpdateForm
 from apps.personas.models import Persona
+from utils.choices import ESTADO_CIVIL, MAX_LENGTHS, NACIONALIDADES
 from .models import Salon, Servicio, Alquiler, Pago_alquiler
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Fieldset, Submit, HTML
@@ -29,11 +30,60 @@ class EncargadorForm(forms.ModelForm):
 
 
 class EncargadoFilterForm(FiltrosForm):
-    encargado__persona__nombre  = forms.CharField(required=False)
-    encargado__persona__apellido =forms.CharField(required=False)
+    persona__dni = forms.CharField(required=False, label="Dni" )
+    persona__apellido = forms.CharField(required=False, label="Apellido")
+
+
+class EncargadoUpdateForm(forms.ModelForm):
+
+    class Meta:
+        model = Persona
+        fields = '__all__'
+        exclude = ['tipo', 'hasta', 'persona']
+        labels = {
+            'ejerce_desde': "Fecha desde que empezo a ejercer",
+        }
+
+    def __init__(self, *args, **kwargs):
+        super(EncargadoUpdateForm, self).__init__(*args, **kwargs)
+        persona_fields = ['dni', 'cuil', 'nombre', 'apellido', 'fecha_nacimiento', 'celular', 'direccion', 'nacionalidad', 'mail', 'estado_civil']
+        for field_name in persona_fields:
+            if field_name == 'fecha_nacimiento':
+                self.fields[field_name] = forms.DateField(
+                    required=True,
+                    initial=getattr(self.instance.persona, field_name),
+                )
+            elif field_name == 'estado_civil':
+                self.fields[field_name] = forms.ChoiceField(
+                    choices=ESTADO_CIVIL,
+                    required=True,
+                    initial=getattr(self.instance.persona, field_name),
+                )
+            elif field_name == 'nacionalidad':
+                self.fields[field_name] = forms.ChoiceField(
+                    choices=NACIONALIDADES,
+                    required=True,
+                    initial=getattr(self.instance.persona, field_name),
+                )
+            elif field_name in MAX_LENGTHS:
+                max_length = MAX_LENGTHS[field_name]
+                self.fields[field_name] = forms.CharField(
+                    max_length=max_length,
+                    required=True,
+                    initial=getattr(self.instance.persona, field_name),
+                    help_text=getattr(self.instance.persona._meta.get_field(field_name), 'help_text', '')
+                )
+            else:
+                self.fields[field_name] = forms.CharField(
+                    required=True,
+                    initial=getattr(self.instance.persona, field_name),
+                    help_text=getattr(self.instance.persona._meta.get_field(field_name), 'help_text', '')
+                )
+            self.fields[field_name].widget.attrs['readonly'] = False
+
 
 # -----------------------------  SERVICIO  ----------------------------------- #
-class ServiciorForm(forms.ModelForm):
+class ServiciorForm(forms.ModelForm):    
     class Meta:
         model = Servicio
         fields = ('nombre',)
@@ -43,22 +93,21 @@ class ServiciorForm(forms.ModelForm):
     
 
 class ServicioFilterForm(FiltrosForm):
-    servicio__nombre = forms.CharField(required=False)
-    
+    nombre = forms.CharField(required=False)    
 
 # ----------------------------- SALON  ----------------------------------- #
 class SalonrForm(forms.ModelForm):
     class Meta:
         model = Salon
-        fields = ('nombre', 'localidad', 'direccion', 'capacidad', 'encargado', 'precio','tipo_salon','servicios')
+        fields = ('nombre', 'localidad', 'direccion', 'capacidad', 'precio','tipo_salon','servicios')
         widgets = {
-           'nombre': forms.TextInput(attrs={'class': 'form-control form-control-user', 'placeholder': 'Eje: PasaRatos'}),
-           'direccion': forms.TextInput(attrs={'class': 'form-control form-control-user', 'placeholder': 'Eje: Pedro Pascal 150'}),
-           'capacidad': forms.TextInput(attrs={'class': 'form-control form-control-user', 'placeholder': 'Eje: 50'}),
-           #'encargado': forms.TextInput(attrs={'class': 'form-control form-control-user', 'placeholder': 'encargado'}),
-           'precio': forms.TextInput(attrs={'class': 'form-control form-control-user', 'placeholder': 'Eje: 1000'}),
-            
-       }
+            'nombre': forms.TextInput(attrs={'class': 'form-control form-control-user', 'placeholder': 'Eje: PasaRatos'}),
+            'direccion': forms.TextInput(attrs={'class': 'form-control form-control-user', 'placeholder': 'Eje: Pedro Pascal 150'}),
+            'capacidad': forms.TextInput(attrs={'class': 'form-control form-control-user', 'placeholder': 'Eje: 50'}),
+            #'encargado': forms.TextInput(attrs={'class': 'form-control form-control-user', 'placeholder': 'encargado'}),
+            'precio': forms.TextInput(attrs={'class': 'form-control form-control-user', 'placeholder': 'Eje: 1000'}),
+            'servicios': forms.CheckboxSelectMultiple
+        }
     
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -101,6 +150,10 @@ class AlquilerFilterForm(FiltrosForm):
 
 # ----------------------------- PAGO ----------------------------------- #
 class PagoForm(forms.ModelForm):
+    forma_pago = forms.ChoiceField(choices=[('total', 'Total'), ('cuota', 'Cuota')])
+    alquiler = forms.ChoiceField(choices=[])
+   
+
     class Meta:
         model = Pago_alquiler
         fields = ('forma_pago', 'alquiler')
@@ -111,8 +164,20 @@ class PagoForm(forms.ModelForm):
             
        }
     
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        alquileres_sin_pagos = Pago_alquiler.alquileres_sin_pago()
+        choices = [(alquiler.id, f'{alquiler.afiliado.persona.nombre} - {alquiler.salon.nombre} - {alquiler.fecha_alquiler.strftime("%d/%m/%Y")} - {alquiler.turno}') for alquiler in alquileres_sin_pagos]
+        self.fields['alquiler'].choices = choices
+
+    def clean_alquiler(self):
+        alquiler_id = self.cleaned_data['alquiler']
+        try:
+            alquiler = Alquiler.objects.get(pk=alquiler_id)
+            return alquiler
+        except Alquiler.DoesNotExist:
+            raise forms.ValidationError("El alquiler seleccionado no es válido.")
         
 class AlquilerFilterForm(FiltrosForm):
     alquiler_salon_nombre = forms.CharField(required=False)

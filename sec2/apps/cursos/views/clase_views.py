@@ -12,8 +12,12 @@ from django.urls import reverse_lazy
 from django.shortcuts import get_object_or_404
 from django.http import HttpResponse, HttpResponseRedirect
 from django.template import loader
+from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
+from django.contrib.auth.decorators import permission_required , login_required 
 
 # --------------- CREACION DE CLASE --------------------------------
+@permission_required('cursos.permission_gestion_curso', raise_exception=True)
+@login_required(login_url='/login/')
 def generar_clases(request, curso_pk, dictado_id):
     # Obtén el objeto Dictado
     dictado = get_object_or_404(Dictado, pk=dictado_id)
@@ -30,9 +34,12 @@ def generar_clases(request, curso_pk, dictado_id):
     return redirect(url_dictado_detalle)
 
 # --------------- CLASE DETALLE --------------------------------
-class ClaseDetailView(DetailView):
+class ClaseDetailView(LoginRequiredMixin, PermissionRequiredMixin, DetailView):
     model = Clase
     template_name = "clase/clase_detail.html"
+    permission_required = 'cursos.permission_gestion_curso'
+    login_url = '/home/'
+
 
     def get_object(self, queryset=None):
         curso_pk = self.kwargs.get("curso_pk")
@@ -61,8 +68,8 @@ class ClaseDetailView(DetailView):
         profesores_inscritos = dictado.profesores_dictados_inscriptos.all()
         alumnos_inscritos = dictado.alumnos.all()
         # Combino todos los objetos en una lista
-        todos_inscritos = list(afiliados_inscritos) + list(profesores_inscritos) + list(alumnos_inscritos)  
-        # todos_inscritos = list(afiliados_inscritos) + list(familiares_inscritos) + list(profesores_inscritos) + list(alumnos_inscritos)        
+        # todos_inscritos = list(afiliados_inscritos) + list(profesores_inscritos) + list(alumnos_inscritos)  
+        todos_inscritos = list(afiliados_inscritos) + list(familiares_inscritos) + list(profesores_inscritos) + list(alumnos_inscritos)        
         context["inscritos"] = todos_inscritos
 
         alumnos_asistieron = clase.asistencia.all()

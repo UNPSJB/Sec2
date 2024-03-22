@@ -43,6 +43,22 @@
     </li>
   </ul>
 </div>
+<hr />
+
+<div class="menu">
+  <!-- Botón desplegable para Pago -->
+  <button class="submenu-toggle" data-submenu="pago">Pago <i class="fa-solid fa-caret-down"></i></button>
+  <ul class="submenu" id="pago-submenu">
+    <li>
+      <a href="{% url 'afiliados:pagar_cuota_sindical' %}"><i class="fa-solid fa-sack-dollar"></i> Cuota sindical</a>
+    </li>
+    <li>
+      <a href="{% url 'afiliados:pago_cuota_listado' %}"><i class="fa-solid fa-list"></i> Lista de familiares</a>
+    </li>
+  </ul>
+</div>
+
+
   {% block extrajs %}
   <script src="{% static 'Libs/js/nav_curso.js' %}"></script>
 {% endblock %}

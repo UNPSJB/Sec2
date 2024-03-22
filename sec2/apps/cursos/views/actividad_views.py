@@ -8,14 +8,19 @@ from django.urls import reverse_lazy
 from django.contrib import messages
 from django.shortcuts import get_object_or_404, redirect
 from django.views.generic.detail import DetailView
+from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
+from django.contrib.auth.decorators import permission_required , login_required 
 
 ## ------------  CREATE AND LIST ACTIVIDAD -------------------
-class GestionActividadView(CreateView, ListView):
+
+class GestionActividadView(LoginRequiredMixin, PermissionRequiredMixin, CreateView, ListView):
     model = Actividad
     template_name = 'actividad/gestion_actividad.html'
     form_class = ActividadForm
     paginate_by = MAXIMO_PAGINATOR
     context_object_name = 'actividades'
+    permission_required = 'cursos.permission_gestion_curso'
+    login_url = '/home/'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -52,9 +57,11 @@ class GestionActividadView(CreateView, ListView):
         return super().get(request, *args, **kwargs)
 
 ## ------------ ACTIVIDAD DETALLE -------------------
-class ActividadDetailView(DetailView):
+class ActividadDetailView(LoginRequiredMixin, PermissionRequiredMixin, DetailView):
     model = Actividad
     template_name = 'actividad/actividad_detalle.html'
+    permission_required = 'cursos.permission_gestion_curso'
+    login_url = '/home/'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -62,11 +69,13 @@ class ActividadDetailView(DetailView):
         return context
 
 ## ------------ ACTIVIDAD UPDATE -------------------
-class ActividadUpdateView(UpdateView):
+class ActividadUpdateView(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
     model = Actividad
     form_class = ActividadForm
     template_name = 'actividad/actividad_alta.html'
     success_url = reverse_lazy('cursos:gestion_actividad')
+    permission_required = 'cursos.permission_gestion_curso'
+    login_url = '/home/'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -85,6 +94,9 @@ class ActividadUpdateView(UpdateView):
         return super().form_invalid(form)
 
 # ## ------------ ACTIVIDAD DELETE -------------------
+    
+@permission_required('cursos.permission_gestion_curso', raise_exception=True)
+@login_required(login_url='/login/')
 def actividad_eliminar(request, pk):
     actividad = get_object_or_404(Actividad, pk=pk)
     try:

@@ -1,6 +1,8 @@
 from django.shortcuts import get_object_or_404, redirect
 from apps.cursos.forms.actividad_forms import ActividadForm
-from apps.cursos.models import Curso
+from apps.cursos.models import Curso, Dictado
+from apps.personas.models import Persona, Rol
+from utils.funciones import mensaje_error, mensaje_exito
 from ..forms.curso_forms import *
 from django.views.generic.edit import CreateView, UpdateView
 from django.views.generic import DetailView
@@ -8,12 +10,18 @@ from django.urls import reverse_lazy
 from django.contrib import messages
 from sec2.utils import ListFilterView
 from django.urls import reverse_lazy
+from django.shortcuts import render
+from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
+from django.contrib.auth.decorators import permission_required , login_required 
 
 #--------------- CREATE DE CURSOS--------------------------------
-class CursoCreateView(CreateView):
+class CursoCreateView(LoginRequiredMixin, PermissionRequiredMixin,CreateView):
     model = Curso
     form_class = CursoForm
-    success_url = reverse_lazy('cursos:index')
+    success_url = reverse_lazy('cursos:curso_crear')
+    permission_required = 'cursos.permission_gestion_curso'
+    login_url = '/home/'
+
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -94,20 +102,25 @@ class CursoCreateView(CreateView):
 #--------------- CURSO DETALLE --------------------------------
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
-class CursoDetailView(DetailView):
+class CursoDetailView(LoginRequiredMixin, PermissionRequiredMixin, DetailView):
     model = Curso
     template_name = 'curso/curso_detalle.html'
     paginate_by = MAXIMO_PAGINATOR
+    permission_required = 'cursos.permission_gestion_curso'
+    login_url = '/home/'
+
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         curso = self.object  # El objeto de curso obtenido de la vista
 
-        context['titulo'] = f"Curso: {self.object.nombre}"
+        context['titulo'] = f"{self.object.nombre}"
         context['tituloListado'] = 'Dictados Asociados'
 
         # Obtener todos los dictados asociados al curso junto con los horarios
         dictados = curso.dictado_set.prefetch_related('horarios').all()
+        
+        context['tiene_dictados'] = dictados.exists()
 
         # Configurar la paginación
         paginator = Paginator(dictados, self.paginate_by)
@@ -121,16 +134,18 @@ class CursoDetailView(DetailView):
             dictados = paginator.page(paginator.num_pages)
 
         context['dictados'] = dictados
-        context['tiene_dictados'] = paginator.num_pages > 0  # Verificar si hay dictados asociados
 
         return context
 
 ##--------------- CURSO LIST --------------------------------
-class CursoListView(ListFilterView):
+class CursoListView(PermissionRequiredMixin, LoginRequiredMixin, ListFilterView):
     model = Curso
     paginate_by = MAXIMO_PAGINATOR
     filter_class = CursoFilterForm
     template_name = 'curso/curso_list.html'
+    permission_required = 'cursos.permission_gestion_curso'
+    login_url = '/home/'
+
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -166,10 +181,14 @@ class CursoListView(ListFilterView):
         return super().get_success_url()
 
 ##--------------- CURSO UPDATE --------------------------------
-class CursoUpdateView(UpdateView):
+
+class CursoUpdateView(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
     model = Curso
     form_class = CursoForm
     success_url = reverse_lazy('cursos:curso')
+    permission_required = 'cursos.permission_gestion_curso'
+    login_url = '/home/'
+
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -186,8 +205,6 @@ class CursoUpdateView(UpdateView):
             context['titulo'] = "Modificar Curso5"
         
         context['actividades'] = Actividad.objects.all().order_by('nombre')
-        print("AASDASDASD")
-        print(self.object.actividad.id)
         return context
 
     def get_form_kwargs(self):
@@ -231,12 +248,83 @@ class CursoUpdateView(UpdateView):
 
         return super().form_invalid(form)
 
+
+@permission_required('cursos.permission_gestion_curso', raise_exception=True)
+@login_required(login_url='/login/')
+def cursoListaEspera(request, pk):
+    # Obtener el objeto Dictado
+    curso = Curso.objects.get(id=pk)
+    dictados = Dictado.objects.all().filter(curso=curso, estado__lt=3).order_by('estado')
+
+    titulo = f'Inscritos en espera para {curso.nombre}'
+
+    # Obtener la lista de espera ordenada por tipo y fecha de inscripción
+    lista_espera = ListaEspera.objects.filter(curso=curso).order_by('rol__tipo', 'fechaInscripcion')
+
+    # OBTENGO A TODOS MIS ALUMNOS (Alumnos, Afiliado, GrupoFamiliar, Profeosres como alumno)
+    # afiliado_inscritos = Afiliado.objects.filter(dictados=dictado)
+    # familiares_inscritos = Familiar.objects.filter(dictados=dictado)    
+    # profesores_inscritos = Profesor.objects.filter(dictados_inscriptos=dictado)
+    # alumnos_inscritos = Alumno.objects.filter(dictados=dictado)
+    # Calculo la suma total de inscritos
+    # total_inscritos = (
+    #     afiliado_inscritos.count() +
+    #     familiares_inscritos.count() +
+    #     profesores_inscritos.count() +
+    #     alumnos_inscritos.count()
+    # )
+    # OBTENGO A TODOS MIS PERSONAS EN LISTA DE ESPERA(Alumnos, Afiliado, GrupoFamiliar, Profeosres como alumno)
+    # afiliado_inscritos_listaEspera = Afiliado.objects.filter(lista_espera=dictado)
+    # familiares_inscritos_listaEspera = Familiar.objects.filter(lista_espera=dictado)    
+    # profesores_inscritos_listaEspera = Profesor.objects.filter(lista_espera=dictado)
+    # alumnos_inscritos_listaEspera = Alumno.objects.filter(lista_espera=dictado)
+    
+    # Combino todos los objetos en una lista
+    # todos_inscritos_listaEspera = list(afiliado_inscritos_listaEspera) + list(familiares_inscritos_listaEspera) + list(profesores_inscritos_listaEspera) + list(alumnos_inscritos_listaEspera)
+    # hay_cupo = total_inscritos < dictado.cupo
+
+    context = {
+        'curso': curso,
+        'dictados': dictados,
+        # 'todos_inscritos_listaEspera': todos_inscritos_listaEspera,
+        'titulo': titulo,
+        'lista_espera': lista_espera,
+
+        # 'hay_cupo': hay_cupo,
+        'curso_pk': pk,
+
+    }
+    return render(request, 'curso/curso_lista_espera.html', context)
+
+
+from django.utils import timezone
+
 ##--------------- CURSO ELIMINAR --------------------------------
+@permission_required('cursos.permission_gestion_curso', raise_exception=True)
+@login_required(login_url='/login/')
 def curso_eliminar(request, pk):
     curso = get_object_or_404(Curso, pk=pk)
+
     try:
-        curso.delete()
-        messages.success(request, f'{ICON_CHECK} El curso se eliminó correctamente!')
+        if dictadosFinalizados(curso):
+            curso.fechaBaja = timezone.now()
+            curso.save()
+            mensaje_exito(request, f'El curso ha sido deshabilitado con exito')
+        else:
+            mensaje_error(request, f'No se puede eliminar el curso porque tiene dictados que no han finalizado')
+
     except Exception as e:
         messages.error(request, 'Ocurrió un error al intentar eliminar el aula.')
     return redirect('cursos:curso_listado') 
+
+@permission_required('cursos.permission_gestion_curso', raise_exception=True)
+@login_required(login_url='/login/')
+def dictadosFinalizados(curso):
+    dictados = Dictado.objects.all().filter(curso=curso)
+    print(dictados)
+    for dictado in dictados:
+        print(dictado.estado)
+        if not dictado.estado == 3:
+            return False
+    
+    return True

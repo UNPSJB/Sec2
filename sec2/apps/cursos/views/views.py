@@ -5,8 +5,10 @@ from django.shortcuts import redirect
 # from ..models import Actividad, Curso, Dictado, Aula, Alumno, Asistencia_alumno, Asistencia_profesor, Titular
 from django.shortcuts import get_object_or_404
 from django.contrib import messages
+from django.contrib.auth.decorators import permission_required , login_required 
 
-
+@permission_required('cursos.permission_gestion_curso', raise_exception=True)
+@login_required(login_url='/login/')
 def index(request):
     template = loader.get_template('home_curso.html')
     return HttpResponse(template.render())

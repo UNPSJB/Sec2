@@ -6,13 +6,14 @@ from utils.constants import *
 from utils.funciones import validate_no_mayor_actual
 from utils.regularexpressions import *
 from datetime import date
+from django.utils import timezone
 
 # -------------------- FAMILIAR ------------------
 class Familiar(Rol):
     TIPO = ROL_TIPO_FAMILIAR  # Define un valor único para el tipo de rol de Familiar
     activo = models.BooleanField(default=False)  # Agregamos el campo "activo" con valor predeterminado True
     dictados = models.ManyToManyField(Dictado, related_name="familiares", blank=True)
-    lista_espera = models.ManyToManyField(Dictado, related_name='familiares_en_espera', blank=True)
+    # lista_espera = models.ManyToManyField(Dictado, related_name='familiares_en_espera', blank=True)
     
     def __str__(self):
         return f"Activo: {self.activo}"
@@ -49,9 +50,9 @@ class Afiliado(Rol):
     )
 
     dictados = models.ManyToManyField(Dictado, related_name="afiliados", blank=True)
-    lista_espera = models.ManyToManyField(Dictado, related_name='afiliados_en_espera', blank=True)
+    # lista_espera = models.ManyToManyField(Dictado, related_name='afiliados_en_espera', blank=True)
     familia = models.ManyToManyField(Familiar, through='RelacionFamiliar', blank=True)
-
+    
     def __str__(self):
         return f" Tipo: {self.TIPO} Razon social: {self.razon_social} CUIT:{self.cuit_empleador}"
     
@@ -60,7 +61,7 @@ class Afiliado(Rol):
         return f"{self.persona.dni} | {self.persona}"
     
     def tiene_esposo(self):
-        esposo_existente = self.familia.filter(tipo_relacion=1).exists()
+        esposo_existente = self.familia.filter(relacionfamiliar__tipo_relacion=1).exists()
         return esposo_existente
     
     """una vez activado al afiliado pondra a los familiares en estado de activo"""
@@ -70,10 +71,11 @@ class Afiliado(Rol):
             familiar.activo = True
             familiar.save()
     
-    def desactivar_familiares(self):
+    def dar_de_baja_familiares(self):
         familiares = self.familia.all()
         for familiar in familiares:
             familiar.activo = False
+            familiar.hasta = timezone.now()
             familiar.save()
 
     def valorCuota(self):
@@ -92,9 +94,10 @@ class Afiliado(Rol):
         self.hasta = date.today()
         self.estado = 3
         self.persona.es_afiliado = False
-        self.desactivar_familiares()
+        self.dar_de_baja_familiares()
         self.persona.save()
         self.save()
+
 Rol.register(Afiliado)
 
 # -------------------- RELACION FAMILIAR-AFILIADO ------------------
@@ -105,3 +108,10 @@ class RelacionFamiliar(models.Model):
 
     def __str__(self):
         return f"Relación: {self.get_tipo_relacion_display()}"
+
+# -------------------- PAGO DE CUOTA ------------------
+class PagoCuota(models.Model):
+    afiliado = models.ForeignKey(Afiliado, on_delete=models.CASCADE, related_name='pagos_cuotas')
+    monto = models.DecimalField(max_digits=10, decimal_places=2, validators=[MinValueValidator(0, 'El monto debe ser un valor positivo.')])
+    pdf_transferencia = models.FileField(upload_to='transferencias/', null=True, blank=True)
+    fecha_pago = models.DateField(default=timezone.now)

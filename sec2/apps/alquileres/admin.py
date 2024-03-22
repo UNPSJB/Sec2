@@ -1,3 +1,7 @@
 from django.contrib import admin
 
-# Register your models here.
+from apps.alquileres.models import Encargado, Salon, Servicio
+
+admin.site.register(Encargado)
+admin.site.register(Servicio)
+admin.site.register(Salon)

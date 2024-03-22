@@ -86,20 +86,37 @@ class Persona(models.Model):
 ############## PATRON DE ROLES #####################################3
 class Rol(models.Model):
     """
-       TI PO PARA ROLES
+       TIPO PARA ROLES
         0: ROL DE ORIGEN
         1: AFILIADO
         2: GRUPO FAMILIAR
+        3: ALUMNO
+        4: PROFESOR
+        5: ENCARGADO
     """
     TIPO = 0
     TIPOS = []
     persona = models.ForeignKey(Persona, related_name="roles", on_delete=models.CASCADE)
     tipo = models.PositiveSmallIntegerField(choices=TIPOS)
-    desde = models.DateTimeField(auto_now_add=True)
     hasta = models.DateTimeField(null=True, blank=True)
+    #se cambio de atributo para que se mueste en el chango
+    desde = models.DateTimeField(null=True, blank=True)
+    # desde = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return f"{self.__class__.__name__} {self.id}"
+
+    def obtenerTipo(self):
+        if self.tipo == 1: 
+            return 'Afiliado'
+        elif self.tipo == 2: 
+            return 'Familiar'
+        elif self.tipo == 3:
+            return 'Alumno'
+        elif self.tipo == 4: 
+            return 'Profesor'
+        elif self.tipo == 5: 
+            return 'Encargado'
 
     # def save(self, *args, **kwargs):
     #     if self.pk is None:

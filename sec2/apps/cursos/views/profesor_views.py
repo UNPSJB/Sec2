@@ -13,12 +13,17 @@ from django.views.generic.edit import CreateView, UpdateView
 from utils.constants import *
 from sec2.utils import ListFilterView
 from django.db import transaction
+from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
+from django.contrib.auth.decorators import permission_required , login_required 
+
 
 ## ------------------ CREATE DE PROFESOR ------------------
-class ProfesorCreateView(CreateView):
+class ProfesorCreateView(LoginRequiredMixin,PermissionRequiredMixin, CreateView):
     model = Persona
     form_class = ProfesorPersonaForm
-    template_name = 'profesor/profesor_form.html'  
+    template_name = 'profesor/profesor_form.html'
+    permission_required = 'cursos.permission_gestion_curso'
+    login_url = '/home/'  
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -67,13 +72,15 @@ class ProfesorCreateView(CreateView):
             return redirect(detail_url)
 
     def form_invalid(self, form):
-        mensaje_advertencia(self.request, f'{ICON_TRIANGLE} {MSJ_CORRECTION}')
+        mensaje_advertencia(self.request, f'{MSJ_CORRECTION}')
         return super().form_invalid(form)
 
 ## ------------------ DETALLE DE PROFESOR ------------------
-class ProfesorDetailView(DetailView):
+class ProfesorDetailView(LoginRequiredMixin, PermissionRequiredMixin, DetailView):
     model = Profesor
     template_name = 'profesor/profesor_detalle.html'
+    permission_required = 'cursos.permission_gestion_curso'
+    login_url = '/home/'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -88,11 +95,13 @@ class ProfesorDetailView(DetailView):
         return context
 
 ## ------------ PROFESOR UPDATE -------------------
-class ProfesorUpdateView(UpdateView):
+class ProfesorUpdateView(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
     model = Profesor
     form_class = ProfesorUpdateForm
     template_name = 'profesor/profesor_form.html'  
     success_url = reverse_lazy('cursos:profesor_listado')
+    permission_required = 'cursos.permission_gestion_curso'
+    login_url = '/home/'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -108,11 +117,13 @@ class ProfesorUpdateView(UpdateView):
         return super().form_invalid(form)
 
 ## ------------------ LISTADO DE PROFESOR ------------------
-class ProfesorListView(ListFilterView):
+class ProfesorListView(PermissionRequiredMixin, LoginRequiredMixin, ListFilterView):
     model = Profesor
     paginate_by = MAXIMO_PAGINATOR
     filter_class = ProfesorFilterForm
     template_name = 'profesor/profesor_list.html'  
+    permission_required = 'cursos.permission_gestion_curso'
+    login_url = '/home/'
     
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -122,6 +133,8 @@ class ProfesorListView(ListFilterView):
         return context
 
 ## ------------ ELIMINAR -------------------
+@permission_required('cursos.permission_gestion_curso', raise_exception=True)
+@login_required(login_url='/login/')
 def profesor_eliminar(request, pk):
     # profesor = get_object_or_404(Profesor, pk=pk)
     # try:

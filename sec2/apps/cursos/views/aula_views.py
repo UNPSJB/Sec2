@@ -7,14 +7,18 @@ from ..models import Aula
 from ..forms.aula_forms import *
 from django.urls import reverse_lazy
 from django.contrib import messages
+from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
+from django.contrib.auth.decorators import permission_required , login_required
 
 ## ------------  CREATE AND LIST AULA -------------------
-class GestionAulaView(CreateView, ListView):
+class GestionAulaView(PermissionRequiredMixin, LoginRequiredMixin, CreateView, ListView):
     model = Aula
     template_name = 'aula/gestion_aula.html'  
     form_class = AulaForm
     paginate_by = MAXIMO_PAGINATOR
     context_object_name = 'aulas'
+    permission_required = 'cursos.permission_gestion_curso'
+    login_url = '/home/'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -58,9 +62,11 @@ class GestionAulaView(CreateView, ListView):
         return queryset
 
 ## ------------ ACTIVIDAD DETALLE -------------------
-class AulaDetailView(DetailView):
+class AulaDetailView(PermissionRequiredMixin, LoginRequiredMixin, DetailView):
     model = Aula
     template_name = "aula/aula_detalle.html"
+    permission_required = 'cursos.permission_gestion_curso'
+    login_url = '/home/'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -68,12 +74,15 @@ class AulaDetailView(DetailView):
         return context
 
 ## ------------ UPDATE -------------------
-class AulaUpdateView(UpdateView):
+class AulaUpdateView(PermissionRequiredMixin, LoginRequiredMixin, UpdateView):
     model = Aula
     form_class = AulaForm
     template_name = 'aula/aula_alta.html'
     context_object_name = 'aula'
     success_url = reverse_lazy('cursos:gestion_actividad')
+    permission_required = 'cursos.permission_gestion_curso'
+    login_url = '/home/'
+
     
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)

@@ -1,11 +1,8 @@
-import decimal
-
 from utils.choices import AFILIADO_ESTADO, ESTADO_CIVIL, LOCALIDADES_CHUBUT, MAX_LENGTHS, NACIONALIDADES, TIPOS_RELACION_FAMILIAR
 from utils.funciones import validate_no_mayor_actual
-from .models import Afiliado, Familiar
+from .models import Afiliado, Familiar, PagoCuota
 from apps.personas.models import Persona
 from sec2.utils import FiltrosForm
-from datetime import date
 from utils.regularexpressions import *
 from utils.constants import *
 from django import forms
@@ -13,6 +10,10 @@ from django.utils import timezone
 import re
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.core.validators import EmailValidator
+from django import forms
+
+import datetime
+from datetime import date
 
 # ---------- Utilizado para el AFILIADO CRATE VIEW 
 class AfiliadoPersonaForm(forms.ModelForm):
@@ -62,18 +63,6 @@ class AfiliadoFilterForm(FiltrosForm):
     
 ########### Utilizado para el AFILIADO UPDATE ##############################################
 class AfiliadoUpdateForm(forms.ModelForm):
-    sueldo = forms.CharField(
-        max_length=12,  # Ajusta según tus necesidades
-        validators=[
-            RegexValidator(
-                regex=r'^\d{1,3}(,\d{3})*(\,\d{1,2})?$',
-                message='Ingrese un sueldo válido (tiene que tener un "," y hasta dos decimales).',
-                code='invalid_sueldo_format',
-            ),
-        ],
-        required=True,
-    )
-        
     class Meta:
         model = Afiliado
         fields = '__all__'
@@ -196,7 +185,7 @@ class AfiliadoSelectForm(forms.Form):
         ]
     )
     celular = forms.CharField(
-        max_length=13,
+        max_length=10,
         validators=[
             numeric_validator,
             exact_length_10_validator,
@@ -289,3 +278,43 @@ class RelacionFamiliarFilterForm(FiltrosForm):
     familiar__persona__dni = forms.CharField(label='DNI del Familiar', required=False)
     afiliado__persona__dni = forms.CharField(label='DNI del Afiliado', required=False)
     tipo_relacion = forms.ChoiceField(choices=TIPOS_RELACION_FAMILIAR, required=False)
+
+
+class PagoCuotaForm(forms.ModelForm):
+    class Meta:
+        model = PagoCuota
+        fields = '__all__'
+        exclude = ['afiliado']
+        widgets = {
+            'monto': forms.NumberInput(attrs={'class': 'form-control'}),
+            'pdf_transferencia': forms.FileInput(attrs={'accept': 'application/pdf'}),
+            'fecha_pago': forms.DateInput(attrs={'type': 'date'}),
+        }
+
+    def clean_monto(self):
+        monto = self.cleaned_data['monto']
+        if monto <= 0:
+            raise forms.ValidationError('El monto debe ser mayor que cero.')
+        return monto
+
+    def clean_fecha_pago(self):
+        fecha_pago = self.cleaned_data.get('fecha_pago')
+        today = timezone.now().date()
+        if fecha_pago is not None and fecha_pago > today:
+            raise forms.ValidationError('La fecha de pago no puede ser superior a la fecha actual.')
+        return fecha_pago
+
+    def clean_pdf_transferencia(self):
+        pdf_transferencia = self.cleaned_data.get('pdf_transferencia')
+        if pdf_transferencia is None:
+            return pdf_transferencia  # Return the original cleaned data if no PDF file is provided
+
+        # Opcionalmente, puedes agregar validaciones adicionales para el archivo PDF si es necesario.
+        # Por ejemplo, verificar el tamaño del archivo, el tipo, etc.
+        return pdf_transferencia
+    
+########### FILTER FORM FAMILIAR  ##############################################
+class PagoCuotarFilterForm(FiltrosForm):
+    afiliado__persona__dni = forms.CharField(label='DNI del Afiliado', required=False)
+    afiliado__cuit_empleador = forms.CharField(label='Cuit del empleador', required=False)
+    

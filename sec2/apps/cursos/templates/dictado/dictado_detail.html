@@ -83,11 +83,34 @@
 {% endblock %}
 
 {% block botones %}
-  {% comment %} <div class="col d-flex justify-content-center">
-    <a href="{% url 'cursos:dictado_editar' curso_pk=curso.pk dictado_pk=dictado.pk %}" class="btn btn-primary btn-sm btn-detalle"><i class="fa-regular fa-pen-to-square"></i> Modificar</a>
-  </div> {% endcomment %}
+<div class="col d-flex">
+  <a href="{% url 'cursos:curso_detalle' pk=dictado.curso.pk %}" class="btn btn-sm btn-secondary btn-detalle">
+    <i class="fa-solid fa-arrow-left"></i> Volver al curso
+  </a>
+</div>
+
+<div class="col d-flex justify-content-center"> 
+
+  {% if not dictado.curso.fechaBaja %}
+  <a href="{% url 'cursos:curso_lista_espera' curso.pk %}" 
+    class="btn btn-warning btn-sm btn-detalle" 
+    onclick="openOrFocusWindow(this.href, 'Lista de espera', 700, 400); return false;">
+    <i class="fa-solid fa-list"></i>
+    Lista de espera
+  </a>
+  {% endif %}
+
+
+</div>
+
+
+<div class="col d-flex">
+    {% comment %} <a href="{% url 'cursos:dictado_editar' curso_pk=curso.pk dictado_pk=dictado.pk %}" class="btn btn-primary btn-sm btn-detalle"><i class="fa-regular fa-pen-to-square"></i> Modificar</a> {% endcomment %}
+</div>
   
-  <div class="col d-flex justify-content-center">
+
+
+  <div class="col d-flex">
     <button type="button" class="btn btn-info btn-sm btn-detalle" data-bs-toggle="modal" data-bs-target="#exampleModal">
       <i class="fa-solid fa-list"></i>
       Alumnos
@@ -98,21 +121,24 @@
   <div class="col d-flex justify-content-center">
   
     {% if not  hay_reserva %}
-      <a href="{% url 'cursos:horario_crear' curso_pk=dictado.curso.pk dictado_pk=dictado.pk %}" class="btn btn-primary btn-detalle">
+      <a href="{% url 'cursos:horario_crear' curso_pk=dictado.curso.pk dictado_pk=dictado.pk %}" class="btn btn-sm btn-primary btn-detalle">
         <i class="fa-solid fa-plus"></i> Generar Horario
       </a>
 
     {% elif todos_los_horarios_con_aula %}
       {% if not clases %}
-      <a href="{% url 'cursos:generar_clases' curso_pk=curso.pk dictado_id=dictado.pk %}" class="btn btn-primary btn-detalle">
+      <a href="{% url 'cursos:generar_clases' curso_pk=curso.pk dictado_id=dictado.pk %}" class="btn btn-outline-success btn-detalle">
         <i class="fa-solid fa-plus"></i> Generar Clases
       </a>
-      {% elif not dictado.estado == 3 %}
-      <a href="{% url 'cursos:dictado_finalizar' curso_pk=curso.pk dictado_pk=dictado.pk %}" class="btn btn-primary btn-detalle">
+      {% elif dictado.estado == 2 %}
+      <a href="{% url 'cursos:dictado_finalizar' curso_pk=curso.pk dictado_pk=dictado.pk %}" class="btn btn-sm btn-outline-danger btn-detalle">
         <i class="fa-solid fa-plus"></i> Finalizar
       </a>
       {% endif %}
     {% endif %}
+    
+
+
   </div>
 
 
@@ -147,7 +173,7 @@
               {% if clase.asistencia_tomada %}
               <i class="fa-solid fa-check" style="color:green"></i>
               {% else %}
-              <i class="fa-solid fa-xmark" style="color:red"></i>
+              <i class="fa-solid fa-circle-exclamation" style="color: #FF8000;"></i>
               {% endif %}
             </td>
             {% comment %} <a href="{% url 'cursos:clase_detalle' curso_pk = curso.pk dictado_pk = dictado.pk clase_pk = clase.pk %}" class="btn btn-primary btn-detalle"><i class="fa-regular fa-eye"></i> Detalle</a> {% endcomment %}
@@ -195,6 +221,21 @@ function gestionInscripcionAlumno(accion, curso_pk, dictado_pk, persona_pk) {
   </script>
 
     
+  <script>
+    var listaEsperaWindow = null;
+  
+    function openOrFocusWindow(url, name, width, height) {
+      // Verifica si la ventana ya está abierta
+      if (listaEsperaWindow && !listaEsperaWindow.closed) {
+        // Si está abierta, enfócala
+        listaEsperaWindow.focus();
+      } else {
+        // Si no está abierta, abre una nueva ventana
+        listaEsperaWindow = window.open(url, name, 'width=' + width + ',height=' + height);
+      }
+    }
+  </script>
+  
 
   {% endblock %}
 

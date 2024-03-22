@@ -3,121 +3,12 @@
 {% load static %}
 
 {% block formulario %}
+<br />
+
   <form method="post">
     {% csrf_token %}
-    {{ form.non_field_errors }}
-    <br />
-    <div class="row">
-        <div class="col">
-        <div class="form-group">
-            <label for="{{ form.dni.id_for_label }}">DNI:</label><br />
-            {{ form.dni }}
-            <br />
-            <span class="help-text">{{ form.dni.help_text }}</span>
-            <span class="error-text">{{ form.dni.errors }}</span>
-        </div>
-        </div>
+    {% include 'persona_alta.html' %}
 
-        <div class="col">
-        <div class="form-group">
-            <label for="{{ form.cuil.id_for_label }}">CUIL:</label><br />
-            {{ form.cuil }}
-            <br />
-            <span class="help-text">{{ form.cuil.help_text }}</span>
-            <span class="error-text">{{ form.cuil.errors }}</span>
-        </div>
-        </div>
-    </div>
-    <div class="row">
-        <div class="col">
-        <br />
-        <div class="form-group">
-            <label for="{{ form.nombre.id_for_label }}">Nombre:</label><br />
-            {{ form.nombre }}
-            <small class="help-text">{{ form.nombre.help_text }}</small><br />
-            <small class="error-text">{{ form.nombre.errors }}</small>
-        </div>
-        </div>
-        <div class="col">
-        <div class="form-group">
-            <br />
-            <label for="{{ form.apellido.id_for_label }}">Apellido:</label><br />
-            {{ form.apellido }}
-            <small class="help-text">{{ form.apellido.help_text }}</small><br />
-            <small class="error-text">{{ form.apellido.errors }}</small>
-        </div>
-        </div>
-    </div>
-
-    <div class="row">
-        <div class="col">
-        <div class="form-group">
-            <br />
-            <label for="{{ form.fecha_nacimiento.id_for_label }}">Fecha de Nacimiento:</label>
-            <br />
-            {{ form.fecha_nacimiento }}
-            <small class="help-text">{{ form.fecha_nacimiento.help_text }}</small><br />
-            <small class="error-text">{{ form.fecha_nacimiento.errors }}</small>
-            <br />
-        </div>
-        </div>
-        <div class="col">
-        <div class="form-group">
-            <br />
-            <label for="{{ form.nacionalidad.id_for_label }}">Nacionalidad:</label>
-            {{ form.nacionalidad }}
-            <small class="help-text">{{ form.nacionalidad.help_text }}</small><br />
-            <small class="error-text">{{ form.nacionalidad.errors }}</small>
-            <br />
-        </div>
-        </div>
-    </div>
-
-    <div class="row">
-        <div class="col">
-        <div class="form-group">
-            <label for="{{ form.celular.id_for_label }}">Celular:</label>
-            <br />
-            {{ form.celular }}
-            <br />
-            <small class="help-text">{{ form.celular.help_text }}</small><br />
-            <small class="error-text">{{ form.celular.errors }}</small>
-            <br />
-        </div>
-        </div>
-        <div class="col">
-        <div class="form-group">
-            <label for="{{ form.estado_civil.id_for_label }}">Estado Civil:</label><br />
-            {{ form.estado_civil }}
-            <small class="help-text">{{ form.estado_civil.help_text }}</small><br />
-            <small class="error-text">{{ form.estado_civil.errors }}</small>
-        </div>
-        </div>
-    </div>
-    <div class="row">
-            <div class="col">
-                <div class="form-group">
-                    <label for="{{ form.direccion.id_for_label }}">Dirección:</label><br />
-                    {{ form.direccion }}
-                    <br />
-                    <small class="help-text">{{ form.direccion.help_text }}</small><br />
-                    <small class="error-text">{{ form.direccion.errors }}</small>
-                    <br />
-                </div>
-            </div>
-
-            <div class="col">
-            <div class="form-group">
-                    <label for="{{ form.mail.id_for_label }}">Correo Electrónico:</label>
-                    <br />
-                    {{ form.mail }}
-                    <br />
-                    <small class="help-text">{{ form.mail.help_text }}</small><br />
-                    <small class="error-text">{{ form.mail.errors }}</small>
-                    <br />
-            </div>
-            </div>
-   
     <div class="row row-cols-1 row-cols-sm-1 row-cols-md-2">
       <div class="col">
         <a href="{% url 'alquiler:index' %}" class="btn btn-secondary">Cancelar</a>
@@ -125,6 +16,5 @@
       <div class="col">
         <button type="submit" class="btn btn-primary">Guardar</button>
       </div>
-    </div>
-  </form>
+      <form>
 {% endblock %}

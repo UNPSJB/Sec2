@@ -1,8 +1,5 @@
 from django.db import models
-# from apps.cursos.models import Alumno
-
-# Create your models here.
-
+from apps.cursos.models import Alumno
 
 # class Pago_alumno(models.Model):
 #     alumno = models.ForeignKey(

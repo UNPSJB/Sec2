@@ -114,9 +114,37 @@
     </div>
     {% endif %}
   </div>
+
+
+  <div class="row">
+    <div class="col-md-2">
+      <p>
+        <strong>Cupo:</strong>
+      </p>
+    </div>
+    <div class="col-md-4">
+      <p>{{ curso.cupo }} participantes maximo</p>
+    </div>
+
+    {% if curso.fechaBaja %}
+
+    <div class="col-md-2">
+      <p>
+        <strong>Fecha de Baja:</strong>
+      </p>
+    </div>
+    <div class="col-md-4">
+      <p>{{ curso.fechaBaja }}</p>
+    </div>
+    {% endif %}
+
+  </div>
+
 {% endblock %}
 
 {% block botones %}
+{% if not curso.fechaBaja %}
+
 
 {% if not tiene_dictados %}
 <div class="col d-flex justify-content-center"> 
@@ -125,10 +153,22 @@
   </a>
 </div>
 {% endif %}
+
+<div class="col d-flex justify-content-center"> 
+  <a href="{% url 'cursos:curso_lista_espera' curso.pk %}" 
+    class="btn btn-warning btn-sm btn-detalle" 
+    onclick="openOrFocusWindow(this.href, 'Lista de espera', 700, 400); return false;">
+    <i class="fa-solid fa-list"></i>
+    Lista de espera
+  </a>
+</div>
+
 <div class="col d-flex justify-content-end">
   <button type="button" class="btn btn-danger btn-sm btn-detalle" data-bs-toggle="modal" data-bs-target="#exampleModal_eliminar"><i class="fa-regular fa-circle-down"></i> Dar de Baja</button>
   {% include 'curso/modal_confirm_baja.html' %}
 </div>
+{% endif  %}
+
 {% endblock %}
 
 {% block listado_asociado %}
@@ -136,18 +176,22 @@
   
   <h3 class="subtitulo">{{ tituloListado }}</h3>
   
+  {% if not curso.fechaBaja %}
+
   {% if tiene_dictados %}
   <a href="{% url 'cursos:dictado_crear' pk=object.pk %}" class="btn btn-primary btn-sm btn-detalle"><i class="fa-regular fa-plus"></i> Nuevo Dictado</a>
   {% else %}
   <button type="button" class="btn btn-primary btn-sm btn-detalle" data-bs-toggle="modal" data-bs-target="#exampleModal"><i class="fa-regular fa-plus"></i> Nuevo Dictado</button>
   {% include 'curso/modal_primer_dictado.html' %}
   {% endif %}
+
+  {% endif %}
+
   <table class="table table-sm table-hover">
     <thead>
       <tr>
         <th>#</th>
         <th>Fecha Inicio</th>
-        <th class="text-center">Cupo</th>
         <th>Desc</th>
         <th>Duración</th>
         <th>Estado</th>
@@ -159,7 +203,6 @@
       <tr>
         <td class="negrita"> {{ dictados.start_index|add:forloop.counter0 }}</td>
         <td>{{ dictado.fecha }}</td>
-        <td class="text-center">{{ dictado.cupo }}</td>
         <td>{{ dictado.descuento }} %</td>
         <td>{{ dictado.modulos_por_clase }} hrs</td>
         <td>{{ dictado.get_estado_display }} </td>
@@ -172,5 +215,21 @@
   </table>
   {% include 'pagination.html' with page_obj=dictados %}
 </div>
+
+
+<script>
+  var listaEsperaWindow = null;
+
+  function openOrFocusWindow(url, name, width, height) {
+    // Verifica si la ventana ya está abierta
+    if (listaEsperaWindow && !listaEsperaWindow.closed) {
+      // Si está abierta, enfócala
+      listaEsperaWindow.focus();
+    } else {
+      // Si no está abierta, abre una nueva ventana
+      listaEsperaWindow = window.open(url, name, 'width=' + width + ',height=' + height);
+    }
+  }
+</script>
 
 {% endblock %}

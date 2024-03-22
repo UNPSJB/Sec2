@@ -1,5 +1,6 @@
+from datetime import timezone
 from django import forms
-from ..models import Actividad, Curso
+from ..models import Actividad, Curso, ListaEspera, PagoProfesor
 from utils.constants import *
 from utils.choices import *
 from sec2.utils import FiltrosForm
@@ -9,7 +10,7 @@ class CursoForm(forms.ModelForm):
     class Meta:
         model = Curso
         fields = '__all__'
-        exclude= ['es_convenio', 'actividad' ]
+        exclude= ['es_convenio', 'actividad', 'cupo', 'fechaBaja']
 
     area = forms.ChoiceField(
         choices=[('', '---------')] + AREAS,  # Agrega el valor por defecto a las opciones de AREAS
@@ -20,9 +21,15 @@ class CursoForm(forms.ModelForm):
     def clean_nombre(self):
         nombre = self.cleaned_data['nombre']
         nombre_lower = nombre.lower()  # Convertir a minúsculas
-        existe_curso = Curso.objects.filter(nombre__iexact=nombre_lower).exists()
+
+        # Exclude the current instance from the queryset (assuming instance is available in the form)
+        curso_id = self.instance.id if self.instance else None
+
+        existe_curso = Curso.objects.filter(nombre__iexact=nombre_lower).exclude(id=curso_id).exists()
+
         if existe_curso:
             raise forms.ValidationError('El nombre del curso ya existe. Por favor, elige otro nombre.')
+
         return nombre
     
     def __init__(self, *args, **kwargs):
@@ -57,7 +64,7 @@ class CursoFilterForm(FiltrosForm):
         widget=forms.Select(attrs={'class': 'form-control'})
     )
     actividad = forms.ModelChoiceField(
-        queryset=Actividad.objects.all(),
+        queryset=Actividad.objects.all().order_by('nombre'),
         label='Actividad',
         required=False,
         widget=forms.Select(attrs={'class': 'form-control'})
@@ -82,3 +89,26 @@ class CursoFilterForm(FiltrosForm):
         except (ValueError, TypeError):
             # Si no se puede convertir a un número, devuelve None
             return None
+        
+
+class ListaEsperaAdminForm(forms.ModelForm):
+    class Meta:
+        model = ListaEspera
+        fields = '__all__'
+
+    def clean_fechaInscripcion(self):
+        # Devuelve la fecha y hora actual
+        return timezone.now()
+    
+
+
+
+class PagoProfesorForm(forms.ModelForm):
+    class Meta:
+        model = PagoProfesor
+        fields = '__all__'
+        exclude = ['profesor', 'desde']
+        widgets = {
+            'monto': forms.NumberInput(attrs={'class': 'form-control'}),
+            'fecha_pago': forms.DateInput(attrs={'type': 'date'}),
+        }

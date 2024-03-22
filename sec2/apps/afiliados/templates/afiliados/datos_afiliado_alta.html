@@ -42,24 +42,6 @@
       </div>
 </div>
 
-{% comment %} RAZON SOCIAL - CATEGORÍA LABORAL {% endcomment %}
-<div class="row row-cols-1 row-cols-sm-2 row-cols-md-2">
-    <div class="col">
-        <div class="form-group">
-            <label for="{{ form.razon_social.id_for_label }}">Razón Social:</label>
-            {{ form.razon_social }}
-            {% include "error_campo.html" with field=form.razon_social %}
-          </div>
-    </div>
-    <div class="col">
-        <div class="form-group">
-            <label for="{{ form.categoria_laboral.id_for_label }}">Categoría Laboral:</label>
-            {{ form.categoria_laboral }}
-            {% include "error_campo.html" with field=form.categoria_laboral %}
-          </div>
-    </div>
-</div>
-
 {% comment %} FECHA INGRESO AL TRABAJO - LOCALIDAD DE LA EMPRESA {% endcomment %}
 <div class="row">
   <div class="col">

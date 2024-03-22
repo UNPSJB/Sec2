@@ -34,11 +34,18 @@ class Aula(models.Model):
         if self.tipo == 'normal':
             return 'Aula {}'.format(self.numero)
         return 'Computación {}'.format(self.numero)
+
+#------------- LISTA DE ESPERA --------------------
+class ListaEspera(models.Model):
+    curso = models.ForeignKey('Curso', on_delete=models.CASCADE, related_name='inscritos_lista_espera')
+    rol = models.ForeignKey(Rol, on_delete=models.CASCADE)
+    fechaInscripcion = models.DateTimeField(auto_now_add=True)
     
 #------------- CURSO --------------------
 class Curso(models.Model):
     # ForeignKey
     actividad = models.ForeignKey(Actividad, on_delete=models.SET_NULL, blank=True, null=True)
+    lista_espera = models.ManyToManyField(ListaEspera, blank=True, related_name='cursos_en_lista_espera')  # Change the related_name here
 
     area = models.PositiveSmallIntegerField(choices=AREAS, blank=True, null=True)
     requiere_certificado_medico = models.BooleanField(default=False)
@@ -47,8 +54,8 @@ class Curso(models.Model):
     modulos_totales= models.PositiveIntegerField(help_text="Horas totales del curso")    
     nombre = models.CharField(
         max_length=50,
-        validators=[text_and_numeric_validator],  # Añade tu validador personalizado si es necesario
-        help_text="Sin caracteres especiales."
+        validators=[text_and_numeric_validator],
+        help_text="Solo se permiten letras, números y espacios, con o sin tildes."
     )
     descripcion = models.CharField(
         max_length=255,
@@ -63,6 +70,20 @@ class Curso(models.Model):
         null=True,    # Also set null to True if you want to allow NULL values in the database
         default=0     # Set the default value to 0
     )
+    cupo = models.PositiveIntegerField(
+        help_text="Máximo alumnos inscriptos",
+        validators=[
+            MinValueValidator(1, message="Valor mínimo permitido es 1."),
+            MaxValueValidator(100, message="Valor máximo es 100."),
+        ],
+        null=True,
+    )
+    
+    fechaBaja= models.DateField(
+        null=True,
+        blank=False,
+    )
+
     
     def __str__(self):
         return f"{self.nombre}"
@@ -83,7 +104,7 @@ class Dictado(models.Model):
     modulos_por_clase= models.PositiveIntegerField(help_text="Horas por clase")
     asistencia_obligatoria = models.BooleanField(default=False)
     periodo_pago=models.PositiveSmallIntegerField(choices=PERIODO_PAGO)
-    estado=models.PositiveSmallIntegerField(choices=ESTADO_DICTADO)
+    estado = models.PositiveSmallIntegerField(choices=ESTADO_DICTADO, default=1)
     fecha = models.DateTimeField(help_text="Seleccione la fecha de inicio")
     fecha_fin = models.DateTimeField(null=True,blank=True )
     cupo = models.PositiveIntegerField(
@@ -135,26 +156,29 @@ class Reserva(models.Model):
     # ForeignKey
     horario = models.ForeignKey(Horario, related_name="reservass", on_delete=models.CASCADE, null=True, blank=True)
     aula = models.ForeignKey(Aula, related_name="reservas", on_delete=models.CASCADE, null=True, blank=True)
-    
     fecha = models.DateField()
 
 #------------- ALUMNO --------------------
 class Alumno(Rol):
     # ForeignKey
     dictados = models.ManyToManyField(Dictado, related_name="alumnos", blank=True)
-    lista_espera = models.ManyToManyField('Dictado', related_name='alumnos_en_espera', blank=True)
+    # lista_espera = models.ManyToManyField('Dictado', related_name='alumnos_en_espera', blank=True)
+    
+    # Si realmente es un alumno o solo un interesado en algun curso
+    es_potencial = models.BooleanField(default=True) 
 
-    TIPO = 3
+    TIPO = ROL_TIPO_ALUMNO
     def agregar_dictado(self, dictado):
         if dictado.cupo > dictado.alumnos.count():
             self.dictados.add(dictado)
             return True
         else:
-            self.lista_espera.add(dictado)
+            # self.lista_espera.add(dictado)
             return False
     
     def esta_inscripto_o_en_espera(self, dictado):
-        return dictado in self.dictados.all() or dictado in self.lista_espera.all()
+        return dictado in self.dictados.all() 
+    # or dictado in self.lista_espera.all()
 
     def esta_inscrito_en_dictado(self, dictado_pk):
         """
@@ -169,10 +193,10 @@ Rol.register(Alumno)
 class Profesor(Rol):
     # ForeignKey
     dictados = models.ManyToManyField(Dictado, through = "Titular", related_name="profesores", blank=True)
-    TIPO = 2
+    TIPO = ROL_TIPO_PROFESOR
     actividades = models.ManyToManyField(Actividad, blank=True)
     dictados_inscriptos = models.ManyToManyField(Dictado, related_name="profesores_dictados_inscriptos", blank=True)
-    lista_espera = models.ManyToManyField(Dictado, related_name='profesores_en_espera', blank=True)
+    # lista_espera = models.ManyToManyField(Dictado, related_name='profesores_en_espera', blank=True)
 
     ejerce_desde= models.DateField(
         null=True,
@@ -231,34 +255,14 @@ class Titular(models.Model):
     profesor = models.ForeignKey(Profesor, on_delete=models.CASCADE)
     dictado= models.ForeignKey(Dictado, on_delete=models.CASCADE)
 
-#------------- ASISTENCIA PROFESOR --------------------
-# class AsistenciaProfesor(models.Model):
-#     profesor = models.ForeignKey(Profesor, on_delete=models.CASCADE)
-#     clase = models.ForeignKey(Clase, on_delete=models.CASCADE)
-#     asistio = models.BooleanField(default=False)
-
-
-# class AsistenciaAlumno(models.Model):
-#     alumno = models.ForeignKey(Alumno, on_delete=models.CASCADE)
-#     clase = models.ForeignKey(Clase, on_delete=models.CASCADE)
-#     asistio = models.BooleanField(default=False)
-
-
+class PagoProfesor(models.Model):
+    profesor = models.ForeignKey(Profesor, on_delete=models.CASCADE, related_name='pagos_profesor')
+    monto = models.DecimalField(max_digits=10, decimal_places=2, validators=[MinValueValidator(0, 'El monto debe ser un valor positivo.')])
+    desde = models.DateTimeField(auto_now_add=True)
 
 # class Asistencia_profesor(models.Model):
 #     fecha_asistencia_profesor = models.DateTimeField(auto_now_add=True)
 #     titular = models.ForeignKey(Titular, related_name="asistencia_profesor", on_delete=models.CASCADE)
-
-# class Pago_profesor(models.Model):
-#     fecha_pago_profesor = models.DateField()
-#     titular = models.ForeignKey(Titular, related_name="pagos", on_delete=models.CASCADE)
-#     monto= models.DecimalField(help_text="Monto pagado", max_digits=10, decimal_places=2)
-
-# class Asistencia_alumno(models.Model):
-#     alumno = models.ForeignKey(Alumno, related_name="asistencia", on_delete=models.CASCADE)
-#     dictado = models.ForeignKey(Dictado, on_delete=models.CASCADE)
-#     fecha_asistencia_alumno = models.DateTimeField(auto_now_add=True)
-    
 
 # class Pago_alumno(models.Model):
 #     alumno = models.ForeignKey(Alumno, related_name="pago", on_delete=models.CASCADE)

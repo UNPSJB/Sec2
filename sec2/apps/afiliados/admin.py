@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Afiliado, Familiar, RelacionFamiliar
+from .models import Afiliado, Familiar, PagoCuota, RelacionFamiliar
 from apps.personas.models import Rol
 
 class AfiliadoAdmin(admin.ModelAdmin):
@@ -34,3 +34,4 @@ class RelacionFamiliarAdmin(admin.ModelAdmin):
 admin.site.register(RelacionFamiliar, RelacionFamiliarAdmin)
 
 admin.site.register(Rol)
+admin.site.register(PagoCuota)
