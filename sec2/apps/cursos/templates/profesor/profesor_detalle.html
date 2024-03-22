@@ -29,6 +29,14 @@
 {% endblock %}
 
 {% block botones %}
+
+<div class="col d-flex">
+  <a href="{% url 'cursos:profesor_listado'%}" class="btn btn-sm btn-secondary btn-detalle">
+    <i class="fa-solid fa-arrow-left"></i> Volver al listado
+  </a>
+</div>
+
+
 <div class="col d-flex justify-content-center">
     <a href="{% url 'cursos:profesor_editar' profesor.pk %}" class="btn btn-primary btn-sm btn-detalle"><i class="fa-regular fa-pen-to-square"></i> Modificar</a>
   </div>

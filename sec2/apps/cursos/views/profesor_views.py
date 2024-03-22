@@ -28,6 +28,7 @@ class ProfesorCreateView(CreateView):
 
     def form_valid(self, form):
         dni = form.cleaned_data["dni"]
+        print("ESTOY ACAAAA")
         existing_person = Persona.objects.filter(dni=dni).first()
         if existing_person:
             mensaje_error(self.request, f'{MSJ_PERSONA_EXISTE}')
@@ -68,6 +69,12 @@ class ProfesorCreateView(CreateView):
 
     def form_invalid(self, form):
         mensaje_advertencia(self.request, f'{MSJ_CORRECTION}')
+        print("")
+        print("ERRORES DEL FORMULARIO")
+        for field, errors in form.errors.items():
+            for error in errors:
+                print(f"Error en el campo '{field}': {error}")
+        print("")
         return super().form_invalid(form)
 
 ## ------------------ DETALLE DE PROFESOR ------------------

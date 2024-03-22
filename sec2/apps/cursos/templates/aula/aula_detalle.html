@@ -29,6 +29,12 @@
 {% endblock %}
 
 {% block botones %}
+<div class="col d-flex">
+  <a href="{% url 'cursos:gestion_aula' %}" class="btn btn-sm btn-secondary btn-detalle">
+    <i class="fa-solid fa-arrow-left"></i> Volver
+  </a>
+</div>
+
 <div class="col d-flex justify-content-center">
   <a href="{% url 'cursos:aula_editar' aula.pk %}" class="btn btn-primary btn-sm btn-detalle"><i class="fa-regular fa-pen-to-square"></i> Modificar</a>
 </div>
