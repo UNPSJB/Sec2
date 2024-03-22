@@ -4,7 +4,7 @@
 {% load static %}
 
 {% block botones %}
-<a href="{% url 'afiliados:afiliado_crear' %}" class="btn btn-primary btn-sm  btn-detalle"><i class="fa-solid fa-plus"></i> Nuevo</a>
+<a href="{% url 'alquiler:salon_crear' %}" class="btn btn-primary btn-sm  btn-detalle"><i class="fa-solid fa-plus"></i> Nuevo</a>
 
 {% endblock %}
 
@@ -33,9 +33,7 @@
         <td>{{ Salon.capacidad }}</td>
         <td>{{ Salon.encargado }}</td>
         <td>{{ Salon.precio }}</td>
-              {% comment %} <td>
-                <a href="{% url 'cursos:curso_detalle' curso.pk %}" class="btn btn-primary btn-detalle"><i class="fa-regular fa-eye"></i> Detalle</a>
-              </td>{% endcomment %}
+        
       </tr>
     {% endfor %}
     </tbody>

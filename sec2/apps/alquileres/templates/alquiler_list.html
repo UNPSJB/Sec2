@@ -24,7 +24,14 @@
 <br>
   <h3 class="titulo">{{ titulo }}</h3>
 
-  <br />
+<br />
+<div class="container ">
+  <div class="row row-cols-1 row-cols-sm-2 row-cols-md-1">
+    <div class="col" id="btn-new-alquiler">
+      <a href="{% url 'alquiler:alquiler_crear' %}" class="btn btn-primary"><i class="fa-solid fa-plus"></i> Nuevo</a>
+    </div>
+  </div>
+</div>
   
   <div class="container-sm" id='calendar'></div>
 
@@ -70,13 +77,7 @@
   </div>
 
 
-  <div class="container ">
-    <div class="row row-cols-1 row-cols-sm-2 row-cols-md-1">
-      <div class="col" id="btn-new-alquiler">
-        <a href="{% url 'alquiler:alquiler_crear' %}" class="btn btn-primary"><i class="fa-solid fa-plus"></i> Nuevo</a>
-      </div>
-    </div>
-  </div>
+  
 </div>
 
 {% block nav_lateral_filtro %}

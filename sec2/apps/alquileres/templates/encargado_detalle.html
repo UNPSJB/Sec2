@@ -8,6 +8,9 @@
 {% endblock %}
 
 {% block botones %}
+<div class="col">
+    <a href="{% url 'alquiler:encargado_listar' %}" class="btn btn-secondary">Volver</a>
+</div>
 <div class="col d-flex justify-content-center">
     <a href="{% url 'alquiler:encargado_editar' encargado.pk %}" class="btn btn-primary btn-sm btn-detalle"><i class="fa-regular fa-pen-to-square"></i> Modificar</a>
 </div>
