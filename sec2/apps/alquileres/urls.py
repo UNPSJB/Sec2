@@ -31,7 +31,7 @@ urlpatterns = [
 ##--------------- ALQUILER--------------------------------
    
     path('crearAlquiler/',AlquilerCreateView.as_view(), name="alquiler_crear"),
-    path('alquiler/<int:pk>',AlquilerDetailView.as_view(), name="Alquiler"),
+    path('alquiler/<int:pk>',AlquilerDetailView.as_view(), name="alquiler_detalle"),
     #path('modificar/<int:pk>', AlquilerUpdateView.as_view(), name="alquiler_actualizar"),
     path('mostrarAlquileres/',AlquilieresListView.as_view(), name="alquiler_listar"),
     #path('mostrar/pendientes',AlquileresListPendienteView.as_view(), name="alquiler_listar_pendiente"),

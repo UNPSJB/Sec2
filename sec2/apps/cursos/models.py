@@ -6,6 +6,7 @@ from utils.choices import *
 from utils.funciones import validate_no_mayor_actual
 from utils.regularexpressions import *
 from django.core.validators import MinValueValidator, MaxValueValidator
+from datetime import date
 
 # ------------- ACTIVIDAD --------------------
 class Actividad(models.Model):
@@ -209,6 +210,11 @@ class Profesor(Rol):
             return f"{self.persona.apellido} {self.persona.nombre}"
         else:
             return super().__str__()
+    
+    def dar_de_baja(self):
+        self.hasta = date.today()
+        self.save()
+
 Rol.register(Profesor)
 
 #------------- CLASE --------------------
@@ -258,7 +264,7 @@ class Titular(models.Model):
 class PagoProfesor(models.Model):
     profesor = models.ForeignKey(Profesor, on_delete=models.CASCADE, related_name='pagos_profesor')
     monto = models.DecimalField(max_digits=10, decimal_places=2, validators=[MinValueValidator(0, 'El monto debe ser un valor positivo.')])
-    desde = models.DateTimeField(auto_now_add=True)
+    fecha = models.DateTimeField(auto_now_add=True)
 
 # class Asistencia_profesor(models.Model):
 #     fecha_asistencia_profesor = models.DateTimeField(auto_now_add=True)

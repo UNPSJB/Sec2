@@ -13,27 +13,25 @@
   <thead>
     <tr>
       <th>#</th>
-      <th scope="col">Nombre</th>
-      <th scope="col">Localidad</th>
-      <th scope="col">Direccion</th>
-      <th scope="col">Capacidad</th>
-      <th scope="col">Encargado</th>
-      <th scope="col">Precio</th>
-      <th scope="col"></th>
+      <th>Localidad</th>
+      <th>Nombre</th>
+      <th>Direccion</th>
+      <th>Capacidad</th>
+      <th>Precio</th>
+      <th></th>
     </tr>
   </thead>
   
   <tbody>
     {% for Salon in object_list %}
-      <tr class="bg-transition fila-personalizada">
+      <tr class="bg-transition">
         <td>{{ forloop.counter }}</td>
-        <td>{{ Salon.nombre }}</td>
         <td>{{ Salon.localidad }}</td>
+        <td>{{ Salon.nombre }}</td>
         <td>{{ Salon.direccion }}</td>
         <td>{{ Salon.capacidad }}</td>
-        <td>{{ Salon.encargado }}</td>
         <td>{{ Salon.precio }}</td>
-        
+        <td>detalle</td>
       </tr>
     {% endfor %}
     </tbody>

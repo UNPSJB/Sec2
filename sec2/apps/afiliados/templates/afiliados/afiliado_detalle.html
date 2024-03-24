@@ -58,8 +58,17 @@
 {% block listado_asociado %}
 {% if afiliado.dictados.all %}
   <div class="container-sm">
-    <h3 class="subtitulo">{{ tituloListado }}</h3>
+    <h3 class="subtitulo">{{ tituloListado1 }}</h3>
     {% include "inscripcion_dictado.html" with dictados=afiliado.dictados.all %}
   </div>
 {% endif %}
+
+{% if alquileres %}
+<div class="container-sm">
+  <h3 class="subtitulo">{{ tituloListado2 }}</h3>
+  {% include "afiliados/afiliado_alquiler.html" with alquileres=alquileres.all %}
+</div>
+{% endif %}
+
+
 {% endblock %}

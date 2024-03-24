@@ -5,6 +5,7 @@ from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.views.generic.edit import CreateView, DeleteView, UpdateView
 from django.urls import reverse_lazy
+from apps.alquileres.models import Alquiler
 from apps.personas.forms import PersonaForm, PersonaUpdateForm
 from apps.personas.models import Rol
 from utils.funciones import mensaje_advertencia, mensaje_error, mensaje_exito  
@@ -27,9 +28,8 @@ def index(request):
     return HttpResponse(template.render())
 
 def existe_persona_activa(self, dni):
-    existing_person = Rol.objects.filter(persona__dni=dni).first()
-    return  existing_person and existing_person.hasta is None
-
+    latest_person = Rol.objects.filter(persona__dni=dni).order_by('-id').first()
+    return latest_person and latest_person.hasta is None
 
 # ----------------------------- AFILIADO CREATE ----------------------------------- #
 class AfiliadoCreateView(CreateView):
@@ -108,16 +108,25 @@ class AfiliadoDetailView (DeleteView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         afiliado = self.object  # Access the Afiliado instance
+
+
         context['titulo'] = "Datos del afiliado"
         context['subtitulodetalle1'] = "Datos personales"
         context['subtitulodetalle2'] = "Datos de afiliación"
-        context['tituloListado'] = "Dictados Incritos"
+        context['tituloListado1'] = "Dictados Incritos"
+        context['tituloListado2'] = "Alquileres"
 
         relacion_familiar_list = afiliado.relacionfamiliar_set.all().order_by('familiar__persona__dni')
         context['relacion_familiar_list'] = relacion_familiar_list
 
         cuotas = PagoCuota.objects.filter(afiliado=afiliado)
         context['cuotas'] = cuotas
+
+        print("ASDASDASDSAD")
+
+        alquileres = Alquiler.objects.filter(afiliado=afiliado)
+        print(alquileres)
+        context['alquileres'] = alquileres
 
         return context
 
@@ -339,9 +348,10 @@ def agregar_firma_y_aclaracion(pdf):
 
 
 def es_menor_de_edad(self, fecha_nacimiento):
-    # Verificar si la fecha de nacimiento es menor de edad (menor de 18 años)
+    # Verificar si la fecha de nacimiento corresponde a una persona menor de 40 años
     hoy = date.today()
-    return (hoy - fecha_nacimiento).days < 365 * 18
+    edad = hoy.year - fecha_nacimiento.year - ((hoy.month, hoy.day) < (fecha_nacimiento.month, fecha_nacimiento.day))
+    return edad <= 40
 
 def alta_familiar(request):
     if request.method == 'POST':

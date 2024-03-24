@@ -31,7 +31,7 @@
             <td>${{ pago.monto }}</td>
             <td>{{ pago.afiliado.persona.dni }} - {{pago.afiliado.persona.apellido}} {{pago.afiliado.persona.nombre}}</td>
             <td class="text-end">
-                <a href="{% url 'afiliados:afiliado_detalle' pago.afiliado.pk %}" class="btn btn-primary btn-sm btn-detalle"><i class="fa-regular fa-eye"></i> Afiliado</a>            
+                {% comment %} <a href="{% url 'afiliados:afiliado_detalle' pago.afiliado.pk %}" class="btn btn-primary btn-sm btn-detalle"><i class="fa-regular fa-eye"></i> Afiliado</a>             {% endcomment %}
 
             </td>
         </tr>

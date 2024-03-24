@@ -38,7 +38,7 @@
               {% if relacion.afiliado.estado == 3 %}<i class="fa-solid fa-circle-minus" style="color: #a80000;"></i>{% endif %}
             </td>
             <td class="text-end">
-              <a href="{% url 'afiliados:familiar_detalle' pk=relacion.afiliado.pk familiar_pk=relacion.familiar.pk ventana='misma_ventana' %}" class="btn btn-primary btn-sm btn-detalle"; return false;"> <i class="fa-regular fa-eye"></i> Detalle</a>
+              <a href="{% url 'afiliados:familiar_detalle' pk=relacion.afiliado.pk familiar_pk=relacion.familiar.pk ventana='misma_ventana' %}" class="btn btn-info btn-sm btn-detalle"; return false;"> <i class="fa-regular fa-eye"></i> Detalle</a>
             </td>
         </tr>
         {% endfor %}

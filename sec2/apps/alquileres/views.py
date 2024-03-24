@@ -1,4 +1,5 @@
 from django.shortcuts import get_object_or_404, render
+from apps.afiliados.views import existe_persona_activa
 from apps.alquileres.forms import *
 from django.template import loader
 from django.http import HttpResponse
@@ -11,7 +12,7 @@ from datetime import datetime
 from django.views.generic import DetailView, ListView
 from apps.personas.models import Rol
 
-from utils.funciones import mensaje_advertencia, mensaje_exito  
+from utils.funciones import mensaje_advertencia, mensaje_error, mensaje_exito  
 from .models import Alquiler, Salon, Servicio, Encargado, Afiliado, Pago_alquiler
 from .forms import *
 from sec2.utils import ListFilterView
@@ -44,10 +45,8 @@ class EncargadoCreateView(CreateView):
 
     def form_valid(self, form):
         dni = form.cleaned_data["dni"]
-        existing_person = Persona.objects.filter(dni=dni).first()
-
-        if existing_person:
-            messages.error(self.request, f'{ICON_ERROR} El encargado ya está registrada en el sistema.')
+        if existe_persona_activa(self, dni):
+            mensaje_error(self.request, f'{MSJ_PERSONA_EXISTE}')
             form = EncargadorForm(self.request.POST)
             return self.render_to_response(self.get_context_data(form=form))
         else:
@@ -65,10 +64,13 @@ class EncargadoCreateView(CreateView):
                 es_encargado = True
             )
             persona.save()
+
+            current_datetime = timezone.now()
+
             encargado = Encargado(
                 persona=persona,
-                tipo = Encargado.TIPO
-            
+                tipo = Encargado.TIPO,
+                desde = current_datetime,
             )
             encargado.save()
             mensaje_exito(self.request, f'{MSJ_CORRECTO_ALTA_AFILIADO}')
@@ -261,7 +263,7 @@ class SalonCreateView(CreateView):
     form_class = SalonrForm
     template_name = 'salon_form.html'
     success_url = reverse_lazy('alquiler:salon_crear')
-    title = "Formulario de Salon"
+    title = "Formulario de Salón"
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -354,7 +356,7 @@ class AlquilerCreateView(CreateView):
     form_class = AlquilerForm
     template_name = 'alquiler_form.html'
     success_url = reverse_lazy('alquiler:pagar_alquiler_crear')
-    title = "Formulario de Alquiler de Salon"  # Agrega un título
+    title = "Alquiler de Salón"  # Agrega un título
 
 
     def get_context_data(self, **kwargs):
@@ -393,14 +395,14 @@ class AlquilerCreateView(CreateView):
 # ----------------------------- LIST DE ALQUILER  ----------------------------------- #
 class AlquilieresListView(ListFilterView):
     model = Alquiler
-    paginate_by = 100
+    paginate_by = MAXIMO_PAGINATOR
     filter_class = AlquilerFilterForm
     success_url = reverse_lazy('alquiler:alquiler_listar')
     template_name = 'alquiler_list.html'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['titulo'] = "Listado de Alquileres"
+        # context['titulo'] = "Listado de Alquileres"
         return context
     
     def get_success_url(self):
@@ -419,7 +421,7 @@ class AlquilerDetailView (DetailView):
     template_name = 'alquiler_detail.html'
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['titulo'] = "Datos del alquiler"
+        context['titulo'] = "Detalle de alquiler"
         return context
     
 

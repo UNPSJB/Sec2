@@ -44,8 +44,8 @@ class Salon(models.Model):
 
 class Alquiler(models.Model):
     turnos=[
-        ('mañana','Mañana'),
-        ('noche','Noche')
+        ('Mañana','Mañana'),
+        ('Noche','Noche')
     ]
     afiliado=models.ForeignKey(Afiliado, related_name="alquileres", on_delete=models.CASCADE)
     salon=models.ForeignKey(Salon, related_name="alquileres", on_delete=models.CASCADE)

@@ -112,3 +112,8 @@ class PagoProfesorForm(forms.ModelForm):
             'monto': forms.NumberInput(attrs={'class': 'form-control'}),
             'fecha_pago': forms.DateInput(attrs={'type': 'date'}),
         }
+
+class PagoProfesorFilterForm(FiltrosForm):
+    pass
+    # monto = forms.DecimalField(max_digits=10, decimal_places=2)
+

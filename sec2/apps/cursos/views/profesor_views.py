@@ -1,6 +1,7 @@
 from django.urls import reverse
 from django.shortcuts import get_object_or_404, redirect
 
+from apps.afiliados.views import existe_persona_activa
 from utils.funciones import mensaje_advertencia, mensaje_error, mensaje_exito
 from ..models import Actividad, Profesor, Titular
 from ..forms.profesor_forms import *
@@ -28,9 +29,8 @@ class ProfesorCreateView(CreateView):
 
     def form_valid(self, form):
         dni = form.cleaned_data["dni"]
-        print("ESTOY ACAAAA")
-        existing_person = Persona.objects.filter(dni=dni).first()
-        if existing_person:
+
+        if existe_persona_activa(self, dni):
             mensaje_error(self.request, f'{MSJ_PERSONA_EXISTE}')
             form = ProfesorPersonaForm(self.request.POST)
             return self.render_to_response(self.get_context_data(form=form))
@@ -52,9 +52,11 @@ class ProfesorCreateView(CreateView):
 
             # Guardar las actividades seleccionadas
             actividades_seleccionadas = self.request.POST.getlist('actividades')
+            current_datetime = timezone.now()
 
             profesor = Profesor(persona=persona,
-                                tipo = Profesor.TIPO
+                                tipo = Profesor.TIPO,
+                                desde = current_datetime
                                 )
                 
             profesor.ejerce_desde = form.cleaned_data["ejerce_desde"]
@@ -130,11 +132,13 @@ class ProfesorListView(ListFilterView):
 
 ## ------------ ELIMINAR -------------------
 def profesor_eliminar(request, pk):
-    # profesor = get_object_or_404(Profesor, pk=pk)
-    # try:
-    #     profesor.delete()
-    #     messages.success(request, f'{ICON_CHECK} El Profesor se eliminó correctamente!')
-    # except Exception as e:
-    #     messages.error(request, 'Ocurrió un error al intentar eliminar el aula.')
-    return redirect('afiliados:funcionalidad_pendiente')
+    print("ESTOY ACA")
+    
+    profesor = get_object_or_404(Profesor, pk=pk)
+    profesor.dar_de_baja()
+    print(profesor)
+    
+    messages.success(request, f'{ICON_CHECK} El Profesor se eliminó correctamente!')
+
+    return redirect('cursos:profesor_listado')
 

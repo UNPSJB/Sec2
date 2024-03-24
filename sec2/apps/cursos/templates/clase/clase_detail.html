@@ -73,17 +73,17 @@
             {% if clase.asistencia_tomada %}disabled{% endif %}
             {% if inscrito.persona.pk in lista_asistencia %}checked{% endif %}>
           </td>
-
         </tr>
         {% endfor %}
       </tbody>
     </table>
-
+    <br>
     <h5 class="subtitulo"> {{tituloListado2}}</h5>
     <table class="table table-sm table-hover">
       <thead>
         <tr>
-          {% include "tabla_persona_cabecera.html" %}
+          <th>Dni</th>
+          <th class="col-6">Nombre</th>
           <th class="text-center">Asistencia</th>
         </tr>
       </thead>

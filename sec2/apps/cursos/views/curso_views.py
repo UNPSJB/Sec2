@@ -352,3 +352,30 @@ class PagoProfesorCreateView(CreateView):
         print("")
         return super().form_invalid(form)
     
+
+
+class PagoProfesorListView(ListFilterView):
+    model = PagoProfesor
+    filter_class = PagoProfesorFilterForm
+    template_name = 'pago/pago_profesor_listado.html'
+    paginate_by = MAXIMO_PAGINATOR
+    success_url = reverse_lazy('afiliados:pago_cuota_listado')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['titulo'] = "Pago de profesor"
+        return context
+        
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        # afiliado_dni = self.request.GET.get('afiliado__persona__dni')
+        # cuit_empleador = self.request.GET.get('afiliado__cuit_empleador')  # Add this line
+
+        # if afiliado_dni:
+            # queryset = queryset.filter(afiliado__persona__dni=afiliado_dni)
+
+        # if cuit_empleador:
+            # Use Q objects to perform OR filtering on afiliado__cuit_empleador and familiar__cuit_empleador
+            # queryset = queryset.filter(Q(afiliado__cuit_empleador=cuit_empleador))
+        
+        return queryset
