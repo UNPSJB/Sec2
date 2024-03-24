@@ -73,8 +73,20 @@ class EncargadoCreateView(CreateView):
                 desde = current_datetime,
             )
             encargado.save()
-            mensaje_exito(self.request, f'{MSJ_CORRECTO_ALTA_AFILIADO}')
-            return redirect('alquiler:encargado_listar')
+            if 'guardar_y_recargar' in self.request.POST:
+                print("---------- GUARDAR y RECARGAR---------")
+                mensaje_exito(self.request, f'{MSJ_CORRECTO_ALTA_AFILIADO}')
+                self.object = form.save()
+                return self.render_to_response(self.get_context_data(form=self.form_class()))   
+
+            elif 'guardar_y_listar' in self.request.POST:
+                print("---------- GUARDAR y LISTAR---------")
+                # Guarda el objeto y redirige a la página de listar
+                self.object = form.save()    
+                return redirect('alquiler:encargado_listar')
+        
+        print("---------- OTRA OPCION---------")    
+        return super().form_valid(form)
 
     def form_invalid(self, form):
         messages.warning(self.request, '<i class="fa-solid fa-triangle-exclamation fa-flip"></i> Por favor, corrija los errores a continuación.')
@@ -262,7 +274,6 @@ class SalonCreateView(CreateView):
     model = Salon
     form_class = SalonrForm
     template_name = 'salon_form.html'
-    success_url = reverse_lazy('alquiler:salon_crear')
     title = "Formulario de Salón"
 
     def get_context_data(self, **kwargs):
@@ -286,9 +297,22 @@ class SalonCreateView(CreateView):
         
         form.instance.encargado = encargado
         form.save()
+        if 'guardar_y_recargar' in self.request.POST:
+                print("---------- GUARDAR y RECARGAR---------")
+                mensaje_exito(self.request, f'{MSJ_CORRECTO_ALTA_ENCARGADO}')
+                self.object = form.save()
+                return self.render_to_response(self.get_context_data(form=self.form_class()))   
 
+        elif 'guardar_y_listar' in self.request.POST:
+                print("---------- GUARDAR y LISTAR---------")
+                # Guarda el objeto y redirige a la página de listar
+                mensaje_exito(self.request, f'{MSJ_CORRECTO_ALTA_ENCARGADO}')
+                self.object = form.save()    
+                return redirect('alquiler:salon_listar')
+        
+        print("---------- OTRA OPCION---------")    
         mensaje_exito(self.request, f'{MSJ_CORRECTO_ALTA_SALON}')
-        return super().form_valid(form)
+        return redirect('alquiler:salon_listar')
 
     def form_invalid(self, form):
         mensaje_advertencia(self.request, f'{MSJ_CORRECTION}')
@@ -297,12 +321,12 @@ class SalonCreateView(CreateView):
 # ----------------------------- DETAIL DE SALON  ----------------------------------- #
 class SalonDetailView(DetailView):
     model = Salon
-    template_name = 'Alquiler/salon_detalle.html'
+    template_name = 'salon_detalle.html'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['titulo'] = f"Salon: {self.object.nombre}"
-        #context['tituloListado'] = 'Dictados Asociados'
+
         return context
     
 # ----------------------------- LIST DE SALON  ----------------------------------- #
@@ -338,9 +362,9 @@ class SalonUpdateView(UpdateView):
         return context
     
     def form_valid(self, form):
-        curso = form.save()
+     
         messages.success(self.request, '<i class="fa-solid fa-square-check fa-beat-fade"></i> salon modificado con éxito')
-        return redirect('alquiler:salon_detalle', pk=curso.pk)
+        return redirect('alquiler:Salon_detalle')
 
     def form_invalid(self, form):
         messages.warning(self.request, '<i class="fa-solid fa-triangle-exclamation fa-flip"></i> Por favor, corrija los errores a continuación.')

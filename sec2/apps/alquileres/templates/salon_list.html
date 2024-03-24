@@ -31,7 +31,9 @@
         <td>{{ Salon.direccion }}</td>
         <td>{{ Salon.capacidad }}</td>
         <td>{{ Salon.precio }}</td>
-        <td>detalle</td>
+        <td class="text-center">
+          <a href="{% url 'alquiler:Salon_detalle' Salon.pk %}" class="btn btn-info btn-sm btn-detalle"><i class="fa-regular fa-eye"></i> Detalle</a>
+        </td>
       </tr>
     {% endfor %}
     </tbody>

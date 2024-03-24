@@ -14,7 +14,12 @@
         <a href="{% url 'alquiler:encargado_listar' %}" class="btn btn-secondary">Cancelar</a>
       </div>
       <div class="col">
-        <button type="submit" class="btn btn-primary">Guardar</button>
+        <button type="submit" name="guardar_y_recargar" value="guardar_y_recargar" class="btn btn-primary">Guardar y Recargar</button>
       </div>
-      <form>
+      <div class="col">
+        <button type="submit" name="guardar_y_listar" value="guardar_y_listar" class="btn btn-primary">Guardar y Listar</button>
+      </div>
+    </div>
+  <form>
+        
 {% endblock %}
