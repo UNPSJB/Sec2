@@ -26,13 +26,6 @@
     <div class="row">
       <div class="col">
         <div class="form-group">
-          {{ form.cupo.label_tag }}
-          <input type="number" name="cupo" step="1" min="1"max="50" required class="form-control" value="{{ form.cupo.value|default:'' }}" />
-        </div>
-      </div>
-
-      <div class="col">
-        <div class="form-group">
           {{ form.descuento.label_tag }}
           <input type="number" name="descuento" step="1" min="0" max="100"required class="form-control" value="{{ form.descuento.value|default:'' }}" />
           <small class="error-text" style="color: red;">{{ form.descuento.error }}</small>
@@ -81,6 +74,24 @@
         document.getElementsByName('fecha')[0].min = nextSundayISO
       </script>
     </div>
+    
+    <div class="row">
+      <div class="col">
+      <div class="form-group">
+        {{ form.cupo_real.label_tag }}
+        <input type="number" name="cupo_real" step="1" min="1"max="50" required class="form-control" value="{{ form.cupo_real.value|default:'' }}" />
+        {% include "error_campo.html" with field=form.cupo_real %}
+      </div>
+    </div>
+
+    <div class="col">
+      <div class="form-group">
+        {{ form.precio_real_profesor.label_tag }}
+        <input type="number" name="precio_real_profesor" step="1" min="1" required class="form-control" value="{{ form.precio_real_profesor.value|default:'' }}" />
+        {% include "error_campo.html" with field=form.precio_real_profesor %}
+      </div>
+    </div>
+  </div>
 
     {% if curso.es_convenio %}
     <div class="row mx-auto">

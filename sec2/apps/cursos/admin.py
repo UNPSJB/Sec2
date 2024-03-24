@@ -12,7 +12,7 @@ class CursoAdmin(admin.ModelAdmin):
 admin.site.register(Curso, CursoAdmin)
 
 class DictadoAdmin(admin.ModelAdmin):
-    list_display = ('fecha','cupo')
+    list_display = ('fecha',)
 admin.site.register(Dictado, DictadoAdmin)
 
 class ReservaAdmin(admin.ModelAdmin):

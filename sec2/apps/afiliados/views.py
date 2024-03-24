@@ -121,13 +121,8 @@ class AfiliadoDetailView (DeleteView):
 
         cuotas = PagoCuota.objects.filter(afiliado=afiliado)
         context['cuotas'] = cuotas
-
-        print("ASDASDASDSAD")
-
         alquileres = Alquiler.objects.filter(afiliado=afiliado)
-        print(alquileres)
         context['alquileres'] = alquileres
-
         return context
 
 # ----------------------------- AFILIADO UPDATE ----------------------------------- #

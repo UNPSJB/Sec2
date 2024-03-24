@@ -32,11 +32,10 @@
     <div class="row">
       <div class="col">
         <div class="form-group">
-          <label for="{{ form.costo.id_for_label }}">Costo:</label>
+          <label for="{{ form.precio_total.id_for_label }}">Precio:</label>
           <br />
-          <input type="number" name="costo" step="1" min="1" required class="form-control" value="{{ form.costo.value|default:'' }}" />
-          <small class="error-text" style="color: red;">{{ form.costo.error }}</small>
-          <small class="form-text text-muted">{{ form.costo.help_text }}</small>
+          <input type="number" name="precio_total" step="1" min="1" required class="form-control" value="{{ form.precio_total.value|default:'' }}" />
+          {% include "error_campo.html" with field=form.precio_total %}
         </div>
       </div>
 
@@ -49,6 +48,27 @@
         </div>
       </div>
     </div>
+
+    <div class="row">
+      <div class="col">
+        <div class="form-group">
+          <label for="{{ form.cupo_estimativo.id_for_label }}">Cupo (estimativo):</label>
+          <br />
+          <input type="number" name="cupo_estimativo" step="1" min="1" required class="form-control" value="{{ form.cupo_estimativo.value|default:'' }}" />
+          {% include "error_campo.html" with field=form.cupo_estimativo %}
+        </div>
+      </div>
+
+      <div class="col">
+        <div class="form-group">
+          <label for="{{ form.precio_estimativo_profesor.id_for_label }}">Precio a pagar al profesor (estimativo):</label>
+          <br />
+          <input type="number" name="precio_estimativo_profesor" step="1" min="1" required class="form-control" value="{{ form.precio_estimativo_profesor.value|default:'' }}" />
+          {% include "error_campo.html" with field=form.precio_estimativo_profesor %}
+        </div>
+      </div>
+    </div>
+
 
     <div class="row">
       <div class="col">

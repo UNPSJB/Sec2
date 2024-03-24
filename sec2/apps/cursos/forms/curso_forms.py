@@ -10,7 +10,7 @@ class CursoForm(forms.ModelForm):
     class Meta:
         model = Curso
         fields = '__all__'
-        exclude= ['es_convenio', 'actividad', 'cupo', 'fechaBaja']
+        exclude= ['es_convenio', 'actividad', 'fechaBaja']
 
     area = forms.ChoiceField(
         choices=[('', '---------')] + AREAS,  # Agrega el valor por defecto a las opciones de AREAS
@@ -41,7 +41,7 @@ class CursoForm(forms.ModelForm):
             self.fields['area'].initial = 0
             self.fields['area'].widget = forms.HiddenInput()
             self.fields['area'].required = False
-            self.fields['costo'].initial = 0
+            self.fields['precio_total'].initial = 0
         else:
             if tipo_curso == 'sec':
                 self.fields['area'].widget = forms.Select(choices=[(0, "Capacitación"), (1, "Cultura")])

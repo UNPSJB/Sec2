@@ -53,10 +53,9 @@ class CursoCreateView(CreateView):
 
     def form_valid(self, form):
         tipo_curso = self.request.GET.get('tipo', None)
-    # Obtener el ID de la actividad seleccionada en el formulario
+
+        # Obtener el ID de la actividad seleccionada en el formulario
         actividad_id = self.request.POST.get('enc_cliente')        
-        print("ACTIVIDAAAAD----")
-        print(actividad_id)
         actividad = get_object_or_404(Actividad, pk=actividad_id)
 
         # Actualizar el valor de es_convenio en base al tipo de curso
@@ -70,6 +69,10 @@ class CursoCreateView(CreateView):
         
         form.instance.actividad = actividad
         form.instance.descripcion = form.cleaned_data['descripcion'].capitalize()
+        form.instance.cupo_estimativo = form.cleaned_data['cupo_estimativo']
+        form.instance.precio_total = form.cleaned_data['precio_total']
+        form.instance.precio_estimativo_profesor = form.cleaned_data['precio_estimativo_profesor']
+
         # form.instance.descripcion = form.cleaned_data['descripcion'].capitalize()
         form.instance.nombre = form.cleaned_data['nombre'].title()
         form.save()

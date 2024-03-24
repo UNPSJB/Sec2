@@ -14,6 +14,7 @@ from django.views.generic.edit import CreateView, UpdateView
 from utils.constants import *
 from sec2.utils import ListFilterView
 from django.db import transaction
+from django.utils import timezone
 
 ## ------------------ CREATE DE PROFESOR ------------------
 class ProfesorCreateView(CreateView):

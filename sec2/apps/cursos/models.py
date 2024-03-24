@@ -63,21 +63,29 @@ class Curso(models.Model):
         validators=[text_and_numeric_validator],  # Añade tu validador personalizado si es necesario
         help_text="Descripción del curso"
     )
-    costo = models.DecimalField(
-        help_text="Costo total del curso",
+    cupo_estimativo = models.PositiveIntegerField(
+        help_text="Maximo por dictado",
+        validators=[
+            MinValueValidator(1, message="Valor mínimo permitido es 1."),
+            MaxValueValidator(100, message="Valor máximo es 100."),
+        ],
+        null=True,
+    )
+    precio_total = models.DecimalField(
+        help_text="Costo total del curso (Alumno)",
         max_digits=10,
         decimal_places=0,
         blank=True,   # Set this to True to make the field optional
         null=True,    # Also set null to True if you want to allow NULL values in the database
         default=0     # Set the default value to 0
     )
-    cupo = models.PositiveIntegerField(
-        help_text="Máximo alumnos inscriptos",
-        validators=[
-            MinValueValidator(1, message="Valor mínimo permitido es 1."),
-            MaxValueValidator(100, message="Valor máximo es 100."),
-        ],
-        null=True,
+    precio_estimativo_profesor = models.DecimalField(
+        help_text="Precio a pagar por profesor (estimado)",
+        max_digits=10,
+        decimal_places=0,
+        blank=True,   # Set this to True to make the field optional
+        null=True,    # Also set null to True if you want to allow NULL values in the database
+        default=0     # Set the default value to 0
     )
     
     fechaBaja= models.DateField(
@@ -108,8 +116,8 @@ class Dictado(models.Model):
     estado = models.PositiveSmallIntegerField(choices=ESTADO_DICTADO, default=1)
     fecha = models.DateTimeField(help_text="Seleccione la fecha de inicio")
     fecha_fin = models.DateTimeField(null=True,blank=True )
-    cupo = models.PositiveIntegerField(
-        help_text="Máximo alumnos inscriptos",
+    cupo_real = models.PositiveIntegerField(
+        help_text="Máximo inscriptos al dictado",
         validators=[
             MinValueValidator(1, message="Valor mínimo permitido es 1."),
             MaxValueValidator(100, message="Valor máximo es 100."),
@@ -121,6 +129,14 @@ class Dictado(models.Model):
             MinValueValidator(0, message="El descuento no puede ser menor que 0."),
             MaxValueValidator(100, message="El descuento no puede ser mayor que 100."),
         ]
+    )
+    precio_real_profesor = models.DecimalField(
+        help_text="Precio a pagar por profesor (real)",
+        max_digits=10,
+        decimal_places=0,
+        blank=True,   # Set this to True to make the field optional
+        null=True,    # Also set null to True if you want to allow NULL values in the database
+        default=0     # Set the default value to 0
     )
 
 #------------- HORARIO --------------------

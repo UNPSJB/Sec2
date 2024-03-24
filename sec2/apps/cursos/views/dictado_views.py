@@ -34,9 +34,16 @@ class DictadoCreateView(CreateView):
     def form_valid(self, form):
         # Obtén el curso asociado al dictado
         curso = get_object_or_404(Curso, pk=self.kwargs.get('pk'))
+        cupo_maximo = curso.cupo_estimativo
+        
 
         # Guarda el dictado en la base de datos sin commit
         dictado = form.save(commit=False)
+
+        if dictado.cupo_real > cupo_maximo:
+            messages.warning(self.request, f'{ICON_TRIANGLE} El cupo supera el cupo maximo del dictado')
+            return self.form_invalid(form)
+
         dictado.curso = curso  # Asigna el curso al dictado
 
         # Verifica la validez del formulario
