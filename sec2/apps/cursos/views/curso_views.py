@@ -1,6 +1,6 @@
 from django.shortcuts import get_object_or_404, redirect
 from apps.cursos.forms.actividad_forms import ActividadForm
-from apps.cursos.models import Curso, Dictado, PagoProfesor, Profesor
+from apps.cursos.models import Curso, Dictado, PagoProfesor, Profesor, Titular
 from apps.personas.models import Persona, Rol
 from utils.funciones import mensaje_advertencia, mensaje_error, mensaje_exito
 from ..forms.curso_forms import *
@@ -310,7 +310,6 @@ def dictadosFinalizados(curso):
             return False
     return True
 
-
 class PagoProfesorCreateView(CreateView):
     model = PagoProfesor
     form_class = PagoProfesorForm
@@ -326,10 +325,14 @@ class PagoProfesorCreateView(CreateView):
         
         # Obtener profesor asociados a las personas obtenidas
         profesores = Profesor.objects.filter(persona__in=personas)
-        context['profesores'] = profesores
+        titulares = Titular.objects.all()
+        # Obtener los profesores asociados a los objetos 'Titular'
+        profesores_titulares = [titular.profesor for titular in titulares]
 
+        print("PROFESORES", profesores)
+        print("TITULARES", profesores_titulares)
+        context['profesores'] = profesores_titulares
         context['titulo'] = "Comprobante de pago"
-        
         return context
 
     def form_valid(self, form):

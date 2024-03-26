@@ -795,3 +795,30 @@ def generarPDF_Afiliado(request, dictado_pk, persona_pk):
     # else:
         # Puedes manejar aquí el caso en el que el alumno no cumple con el 80% de asistencia
         # return HttpResponse("El alumno no cumple con el 80% de asistencia requerido.")
+
+
+from django.http import JsonResponse
+
+def get_dictados_por_titular(request, titular_pk):
+
+    if request.method == 'GET':
+        try:
+            valor_total = 0
+
+            #obtengo al profesor y donde es titular
+            profesor = Profesor.objects.get(pk=titular_pk)
+            titulares = Titular.objects.all().filter(profesor=profesor)
+
+            for titular in titulares.all():
+                dictado = titular.dictado
+                precio = dictado.precio_real_profesor
+                valor_total += precio
+
+            return HttpResponse(f'El monto a pagar es: {valor_total}')
+
+        except Titular.DoesNotExist:
+            return HttpResponse("El profesor no existe", status=404)
+        # dictados = Dictado.objects.filter(titular_id=titular_pk).values('id', 'nombre')  # Ajusta esto según tu modelo Dictado
+
+        data = 2000000
+        return HttpResponse(data)

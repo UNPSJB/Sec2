@@ -105,6 +105,7 @@ urlpatterns = [
     path('pago/profesor', PagoProfesorCreateView.as_view(), name="pago_profesor"),
     path('pago/listado', PagoProfesorListView.as_view() ,name="pago_cuota_listado"),
 
+    path('get_dictados_por_titular/<int:titular_pk>/', get_dictados_por_titular, name='get_dictados_por_titular'),
 
 
 
