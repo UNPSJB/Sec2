@@ -140,11 +140,11 @@ class EncargadoUpdateView(UpdateView):
     model = Encargado
     form_class = EncargadoUpdateForm
     template_name = 'encargado_form.html'  
-    success_url = reverse_lazy('cursos:profesor_listado')
+    success_url = reverse_lazy('alquiler:encargado_listar')
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['titulo'] = "Modificar Profesor"
+        context['titulo'] = "Modificar Encargado"
         return context
 
     def form_valid(self, form):
@@ -388,33 +388,53 @@ class AlquilerCreateView(CreateView):
         context['titulo'] = self.title  # Agrega el título al contexto
         # Verificar si hay alguna actividad
         return context
-
+    
+   
     
     def form_valid(self, form):
         salon = form.cleaned_data["salon"]
         fecha = form.cleaned_data["fecha_alquiler"]
         turno = form.cleaned_data["turno"]
         alquiler = Alquiler.objects.first()
-        print("ALQUILER EXISTENTE", alquiler)
-        if alquiler is not None:
-            if alquiler.verificar_existencia_alquiler(salon, fecha, turno):
-                #el alquiler ya existe
-                messages.error(self.request, f'{ICON_ERROR} Ya existía un alquiler del salón {salon} en la fecha {fecha} en el turno {turno}.')
-                return self.render_to_response(self.get_context_data(form=form))
-            else:
-                #el alquiler no exite y se puede alquilar. Guardar el nuevo alquiler
-                messages.success(self.request, f'{ICON_CHECK} Alquiler exitosa!')
+        print("---------------AAAAAAAAA-------------------")
+        print("fecha: ",type(fecha))
+        if Alquiler.fecha_valida(fecha):
+            if alquiler is not None:
+                if alquiler.verificar_existencia_alquiler(salon, fecha, turno):
+                    #el alquiler ya existe
+                    messages.error(self.request, f'{ICON_ERROR} Ya existía un alquiler del salón {salon} en la fecha {fecha} en el turno {turno}.')
+                    return self.render_to_response(self.get_context_data(form=form))
+                else:
+                    #el alquiler no exite y se puede alquilar. Guardar el nuevo alquiler
+                    messages.success(self.request, f'{ICON_CHECK} Alquiler exitosa!')
+                    return super().form_valid(form)
+            else: 
+                # es el primer alquiler y se guarda
+                messages.success(self.request, f'{ICON_CHECK} Alquiler creado con éxito!')
                 return super().form_valid(form)
-        else: 
-            # es el primer alquiler y se guarda
-            messages.success(self.request, f'{ICON_CHECK} Alquiler creado con éxito!')
-            return super().form_valid(form)
+        else:
+             messages.error(self.request, f'{ICON_ERROR} La fecha {fecha.strftime("%d-%m-%Y")} es anterior a la fehca de hoy.')
+             return self.render_to_response(self.get_context_data(form=form))
+       
         
+            
     def form_invalid(self, form):
         messages.warning(self.request, '<i class="fa-solid fa-triangle-exclamation fa-flip"></i> Por favor, corrija los errores a continuación.')
         return super().form_invalid(form)
     
-
+    def fecha_valida(fecha):
+        """Verifica que la fecha sea mayor a la de hoy"""
+        hoy = datetime.today()
+        try:
+            fecha_formateada = datetime.strptime(fecha, '%Y-%m-%d').date()
+            if fecha_formateada >= hoy.date():
+                return True
+            else:
+                raise ValueError('La fecha debe ser superior a la actual')
+        except ValueError as e:
+            raise forms.ValidationError(e)
+            
+   
 
 # ----------------------------- LIST DE ALQUILER  ----------------------------------- #
 class AlquilieresListView(ListFilterView):

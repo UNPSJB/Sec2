@@ -6,6 +6,8 @@ from apps.afiliados.models import *
 from utils.choices import LOCALIDADES_CHUBUT
 from apps.personas.models import Rol, Persona
 from django.db.models import Count
+from django import forms
+from datetime import datetime
 
 # Create your models here.
 
@@ -66,6 +68,16 @@ class Alquiler(models.Model):
        # Devolver True si existe al menos un alquiler que cumple con las condiciones
         return alquiler_existente
 
+    def fecha_valida(fecha):
+            """Verifica que la fecha sea mayor a la de hoy"""
+            hoy = datetime.today()
+                #fecha_formateada = fecha.strftime("%Y-%m-%d") # datetime.strptime(fecha, '%Y-%m-%d').date()
+            if fecha.date() > hoy.date():
+                return True
+            else:
+                return False
+            
+            
 class Pago_alquiler(models.Model):
     alquiler=models.ForeignKey(Alquiler, related_name="pagos", on_delete=models.CASCADE)
     fecha_pago=models.DateTimeField(auto_now_add=True, null=True, blank=True)
