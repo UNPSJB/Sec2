@@ -41,7 +41,7 @@
 
 <script>
     $(function () {
-      $("#enc_profesor").select2();
+      //$("#enc_profesor").select2();
     }); 
 
     var jq = $.noConflict();
@@ -51,7 +51,6 @@
         jq('#enc_profesor').change(function() {
             var titular_id = jq(this).val();
             var url = 'get_dictados_por_titular/';
-            console.log(url);
     
             if (titular_id && titular_id !== '0') {
                 jq.ajax({
@@ -62,7 +61,7 @@
                     },
                     dataType: 'json',
                     success: function(data) {
-
+                        
                         var total = data.valor_total;
                         var datosDiv = $('#datos_titular');
                         var html = '<p>Dictados a pagar:</p>';
@@ -70,7 +69,7 @@
                         html += '<ul>';
                         // Iterar sobre cada dictado
                         data.dictados.forEach(function(dictado) {
-                            html += '<li>' + dictado.nombre + ', Precio: $' + dictado.precio + '</li>';
+                            html += '<li>' + dictado.nombre + ', Estado: ' + dictado.estado + ' Precio: $' + dictado.precio + ' Clases a pagar: ' + dictado.cantidad_clases + ' Porcentaje de asistencia: ' + dictado.porcentaje_asistencia +' Precio Final: $' + dictado.precioFinal +'</li>';
                         });
                         html += '</ul>';
 

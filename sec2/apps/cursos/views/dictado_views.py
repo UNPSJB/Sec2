@@ -3,6 +3,7 @@ from django.views import View
 from django.views.generic import DetailView
 from django.views.generic.edit import CreateView, UpdateView
 from apps.afiliados.models import Afiliado, Familiar
+from apps.cursos.views.curso_views import obtenerUltimoDiaMesAnterior
 from apps.personas.forms import PersonaForm
 
 from apps.personas.models import Persona, Rol
@@ -120,6 +121,7 @@ class DictadoDetailView(DetailView):
 
         # Obtener todos los horarios asociados al dictado
         horarios = dictado.horarios.all().order_by('dia_semana', 'hora_inicio')
+    
         context['horarios'] = horarios
 
         # Obtener el nombre del profesor asociado al dictado
@@ -196,7 +198,7 @@ class DictadoDetailView(DetailView):
                 # PERIODO DE PAGO POR CLASE
                 cantidad_clase = Decimal(curso.modulos_totales) / Decimal(dictado.modulos_por_clase)
                 cantidad_clase = Decimal(math.ceil(cantidad_clase))
-                result = round(curso.costo / cantidad_clase, 2)
+                result = round(curso.precio_total / cantidad_clase, 2)
                 context['costo_parcial'] = f"${result} AR por {dictado.get_periodo_pago_display()}"
             else:
                 # PERIODO DE PAGO POR MES
@@ -797,8 +799,56 @@ def generarPDF_Afiliado(request, dictado_pk, persona_pk):
         # return HttpResponse("El alumno no cumple con el 80% de asistencia requerido.")
 
 
-from django.http import JsonResponse
+from django.db.models import Count, F
 
+
+def obtenerPorcentajeAsistencia(dictado,profesor):
+    
+    # ultimo_dia_mes_anterior = obtenerUltimoDiaMesAnterior()
+    # primer_dia_mes_anterior = ultimo_dia_mes_anterior.replace(day=1)
+
+    #Por mes actual
+    ultimo_dia_mes_actual = timezone.now().replace(day=30, month=4)
+    primer_dia_mes_actual = ultimo_dia_mes_actual.replace(day=1)
+    clases_dictado = Clase.objects.filter(asistencia_tomada=True, 
+                                          reserva__horario__dictado=dictado,
+                                          reserva__fecha__range=(primer_dia_mes_actual, ultimo_dia_mes_actual)
+                                          )
+    
+
+
+
+
+    # Contar el número total de clases en el mes actual
+    total_clases_mes_actual = clases_dictado.count()
+    # Contar el número de clases donde el profesor estuvo presente
+    clases_profesor_presente = clases_dictado.filter(asistencia_profesor=profesor)
+
+    # Contar el número total de clases donde el profesor debería haber estado presente
+    total_clases_profesor = clases_dictado.annotate(
+        total_asistentes_profesor=Count('asistencia_profesor')
+    ).filter(total_asistentes_profesor__gt=0).count()
+
+    # Calcular el porcentaje de asistencia del profesor
+    if total_clases_profesor > 0:
+        porcentaje_asistencia = (clases_profesor_presente.count() / total_clases_profesor) * 100
+    else:
+        porcentaje_asistencia = 0
+    
+    # Tengo que devolver la cantidad de clases, porcentaje de asistencia
+    return total_clases_mes_actual, porcentaje_asistencia
+
+from django.http import JsonResponse
+from django.utils import timezone
+
+def calcularPrecioPagar(precio_base, porcentaje_asistencia):
+    if porcentaje_asistencia == 100:
+        return precio_base
+    elif porcentaje_asistencia > 0:
+        return precio_base * (porcentaje_asistencia / 100)
+    else:
+        return 0
+    
 def get_dictados_por_titular(request, titular_pk):
     if request.method == 'GET':
         try:
@@ -809,14 +859,21 @@ def get_dictados_por_titular(request, titular_pk):
             profesor = Profesor.objects.get(pk=titular_pk)
             titulares = Titular.objects.filter(profesor=profesor)
 
+
             for titular in titulares:
                 dictado = titular.dictado
                 precio = dictado.precio_real_profesor
-                valor_total += precio
+                cantidad_clases, porcentaje_asistencia = obtenerPorcentajeAsistencia(dictado,profesor)
+                precio_pagar = calcularPrecioPagar(precio, porcentaje_asistencia)
                 data['dictados'].append({
                     'nombre': dictado.curso.nombre,
-                    'precio': precio
+                    'precio': precio,
+                    'estado': dictado.get_estado_display(),
+                    'cantidad_clases' : cantidad_clases,
+                    'porcentaje_asistencia': porcentaje_asistencia,
+                    'precioFinal': precio_pagar,
                 })
+                valor_total += precio_pagar
 
             # Agregar el valor total al diccionario
             data['valor_total'] = valor_total

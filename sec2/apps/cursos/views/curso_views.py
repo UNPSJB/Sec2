@@ -310,7 +310,53 @@ def dictadosFinalizados(curso):
             return False
     return True
 
+def obtenerTitularesVigente(profesores_titulares):
+    
+    print("")
+    print("")
+    print("INICIO DE OBTENER DICTAODS VIGENTES")
+    for profesor in profesores_titulares:
+        print(profesor.persona.dni)
+        profesor = Profesor.objects.get(pk=profesor.pk)
+        titulares = Titular.objects.filter(profesor=profesor)
+    print(profesores_titulares)
+
+    print("")
+    print("")
+
+    return True
+from django.utils import timezone
+from datetime import datetime, timedelta
+
+from django.db.models import Q
+
+def obtenerProfesoresActivos():
+    roles_sin_fecha_hasta = Rol.objects.filter(hasta__isnull=True)
+     # Obtener personas asociadas a los roles sin fecha de finalización
+    personas = Persona.objects.filter(roles__in=roles_sin_fecha_hasta)
+    # Obtener profesor asociados a las personas obtenidas
+    return Profesor.objects.filter(persona__in=personas)
+
+def obtenerUltimoDiaMesAnterior():
+    hoy = timezone.now()
+    primer_dia_mes_actual = hoy.replace(day=1)
+    return primer_dia_mes_actual - timedelta(days=1)
+
+def obtenerProfesoresConDictados(titulares_ya_finalizados, titulares_vigentes):
+    # Obtener profesores asociados a titulares con dictados finalizados el mes pasado
+    profesores_finalizados = Profesor.objects.filter(titular__in=titulares_ya_finalizados).distinct()
+    
+    # Obtener profesores asociados a titulares con dictados vigentes
+    profesores_vigentes = Profesor.objects.filter(titular__in=titulares_vigentes).distinct()
+    
+    # Combinar los profesores de ambos grupos
+    profesores = profesores_finalizados | profesores_vigentes
+    
+    return profesores
+
+
 class PagoProfesorCreateView(CreateView):
+    """se paga el mes anterior"""
     model = PagoProfesor
     form_class = PagoProfesorForm
     template_name = 'pago/pago_profesor.html'
@@ -318,20 +364,23 @@ class PagoProfesorCreateView(CreateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        roles_sin_fecha_hasta = Rol.objects.filter(hasta__isnull=True)
-        
-        # Obtener personas asociadas a los roles sin fecha de finalización
-        personas = Persona.objects.filter(roles__in=roles_sin_fecha_hasta)
-        
-        # Obtener profesor asociados a las personas obtenidas
-        profesores = Profesor.objects.filter(persona__in=personas)
-        titulares = Titular.objects.all()
-        # Obtener los profesores asociados a los objetos 'Titular'
-        profesores_titulares = [titular.profesor for titular in titulares]
+        profesores = obtenerProfesoresActivos()        
 
-        print("PROFESORES", profesores)
-        print("TITULARES", profesores_titulares)
-        context['profesores'] = profesores_titulares
+        ultimo_dia_mes_anterior = obtenerUltimoDiaMesAnterior()
+        primer_dia_mes_anterior = ultimo_dia_mes_anterior.replace(day=1)
+        
+        # Obtengo los titulaes que tienen dictado vigente
+        titulares_vigentes = Titular.objects.all().filter(dictado__estado=2)
+        # Obtener los titulares cuyos dictados han finalizado y cuya fecha de finalización está entre el primer día y el último día del mes anterior
+        titulares_ya_finalizados = Titular.objects.filter(
+            dictado__estado=3,  # Filtrar los titulares cuyos dictados tienen un estado de 3
+            dictado__fecha_fin__range=(primer_dia_mes_anterior, ultimo_dia_mes_anterior)  # Filtrar los titulares cuyos dictados tienen una fecha de finalización dentro del rango del mes anterior
+        )
+
+        # Obtener los profesores asociados a los titulares con dictados
+        profesores = obtenerProfesoresConDictados(titulares_ya_finalizados, titulares_vigentes)
+
+        context['profesores'] = profesores
         context['titulo'] = "Comprobante de pago"
         return context
 

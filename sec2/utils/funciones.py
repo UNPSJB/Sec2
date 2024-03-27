@@ -25,3 +25,4 @@ def handle_existing_person(self, form):
     dni = form.cleaned_data["dni"]
     messages.error(self.request, f'{ICON_ERROR} ERROR: Ya existe una persona registrada en el sistema con el mismo DNI.')
     return self.render_to_response(self.get_context_data(form=form))
+

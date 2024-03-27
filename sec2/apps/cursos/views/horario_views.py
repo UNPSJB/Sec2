@@ -212,7 +212,7 @@ def asignar_aula(request, curso_pk, dictado_pk, horario_id):
     print("AULAS LIBRES", aulas_libres)
 
     # Obtener las aulas disponibles que tienen capacidad para el cupo del dictado
-    aulas_disponibles_con_capacidad = aulas_libres.filter(capacidad__gte=dictado.cupo)
+    aulas_disponibles_con_capacidad = aulas_libres.filter(capacidad__gte=dictado.cupo_real)
     print("AULAS DISPONIBLES CON CAPACIDAD", aulas_disponibles_con_capacidad)
 
     if not aulas_disponibles_con_capacidad.exists():

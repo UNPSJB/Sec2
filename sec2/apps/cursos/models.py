@@ -260,7 +260,6 @@ class Clase(models.Model):
         return inscrito in self.asistencia.all()
 
 from django.shortcuts import get_object_or_404
-    
 # Luego, podrías usar este método en tu vista para marcar la asistencia de un alumno, profesor, etc.
 def marcar_asistencia(request, clase_id, rol_id):
     clase = get_object_or_404(Clase, pk=clase_id)
