@@ -800,25 +800,30 @@ def generarPDF_Afiliado(request, dictado_pk, persona_pk):
 from django.http import JsonResponse
 
 def get_dictados_por_titular(request, titular_pk):
-
     if request.method == 'GET':
         try:
+            data = {'dictados': []}  # Initialize data with 'dictados' key as an empty list
             valor_total = 0
 
-            #obtengo al profesor y donde es titular
+            # Obtener al profesor y sus titulares
             profesor = Profesor.objects.get(pk=titular_pk)
-            titulares = Titular.objects.all().filter(profesor=profesor)
+            titulares = Titular.objects.filter(profesor=profesor)
 
-            for titular in titulares.all():
+            for titular in titulares:
                 dictado = titular.dictado
                 precio = dictado.precio_real_profesor
                 valor_total += precio
+                data['dictados'].append({
+                    'nombre': dictado.curso.nombre,
+                    'precio': precio
+                })
 
-            return HttpResponse(f'El monto a pagar es: {valor_total}')
+            # Agregar el valor total al diccionario
+            data['valor_total'] = valor_total
 
+            return JsonResponse(data)
+
+        except Profesor.DoesNotExist:
+            return JsonResponse({'error': 'Profesor no encontrado'}, status=404)
         except Titular.DoesNotExist:
-            return HttpResponse("El profesor no existe", status=404)
-        # dictados = Dictado.objects.filter(titular_id=titular_pk).values('id', 'nombre')  # Ajusta esto según tu modelo Dictado
-
-        data = 2000000
-        return HttpResponse(data)
+            return JsonResponse({'error': 'Titular no encontrado'}, status=404)
