@@ -803,24 +803,21 @@ from django.db.models import Count, F
 
 
 def obtenerPorcentajeAsistencia(dictado,profesor):
-    
+
     # ultimo_dia_mes_anterior = obtenerUltimoDiaMesAnterior()
     # primer_dia_mes_anterior = ultimo_dia_mes_anterior.replace(day=1)
-
     #Por mes actual
     ultimo_dia_mes_actual = timezone.now().replace(day=30, month=4)
     primer_dia_mes_actual = ultimo_dia_mes_actual.replace(day=1)
+
     clases_dictado = Clase.objects.filter(asistencia_tomada=True, 
                                           reserva__horario__dictado=dictado,
                                           reserva__fecha__range=(primer_dia_mes_actual, ultimo_dia_mes_actual)
                                           )
-    
-
-
-
 
     # Contar el número total de clases en el mes actual
     total_clases_mes_actual = clases_dictado.count()
+
     # Contar el número de clases donde el profesor estuvo presente
     clases_profesor_presente = clases_dictado.filter(asistencia_profesor=profesor)
 
@@ -831,21 +828,22 @@ def obtenerPorcentajeAsistencia(dictado,profesor):
 
     # Calcular el porcentaje de asistencia del profesor
     if total_clases_profesor > 0:
-        porcentaje_asistencia = (clases_profesor_presente.count() / total_clases_profesor) * 100
+        porcentaje_asistencia = ((total_clases_profesor/total_clases_mes_actual) * 100 )
     else:
         porcentaje_asistencia = 0
     
     # Tengo que devolver la cantidad de clases, porcentaje de asistencia
-    return total_clases_mes_actual, porcentaje_asistencia
+    return total_clases_mes_actual, total_clases_profesor,  porcentaje_asistencia
 
 from django.http import JsonResponse
 from django.utils import timezone
 
 def calcularPrecioPagar(precio_base, porcentaje_asistencia):
+
     if porcentaje_asistencia == 100:
         return precio_base
     elif porcentaje_asistencia > 0:
-        return precio_base * (porcentaje_asistencia / 100)
+        return float(precio_base) * (porcentaje_asistencia / 100)
     else:
         return 0
     
@@ -859,17 +857,18 @@ def get_dictados_por_titular(request, titular_pk):
             profesor = Profesor.objects.get(pk=titular_pk)
             titulares = Titular.objects.filter(profesor=profesor)
 
-
             for titular in titulares:
                 dictado = titular.dictado
                 precio = dictado.precio_real_profesor
-                cantidad_clases, porcentaje_asistencia = obtenerPorcentajeAsistencia(dictado,profesor)
+                cantidad_clases, clases_asistidas, porcentaje_asistencia = obtenerPorcentajeAsistencia(dictado,profesor)
                 precio_pagar = calcularPrecioPagar(precio, porcentaje_asistencia)
                 data['dictados'].append({
+                    'pk' : dictado.pk,
                     'nombre': dictado.curso.nombre,
-                    'precio': precio,
                     'estado': dictado.get_estado_display(),
-                    'cantidad_clases' : cantidad_clases,
+                    'precio': precio,
+                    'total_clases' : cantidad_clases,
+                    'clases_asistidas': clases_asistidas,
                     'porcentaje_asistencia': porcentaje_asistencia,
                     'precioFinal': precio_pagar,
                 })

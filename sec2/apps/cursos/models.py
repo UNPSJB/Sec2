@@ -1,9 +1,9 @@
 from django.db import models
-from django.http import HttpResponse
+from django.http import Http404, HttpResponse
 from apps.personas.models import Rol
 from utils.constants import *
 from utils.choices import *
-from utils.funciones import validate_no_mayor_actual
+from utils.funciones import registrar_fuentes, validate_no_mayor_actual
 from utils.regularexpressions import *
 from django.core.validators import MinValueValidator, MaxValueValidator
 from datetime import date
@@ -276,10 +276,64 @@ class Titular(models.Model):
     profesor = models.ForeignKey(Profesor, on_delete=models.CASCADE)
     dictado= models.ForeignKey(Dictado, on_delete=models.CASCADE)
 
+from io import BytesIO
+import io
+from reportlab.pdfgen import canvas
+from django.http import FileResponse
+
 class PagoProfesor(models.Model):
     profesor = models.ForeignKey(Profesor, on_delete=models.CASCADE, related_name='pagos_profesor')
-    monto = models.DecimalField(max_digits=10, decimal_places=2, validators=[MinValueValidator(0, 'El monto debe ser un valor positivo.')])
+    total = models.DecimalField(max_digits=10, decimal_places=2, null=True, validators=[MinValueValidator(0, 'El monto debe ser un valor positivo.')])
     fecha = models.DateTimeField(auto_now_add=True)
+    pre_factura = models.FileField(upload_to='prefacturas/', null=True, blank=True)
+
+    def generarPreFactura(self):
+        buffer = self.generarPdf()
+        filename = "Comprobante-pre-factura.pdf"
+        self.pre_factura.save(filename, buffer)
+    
+    def descargarPreFactura(self):
+        # Llamar al método generarPreFactura para asegurarse de que el archivo esté generado
+        self.generarPreFactura()
+
+        # Abrir el archivo y enviarlo como una respuesta HTTP para descargarlo automáticamente
+        try:
+            with open(self.pre_factura.path, 'rb') as f:
+                response = FileResponse(f)
+                response['Content-Disposition'] = 'attachment; filename="Comprobante-pre-factura.pdf"'
+                return response
+        except FileNotFoundError:
+            raise Http404("El archivo no existe")
+    
+    def generarPdf(self):
+        registrar_fuentes()
+        
+        buffer = io.BytesIO()
+        pdf = canvas.Canvas(buffer)
+        titulo = "Comprobante de pago"
+
+        self.establecer_titulo(pdf, titulo)
+
+        pdf.showPage()
+        pdf.save()
+        buffer.seek(0)
+        return buffer
+
+    def establecer_titulo(self, pdf, titulo):
+        pdf.setFont('Times-Bold', 14)
+        pdf.drawCentredString(300, 770, "Sindicato de Empleado de Comercio 2")
+        pdf.drawCentredString(300, 745, titulo)
+
+
+
+class DetallePagoProfesor(models.Model):
+    pago_profesor = models.ForeignKey(PagoProfesor, on_delete=models.CASCADE, related_name='detalles_pago')
+    dictado = models.ForeignKey(Dictado, on_delete=models.CASCADE)
+    total_clases = models.IntegerField()
+    clases_asistidas = models.IntegerField()
+    porcentaje_asistencia = models.IntegerField()
+    precioFinal = models.DecimalField(max_digits=10, decimal_places=2, null=True, validators=[MinValueValidator(0, 'El monto debe ser un valor positivo.')])
+
 
 # class Asistencia_profesor(models.Model):
 #     fecha_asistencia_profesor = models.DateTimeField(auto_now_add=True)

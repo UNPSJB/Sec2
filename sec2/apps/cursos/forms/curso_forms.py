@@ -106,12 +106,7 @@ class ListaEsperaAdminForm(forms.ModelForm):
 class PagoProfesorForm(forms.ModelForm):
     class Meta:
         model = PagoProfesor
-        fields = '__all__'
-        exclude = ['profesor', 'desde']
-        widgets = {
-            'monto': forms.NumberInput(attrs={'class': 'form-control'}),
-            'fecha_pago': forms.DateInput(attrs={'type': 'date'}),
-        }
+        fields = ['profesor']
 
 class PagoProfesorFilterForm(FiltrosForm):
     pass

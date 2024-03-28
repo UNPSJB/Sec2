@@ -1,6 +1,6 @@
 from django.shortcuts import get_object_or_404, redirect
 from apps.cursos.forms.actividad_forms import ActividadForm
-from apps.cursos.models import Curso, Dictado, PagoProfesor, Profesor, Titular
+from apps.cursos.models import Curso, DetallePagoProfesor, Dictado, PagoProfesor, Profesor, Titular
 from apps.personas.models import Persona, Rol
 from utils.funciones import mensaje_advertencia, mensaje_error, mensaje_exito
 from ..forms.curso_forms import *
@@ -354,9 +354,9 @@ def obtenerProfesoresConDictados(titulares_ya_finalizados, titulares_vigentes):
     
     return profesores
 
+import json
 
 class PagoProfesorCreateView(CreateView):
-    """se paga el mes anterior"""
     model = PagoProfesor
     form_class = PagoProfesorForm
     template_name = 'pago/pago_profesor.html'
@@ -385,14 +385,50 @@ class PagoProfesorCreateView(CreateView):
         return context
 
     def form_valid(self, form):
-        enc_profesor = self.request.POST.get('enc_profesor')
-        
+        enc_profesor = self.request.POST.get('profesor')
+        total_a_pagar = self.request.POST.get('total_a_pagar')
+        datos_dictados = self.request.POST.get('datos_dictados')
+
+        print("")
+        print("")
+        print("")
+        print("ESTOY AQUI")
+        print("enc_profesor",enc_profesor)
+        print("total_a_pagar",total_a_pagar)
+        print("datos_dictados",datos_dictados)
+        print("")
+        print("")
+
         if enc_profesor == '0':
             mensaje_advertencia(self.request, f'Seleccione al profesor')
             return super().form_invalid(form)
+        
+        if datos_dictados:
+            print("estoy en el if")
 
-        form.instance.profesor_id = enc_profesor
-        form.save()
+            dictados_info = json.loads(datos_dictados)
+            pago = form.save(commit=False)
+            pago.profesor_id = enc_profesor
+            pago.total = total_a_pagar
+            pago.save()
+
+            for dictado_info in dictados_info:
+                pk = dictado_info.get('pk')
+                dictado = get_object_or_404(Dictado, pk=pk)
+
+               # Crear una instancia de DetallePagoProfesor para cada dictado asociado al pago
+                DetallePagoProfesor.objects.create(
+                    pago_profesor=pago,
+                    dictado=dictado,
+                    total_clases=dictado_info.get('total_clases'),
+                    clases_asistidas=dictado_info.get('clases_asistidas'),
+                    porcentaje_asistencia=dictado_info.get('porcentaje_asistencia'),
+                    precioFinal=dictado_info.get('precioFinal'),
+                )
+            pago.generarPreFactura()
+            # pago.descargarPreFactura()
+
+
         mensaje_exito(self.request, f'{MSJ_CORRECTO_PAGO_REALIZADO}')
         return super().form_invalid(form)
 
@@ -434,3 +470,33 @@ class PagoProfesorListView(ListFilterView):
             # queryset = queryset.filter(Q(afiliado__cuit_empleador=cuit_empleador))
         
         return queryset
+    
+
+from django.http import HttpResponse
+
+class PagoProfesorDetailView(DetailView):
+    model = PagoProfesor
+    template_name = 'pago/pago_profesor_detalle.html'
+    paginate_by = MAXIMO_PAGINATOR
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        pago = self.object  # El objeto de curso obtenido de la vista
+
+        context['titulo'] = "Detalle del pago"
+        context['tituloListado'] = "Clases pagadas"
+        context['pago'] = pago
+        
+        return context
+
+    def render_to_response(self, context, **response_kwargs):
+        # Si se solicita un PDF, generamos y devolvemos el PDF
+        if 'pdf' in self.request.GET:
+            pago = context['pago']
+            pdf = pago.generarPdf()
+            response = HttpResponse(pdf, content_type='application/pdf')
+            response['Content-Disposition'] = 'attachment; filename="Comprobante-pre-factura.pdf"'
+            return response
+        else:
+            # De lo contrario, renderizamos la plantilla normalmente
+            return super().render_to_response(context, **response_kwargs)

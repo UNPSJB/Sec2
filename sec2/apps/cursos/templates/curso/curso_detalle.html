@@ -191,7 +191,7 @@
   {% if not curso.fechaBaja %}
 
   {% if tiene_dictados %}
-  <a href="{% url 'cursos:dictado_crear' pk=object.pk %}" class="btn btn-outline-successs btn-sm btn-detalle"><i class="fa-regular fa-plus"></i> Nuevo Dictado</a>
+  <a href="{% url 'cursos:dictado_crear' pk=object.pk %}" class="btn btn-outline-success btn-sm btn-detalle"><i class="fa-regular fa-plus"></i> Nuevo Dictado</a>
   {% else %}
   <button type="button" class="btn btn-outline-success btn-sm btn-detalle" data-bs-toggle="modal" data-bs-target="#exampleModal"><i class="fa-regular fa-plus"></i> Nuevo Dictado</button>
   {% include 'curso/modal_primer_dictado.html' %}

@@ -7,17 +7,23 @@
 
 <form method="post">
     {% csrf_token %}
+    
+    <input type="hidden" id="total_a_pagar" name="total_a_pagar" value="">
+    <input type="hidden" id="datos_dictados" name="datos_dictados" value="">
+
 
     <div class="row">
         <div class="col">
             <label>Seleccione al Titular:</label>
             <div class="form-group">
-                <select name="enc_profesor" id="enc_profesor">
+                <select name="profesor" id="enc_profesor">
                     <option value="0"> --------------- </option>
                     {% for profesor in profesores %}
                         <option value="{{ profesor.pk }}">{{ profesor.persona.dni }} - {{ profesor.persona.apellido }} {{profesor.persona.nombre}}</option>
                     {% endfor %}
                 </select>
+                {% include "error_campo.html" with field=form.profesor %}
+
             </div>
         </div>
     </div>
@@ -26,7 +32,7 @@
     <div class="row">
         <div class="col-12">
             <div class="text-center mt-3">
-                <button type="submit" class="btn btn-success">Pagar</button>
+                <button type="submit" class="btn btn-success">Generar Comprobante</button>
             </div>
         </div>
     </div>
@@ -54,40 +60,47 @@
     
             if (titular_id && titular_id !== '0') {
                 jq.ajax({
-                    url: '../' + url + titular_id,
+                    url: '../../' + url + titular_id,
                     type: 'GET',
-                    data: {
-                        //'pk': titular_id
-                    },
+                    data: {},
                     dataType: 'json',
                     success: function(data) {
-                        
                         var total = data.valor_total;
                         var datosDiv = $('#datos_titular');
                         var html = '<p>Dictados a pagar:</p>';
-
+    
                         html += '<ul>';
                         // Iterar sobre cada dictado
                         data.dictados.forEach(function(dictado) {
-                            html += '<li>' + dictado.nombre + ', Estado: ' + dictado.estado + ' Precio: $' + dictado.precio + ' Clases a pagar: ' + dictado.cantidad_clases + ' Porcentaje de asistencia: ' + dictado.porcentaje_asistencia +' Precio Final: $' + dictado.precioFinal +'</li>';
+                            html += '<li>';
+                            html += dictado.nombre;
+                            html += '<ul>';
+                            html += '<li>Estado ' + dictado.estado + '</li>';
+                            html += '<li>Precio $' + dictado.precio + '</li>';
+                            html += '<li>Total de clases ' + dictado.total_clases + '</li>';
+                            html += '<li>Clases asistidas ' + dictado.clases_asistidas + '</li>';
+                            html += '<li>Porcentaje de asistencia ' + dictado.porcentaje_asistencia + '% </li>';
+                            html += '<li>Precio Final <strong>$' + dictado.precioFinal + '</strong></li>';
+                            html += '</ul>';
+                            html += '</li>';
                         });
                         html += '</ul>';
-
+    
                         html += '<p> Total a pagar <strong>$' + total + '</strong></p>';
-
+    
                         datosDiv.html(html);
-                    },
+    
+                        // Actualiza los campos ocultos
+                        jq('#total_a_pagar').val(total); // Actualiza el campo oculto con el total a pagar
+                        jq('#datos_dictados').val(JSON.stringify(data.dictados)); // Actualiza el campo oculto con los datos de los dictados
+                    }
                 });
-            }else{
+            } else {
                 // Limpiar el contenido del div
                 $('#datos_titular').html('');
             }
         });
     });
+    
 </script>
-
-
-
-
-
 {% endblock %}

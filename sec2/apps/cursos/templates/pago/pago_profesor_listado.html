@@ -25,10 +25,9 @@
             <td class="negrita"> {{ page_obj.start_index|add:forloop.counter0 }}</td>
             <td> {{pago.fecha}}</td>
             {% include 'tabla_persona_cuerpo.html' with persona=pago.profesor.persona %}
-            <td>$ {{ pago.monto }}</td>
+            <td>$ {{ pago.total }}</td>
             <td class="text-end">
-                <a href="{% url 'cursos:profesor_detalle' pago.profesor.pk %}" class="btn btn-info btn-sm btn-detalle"><i class="fa-regular fa-eye"></i> Detalle</a>            
-
+                <a href="{% url 'cursos:pago_profesor_detalle' pago.pk %}" class="btn btn-info btn-sm btn-detalle"><i class="fa-regular fa-eye"></i> Detalle</a>            
             </td>
         </tr>
         {% endfor %}

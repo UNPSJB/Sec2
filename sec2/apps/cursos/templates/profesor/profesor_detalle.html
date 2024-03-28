@@ -1,4 +1,4 @@
-{% extends 'detalle_listado.html' %}
+{% extends 'detalle_listado_app_cursos.html' %}
 
 {% load crispy_forms_tags %}
 {% load static %}
@@ -37,13 +37,21 @@
 </div>
 
 
-
 {% if not profesor.hasta %}
 
 
 <div class="col d-flex justify-content-center">
     <a href="{% url 'cursos:profesor_editar' profesor.pk %}" class="btn btn-primary btn-sm btn-detalle"><i class="fa-regular fa-pen-to-square"></i> Modificar</a>
 </div>
+<div class="col d-flex justify-content-center">
+
+<button type="button" class="btn btn-warning btn-sm btn-detalle" data-bs-toggle="modal" data-bs-target="#modalPagos  ">
+  <i class="fa-solid fa-credit-card"></i>
+  Pagos
+</button>
+{% include "profesor/modal_pago_dictados.html" with pagos=pagos%}
+</div>
+
 
 
 

@@ -3,7 +3,7 @@ from django.shortcuts import get_object_or_404, redirect
 
 from apps.afiliados.views import existe_persona_activa
 from utils.funciones import mensaje_advertencia, mensaje_error, mensaje_exito
-from ..models import Actividad, Profesor, Titular
+from ..models import Actividad, PagoProfesor, Profesor, Titular
 from ..forms.profesor_forms import *
 from django.views.generic import DetailView
 
@@ -87,11 +87,15 @@ class ProfesorDetailView(DetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        profesor = self.object
+
+        pagos = PagoProfesor.objects.all().filter(profesor=profesor)
+
+        context['pagos'] = pagos
         context['titulo'] = "Detalle del Profesor"
         context['tituloListado'] = 'Titular'
         context['tituloDictadoInscrito'] = 'Dictados que esta inscrito como alumno'
         # Obtener el profesor actual
-        profesor = self.object
         # Obtener todos los titulares asociados a este profesor
         titulares = Titular.objects.filter(profesor=profesor)
         context['titulares'] = titulares

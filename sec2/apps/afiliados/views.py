@@ -8,7 +8,7 @@ from django.urls import reverse_lazy
 from apps.alquileres.models import Alquiler
 from apps.personas.forms import PersonaForm, PersonaUpdateForm
 from apps.personas.models import Rol
-from utils.funciones import mensaje_advertencia, mensaje_error, mensaje_exito  
+from utils.funciones import mensaje_advertencia, mensaje_error, mensaje_exito, registrar_fuentes  
 from .models import Afiliado, Familiar, PagoCuota, RelacionFamiliar
 from .forms import *
 from sec2.utils import ListFilterView
@@ -237,8 +237,6 @@ def afiliado_afiliar_desafiliar(request, pk, accion, origen):
 from io import BytesIO
 import io
 from reportlab.pdfgen import canvas
-from reportlab.pdfbase.ttfonts import TTFont
-from reportlab.pdfbase import pdfmetrics
 
 def confeccionarNota(request, pk):
     afiliado = get_object_or_404(Afiliado, pk=pk)
@@ -270,11 +268,6 @@ def generate_pdf(afiliado):
     buffer.seek(0)
     return buffer
 
-def registrar_fuentes():
-    pdfmetrics.registerFont(TTFont('Calibri', 'calibri.ttf'))
-    pdfmetrics.registerFont(TTFont('TituloFont', 'times.ttf'))
-    pdfmetrics.registerFont(TTFont('Times-Italic', 'timesi.ttf'))
-    pdfmetrics.registerFont(TTFont('Times-Bold', 'timesbd.ttf'))
 
 def establecer_fuente_titulo(pdf):
     pdf.setFont('Times-Bold', 14)
