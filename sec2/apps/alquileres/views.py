@@ -396,8 +396,6 @@ class AlquilerCreateView(CreateView):
         fecha = form.cleaned_data["fecha_alquiler"]
         turno = form.cleaned_data["turno"]
         alquiler = Alquiler.objects.first()
-        print("---------------AAAAAAAAA-------------------")
-        print("fecha: ",type(fecha))
         if Alquiler.fecha_valida(fecha):
             if alquiler is not None:
                 if alquiler.verificar_existencia_alquiler(salon, fecha, turno):

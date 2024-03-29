@@ -69,9 +69,9 @@ class Alquiler(models.Model):
         return alquiler_existente
 
     def fecha_valida(fecha):
-            """Verifica que la fecha sea mayor a la de hoy"""
+            #Verifica que la fecha sea mayor a la de hoy
             hoy = datetime.today()
-                #fecha_formateada = fecha.strftime("%Y-%m-%d") # datetime.strptime(fecha, '%Y-%m-%d').date()
+                
             if fecha.date() > hoy.date():
                 return True
             else:
