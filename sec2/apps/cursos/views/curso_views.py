@@ -1,6 +1,8 @@
 from django.shortcuts import get_object_or_404, redirect
+from apps.afiliados.models import Afiliado, Familiar
+from apps.alquileres.models import Encargado
 from apps.cursos.forms.actividad_forms import ActividadForm
-from apps.cursos.models import Curso, DetallePagoProfesor, Dictado, PagoProfesor, Profesor, Titular
+from apps.cursos.models import Alumno, Curso, DetallePagoProfesor, Dictado, PagoAlumno, PagoProfesor, Profesor, Titular
 from apps.personas.models import Persona, Rol
 from utils.funciones import mensaje_advertencia, mensaje_error, mensaje_exito
 from ..forms.curso_forms import *
@@ -365,7 +367,6 @@ class PagoProfesorCreateView(CreateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         profesores = obtenerProfesoresActivos()        
-
         ultimo_dia_mes_anterior = obtenerUltimoDiaMesAnterior()
         primer_dia_mes_anterior = ultimo_dia_mes_anterior.replace(day=1)
         
@@ -389,23 +390,11 @@ class PagoProfesorCreateView(CreateView):
         total_a_pagar = self.request.POST.get('total_a_pagar')
         datos_dictados = self.request.POST.get('datos_dictados')
 
-        print("")
-        print("")
-        print("")
-        print("ESTOY AQUI")
-        print("enc_profesor",enc_profesor)
-        print("total_a_pagar",total_a_pagar)
-        print("datos_dictados",datos_dictados)
-        print("")
-        print("")
-
         if enc_profesor == '0':
             mensaje_advertencia(self.request, f'Seleccione al profesor')
             return super().form_invalid(form)
         
         if datos_dictados:
-            print("estoy en el if")
-
             dictados_info = json.loads(datos_dictados)
             pago = form.save(commit=False)
             pago.profesor_id = enc_profesor
@@ -426,8 +415,6 @@ class PagoProfesorCreateView(CreateView):
                     precioFinal=dictado_info.get('precioFinal'),
                 )
             pago.generarPreFactura()
-            # pago.descargarPreFactura()
-
 
         mensaje_exito(self.request, f'{MSJ_CORRECTO_PAGO_REALIZADO}')
         return super().form_invalid(form)
@@ -500,3 +487,58 @@ class PagoProfesorDetailView(DetailView):
         else:
             # De lo contrario, renderizamos la plantilla normalmente
             return super().render_to_response(context, **response_kwargs)
+
+def getObjectRolTipo(rol):
+
+    if rol.tipo == 1: 
+        return get_object_or_404(Afiliado, persona__pk=rol.persona.pk), False
+    elif rol.tipo == 2:
+        return get_object_or_404(Familiar, persona__pk=rol.persona.pk), False
+    elif rol.tipo == 3:
+        return get_object_or_404(Alumno, persona__pk=rol.persona.pk), False
+    elif rol.tipo == 4: 
+        return get_object_or_404(Profesor, persona__pk=rol.persona.pk), True
+    elif rol.tipo == 5: 
+        return get_object_or_404(Encargado, persona__pk=rol.persona.pk), False
+
+def obtenerDictados(persona, es_profesor):
+    
+    if es_profesor:
+        return persona.dictados_inscriptos.all()
+    else:
+        return persona.dictados.all()
+
+def estaEnDictadoActivo(persona, es_profesor):
+
+    dictados = obtenerDictados(persona, es_profesor)
+
+    if dictados.exists():
+        for dictado in dictados:
+            if not dictado.estado == 3:
+                return True
+    return False
+
+def obtenerAlumnosEnDictado():
+    #Obtengo todos los roles activos
+    roles_sin_fecha_hasta = Rol.objects.filter(hasta__isnull=True)
+    resultados = []
+
+    for rol in roles_sin_fecha_hasta:
+        persona, es_profesor = getObjectRolTipo(rol)
+        
+        if estaEnDictadoActivo(persona, es_profesor):
+            resultados.append({"alumnos": persona})
+    return resultados
+
+class PagoAlumnoCreateView(CreateView):
+    model = PagoAlumno
+    form_class = PagoRolForm
+    template_name = 'pago/pago_alumno.html'
+    success_url = reverse_lazy('cursos:pago_profesor')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        alumnos = obtenerAlumnosEnDictado()
+        context['titulo'] = "Comprobante de pago"
+        context['alumnos'] = alumnos
+        return context

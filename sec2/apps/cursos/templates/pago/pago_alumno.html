@@ -1,0 +1,101 @@
+{% extends 'app_cursos_alta.html' %}
+{% load crispy_forms_tags %}
+{% load static %}
+
+{% block formulario %}
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+
+<form method="post">
+    {% csrf_token %}
+    
+    <input type="hidden" id="total_a_pagar" name="total_a_pagar" value="">
+    <input type="hidden" id="datos_dictados" name="datos_dictados" value="">
+
+
+    <div class="row">
+        <div class="col">
+            <label>Seleccione al Alumno:</label>
+            <div class="form-group">
+                <select name="alumno" id="enc_alumno">
+                    <option value="0"> --------------- </option>
+                    {% for alumno in alumnos %}
+                        <option value="{{ alumno.alumnos.pk }}">{{ alumno.alumnos.persona.dni }} - {{ alumno.alumnos.persona.apellido }} {{ alumno.alumnos.persona.nombre }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+    </div>
+
+    <div id="datos_titular"></div>
+
+    <div class="row">
+        <div class="col-12">
+            <div class="text-center mt-3">
+                <button type="submit" class="btn btn-success">Siguiente</button>
+            </div>
+        </div>
+    </div>
+
+</form>
+
+<!-- Incluir archivo estático de Select2 desde CDN -->
+<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+<script>
+    $(function () {
+      //$("#enc_alumno").select2();
+    }); 
+
+    var jq = $.noConflict();
+
+    jq(document).ready(function() {
+
+        jq('#enc_alumno').change(function() {
+            var rol_id = jq(this).val();
+            var url = 'get_dictados_por_alumno/';
+    
+            if (rol_id && rol_id !== '0') {
+                jq.ajax({
+                    url: '../../' + url + rol_id,
+                    type: 'GET',
+                    data: {},
+                    dataType: 'json',
+                    success: function(data) {
+                        var datosDiv = $('#datos_titular');
+                        var html = '<p>Seleccione el dictado:</p>';
+    
+                        html += '<ul>';
+                        // Iterar sobre cada dictado
+                        data.dictados.forEach(function(dictado) {
+                            html += '<label>';
+                            html += '<input type="checkbox" name="dictado" value="' + dictado.pk + '">';
+                            html += ' ' + dictado.nombre;
+                            
+                            if (dictado.descuento > 0) {
+                                html += ' $' + dictado.precio_con_descuento + ' ' + dictado.tipo_pago;
+                                html += ' (Descuento aplicado)';
+                            }else{
+                                html += ' $' + dictado.precio + ' ' + dictado.tipo_pago;
+                            }
+                            html += '</label>';
+                        });
+                        html += '</ul>';
+    
+    
+                        datosDiv.html(html);
+    
+                        // Actualiza los campos ocultos
+                        jq('#datos_dictados').val(JSON.stringify(data.dictados)); // Actualiza el campo oculto con los datos de los dictados
+                    }
+                });
+            } else {
+                // Limpiar el contenido del div
+                $('#datos_titular').html('');
+            }
+        });
+    });
+    
+</script>
+{% endblock %}

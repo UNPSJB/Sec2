@@ -1,6 +1,6 @@
 from datetime import timezone
 from django import forms
-from ..models import Actividad, Curso, ListaEspera, PagoProfesor
+from ..models import Actividad, Curso, ListaEspera, PagoAlumno, PagoProfesor
 from utils.constants import *
 from utils.choices import *
 from sec2.utils import FiltrosForm
@@ -112,3 +112,8 @@ class PagoProfesorFilterForm(FiltrosForm):
     pass
     # monto = forms.DecimalField(max_digits=10, decimal_places=2)
 
+
+class PagoRolForm(forms.ModelForm):
+    class Meta:
+        model = PagoAlumno
+        fields = ['rol']

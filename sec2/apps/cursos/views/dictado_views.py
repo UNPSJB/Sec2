@@ -3,7 +3,8 @@ from django.views import View
 from django.views.generic import DetailView
 from django.views.generic.edit import CreateView, UpdateView
 from apps.afiliados.models import Afiliado, Familiar
-from apps.cursos.views.curso_views import obtenerUltimoDiaMesAnterior
+from apps.alquileres.models import Encargado
+from apps.cursos.views.curso_views import getObjectRolTipo, obtenerDictados, obtenerUltimoDiaMesAnterior
 from apps.personas.forms import PersonaForm
 
 from apps.personas.models import Persona, Rol
@@ -146,7 +147,7 @@ class DictadoDetailView(DetailView):
         context['todos_los_horarios_con_aula'] = todos_los_horarios_con_aula
         # Obtener todas las clases asociadas al dictado a través de los horarios
         clases = Clase.objects.filter(reserva__horario__dictado=dictado).order_by('reserva__fecha')
-        
+        todas_clases = clases
         existen_clases =  clases.exists()
 
          # Configurar la paginación
@@ -202,19 +203,20 @@ class DictadoDetailView(DetailView):
                 context['costo_parcial'] = f"${result} AR por {dictado.get_periodo_pago_display()}"
             else:
                 # PERIODO DE PAGO POR MES
-                # if not existen_clases:
-                #     # Obtén las fechas de la primera y última clase
-                #     primera_fecha_clase = clases.first().reserva.fecha
-                #     ultima_fecha_clase = clases.last().reserva.fecha
-                #     # Calcula la diferencia de tiempo entre la primera y última fecha de clases
-                #     diferencia_tiempo = ultima_fecha_clase - primera_fecha_clase
-                #     # Calcula el número de meses
-                #     meses_transcurridos = round(diferencia_tiempo.days / 30)  # Suponiendo 30 días por mes para simplificar
-                #     # Realiza el cálculo del costo basado en el número de meses
-                #     result = round(curso.costo / meses_transcurridos, 2)
-                #     context['costo_parcial'] = f"${result} AR por {dictado.get_periodo_pago_display()}"
-                # else:
-                context['costo_parcial'] = 'Primero tiene generar las clases'
+                if existen_clases:
+                    # Obtén las fechas de la primera y última clase
+                    primera_fecha_clase = todas_clases.first().reserva.fecha
+                    ultima_fecha_clase = todas_clases.last().reserva.fecha
+                    # Calcula la diferencia de tiempo entre la primera y última fecha de clases
+                    diferencia_tiempo = ultima_fecha_clase - primera_fecha_clase
+                    # Calcula el número de meses
+                    meses_transcurridos = round(diferencia_tiempo.days / 30)  # Suponiendo 30 días por mes para simplificar
+                    print("MESES TRANSCURRIDOS", meses_transcurridos)
+                    # Realiza el cálculo del costo basado en el número de meses
+                    result = round(curso.precio_total / meses_transcurridos, 2)
+                    context['costo_parcial'] = f"${result} AR por {dictado.get_periodo_pago_display()} | {meses_transcurridos} Meses"
+                else:
+                    context['costo_parcial'] = 'Primero tiene generar las clases'
         return context
 
     def get_reserva(self, horario):
@@ -524,8 +526,7 @@ def gestionListaEspera(request, pk, rol_pk, accion):
         elif rol.tipo == 4: 
             persona = get_object_or_404(Profesor, persona__pk=rol.persona.pk)
         elif rol.tipo == 5: 
-            # [FALTA: CREAR AL ENCARGADO]
-            persona = get_object_or_404(Profesor, persona__pk=rol.persona.pk)
+            persona = get_object_or_404(Encargado, persona__pk=rol.persona.pk)
         
         persona.dictados.add(dictado)
         persona.persona.es_alumno = True
@@ -850,7 +851,7 @@ def calcularPrecioPagar(precio_base, porcentaje_asistencia):
 def get_dictados_por_titular(request, titular_pk):
     if request.method == 'GET':
         try:
-            data = {'dictados': []}  # Initialize data with 'dictados' key as an empty list
+            data = {'dictados': []} 
             valor_total = 0
 
             # Obtener al profesor y sus titulares
@@ -883,3 +884,59 @@ def get_dictados_por_titular(request, titular_pk):
             return JsonResponse({'error': 'Profesor no encontrado'}, status=404)
         except Titular.DoesNotExist:
             return JsonResponse({'error': 'Titular no encontrado'}, status=404)
+
+def calcularPrecioxMes(dictado):
+    clases = Clase.objects.filter(reserva__horario__dictado=dictado).order_by('reserva__fecha')
+    # Obtén las fechas de la primera y última clase
+    primera_fecha_clase = clases.first().reserva.fecha
+    ultima_fecha_clase = clases.last().reserva.fecha
+    # Calcula la diferencia de tiempo entre la primera y última fecha de clases
+    diferencia_tiempo = ultima_fecha_clase - primera_fecha_clase
+    # Calcula el número de meses
+    meses_transcurridos = round(diferencia_tiempo.days / 30)  # Suponiendo 30 días por mes para simplificar
+    # Realiza el cálculo del costo basado en el número de meses
+    return round(dictado.curso.precio_total / meses_transcurridos, 2)
+
+def calcularPrecioxClase(dictado):
+    cantidad_clase = Decimal(dictado.curso.modulos_totales) / Decimal(dictado.modulos_por_clase)
+    cantidad_clase = Decimal(math.ceil(cantidad_clase))
+    return round(dictado.curso.precio_total / cantidad_clase, 2)
+
+def aplicarDescuento(dictado,precio, es_afiliado):
+    if es_afiliado:
+        descuento = Decimal(dictado.descuento)  # Convertir descuento a Decimal
+        precio_con_descuento = round(precio * (descuento / Decimal(100)), 2)
+    else:
+        descuento = 0
+        precio_con_descuento = 0
+
+    return descuento, precio_con_descuento
+
+def get_dictados_por_alumno(request, rol_pk):
+    if request.method == 'GET':
+        data = {'dictados': []}
+        rol = get_object_or_404(Rol, pk=rol_pk)
+        es_afiliado = True if rol.tipo == 1 else False
+        persona, es_profesor = getObjectRolTipo(rol)
+        dictados = obtenerDictados(persona, es_profesor)
+
+        for dictado in dictados:
+            if not dictado.estado == 3:
+                if dictado.periodo_pago == 1:
+                    precio = calcularPrecioxMes(dictado)
+                    tipo_pago = "por mes"
+                else:
+                    precio = calcularPrecioxClase(dictado)
+                    tipo_pago = "por clase"
+
+                descuento, precio_con_descuento = aplicarDescuento(dictado,precio,es_afiliado)
+
+                data['dictados'].append({
+                    'pk' : dictado.pk,
+                    'nombre': dictado.curso.nombre,
+                    'precio': precio,
+                    'descuento': descuento,
+                    'precio_con_descuento': precio_con_descuento ,
+                    'tipo_pago': tipo_pago,
+                })
+        return JsonResponse(data)
