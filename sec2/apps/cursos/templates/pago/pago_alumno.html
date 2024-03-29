@@ -12,7 +12,8 @@
 <form method="post">
     {% csrf_token %}
 
-    <input type="hidden" id="total_a_pagar" name="total_a_pagar" value="232323">
+    <input type="hidden" id="total_a_pagar" name="total_a_pagar" value="">
+    <input type="hidden" id="dictados_seleccionados" name="dictados_seleccionados">
 
     <div class="row">
         <div class="col-12">
@@ -173,6 +174,8 @@
                     precio: $(this).data('precio'), // Obtiene el precio desde el atributo data-precio
                     cantidad: 1,
                 });
+
+                alert("ACA ME QUEDE EN GUARDAR LOS VALORES DEL DICTADO SELECCIONADO")
                 // Calcula el subtotal y lo suma al total
                 totalSubtotales += $(this).data('precio_con_descuento');
             });
@@ -257,7 +260,6 @@
                 totalSubtotales += parseFloat($(this).text().replace('$', ''));
             });
             $('#totalSubtotales').html('TOTAL : $<strong>' + totalSubtotales.toFixed(2) + '</strong>');
-
             $('#total_a_pagar').val(totalSubtotales.toFixed(2));
 
         });

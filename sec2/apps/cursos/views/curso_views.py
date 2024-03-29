@@ -547,9 +547,11 @@ class PagoAlumnoCreateView(CreateView):
         pk = self.request.POST.get('alumno')
         rol = get_object_or_404(Rol, pk=pk)
         total_a_pagar = self.request.POST.get('total_a_pagar')
+        dictados_seleccionados = self.request.POST.get('dictados_seleccionados')
         print("pk", pk)
         print("rol", rol)
         print("total_a_pagar", total_a_pagar)
+        print("dictados_seleccionados", dictados_seleccionados)
         
         mensaje_advertencia(self.request, f'sssss')
         return super().form_invalid(form)
