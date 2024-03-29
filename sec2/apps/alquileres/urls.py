@@ -27,6 +27,8 @@ urlpatterns = [
     path('salon/<int:pk>',SalonDetailView.as_view(), name="Salon_detalle"),
     path('modificar/<int:pk>', SalonUpdateView.as_view(), name="salon_actualizar"),
 
+    path('modificar/<int:pk>', SalonUpdateView.as_view(), name="salon_actualizar"),
+
 
 ##--------------- ALQUILER--------------------------------
    
@@ -36,6 +38,7 @@ urlpatterns = [
     path('mostrarAlquileres/',AlquilieresListView.as_view(), name="alquiler_listar"),
     #path('mostrar/pendientes',AlquileresListPendienteView.as_view(), name="alquiler_listar_pendiente"),
     #path('mostrar/activos',AlquileresListActivoView.as_view(), name="alquiler_listar_activos"),
+    path('alquiler/agregarlistaespera/<int:pk>/',agregar_lista_espera, name="agregar_lista_espera"),
 
 ##--------------- PAGO DE ALQUILER--------------------------------
     path('crearPago/',PagoAlquilerCreateView.as_view(), name="pagar_alquiler_crear"),

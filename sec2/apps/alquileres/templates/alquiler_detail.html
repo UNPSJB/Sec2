@@ -82,6 +82,54 @@
 
 {% endblock %}
 
+{% block listado_asociado %}
+<div class="container-sm">
+  <h3 class="subtitulo">{{ tituloListado1 }}</h3>
+  <a href="#" class="btn btn-outline-success btn-sm btn-detalle"><i class="fa-solid fa-plus"></i> Nuevo</a>
+  <a href={% url 'alquiler:agregar_lista_espera' alquiler.pk %} 
+    class="btn btn-warning btn-sm btn-detalle" 
+    onclick="openOrFocusWindow(this.href, 'Lista de espera', 700, 400); return false;">
+    <i class="fa-solid fa-list"></i>
+    Agregar
+  </a>
+
+  {% if alquiler.lista_espera.all %}
+  
+  
+
+  <table class="table table-sm table-hover">
+    <thead>
+        <tr>
+          <th>#</th>
+          {% include 'tabla_persona_cabecera.html' %}
+          <th>N° Contacto</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for afiliado in alquiler.lista_espera.all %}
+        <tr>
+          <td class="negrita">{{ forloop.counter }}</td>
+          {% include 'tabla_persona_cuerpo.html' with persona=afiliado.persona %}
+          <td>{{ afiliado.persona.celular }}</td>
+
+          <td class="text-end">
+            <a href="{% url 'afiliados:afiliado_detalle' afiliado.pk %}" class="btn btn-info btn-sm btn-detalle"><i class="fa-regular fa-eye"></i> Detalle</a>            
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+  </table>
+
+    {% else %}
+    No existen afiliados en lista de espera
+  {% endif %}
+
+</div>
+{% endblock %}
+
+
+
 {% block extrajs_intermedia %}
 <script>
   var listaEsperaWindow = null;
