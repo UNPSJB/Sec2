@@ -446,7 +446,7 @@ def agregar_lista_espera(request, pk):
     
     if request.method == 'POST':
         enc_afiliado_id = request.POST.get('enc_afiliado')
-        afiliado = get_object_or_404(Afiliado, pk=pk)
+        afiliado = get_object_or_404(Afiliado, pk=enc_afiliado_id)
         alquiler.lista_espera.add(afiliado)
         alquiler.save()
         mensaje_exito(request, 'Agregado a la lista de espera con exito')

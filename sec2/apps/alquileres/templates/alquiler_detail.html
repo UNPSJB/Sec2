@@ -60,15 +60,12 @@
 </div>
 
 <div class="col d-flex justify-content-center"> 
-  <a href="#" 
-    class="btn btn-warning btn-sm btn-detalle" 
-    onclick="openOrFocusWindow(this.href, 'Lista de espera', 700, 400); return false;">
-    <i class="fa-solid fa-list"></i>
-    Lista de espera
-  </a>
+  <a href="{% url 'afiliados:afiliado_actualizar' alquiler.pk %}" class="btn btn-sm btn-primary btn-detalle "><i class="fas fa-pencil-alt"></i> Modificar</a>
+
 </div>
 
 <div class="col d-flex justify-content-center"> 
+  {% comment %} CAMBIAR EL URL DEL DETALLE {% endcomment %}
   <a href="{% url 'afiliados:afiliado_detalle' alquiler.afiliado.pk %}" class="btn btn-sm btn-primary btn-detalle">
     <i class="fa-regular fa-user"></i> Ir al Afiliado
   </a>
@@ -85,12 +82,11 @@
 {% block listado_asociado %}
 <div class="container-sm">
   <h3 class="subtitulo">{{ tituloListado1 }}</h3>
-  <a href="#" class="btn btn-outline-success btn-sm btn-detalle"><i class="fa-solid fa-plus"></i> Nuevo</a>
   <a href={% url 'alquiler:agregar_lista_espera' alquiler.pk %} 
     class="btn btn-warning btn-sm btn-detalle" 
     onclick="openOrFocusWindow(this.href, 'Lista de espera', 700, 400); return false;">
     <i class="fa-solid fa-list"></i>
-    Agregar
+    Agregar lista espera
   </a>
 
   {% if alquiler.lista_espera.all %}
