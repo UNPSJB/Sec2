@@ -396,8 +396,6 @@ class AlquilerCreateView(CreateView):
         fecha = form.cleaned_data["fecha_alquiler"]
         turno = form.cleaned_data["turno"]
         alquiler = Alquiler.objects.first()
-        print("---------------AAAAAAAAA-------------------")
-        print("fecha: ",type(fecha))
         if Alquiler.fecha_valida(fecha):
             if alquiler is not None:
                 if alquiler.verificar_existencia_alquiler(salon, fecha, turno):
@@ -435,6 +433,30 @@ class AlquilerCreateView(CreateView):
             raise forms.ValidationError(e)
             
    
+def agregar_lista_espera(request, pk):
+    alquiler = get_object_or_404(Alquiler, pk=pk)
+    
+    roles_sin_fecha_hasta = Rol.objects.filter(hasta__isnull=True, tipo=1)
+
+    # Obtener personas asociadas a los roles sin fecha de finalización
+    personas = Persona.objects.filter(roles__in=roles_sin_fecha_hasta)
+
+    # Obtener afiliados asociados a las personas obtenidas
+    afiliados = Afiliado.objects.filter(persona__in=personas)
+    
+    if request.method == 'POST':
+        enc_afiliado_id = request.POST.get('enc_afiliado')
+        afiliado = get_object_or_404(Afiliado, pk=pk)
+        alquiler.lista_espera.add(afiliado)
+        alquiler.save()
+        mensaje_exito(request, 'Agregado a la lista de espera con exito')
+    
+    context = {
+        'alquiler': alquiler,
+        'afiliados': afiliados,
+    }
+    
+    return render(request, 'lista_espera_alquiler.html', context)
 
 # ----------------------------- LIST DE ALQUILER  ----------------------------------- #
 class AlquilieresListView(ListFilterView):
@@ -466,6 +488,8 @@ class AlquilerDetailView (DetailView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['titulo'] = "Detalle de alquiler"
+        context['tituloListado1'] = "Lista de espera"
+        
         return context
     
 
