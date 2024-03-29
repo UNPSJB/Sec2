@@ -43,7 +43,7 @@
             <div class="text-center mt-3">
                 <button id="prev-button" class="btn btn-primary" style="display: none;">Anterior</button>
                 <button id="next-button" class="btn btn-primary">Siguiente</button>
-                <button type="submit" class="btn btn-success" style="display: none;">Guardar</button>
+                <button type="submit" class="btn btn-success" style="display: none;">Continuar</button>
             </div>
         </div>
     </div>
@@ -167,6 +167,8 @@
         // Captura el cambio en los checkboxes y actualiza la sección 2
         $(document).on('change', 'input[name="dictado"]', function () {
             var seleccionados = [];
+            var totalSubtotales = 0; // Variable para almacenar el total de los subtotales
+
             $('input[name="dictado"]:checked').each(function () {
                 seleccionados.push({
                     valor: $(this).val(),
@@ -177,7 +179,10 @@
                     precio: $(this).data('precio'), // Obtiene el precio desde el atributo data-precio
                     cantidad: 1,
                 });
+                // Calcula el subtotal y lo suma al total
+                totalSubtotales += $(this).data('precio_con_descuento');
             });
+
             var tableHTML = '<table>';
                 tableHTML += '<thead>';
                 tableHTML += '<tr>';
@@ -213,6 +218,7 @@
                         tableHTML += ' </td>';
 
                         var precioTotal = seleccionados[i].precioConDescuento * seleccionados[i].cantidad; // Calcula el precio total
+
                         tableHTML += '<td class="subtotal">';
                             tableHTML += '$' + precioTotal.toFixed(2); // Muestra el precio total
                         tableHTML += '</td>';
@@ -225,31 +231,39 @@
                 tableHTML += '<br>';
                 tableHTML += '<br>';
                 tableHTML += '<br>';
-                tableHTML += '<p> TOTAL <p>';
             
+            // Muestra el total de los subtotales
+            tableHTML += '<p id="totalSubtotales">Total de subtotales: $' + totalSubtotales.toFixed(2) + '</p>';
             $('#seleccionados').html(tableHTML); // Actualiza el contenedor con los checkboxes seleccionados
         });
 
-        // Captura el cambio en los campos de cantidad y actualiza los subtotales
-        $(document).on('change', '.cantidad', function () {
-            var index = $(this).data('index'); // Obtiene el índice del elemento seleccionado
-            var cantidad = parseInt($(this).val());
-            
-            if (cantidad == 0){
-                alert("La cantidad no puede ser 0")
-                cantidad = 1; // Establece la cantidad a 1
-                $(this).val(1); // Actualiza el valor del campo de cantidad en el HTML
-            }
+// Captura el cambio en los campos de cantidad y actualiza los subtotales
+$(document).on('change', '.cantidad', function () {
+    var index = $(this).data('index'); // Obtiene el índice del elemento seleccionado
+    var cantidad = parseInt($(this).val());
+    
+    if (cantidad == 0){
+        alert("La cantidad no puede ser 0")
+        cantidad = 1; // Establece la cantidad a 1
+        $(this).val(1); // Actualiza el valor del campo de cantidad en el HTML
+    }
 
-            var precioTotal = parseFloat($(this).closest('tr').find('td:nth-child(4)').text().replace('$', '')); // Obtiene el precio con descuento
-            var subtotal = cantidad * precioTotal;
-            $(this).closest('tr').find('.subtotal').text('$' + subtotal.toFixed(2)); // Actualiza el subtotal en la tabla
-            // Actualiza la cantidad en el arreglo seleccionados
-            // Verifica si el índice es válido antes de actualizar la cantidad en el arreglo seleccionados
-            if (index >= 0 && index < seleccionados.length) {
-                seleccionados[index].cantidad = cantidad;
-            }
-        });
+    var precioTotal = parseFloat($(this).closest('tr').find('td:nth-child(4)').text().replace('$', '')); // Obtiene el precio con descuento
+    var subtotal = cantidad * precioTotal;
+    $(this).closest('tr').find('.subtotal').text('$' + subtotal.toFixed(2)); // Actualiza el subtotal en la tabla
+    // Actualiza la cantidad en el arreglo seleccionados
+    // Verifica si el índice es válido antes de actualizar la cantidad en el arreglo seleccionados
+    if (index >= 0 && index < seleccionados.length) {
+        seleccionados[index].cantidad = cantidad;
+    }
+
+    // Recalcular el total de subtotales
+    var totalSubtotales = 0;
+    $('.subtotal').each(function () {
+        totalSubtotales += parseFloat($(this).text().replace('$', ''));
+    });
+    $('#totalSubtotales').text('Total de subtotales: $' + totalSubtotales.toFixed(2));
+});
     });
 </script>
 

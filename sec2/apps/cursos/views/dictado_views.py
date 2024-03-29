@@ -908,7 +908,7 @@ def aplicarDescuento(dictado,precio, es_afiliado):
         precio_con_descuento = round(precio * (descuento / Decimal(100)), 2)
     else:
         descuento = 0
-        precio_con_descuento = 0
+        precio_con_descuento = precio
 
     return descuento, precio_con_descuento
 
@@ -930,6 +930,10 @@ def get_dictados_por_alumno(request, rol_pk):
                     tipo_pago = "por clase"
 
                 descuento, precio_con_descuento = aplicarDescuento(dictado,precio,es_afiliado)
+
+                print("estoy aquiiiiii")
+                print("descuento", descuento)
+                print("precio_con_descuento", precio_con_descuento)
 
                 data['dictados'].append({
                     'pk' : dictado.pk,
