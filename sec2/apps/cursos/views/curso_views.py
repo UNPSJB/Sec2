@@ -542,3 +542,24 @@ class PagoAlumnoCreateView(CreateView):
         context['titulo'] = "Comprobante de pago"
         context['alumnos'] = alumnos
         return context
+
+    def form_valid(self, form):
+        pk = self.request.POST.get('alumno')
+        rol = get_object_or_404(Rol, pk=pk)
+        total_a_pagar = self.request.POST.get('total_a_pagar')
+        print("pk", pk)
+        print("rol", rol)
+        print("total_a_pagar", total_a_pagar)
+        
+        mensaje_advertencia(self.request, f'sssss')
+        return super().form_invalid(form)
+
+    def form_invalid(self, form):
+        mensaje_advertencia(self.request, MSJ_CORRECTION)
+        print("")
+        print("ERRORES DEL FORMULARIO")
+        for field, errors in form.errors.items():
+            for error in errors:
+                print(f"Error en el campo '{field}': {error}")
+        print("")
+        return super().form_invalid(form)

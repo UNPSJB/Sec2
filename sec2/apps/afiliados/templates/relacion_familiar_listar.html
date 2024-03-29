@@ -28,7 +28,7 @@
     <tbody>
       {% for relacion in page_obj %}
         <tr>
-            <td class="negrita">{{ forloop.counter }}</td>
+            <td class="negrita">{{ forloop.counter }}</td>77
             {% include "tabla_persona_cuerpo.html" with persona=relacion.familiar.persona %}
             <td >{{ relacion.get_tipo_relacion_display }}</td>
             {% include "tabla_persona_cuerpo.html" with persona=relacion.afiliado.persona %}

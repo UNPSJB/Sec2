@@ -4,13 +4,16 @@
 
 {% block formulario %}
 <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
-
+<style>
+    .smaller-input {
+        text-align: center; /* Centra el texto dentro del input */
+    }
+</style>
 <form method="post">
     {% csrf_token %}
-    
-    <input type="hidden" id="total_a_pagar" name="total_a_pagar" value="">
-    <input type="hidden" id="datos_dictados" name="datos_dictados" value="">
-    
+
+    <input type="hidden" id="total_a_pagar" name="total_a_pagar" value="232323">
+
     <div class="row">
         <div class="col-12">
             <div class="tab-content" id="form-tabs-content">
@@ -27,7 +30,6 @@
                         </select>
                     </div>
                     <div id="datos_titular"></div>
-
                 </div>
             
                 {% comment %}SECCION 2{% endcomment %}
@@ -43,7 +45,7 @@
             <div class="text-center mt-3">
                 <button id="prev-button" class="btn btn-primary" style="display: none;">Anterior</button>
                 <button id="next-button" class="btn btn-primary">Siguiente</button>
-                <button type="submit" class="btn btn-success" style="display: none;">Continuar</button>
+                <button type="submit" class="btn btn-success" style="display: none;">Generar pre Factura</button>
             </div>
         </div>
     </div>
@@ -96,12 +98,7 @@
                             html += '</label>';
                         });
                         html += '</ul>';
-    
-    
                         datosDiv.html(html);
-    
-                        // Actualiza los campos ocultos
-                        jq('#datos_dictados').val(JSON.stringify(data.dictados)); // Actualiza el campo oculto con los datos de los dictados
                     }
                 });
             } else {
@@ -111,10 +108,6 @@
         });
     });
     
-</script>
-
-
-<script>
     $(document).ready(function () {
         var currentTab = 1;
 
@@ -132,6 +125,7 @@
                 $('#next-button').show();
                 $("button[type='submit']").hide();
             }
+            
         }
 
         updateButtons(); // Llama a esta función al cargar la página
@@ -167,7 +161,7 @@
         // Captura el cambio en los checkboxes y actualiza la sección 2
         $(document).on('change', 'input[name="dictado"]', function () {
             var seleccionados = [];
-            var totalSubtotales = 0; // Variable para almacenar el total de los subtotales
+            var totalSubtotales = 0;
 
             $('input[name="dictado"]:checked').each(function () {
                 seleccionados.push({
@@ -183,43 +177,43 @@
                 totalSubtotales += $(this).data('precio_con_descuento');
             });
 
-            var tableHTML = '<table>';
+            var tableHTML = '<table class="table table-sm table-hover">';
                 tableHTML += '<thead>';
                 tableHTML += '<tr>';
                 tableHTML += '<th>Descripción</th>';
-                tableHTML += '<th>Precio</th>';
-                tableHTML += '<th>Descuento</th>';
-                tableHTML += '<th>Precio con desc.</th>';
-                tableHTML += '<th>Cantidad</th>';
-                tableHTML += '<th>SubTotal</th>';
+                tableHTML += '<th class="text-end">Precio</th>';
+                tableHTML += '<th class="text-center">Desc</th>';
+                tableHTML += '<th class="text-end">Precio (desc)</th>';
+                tableHTML += '<th class="text-center">Cantidad</th>';
+                tableHTML += '<th class="text-end">SubTotal</th>';
                 tableHTML += '</tr>';
                 tableHTML += '</thead>';
                 tableHTML += '<tbody>';
                 for (var i = 0; i < seleccionados.length; i++) {
-                    tableHTML += '<tr>';tableHTML += '<td>';
-                            tableHTML += '<label>';
+                    tableHTML += '<tr>';
+                        
+                        tableHTML += '<td>';
                             tableHTML += seleccionados[i].nombre;
-                            tableHTML += '</label>';
                         tableHTML += '</td>';
 
-                        tableHTML += '<td> $';
+                        tableHTML += '<td class="text-end"> $';
                             tableHTML += seleccionados[i].precio;
                         tableHTML += '</td>';
-                        tableHTML += '<td> ';
+                        tableHTML += '<td class="text-center"> ';
                             tableHTML += seleccionados[i].descuento;
                         tableHTML += '%</td>';
 
-                        tableHTML += '<td> $';
+                        tableHTML += '<td class="text-end"> $';
                             tableHTML += seleccionados[i].precioConDescuento;
                         tableHTML += '</td>';
                         
-                        tableHTML += '<td>';
-                            tableHTML += '<input type="number" class="cantidad" value="' + seleccionados[i].cantidad + '" min="1" data-index="' + i + '">'; // Agrega un atributo data-index para identificar el índice del elemento seleccionado
-                        tableHTML += ' </td>';
+                        tableHTML += '<td class="text-center">';
+                            tableHTML += '<input type="number" class="cantidad form-control smaller-input" value="' + seleccionados[i].cantidad + '" min="1" data-index="' + i + '">'; // Agrega un atributo data-index para identificar el índice del elemento seleccionado
+                            tableHTML += ' </td>';
 
                         var precioTotal = seleccionados[i].precioConDescuento * seleccionados[i].cantidad; // Calcula el precio total
 
-                        tableHTML += '<td class="subtotal">';
+                        tableHTML += '<td class="subtotal text-end">';
                             tableHTML += '$' + precioTotal.toFixed(2); // Muestra el precio total
                         tableHTML += '</td>';
                         
@@ -232,38 +226,41 @@
                 tableHTML += '<br>';
                 tableHTML += '<br>';
             
-            // Muestra el total de los subtotales
-            tableHTML += '<p id="totalSubtotales">Total de subtotales: $' + totalSubtotales.toFixed(2) + '</p>';
+                // Muestra el total de los subtotales
+                tableHTML += '<p class="text-end" id="totalSubtotales">TOTAL: <strong>$' + totalSubtotales.toFixed(2) + '</strong></p>';
             $('#seleccionados').html(tableHTML); // Actualiza el contenedor con los checkboxes seleccionados
         });
 
-// Captura el cambio en los campos de cantidad y actualiza los subtotales
-$(document).on('change', '.cantidad', function () {
-    var index = $(this).data('index'); // Obtiene el índice del elemento seleccionado
-    var cantidad = parseInt($(this).val());
-    
-    if (cantidad == 0){
-        alert("La cantidad no puede ser 0")
-        cantidad = 1; // Establece la cantidad a 1
-        $(this).val(1); // Actualiza el valor del campo de cantidad en el HTML
-    }
+        // Captura el cambio en los campos de cantidad y actualiza los subtotales
+        $(document).on('change', '.cantidad', function () {
+            var index = $(this).data('index'); // Obtiene el índice del elemento seleccionado
+            var cantidad = parseInt($(this).val());
 
-    var precioTotal = parseFloat($(this).closest('tr').find('td:nth-child(4)').text().replace('$', '')); // Obtiene el precio con descuento
-    var subtotal = cantidad * precioTotal;
-    $(this).closest('tr').find('.subtotal').text('$' + subtotal.toFixed(2)); // Actualiza el subtotal en la tabla
-    // Actualiza la cantidad en el arreglo seleccionados
-    // Verifica si el índice es válido antes de actualizar la cantidad en el arreglo seleccionados
-    if (index >= 0 && index < seleccionados.length) {
-        seleccionados[index].cantidad = cantidad;
-    }
+            if (isNaN(cantidad) || cantidad == 0) {
+                alert("La cantidad tiene que ser mayor que 1")
+                cantidad = 1; // Establece la cantidad a 1
+                $(this).val(1); // Actualiza el valor del campo de cantidad en el HTML
+            }
 
-    // Recalcular el total de subtotales
-    var totalSubtotales = 0;
-    $('.subtotal').each(function () {
-        totalSubtotales += parseFloat($(this).text().replace('$', ''));
-    });
-    $('#totalSubtotales').text('Total de subtotales: $' + totalSubtotales.toFixed(2));
-});
+            var precioTotal = parseFloat($(this).closest('tr').find('td:nth-child(4)').text().replace('$', '')); // Obtiene el precio con descuento
+            var subtotal = cantidad * precioTotal;
+            $(this).closest('tr').find('.subtotal').text('$' + subtotal.toFixed(2)); // Actualiza el subtotal en la tabla
+
+            // Verifica si el índice es válido antes de actualizar la cantidad en el arreglo seleccionados
+            if (index >= 0 && index < seleccionados.length) {
+                seleccionados[index].cantidad = cantidad;
+            }
+
+            // Recalcular el total de subtotales
+            var totalSubtotales = 0;
+            $('.subtotal').each(function () {
+                totalSubtotales += parseFloat($(this).text().replace('$', ''));
+            });
+            $('#totalSubtotales').html('TOTAL : $<strong>' + totalSubtotales.toFixed(2) + '</strong>');
+
+            $('#total_a_pagar').val(totalSubtotales.toFixed(2));
+
+        });
     });
 </script>
 

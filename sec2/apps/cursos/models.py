@@ -348,7 +348,7 @@ class DetallePagoProfesor(models.Model):
 #         return f'nombre de alumno: ({self.alumno.pk})'
 
 class PagoAlumno(models.Model):
-    rol = models.ForeignKey(Rol, on_delete=models.CASCADE, related_name='pagos_rol')
+    rol = models.ForeignKey(Rol, on_delete=models.CASCADE, related_name='pagos_rol', null=True, blank=True)
     total = models.DecimalField(max_digits=10, decimal_places=2, null=True, validators=[MinValueValidator(0, 'El monto debe ser un valor positivo.')])
     fecha = models.DateTimeField(auto_now_add=True)
     pre_factura = models.FileField(upload_to='prefacturas/', null=True, blank=True)
