@@ -498,7 +498,7 @@ def getObjectRolTipo(rol):
         return get_object_or_404(Alumno, persona__pk=rol.persona.pk), False
     elif rol.tipo == 4: 
         return get_object_or_404(Profesor, persona__pk=rol.persona.pk), True
-    elif rol.tipo == 5: 
+    elif rol.tipo == 5:
         return get_object_or_404(Encargado, persona__pk=rol.persona.pk), False
 
 def obtenerDictados(persona, es_profesor):
@@ -547,11 +547,14 @@ class PagoAlumnoCreateView(CreateView):
         pk = self.request.POST.get('alumno')
         rol = get_object_or_404(Rol, pk=pk)
         total_a_pagar = self.request.POST.get('total_a_pagar')
-        dictados_seleccionados = self.request.POST.get('dictados_seleccionados')
-        print("pk", pk)
-        print("rol", rol)
         print("total_a_pagar", total_a_pagar)
-        print("dictados_seleccionados", dictados_seleccionados)
+        
+        dictados_seleccionados = self.request.POST.get('dictados_seleccionados')
+        dictados_seleccionados = json.loads(dictados_seleccionados)
+
+        for dictado in dictados_seleccionados:
+            print(dictado)
+    
         
         mensaje_advertencia(self.request, f'sssss')
         return super().form_invalid(form)

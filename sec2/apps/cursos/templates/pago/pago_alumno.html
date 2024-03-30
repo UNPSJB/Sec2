@@ -3,12 +3,7 @@
 {% load static %}
 
 {% block formulario %}
-<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
-<style>
-    .smaller-input {
-        text-align: center; /* Centra el texto dentro del input */
-    }
-</style>
+
 <form method="post">
     {% csrf_token %}
 
@@ -59,11 +54,12 @@
 <script src="{% static 'js/afiliado_formulario.js' %}"></script>
 
 <script>
-    $(function () {
-      //$("#enc_alumno").select2();
-    }); 
-
+    var dictadosSeleccionados = []; // Declaración de la variable global
     var jq = $.noConflict();
+
+    //$(function () {
+      //$("#enc_alumno").select2();
+    //}); 
 
     jq(document).ready(function() {
 
@@ -132,9 +128,13 @@
         updateButtons(); // Llama a esta función al cargar la página
 
         $('#next-button').click(function (e) {
+
             e.preventDefault(); // Previene el comportamiento predeterminado del botón
 
             if (currentTab === 1) {
+                // Guardar los dictados seleccionados antes de avanzar a la siguiente pestaña
+                guardarDictadosSeleccionados();
+                
                 $('#section1').removeClass('show active');
                 $('#tab-section-1').removeClass('active');
                 $('#section2').addClass('show active');
@@ -143,8 +143,27 @@
             } else if (currentTab === 2) {
                 // Aquí puedes realizar validaciones antes de avanzar
             }
+
+            
+
             updateButtons(); // Actualiza los botones
         });
+
+        function guardarDictadosSeleccionados() {
+            var dictadosSeleccionados = [];
+            $('input[name="dictado"]:checked').each(function () {
+                dictadosSeleccionados.push({
+                    pk: $(this).val(),
+                    nombre: $(this).data('nombre'),
+                    precioConDescuento: $(this).data('precio_con_descuento'),
+                    tipo_pago: $(this).data('tipo_pago'),
+                    descuento: $(this).data('descuento'),
+                    precio: $(this).data('precio'), // Obtiene el precio desde el atributo data-precio
+                    cantidad: 1,
+                });
+            });
+            $('#dictados_seleccionados').val(JSON.stringify(dictadosSeleccionados));
+        }
 
         $('#prev-button').click(function (e) {
             e.preventDefault(); // Previene el comportamiento predeterminado del botón
@@ -165,7 +184,7 @@
             var totalSubtotales = 0;
 
             $('input[name="dictado"]:checked').each(function () {
-                seleccionados.push({
+                dictadosSeleccionados.push({
                     valor: $(this).val(),
                     nombre: $(this).data('nombre'),
                     precioConDescuento: $(this).data('precio_con_descuento'),
@@ -174,8 +193,6 @@
                     precio: $(this).data('precio'), // Obtiene el precio desde el atributo data-precio
                     cantidad: 1,
                 });
-
-                alert("ACA ME QUEDE EN GUARDAR LOS VALORES DEL DICTADO SELECCIONADO")
                 // Calcula el subtotal y lo suma al total
                 totalSubtotales += $(this).data('precio_con_descuento');
             });
@@ -192,29 +209,30 @@
                 tableHTML += '</tr>';
                 tableHTML += '</thead>';
                 tableHTML += '<tbody>';
-                for (var i = 0; i < seleccionados.length; i++) {
+                for (var i = 0; i < dictadosSeleccionados.length; i++) {
+                    alert("ASDASASD")
                     tableHTML += '<tr>';
                         
                         tableHTML += '<td>';
-                            tableHTML += seleccionados[i].nombre;
+                            tableHTML += dictadosSeleccionados[i].nombre;
                         tableHTML += '</td>';
 
                         tableHTML += '<td class="text-end"> $';
-                            tableHTML += seleccionados[i].precio;
+                            tableHTML += dictadosSeleccionados[i].precio;
                         tableHTML += '</td>';
                         tableHTML += '<td class="text-center"> ';
-                            tableHTML += seleccionados[i].descuento;
+                            tableHTML += dictadosSeleccionados[i].descuento;
                         tableHTML += '%</td>';
 
                         tableHTML += '<td class="text-end"> $';
-                            tableHTML += seleccionados[i].precioConDescuento;
+                            tableHTML += dictadosSeleccionados[i].precioConDescuento;
                         tableHTML += '</td>';
                         
                         tableHTML += '<td class="text-center">';
-                            tableHTML += '<input type="number" class="cantidad form-control smaller-input" value="' + seleccionados[i].cantidad + '" min="1" data-index="' + i + '">'; // Agrega un atributo data-index para identificar el índice del elemento seleccionado
+                            tableHTML += '<input type="number" class="cantidad form-control smaller-input" value="' + dictadosSeleccionados[i].cantidad + '" min="1" data-index="' + i + '">'; // Agrega un atributo data-index para identificar el índice del elemento seleccionado
                             tableHTML += ' </td>';
 
-                        var precioTotal = seleccionados[i].precioConDescuento * seleccionados[i].cantidad; // Calcula el precio total
+                        var precioTotal = dictadosSeleccionados[i].precioConDescuento * dictadosSeleccionados[i].cantidad; // Calcula el precio total
 
                         tableHTML += '<td class="subtotal text-end">';
                             tableHTML += '$' + precioTotal.toFixed(2); // Muestra el precio total
@@ -250,7 +268,8 @@
             $(this).closest('tr').find('.subtotal').text('$' + subtotal.toFixed(2)); // Actualiza el subtotal en la tabla
 
             // Verifica si el índice es válido antes de actualizar la cantidad en el arreglo seleccionados
-            if (index >= 0 && index < seleccionados.length) {
+            if (index >= 0 && index < dictadosSeleccionados.length) {
+                alert("esffdfsdfds")
                 seleccionados[index].cantidad = cantidad;
             }
 

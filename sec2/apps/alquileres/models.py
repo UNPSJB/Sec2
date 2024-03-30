@@ -19,6 +19,7 @@ class Servicio (models.Model):
     
 class Encargado (Rol):
     TIPO=ROL_TIPO_ENCARGADO
+    dictados = models.ManyToManyField(Dictado, related_name="encargados", blank=True)
 
     def __str__(self):
         return f"{self.persona.dni} | {self.persona.nombre} {self.persona.apellido}"
