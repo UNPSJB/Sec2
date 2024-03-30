@@ -3,17 +3,14 @@
 {% load static %}
 
 {% block formulario %}
-
 <form method="post">
     {% csrf_token %}
-
     <input type="hidden" id="total_a_pagar" name="total_a_pagar" value="">
     <input type="hidden" id="dictados_seleccionados" name="dictados_seleccionados">
-
+    
     <div class="row">
         <div class="col-12">
             <div class="tab-content" id="form-tabs-content">
-            
                 {% comment %}SECCION 1{% endcomment %}
                 <div id="section1" class="tab-pane fade show active">
                     <label>Seleccione al Alumno:</label>
@@ -27,7 +24,7 @@
                     </div>
                     <div id="datos_titular"></div>
                 </div>
-            
+
                 {% comment %}SECCION 2{% endcomment %}
                 <div id="section2" class="tab-pane fade">
                     <div id="seleccionados"></div>
@@ -35,6 +32,7 @@
             </div>
         </div>
     </div>
+
 
     <div class="row">
         <div class="col-12">
@@ -45,245 +43,11 @@
             </div>
         </div>
     </div>
+
 </form>
 
-<!-- Incluir archivo estático de Select2 desde CDN -->
 <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-<script src="{% static 'js/afiliado_formulario.js' %}"></script>
-
-<script>
-    var dictadosSeleccionados = []; // Declaración de la variable global
-    var jq = $.noConflict();
-
-    //$(function () {
-      //$("#enc_alumno").select2();
-    //}); 
-
-    jq(document).ready(function() {
-
-        jq('#enc_alumno').change(function() {
-            var rol_id = jq(this).val();
-            var url = 'get_dictados_por_alumno/';
-    
-            if (rol_id && rol_id !== '0') {
-                jq.ajax({
-                    url: '../../' + url + rol_id,
-                    type: 'GET',
-                    data: {},
-                    dataType: 'json',
-                    success: function(data) {
-                        var datosDiv = $('#datos_titular');
-                        var html = '<p>Seleccione el dictado:</p>';
-    
-                        html += '<ul>';
-                        // Iterar sobre cada dictado
-                        data.dictados.forEach(function(dictado) {
-                            html += '<label>';
-                            //html += '<input type="checkbox" name="dictado" value="' + dictado.pk + '">';
-                            html += '<input type="checkbox" name="dictado" value="' + dictado.pk + '" data-precio="' + dictado.precio + '" data-precio_con_descuento="' + dictado.precio_con_descuento + '" data-tipo_pago="' + dictado.tipo_pago + '" data-nombre="' + dictado.nombre + '" data-descuento="' + dictado.descuento + '">';
-
-                            html += ' ' + dictado.nombre;
-                            
-                            if (dictado.descuento > 0) {
-                                html += ' $' + dictado.precio_con_descuento + ' ' + dictado.tipo_pago;
-                                html += ' (Descuento aplicado)';
-                            }else{
-                                html += ' $' + dictado.precio + ' ' + dictado.tipo_pago;
-                            }
-                            html += '</label>';
-                        });
-                        html += '</ul>';
-                        datosDiv.html(html);
-                    }
-                });
-            } else {
-                // Limpiar el contenido del div
-                $('#datos_titular').html('');
-            }
-        });
-    });
-    
-    $(document).ready(function () {
-        var currentTab = 1;
-
-        function updateButtons() {
-            if (currentTab === 1) {
-                $('#prev-button').hide();
-            } else {
-                $('#prev-button').show();
-            }
-
-            if (currentTab === 2) {
-                $('#next-button').hide();
-                $("button[type='submit']").show();
-            } else {
-                $('#next-button').show();
-                $("button[type='submit']").hide();
-            }
-            
-        }
-
-        updateButtons(); // Llama a esta función al cargar la página
-
-        $('#next-button').click(function (e) {
-
-            e.preventDefault(); // Previene el comportamiento predeterminado del botón
-
-            if (currentTab === 1) {
-                // Guardar los dictados seleccionados antes de avanzar a la siguiente pestaña
-                guardarDictadosSeleccionados();
-                
-                $('#section1').removeClass('show active');
-                $('#tab-section-1').removeClass('active');
-                $('#section2').addClass('show active');
-                $('#tab-section-2').addClass('active');
-                currentTab = 2;
-            } else if (currentTab === 2) {
-                // Aquí puedes realizar validaciones antes de avanzar
-            }
-
-            
-
-            updateButtons(); // Actualiza los botones
-        });
-
-        function guardarDictadosSeleccionados() {
-            var dictadosSeleccionados = [];
-            $('input[name="dictado"]:checked').each(function () {
-                dictadosSeleccionados.push({
-                    pk: $(this).val(),
-                    nombre: $(this).data('nombre'),
-                    precioConDescuento: $(this).data('precio_con_descuento'),
-                    tipo_pago: $(this).data('tipo_pago'),
-                    descuento: $(this).data('descuento'),
-                    precio: $(this).data('precio'), // Obtiene el precio desde el atributo data-precio
-                    cantidad: 1,
-                });
-            });
-            $('#dictados_seleccionados').val(JSON.stringify(dictadosSeleccionados));
-        }
-
-        $('#prev-button').click(function (e) {
-            e.preventDefault(); // Previene el comportamiento predeterminado del botón
-
-            if (currentTab === 2) {
-                $('#section2').removeClass('show active');
-                $('#tab-section-2').removeClass('active');
-                $('#section1').addClass('show active');
-                $('#tab-section-1').addClass('active');
-                currentTab = 1;
-            }
-            updateButtons(); // Actualiza los botones
-        });
-
-        // Captura el cambio en los checkboxes y actualiza la sección 2
-        $(document).on('change', 'input[name="dictado"]', function () {
-            var seleccionados = [];
-            var totalSubtotales = 0;
-
-            $('input[name="dictado"]:checked').each(function () {
-                dictadosSeleccionados.push({
-                    valor: $(this).val(),
-                    nombre: $(this).data('nombre'),
-                    precioConDescuento: $(this).data('precio_con_descuento'),
-                    tipo_pago: $(this).data('tipo_pago'),
-                    descuento: $(this).data('descuento'),
-                    precio: $(this).data('precio'), // Obtiene el precio desde el atributo data-precio
-                    cantidad: 1,
-                });
-                // Calcula el subtotal y lo suma al total
-                totalSubtotales += $(this).data('precio_con_descuento');
-            });
-
-            var tableHTML = '<table class="table table-sm table-hover">';
-                tableHTML += '<thead>';
-                tableHTML += '<tr>';
-                tableHTML += '<th>Descripción</th>';
-                tableHTML += '<th class="text-end">Precio</th>';
-                tableHTML += '<th class="text-center">Desc</th>';
-                tableHTML += '<th class="text-end">Precio (desc)</th>';
-                tableHTML += '<th class="text-center">Cantidad</th>';
-                tableHTML += '<th class="text-end">SubTotal</th>';
-                tableHTML += '</tr>';
-                tableHTML += '</thead>';
-                tableHTML += '<tbody>';
-                for (var i = 0; i < dictadosSeleccionados.length; i++) {
-                    alert("ASDASASD")
-                    tableHTML += '<tr>';
-                        
-                        tableHTML += '<td>';
-                            tableHTML += dictadosSeleccionados[i].nombre;
-                        tableHTML += '</td>';
-
-                        tableHTML += '<td class="text-end"> $';
-                            tableHTML += dictadosSeleccionados[i].precio;
-                        tableHTML += '</td>';
-                        tableHTML += '<td class="text-center"> ';
-                            tableHTML += dictadosSeleccionados[i].descuento;
-                        tableHTML += '%</td>';
-
-                        tableHTML += '<td class="text-end"> $';
-                            tableHTML += dictadosSeleccionados[i].precioConDescuento;
-                        tableHTML += '</td>';
-                        
-                        tableHTML += '<td class="text-center">';
-                            tableHTML += '<input type="number" class="cantidad form-control smaller-input" value="' + dictadosSeleccionados[i].cantidad + '" min="1" data-index="' + i + '">'; // Agrega un atributo data-index para identificar el índice del elemento seleccionado
-                            tableHTML += ' </td>';
-
-                        var precioTotal = dictadosSeleccionados[i].precioConDescuento * dictadosSeleccionados[i].cantidad; // Calcula el precio total
-
-                        tableHTML += '<td class="subtotal text-end">';
-                            tableHTML += '$' + precioTotal.toFixed(2); // Muestra el precio total
-                        tableHTML += '</td>';
-                        
-                        tableHTML += '</tr>';
-                }
-                tableHTML += '</tbody>';
-                tableHTML += '</table>';
-                
-                tableHTML += '<br>';
-                tableHTML += '<br>';
-                tableHTML += '<br>';
-            
-                // Muestra el total de los subtotales
-                tableHTML += '<p class="text-end" id="totalSubtotales">TOTAL: <strong>$' + totalSubtotales.toFixed(2) + '</strong></p>';
-            $('#seleccionados').html(tableHTML); // Actualiza el contenedor con los checkboxes seleccionados
-        });
-
-        // Captura el cambio en los campos de cantidad y actualiza los subtotales
-        $(document).on('change', '.cantidad', function () {
-            var index = $(this).data('index'); // Obtiene el índice del elemento seleccionado
-            var cantidad = parseInt($(this).val());
-
-            if (isNaN(cantidad) || cantidad == 0) {
-                alert("La cantidad tiene que ser mayor que 1")
-                cantidad = 1; // Establece la cantidad a 1
-                $(this).val(1); // Actualiza el valor del campo de cantidad en el HTML
-            }
-
-            var precioTotal = parseFloat($(this).closest('tr').find('td:nth-child(4)').text().replace('$', '')); // Obtiene el precio con descuento
-            var subtotal = cantidad * precioTotal;
-            $(this).closest('tr').find('.subtotal').text('$' + subtotal.toFixed(2)); // Actualiza el subtotal en la tabla
-
-            // Verifica si el índice es válido antes de actualizar la cantidad en el arreglo seleccionados
-            if (index >= 0 && index < dictadosSeleccionados.length) {
-                alert("esffdfsdfds")
-                seleccionados[index].cantidad = cantidad;
-            }
-
-            // Recalcular el total de subtotales
-            var totalSubtotales = 0;
-            $('.subtotal').each(function () {
-                totalSubtotales += parseFloat($(this).text().replace('$', ''));
-            });
-            $('#totalSubtotales').html('TOTAL : $<strong>' + totalSubtotales.toFixed(2) + '</strong>');
-            $('#total_a_pagar').val(totalSubtotales.toFixed(2));
-
-        });
-    });
-</script>
-
-
+<script src="{% static 'js/tab_control.js' %}"></script>
+<script src="{% static 'js/pago_alumno.js' %}"></script>
 {% endblock %}
