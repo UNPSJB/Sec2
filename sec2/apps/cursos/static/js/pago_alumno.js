@@ -1,7 +1,7 @@
 // mi_script.js
 var jq = $.noConflict();
 var dictadosJson;
-
+var dictadosArray
 // Función para obtener los dictados por alumno
 function obtenerDictadosPorAlumno() {
     jq('#enc_alumno').change(function() {
@@ -117,6 +117,7 @@ function generarTablaHTML(dictadosSeleccionados, totalSubtotales) {
 
 // Función para actualizar el valor del input dictados_seleccionados
 function actualizarInputDictados(dictadosSeleccionados) {
+    dictadosArray = dictadosSeleccionados
     dictadosJson = JSON.stringify(dictadosSeleccionados);
     $('#dictados_seleccionados').val(dictadosJson);
 }
@@ -139,35 +140,28 @@ function indiceValido(index) {
     return index >= 0;
 }
 
-
-
-
 // Captura el cambio en los campos de cantidad y actualiza los subtotales
 $(document).on('change', '.cantidad', function () {
     var index = $(this).data('index'); // Obtiene el índice del elemento seleccionado
     var cantidad = parseInt($(this).val());
 
-    if (!cantidadAceptada(cantidad)){
-        cantidad = 1; // Establece la cantidad a 1
-        $(this).val(cantidad); // Actualiza el valor del campo de cantidad en el HTML
+    // Verifica si la cantidad es aceptada
+    if (!cantidadAceptada(cantidad)) {
+        $(this).val(1); // Establece la cantidad a 1 si no es aceptada
     }
 
+    // Calcula el subtotal
     var precioTotal = parseFloat($(this).closest('tr').find('td:nth-child(4)').text().replace('$', '')); // Obtiene el precio con descuento
     var subtotal = cantidad * precioTotal;
-    
     $(this).closest('tr').find('.subtotal').text('$' + subtotal.toFixed(2)); // Actualiza el subtotal en la tabla
 
-    // Verifica si el índice es válido antes de actualizar la cantidad en el arreglo seleccionados
+    // Actualiza la cantidad en los dictados seleccionados
+    dictadosArray[index].cantidad = cantidad;
 
-    seleccionados = dictadosJson;
-    console.log("SELECCIONADOS " + seleccionados);
-    console.log("INDEX " + index);
-    if (indiceValido(index)) {
-        seleccionados[index].cantidad = cantidad;
-        
-    }
+    // Actualiza el valor del input dictados_seleccionados
+    actualizarInputDictados(dictadosArray);
 
-    // Recalcular el total de subtotales
+    // Recalcula el total de subtotales
     var totalSubtotales = 0;
     $('.subtotal').each(function () {
         totalSubtotales += parseFloat($(this).text().replace('$', ''));
@@ -175,6 +169,7 @@ $(document).on('change', '.cantidad', function () {
     $('#totalSubtotales').html('TOTAL : $<strong>' + totalSubtotales.toFixed(2) + '</strong>');
     $('#total_a_pagar').val(totalSubtotales.toFixed(2));
 });
+
 
 // Ejecutar funciones al cargar el documento
 jq(document).ready(function() {
