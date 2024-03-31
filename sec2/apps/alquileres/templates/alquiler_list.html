@@ -5,7 +5,7 @@
 
 {% block extracss_intermedia %}
   <link href="{% static 'css/listado.css' %}" rel="stylesheet" />
-  <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.10/index.global.min.js'></script>
+  {% comment %} <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.10/index.global.min.js'></script> {% endcomment %}
     <script>
 
       document.addEventListener('DOMContentLoaded', function() {
@@ -87,8 +87,8 @@
         conectarBotonesAModal('.btn-eliminar')
         </script>
 
-        <script src="{% static 'libs/fullcalendar/main.js' %}"> </script>
-        <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.10/locales/es.js'></script>
+        {% comment %} <script src="{% static 'libs/fullcalendar/main.js' %}"> </script> {% endcomment %}
+        {% comment %} <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.10/locales/es.js'></script> {% endcomment %}
 
         <script>
             // Paso 1: Inicializar el calendario

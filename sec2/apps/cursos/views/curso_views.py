@@ -583,8 +583,9 @@ class PagoAlumnoCreateView(CreateView):
                     total = total,
                 )
 
-        pago.generarPreFactura
+        pago.generarPreFactura()
         mensaje_exito(self.request, f'{MSJ_CORRECTO_PAGO_REALIZADO}')
+        return super().form_invalid(form)
         return super().form_valid(form)
 
     def form_invalid(self, form):
@@ -623,3 +624,42 @@ class PagoAlumnoListView(ListFilterView):
             # queryset = queryset.filter(Q(afiliado__cuit_empleador=cuit_empleador))
         
         return queryset
+    def render_to_response(self, context, **response_kwargs):
+        # Si se solicita un PDF, generamos y devolvemos el PDF
+        if 'pdf' in self.request.GET:
+            pago = context['pago']
+            pdf = pago.generarPdf()
+            response = HttpResponse(pdf, content_type='application/pdf')
+            response['Content-Disposition'] = 'attachment; filename="Comprobante-pre-factura.pdf"'
+            return response
+        else:
+            # De lo contrario, renderizamos la plantilla normalmente
+            return super().render_to_response(context, **response_kwargs)
+
+class PagoAlumnoDetailView(DetailView):
+    model = PagoAlumno
+    template_name = 'pago/pago_profesor_detalle.html'
+    paginate_by = MAXIMO_PAGINATOR
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        pago = self.object  # El objeto de curso obtenido de la vista
+
+        context['titulo'] = "Detalle del pago"
+        context['tituloListado'] = "Clases pagadas"
+        context['pago'] = pago
+        
+        return context
+
+    def render_to_response(self, context, **response_kwargs):
+        # Si se solicita un PDF, generamos y devolvemos el PDF
+        if 'pdf' in self.request.GET:
+            pago = context['pago']
+            pdf = pago.generarPdf()
+            response = HttpResponse(pdf, content_type='application/pdf')
+            response['Content-Disposition'] = 'attachment; filename="Comprobante-pre-factura.pdf"'
+            return response
+        else:
+            # De lo contrario, renderizamos la plantilla normalmente
+            return super().render_to_response(context, **response_kwargs)
+

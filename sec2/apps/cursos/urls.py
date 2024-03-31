@@ -109,6 +109,8 @@ urlpatterns = [
 
     path('pago/listado/alumno', PagoAlumnoListView.as_view() ,name="pago_cuota_alumno_listado"),
     path('pago/alumno/crear', PagoAlumnoCreateView.as_view(), name="pago_alumno_crear"),
+    path('pago/alumno/<int:pk>', PagoAlumnoDetailView.as_view(), name="pago_alumno_detalle"),
+
     path('get_dictados_por_alumno/<int:rol_pk>/', get_dictados_por_alumno, name='get_dictados_por_alumno'),
 
 

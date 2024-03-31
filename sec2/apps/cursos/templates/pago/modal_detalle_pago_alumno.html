@@ -19,7 +19,7 @@
 
               <div class="row text-center">
                 <div class="col">
-                  <a href="{% url 'cursos:pago_profesor_detalle' pago.pk %}?pdf=true" class="btn btn-info btn-sm btn-detalle">
+                  <a href="{% url 'cursos:pago_alumno_detalle' pago.pk %}?pdf=true" class="btn btn-info btn-sm btn-detalle">
                     <i class="fa-solid fa-file-pdf"></i> PFD
                   </a>
                 </div>
@@ -57,7 +57,7 @@
                     <td class="text-end">${{ detalle.precioFinal }}</td>
                     <td class="text-end">{{ detalle.descuento }}</td>
                     <td class="text-end">${{ detalle.precioConDescuento }}</td>
-                    <td class="text-center" > x {{ detalle.get_periodo_pago_display }}</td>
+                    <td class="text-center" >{{ detalle.get_periodo_pago_display }}</td>
                     <td class="text-center">{{ detalle.cantidad }}</td>
                     <td class="text-end">${{ detalle.total }}</td>
                   </tr>
