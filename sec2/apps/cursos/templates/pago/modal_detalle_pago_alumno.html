@@ -39,8 +39,8 @@
 
                     <th class="text-end">Precio</th>
                     <th class="text-end">% Desc</th>
-                    <th class="text-end">Prec con Desc</th>
-                    <th >Periodo</th>
+                    <th class="text-end">Precio (Desc)</th>
+                    <th class="text-center" >Periodo</th>
                     <th class="text-center">Cantidad</th>
                     <th class="text-end">Subtotal</th>
                   </tr>
@@ -57,7 +57,7 @@
                     <td class="text-end">${{ detalle.precioFinal }}</td>
                     <td class="text-end">{{ detalle.descuento }}</td>
                     <td class="text-end">${{ detalle.precioConDescuento }}</td>
-                    <td >{{ detalle.tipo_pago }}</td>
+                    <td class="text-center" > x {{ detalle.get_periodo_pago_display }}</td>
                     <td class="text-center">{{ detalle.cantidad }}</td>
                     <td class="text-end">${{ detalle.total }}</td>
                   </tr>

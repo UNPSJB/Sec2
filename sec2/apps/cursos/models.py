@@ -380,6 +380,7 @@ class PagoAlumno(models.Model):
 class DetallePagoAlumno(models.Model):
     pago_alumno = models.ForeignKey(PagoAlumno, on_delete=models.CASCADE, related_name='detalles_pago_alumno')
     dictado = models.ForeignKey(Dictado, on_delete=models.CASCADE)
+    periodo_pago=models.PositiveSmallIntegerField(choices=PERIODO_PAGO)
     cantidad = models.IntegerField()
     descuento = models.IntegerField()
     tipo_pago = models.CharField(max_length=255)

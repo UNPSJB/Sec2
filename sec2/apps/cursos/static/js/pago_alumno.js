@@ -31,15 +31,22 @@ function mostrarDictados(dictados) {
     
     html += '<ul>';
     dictados.forEach(function(dictado) {
+        
+        if (dictado.tipo_pago === 1){
+            var periodo = "Mes";
+        }else{
+            var periodo = "Clase";
+        }
+
         html += '<label>';
         html += '<input type="checkbox" name="dictado" value="' + dictado.pk + '" data-precio="' + dictado.precio + '" data-precio_con_descuento="' + dictado.precio_con_descuento + '" data-tipo_pago="' + dictado.tipo_pago + '" data-nombre="' + dictado.nombre + '" data-descuento="' + dictado.descuento + '">';
         html += ' ' + dictado.nombre;
         
         if (dictado.descuento > 0) {
-            html += ' $' + dictado.precio_con_descuento + ' ' + dictado.tipo_pago;
+            html += ' $' + dictado.precio_con_descuento + ' x ' + periodo;
             html += ' (Descuento aplicado)';
         } else {
-            html += ' $' + dictado.precio + ' ' + dictado.tipo_pago;
+            html += ' $' + dictado.precio + ' x ' + periodo;
         }
         html += '</label>';
     });
@@ -87,7 +94,8 @@ function generarTablaHTML(dictadosSeleccionados, totalSubtotales) {
     tableHTML += '<th>Descripción</th>';
     tableHTML += '<th class="text-end">Precio</th>';
     tableHTML += '<th class="text-center">Desc</th>';
-    tableHTML += '<th colspan="2" class="text-end">Precio (desc)</th>';
+    tableHTML += '<th class="text-end">Precio (desc)</th>';
+    tableHTML += '<th> Periodo </th>';
     tableHTML += '<th class="text-center">Cantidad</th>';
     tableHTML += '<th class="text-end">SubTotal</th>';
     tableHTML += '</tr>';
@@ -100,7 +108,13 @@ function generarTablaHTML(dictadosSeleccionados, totalSubtotales) {
         tableHTML += '<td class="text-end">$' + dictadosSeleccionados[i].precio + '</td>';
         tableHTML += '<td class="text-center">' + dictadosSeleccionados[i].descuento + '%</td>';
         tableHTML += '<td class="text-end">$' + dictadosSeleccionados[i].precioConDescuento + '</td>';
-        tableHTML += '<td class="text-end">' + dictadosSeleccionados[i].tipo_pago + '</td>';
+
+        if (dictadosSeleccionados[i].tipo_pago === 1 ){
+            tableHTML += '<td class="text-center"> x Mes </td>';
+        }else{
+            tableHTML += '<td class="text-center"> x Clase </td>';
+        }
+
         tableHTML += '<td class="text-center"><input type="number" class="cantidad form-control smaller-input" value="' + dictadosSeleccionados[i].cantidad + '" min="1" data-index="' + i + '"></td>';
 
         var precioTotal = dictadosSeleccionados[i].precioConDescuento * dictadosSeleccionados[i].cantidad;
@@ -110,7 +124,7 @@ function generarTablaHTML(dictadosSeleccionados, totalSubtotales) {
 
     tableHTML += '</tbody>';
     tableHTML += '</table>';
-    tableHTML += '<br><br><br>';
+    tableHTML += '<br>';
     tableHTML += '<p class="text-end" id="totalSubtotales">TOTAL: <strong>$' + totalSubtotales.toFixed(2) + '</strong></p>';
 
     return tableHTML;

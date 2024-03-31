@@ -578,7 +578,7 @@ class PagoAlumnoCreateView(CreateView):
                     cantidad = cantidad,
                     precioFinal = dictado_info.get('precio'),
                     descuento = dictado_info.get('descuento'),
-                    tipo_pago = dictado_info.get('tipo_pago'),
+                    periodo_pago = dictado.periodo_pago,
                     precioConDescuento = precioConDescuento,
                     total = total,
                 )

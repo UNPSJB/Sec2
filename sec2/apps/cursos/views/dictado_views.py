@@ -924,16 +924,10 @@ def get_dictados_por_alumno(request, rol_pk):
             if not dictado.estado == 3:
                 if dictado.periodo_pago == 1:
                     precio = calcularPrecioxMes(dictado)
-                    tipo_pago = "por mes"
                 else:
                     precio = calcularPrecioxClase(dictado)
-                    tipo_pago = "por clase"
 
                 descuento, precio_con_descuento = aplicarDescuento(dictado,precio,es_afiliado)
-
-                print("estoy aquiiiiii")
-                print("descuento", descuento)
-                print("precio_con_descuento", precio_con_descuento)
 
                 data['dictados'].append({
                     'pk' : dictado.pk,
@@ -941,6 +935,6 @@ def get_dictados_por_alumno(request, rol_pk):
                     'precio': precio,
                     'descuento': descuento,
                     'precio_con_descuento': precio_con_descuento ,
-                    'tipo_pago': tipo_pago,
+                    'tipo_pago': dictado.periodo_pago,
                 })
         return JsonResponse(data)
