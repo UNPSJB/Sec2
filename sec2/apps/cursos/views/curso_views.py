@@ -79,6 +79,10 @@ class CursoCreateView(CreateView):
         form.instance.nombre = form.cleaned_data['nombre'].title()
         form.save()
         messages.success(self.request, f'{ICON_CHECK} Alta de curso exitosa!')
+        if 'guardar_agregar_otro' in self.request.POST:
+                return redirect('cursos:curso_crear')
+        elif 'guardar_listar' in self.request.POST:
+                return redirect('cursos:curso_listado')
         return result
 
     def form_invalid(self, form):
@@ -305,28 +309,17 @@ def curso_eliminar(request, pk):
 
 def dictadosFinalizados(curso):
     dictados = Dictado.objects.all().filter(curso=curso)
-    print(dictados)
     for dictado in dictados:
-        print(dictado.estado)
         if not dictado.estado == 3:
             return False
     return True
 
 def obtenerTitularesVigente(profesores_titulares):
-    
-    print("")
-    print("")
-    print("INICIO DE OBTENER DICTAODS VIGENTES")
     for profesor in profesores_titulares:
-        print(profesor.persona.dni)
         profesor = Profesor.objects.get(pk=profesor.pk)
         titulares = Titular.objects.filter(profesor=profesor)
-    print(profesores_titulares)
-
-    print("")
-    print("")
-
     return True
+
 from django.utils import timezone
 from datetime import datetime, timedelta
 
@@ -366,7 +359,7 @@ class PagoProfesorCreateView(CreateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        profesores = obtenerProfesoresActivos()        
+        profesores = obtenerProfesoresActivos()
         ultimo_dia_mes_anterior = obtenerUltimoDiaMesAnterior()
         primer_dia_mes_anterior = ultimo_dia_mes_anterior.replace(day=1)
         
@@ -417,8 +410,13 @@ class PagoProfesorCreateView(CreateView):
             pago.generarPreFactura()
 
         mensaje_exito(self.request, f'{MSJ_CORRECTO_PAGO_REALIZADO}')
-        return super().form_valid(form)
+        self.object = form.save()
 
+        if 'guardar_y_recargar' in self.request.POST:
+            return self.render_to_response(self.get_context_data(form=self.form_class()))   
+        elif 'guardar_y_listar' in self.request.POST:
+            return redirect('cursos:pago_cuota_profesor_listado')
+        return super().form_valid(form)
 
     def form_invalid(self, form):
         mensaje_advertencia(self.request, MSJ_CORRECTION)
@@ -557,6 +555,8 @@ class PagoAlumnoCreateView(CreateView):
         if datos_dictados:
             dictados_info = json.loads(datos_dictados)
             pago = form.save(commit=False)
+            print("pk",pk)
+            print("total_a_pagar",total_a_pagar)
             pago.rol_id = pk
             pago.total = total_a_pagar
             pago.save()
@@ -583,11 +583,16 @@ class PagoAlumnoCreateView(CreateView):
                     total = total,
                 )
 
-        pago.generarPreFactura()
-        mensaje_exito(self.request, f'{MSJ_CORRECTO_PAGO_REALIZADO}')
-        return super().form_invalid(form)
-        return super().form_valid(form)
+            pago.generarPreFactura()
+            mensaje_exito(self.request, f'{MSJ_CORRECTO_PAGO_REALIZADO}')
+            self.object = form.save()
 
+            if 'guardar_y_recargar' in self.request.POST:
+                return self.render_to_response(self.get_context_data(form=self.form_class()))   
+            elif 'guardar_y_listar' in self.request.POST:
+                return redirect('cursos:pago_cuota_alumno_listado')
+            return super().form_valid(form)
+    
     def form_invalid(self, form):
         mensaje_advertencia(self.request, MSJ_CORRECTION)
         print("")

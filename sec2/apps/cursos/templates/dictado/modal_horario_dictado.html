@@ -3,8 +3,7 @@
       <tr>
         <th>Día</th>
         <th>Horario</th>
-        <th>Lugar</th>
-        <th></th>
+        <th colspan="5">Lugar</th>
       </tr>
     </thead>
     <tbody>
@@ -12,14 +11,18 @@
       <tr>
         <td>{{ horario.get_dia_semana_display }}</td>
         <td>{{ horario.hora_inicio }} a {{ horario.hora_fin }} hrs.</td>
+
         <td>
-          {% if horario.reserva %}
-          {{ horario.reserva.aula }}
-          {% else %}
-          Sin asignar
-          {% endif %}
+          {% if horario.reserva %}{{ horario.reserva.aula }}
+          {% else %}Sin asignar{% endif %}
         </td>
         
+        {% if horario.reserva %}
+        <td>
+          <a href="{% url 'cursos:aula_detalle' horario.reserva.aula.pk %}" class="btn btn-info btn-sm btn-detalle"><i class="fa-regular fa-eye"></i> Ir al Aula</a>
+        </td>
+        {% endif %}
+
         {% if not horario.reserva %}
         <td class="text-end">
 

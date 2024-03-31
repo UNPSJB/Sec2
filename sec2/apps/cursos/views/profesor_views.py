@@ -66,7 +66,12 @@ class ProfesorCreateView(CreateView):
 
             profesor.actividades.set(actividades_seleccionadas)
             mensaje_exito(self.request, f'{MSJ_CORRECTO_ALTA_PROFESOR}')
-            # Redirige al listado de profesores
+            self.object = form.save()
+
+            if 'guardar_y_recargar' in self.request.POST:
+                return self.render_to_response(self.get_context_data(form=self.form_class()))
+            elif 'guardar_y_listar' in self.request.POST:
+                return redirect('cursos:profesor_listado')
             detail_url = reverse('cursos:profesor_listado')
             return redirect(detail_url)
 
@@ -110,6 +115,7 @@ class ProfesorUpdateView(UpdateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        context['editar'] = True
         context['titulo'] = "Modificar Profesor"
         return context
 
@@ -137,13 +143,8 @@ class ProfesorListView(ListFilterView):
 
 ## ------------ ELIMINAR -------------------
 def profesor_eliminar(request, pk):
-    print("ESTOY ACA")
-    
     profesor = get_object_or_404(Profesor, pk=pk)
     profesor.dar_de_baja()
-    print(profesor)
-    
     messages.success(request, f'{ICON_CHECK} El Profesor se eliminó correctamente!')
-
     return redirect('cursos:profesor_listado')
 

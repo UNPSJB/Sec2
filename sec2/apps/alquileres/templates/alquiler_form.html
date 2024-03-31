@@ -51,12 +51,9 @@
       
     </div>
 
-    <div class="row row-cols-1 row-cols-sm-1 row-cols-md-2">
+    <div class="row text-center">
       <div class="col">
-        <a href="{% url 'alquiler:alquiler_listar' %}" class="btn btn-secondary">Cancelar</a>
-      </div>
-      <div class="col">
-        <button href="{% url 'alquiler:pagar_alquiler_crear' %}" class="btn btn-outline-success">Pagar</button>
+        <button href="{% url 'alquiler:pagar_alquiler_crear' %}" class="btn btn-success">Pagar</button>
       </div>
     </div>
   </form>

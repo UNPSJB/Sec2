@@ -2,7 +2,7 @@ from django.views.generic.edit import CreateView, UpdateView
 from django.views.generic import ListView
 
 from utils.funciones import mensaje_advertencia, mensaje_error, mensaje_exito
-from ..models import Actividad
+from ..models import Actividad, Curso
 from ..forms.actividad_forms import *
 from django.urls import reverse_lazy
 from django.contrib import messages
@@ -62,7 +62,13 @@ class ActividadDetailView(DetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        actividad = self.object  # Access the Afiliado instance
+
+        cursos = Curso.objects.all().filter(actividad=actividad)
         context['titulo'] = 'Detalle de Actividad'
+        context['tituloListado'] = 'Cursos con actividad'
+
+        context['cursos'] = cursos
         return context
 
 ## ------------ ACTIVIDAD UPDATE -------------------

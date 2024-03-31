@@ -87,9 +87,15 @@ class AfiliadoCreateView(CreateView):
                 desde = current_datetime
             )
             afiliado.save()
-            detail_url = reverse('afiliados:afiliado_detalle', kwargs={'pk': afiliado.pk})
+
             mensaje_exito(self.request, f'{MSJ_CORRECTO_ALTA_AFILIADO}')
-            return redirect(detail_url)
+            self.object = form.save()
+
+            if 'guardar_y_recargar' in self.request.POST:
+                return self.render_to_response(self.get_context_data(form=self.form_class()))   
+            elif 'guardar_y_listar' in self.request.POST:
+                return redirect('afiliados:afiliado_listar')
+            return super().form_valid(form)
 
     def form_invalid(self, form):
         mensaje_advertencia(self.request, f'{MSJ_CORRECTION}')
@@ -137,6 +143,7 @@ class AfiliadoUpdateView(UpdateView):
     
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        context['editar'] = True
         context['titulo'] = "Modicacion de Afiliación"
         return context
     
@@ -349,7 +356,6 @@ def alta_familiar(request):
         form = AfiliadoSelectForm(request.POST)
         if form.is_valid():
             dni = form.cleaned_data["dni"]
-            print("ESTOY AQUI", dni)
 
             if existe_persona_activa(request, dni):
                 mensaje_error(request, f'{MSJ_PERSONA_EXISTE}')
@@ -372,7 +378,6 @@ def alta_familiar(request):
                             'titulo': 'Alta de Familiar',  # Replace with your desired title
                         }
                         return render(request, 'grupoFamiliar/grupo_familiar_alta_directa.html', context)
-
 
                     else:
                         persona = Persona(
@@ -405,13 +410,20 @@ def alta_familiar(request):
                             tipo_relacion =form.cleaned_data["tipo"],
                         )
                         relacion.save()
+                        
                         mensaje_exito(request, f'{MSJ_FAMILIAR_CARGA_CORRECTA}')
+
                         form = AfiliadoSelectForm(request.POST)
                         context = {
                         'form': form,
                         'clientes': Afiliado.objects.filter(estado__in=[1, 2]),
                         'titulo': 'Alta de Familiar',  # Replace with your desired title
                         }
+
+                        if 'guardar_y_recargar' in request.POST:
+                            return render(request, 'grupoFamiliar/grupo_familiar_alta_directa.html', context)
+                        elif 'guardar_y_listar' in request.POST:
+                            return redirect('afiliados:grupo_familiar_listar')
                         return render(request, 'grupoFamiliar/grupo_familiar_alta_directa.html', context)
 
     else:
@@ -444,7 +456,6 @@ class FamiliaCreateView(CreateView):
         afiliado = get_object_or_404(Afiliado, pk=self.kwargs.get('pk'))
         existing_person = Rol.objects.filter(persona__dni=dni).first()
         
-        print(existing_person)
         # Si existe la persona y no tiene fecha hasta (esta activa)
         if existing_person and existing_person.hasta is None:
             mensaje_error(self.request, f'{MSJ_PERSONA_EXISTE}')
@@ -710,7 +721,7 @@ class FamiliarUpdateView_(UpdateView):
                     return self.render_to_response(self.get_context_data(form=persona_form))
             else:
                 # El afiliado no tiene al familiar
-                mensaje_error(self.request, f'{MSJ_AFILIADO_NO_FAMILIAR}')
+                # mensaje_error(self.request, f'{MSJ_AFILIADO_NO_FAMILIAR}')
                 return self.render_to_response(self.get_context_data(form=form))
         else:
             mensaje_error(self.request, f'{MSJ_PERSONA_NO_EXISTE}')
@@ -820,6 +831,12 @@ class PagoCuotaCreateView(CreateView):
 
             else:
                 mensaje_exito(self.request, f'{MSJ_CORRECTO_PAGO_REALIZADO}')
+            
+            if 'guardar_y_recargar' in self.request.POST:
+                return self.render_to_response(self.get_context_data(form=self.form_class()))   
+            elif 'guardar_y_listar' in self.request.POST:
+                return redirect('afiliados:pago_cuota_listado')
+
         else:
             # Si ya existen cuotas obtengo mi ultima cuota por fecha de pago
             ultima_cuota = PagoCuota.objects.filter(afiliado=afiliado).latest('fecha_pago')
@@ -833,9 +850,11 @@ class PagoCuotaCreateView(CreateView):
                 mensaje_exito(self.request, f'{MSJ_CORRECTO_PAGO_REALIZADO}')
                 return super().form_valid(form)
             else:
-                print("ESTOY EN EL ELSE")
                 mensaje_advertencia(self.request, 'El mes anterior esta sin pagar.')
                 return super().form_invalid(form)
+
+
+
 
     def form_invalid(self, form):
         mensaje_advertencia(self.request, MSJ_CORRECTION)
@@ -881,13 +900,8 @@ def cuota_sindical_actualizar_estado(request):
     fecha_actual = datetime.now().date()
     fecha_dos_meses_atras = fecha_actual - relativedelta(months=2)
 
-    print(fecha_actual)
-    print(fecha_dos_meses_atras)
-
     for afiliado in afiliados_vinculados:
-        print("")
         ultima_cuota = PagoCuota.objects.filter(afiliado=afiliado).latest('fecha_pago')
-        print("ULTIMA CUOTA", ultima_cuota)
         if ultima_cuota.fecha_pago < fecha_dos_meses_atras:
             if afiliado.estado == 2:
                 #se lo marca como Moroso

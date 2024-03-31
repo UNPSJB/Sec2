@@ -1,9 +1,9 @@
-{% extends 'detalle.html' %}
+{% extends 'detalle_listado_app_cursos.html' %}
 {% load crispy_forms_tags %}
 
 {% load static %}
 
-{% block detalle_lado_derecho %}
+{% block detalle %}
   <div class="col">
     <p>
       <strong>Nombre:</strong> {{ object.nombre }}
@@ -26,4 +26,14 @@
     <button type="button" class="btn btn-danger btn-sm btn-detalle" data-bs-toggle="modal" data-bs-target="#exampleModal_dar_de_baja_{{ object.pk }}"><i class="fa-regular fa-circle-down"></i> Eliminar</button>
     {% include 'actividad/modal_confirm_baja.html' with actividad=object %}            
   </div>
+{% endblock %}
+
+{% block listado_asociado %}
+{% if cursos %}
+<div class="container-sm">
+  <h3 class="subtitulo">{{ tituloListado }}</h3>
+  {% include 'curso/curso_include_listado.html' with cursos=cursos %}
+
+  
+{% endif %}
 {% endblock %}

@@ -126,7 +126,7 @@ function generarTablaHTML(dictadosSeleccionados, totalSubtotales) {
     tableHTML += '</table>';
     tableHTML += '<br>';
     tableHTML += '<p class="text-end" id="totalSubtotales">TOTAL: <strong>$' + totalSubtotales.toFixed(2) + '</strong></p>';
-
+    $('#total_a_pagar').val(totalSubtotales.toFixed(2));
     return tableHTML;
 }
 
@@ -189,4 +189,5 @@ $(document).on('change', '.cantidad', function () {
 // Ejecutar funciones al cargar el documento
 jq(document).ready(function() {
     obtenerDictadosPorAlumno();
+
 });

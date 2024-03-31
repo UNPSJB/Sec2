@@ -90,14 +90,19 @@
         </div>
       </div>
     </div>
-
-    <div class="row row-cols-1 row-cols-sm-1 row-cols-md-2">
-      <div class="col">
-        <a href="{% url 'cursos:index' %}" class="btn btn-secondary">Cancelar</a>
-      </div>
-      <div class="col">
-        <button type="submit" class="btn btn-success">Guardar</button>
-      </div>
+  <div class="row text-center">
+    <div class="col">
+      <button type="submit" class="btn btn-success" name="guardar_agregar_otro">Guardar y agregar otro curso</button>
     </div>
+    <div class="col">
+      <button type="submit" class="btn btn-success" name="guardar_listar">Guardar y listar</button>
+    </div>
+  </div>
+  
+  <div class="row">
+    <div class="col">
+      <a href="{% url 'cursos:curso_crear' %}" class="btn btn-secondary">Cancelar</a>
+    </div>
+  </div>
   </form>
 {% endblock %}

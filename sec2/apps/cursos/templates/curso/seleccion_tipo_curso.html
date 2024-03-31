@@ -23,7 +23,6 @@
     })
     
     function mostrarFormulario(tipoCurso) {
-      // Redirige a la vista correspondiente con el tipo de curso como parámetro
       window.location.href = '{% url "cursos:curso_crear" %}?tipo=' + tipoCurso
     }
   </script>

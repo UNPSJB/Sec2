@@ -74,18 +74,15 @@ class EncargadoCreateView(CreateView):
             )
             encargado.save()
             if 'guardar_y_recargar' in self.request.POST:
-                print("---------- GUARDAR y RECARGAR---------")
                 mensaje_exito(self.request, f'{MSJ_CORRECTO_ALTA_AFILIADO}')
                 self.object = form.save()
                 return self.render_to_response(self.get_context_data(form=self.form_class()))   
 
             elif 'guardar_y_listar' in self.request.POST:
-                print("---------- GUARDAR y LISTAR---------")
                 # Guarda el objeto y redirige a la página de listar
                 self.object = form.save()    
                 return redirect('alquiler:encargado_listar')
         
-        print("---------- OTRA OPCION---------")    
         return super().form_valid(form)
 
     def form_invalid(self, form):
@@ -298,19 +295,16 @@ class SalonCreateView(CreateView):
         form.instance.encargado = encargado
         form.save()
         if 'guardar_y_recargar' in self.request.POST:
-                print("---------- GUARDAR y RECARGAR---------")
                 mensaje_exito(self.request, f'{MSJ_CORRECTO_ALTA_ENCARGADO}')
                 self.object = form.save()
                 return self.render_to_response(self.get_context_data(form=self.form_class()))   
 
         elif 'guardar_y_listar' in self.request.POST:
-                print("---------- GUARDAR y LISTAR---------")
                 # Guarda el objeto y redirige a la página de listar
                 mensaje_exito(self.request, f'{MSJ_CORRECTO_ALTA_ENCARGADO}')
                 self.object = form.save()    
                 return redirect('alquiler:salon_listar')
         
-        print("---------- OTRA OPCION---------")    
         mensaje_exito(self.request, f'{MSJ_CORRECTO_ALTA_SALON}')
         return redirect('alquiler:salon_listar')
 
@@ -380,7 +374,7 @@ class AlquilerCreateView(CreateView):
     form_class = AlquilerForm
     template_name = 'alquiler_form.html'
     success_url = reverse_lazy('alquiler:pagar_alquiler_crear')
-    title = "Alquiler de Salón"  # Agrega un título
+    title = "Alquiler de Salón" 
 
 
     def get_context_data(self, **kwargs):
@@ -500,7 +494,7 @@ class PagoAlquilerCreateView(CreateView):
     form_class = PagoForm
     template_name = 'pago_form.html'
     success_url = reverse_lazy('alquiler:alquiler_listar')
-    title = "Formulario Alta de Pago"  # Agrega un título
+    title = "Formulario Alta de Pago"
 
 
     def get_context_data(self, **kwargs):

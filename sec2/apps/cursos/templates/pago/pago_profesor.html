@@ -29,11 +29,12 @@
     </div>
     <div id="datos_titular"></div>
 
-    <div class="row">
-        <div class="col-12">
-            <div class="text-center mt-3">
-                <button type="submit" class="btn btn-success">Generar Comprobante</button>
-            </div>
+    <div class="row text-center">
+        <div class="col">
+            <button type="submit" class="btn btn-success" name="guardar_y_recargar">Guardar y agregar otro</button>
+        </div>
+        <div class="col">
+            <button type="submit" class="btn btn-success" name="guardar_y_listar">Guardar y listar</button>
         </div>
     </div>
 
@@ -68,26 +69,35 @@
                         var total = data.valor_total;
                         var datosDiv = $('#datos_titular');
                         var html = '<p>Dictados a pagar:</p>';
-    
-                        html += '<ul>';
-                        // Iterar sobre cada dictado
-                        data.dictados.forEach(function(dictado) {
-                            html += '<li>';
-                            html += dictado.nombre;
-                            html += '<ul>';
-                            html += '<li>Estado ' + dictado.estado + '</li>';
-                            html += '<li>Precio $' + dictado.precio + '</li>';
-                            html += '<li>Total de clases ' + dictado.total_clases + '</li>';
-                            html += '<li>Clases asistidas ' + dictado.clases_asistidas + '</li>';
-                            html += '<li>Porcentaje de asistencia ' + dictado.porcentaje_asistencia + '% </li>';
-                            html += '<li>Precio Final <strong>$' + dictado.precioFinal + '</strong></li>';
-                            html += '</ul>';
-                            html += '</li>';
-                        });
-                        html += '</ul>';
-    
-                        html += '<p> Total a pagar <strong>$' + total + '</strong></p>';
-    
+                        
+                        html += '<table class="table table-sm table-hover">';
+                            html += '<thead>';
+                                html += '<tr>';
+                                    html += '<th>Descripción</th>';
+                                    html += '<th>Estado</th>';
+                                    html += '<th class="text-end">Precio</th>';
+                                    html += '<th class="text-center">Clases (total)</th>';
+                                    html += '<th class="text-center">Clases (Asistidas)</th>';
+                                    html += '<th class="text-end">% Asistencia</th>';
+                                    html += '<th class="text-end">Total</th>';
+                                html += '</tr>';
+                            html += '</thead>';
+                            html += '<tbody>';
+                            data.dictados.forEach(function(dictado) {
+                                html += '<tr>';
+                                    html += '<td>' + dictado.nombre + '</td>';
+                                    html += '<td>' + dictado.estado + '</td>';
+                                    html += '<td class="text-end">$' + dictado.precio + '</td>';
+                                    html += '<td class="text-center">' + dictado.total_clases + '</td>';
+                                    html += '<td class="text-center">' + dictado.clases_asistidas + '</td>';
+                                    html += '<td class="text-end">' + dictado.porcentaje_asistencia + '%</td>';
+                                    html += '<td class="text-end">$' + dictado.precioFinal + '</td>';
+                                html += '</tr>';
+                            });
+                            html += '</tbody>';
+                        html += '</table>';
+                        html += '<p class="text-end"> TOTAL <strong>$' + total + '</strong></p>';
+
                         datosDiv.html(html);
     
                         // Actualiza los campos ocultos

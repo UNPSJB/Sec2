@@ -114,12 +114,6 @@ class AfiliadoUpdateForm(forms.ModelForm):
             raise forms.ValidationError('La fecha de nacimiento no puede estar en el futuro.')
         return fecha_nacimiento
     
-    def clean_nombre(self):
-        nombre = self.cleaned_data['nombre']
-        if not nombre.isalpha():
-            raise forms.ValidationError('El nombre debe contener solo letras y espacios.')
-        return nombre
-
     def clean_apellido(self):
         apellido = self.cleaned_data['apellido']
         if not apellido.isalpha():

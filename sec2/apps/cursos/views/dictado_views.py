@@ -89,9 +89,7 @@ class DictadoCreateView(CreateView):
 
     def form_invalid(self, form):
         messages.warning(self.request, f'{ICON_TRIANGLE} {MSJ_CORRECTION}')
-        print("ESTOY AQUIII")
         context = self.get_context_data()
-        print("Errores del formulario:", form.errors)
         return self.render_to_response(context)
 
 ##--------------- DICTADO DETALLE --------------------------------
@@ -211,7 +209,6 @@ class DictadoDetailView(DetailView):
                     diferencia_tiempo = ultima_fecha_clase - primera_fecha_clase
                     # Calcula el número de meses
                     meses_transcurridos = round(diferencia_tiempo.days / 30)  # Suponiendo 30 días por mes para simplificar
-                    print("MESES TRANSCURRIDOS", meses_transcurridos)
                     # Realiza el cálculo del costo basado en el número de meses
                     result = round(curso.precio_total / meses_transcurridos, 2)
                     context['costo_parcial'] = f"${result} AR por {dictado.get_periodo_pago_display()} | {meses_transcurridos} Meses"
@@ -309,7 +306,6 @@ class BuscarPersonaView(View):
 
     def get(self, request, *args, **kwargs):
         id_rol = request.GET.get('id_rol', '')
-        print("ID ROL: ",id_rol)
         try:
             # FILTRA EL PRIMERO QUE ENCUENTRA POR QUE LO GUARDA DOS VECES EN LA BASE
             rol = Rol.objects.filter(pk=id_rol).first()
@@ -379,12 +375,6 @@ class VerificarInscripcionView(View):
         # Obtener roles asociados a los inscritos en los dictados
         rolesEnDictado_ids = Rol.objects.filter(persona__pk__in=incritosEnDictado_dni).values_list('id', flat=True)
 
-        print("")
-        print("")
-        print("")
-        print("")
-        print("ROLES IDS")
-        print(rolesEnDictado_ids)
         # Obtener todos los roles
 
         # familiares_inscritos_listaEspera = Familiar.objects.filter(lista_espera=dictado)    
@@ -415,10 +405,8 @@ class VerificarInscripcionView(View):
         
         # personas = Persona.objects.all()
         
-        print("INSCRITOS EN ESPERA: ", inscritosEspera_ids)
         total_en_espera = inscritosEspera_ids.count()
-        print("INSCRITOS EN ESPERA: ", total_en_espera)
-                
+
         context = {
             'titulo': 'Incorporación a la lista de espera',
             'curso_pk': curso_pk,
@@ -450,10 +438,6 @@ class VerificarInscripcionView(View):
             'curso_pk': curso_pk,
             'dictado_pk': dictado_pk,
         }
-
-        if persona_exists:
-            print("PERSONA EXISTE")
-
         return render(request, self.template_name, context)
 
 
@@ -684,9 +668,6 @@ def finalizarDictado(request, curso_pk, dictado_pk):
         asistencia_tomada=True
     ).order_by('-reserva__fecha').first()
 
-    print("ULTIMA CLASE")
-    print(ultima_clase_con_asistencia)
-
     #OBTENEMOS LA FECHA QUE SE REALIZO LA CLASE
     fecha = ultima_clase_con_asistencia.reserva.fecha
     #Le asignamos la fecha de fin a mi dictado
@@ -790,7 +771,6 @@ def generarPDF_Afiliado(request, dictado_pk, persona_pk):
 
     # Calcular el porcentaje de asistencia
     porcentaje_asistencia = round((clases_asistidas.count() / clases.count()) * 100)
-    print(porcentaje_asistencia)
     # Verificar si el alumno cumple con el 80% de asistencia
     # if porcentaje_asistencia >= 80:
     buffer = generate_pdf(dictado, persona, porcentaje_asistencia)
