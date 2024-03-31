@@ -18,8 +18,8 @@
   {% if afiliado.estado == 1 or afiliado.estado == 2 %}
     <a href="{% url 'afiliados:afiliado_actualizar' afiliado.pk %}" class="btn btn-sm btn-primary "><i class="fas fa-pencil-alt"></i> Modificar</a>
     {% endif %}
-    
-    <a href="{% url 'afiliados:confeccionar_nota' afiliado.pk %}" class="btn btn-sm btn-primary ">
+
+    <a href="{% url 'afiliados:confeccionar_nota' afiliado.pk %}" class="btn btn-sm btn-light ">
       <i class="fa-solid fa-file-pdf"></i>Pdf</a>
 </div>
 
@@ -38,6 +38,14 @@
 </button>
 {% include "afiliados/modal_estado_cuotas.html" with cuotas=cuotas%}
 </div>
+
+<div class="col d-flex justify-content-center">
+  <button type="button" class="btn btn-warning btn-sm" data-bs-toggle="modal" data-bs-target="#modalPagos">
+    <i class="fa-solid fa-sack-dollar"></i>
+    Pagos
+  </button>
+  {% include "afiliados/modal_estado_pagos.html" with pagos=pagos%}
+  </div>
 
 <div class="col d-flex justify-content-end">
   {% if afiliado.estado == 1 %}

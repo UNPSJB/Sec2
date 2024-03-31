@@ -8,6 +8,7 @@ from django.urls import reverse_lazy
 from django.contrib import messages
 from django.shortcuts import get_object_or_404, redirect
 from django.views.generic.detail import DetailView
+from django.utils.text import capfirst
 
 ## ------------  CREATE AND LIST ACTIVIDAD -------------------
 class GestionActividadView(CreateView, ListView):
@@ -28,7 +29,10 @@ class GestionActividadView(CreateView, ListView):
         return reverse_lazy('cursos:gestion_actividad')
 
     def form_valid(self, form):
-        form.instance.nombre = form.cleaned_data['nombre'].title()
+        nombre = form.cleaned_data['nombre']
+        # Convierte el nombre a título (primera letra en mayúscula, resto en minúscula)
+        nombre_formateado = capfirst(nombre.lower())
+        form.instance.nombre = nombre_formateado
         mensaje_exito(self.request, f'{MSJ_ACTIVIDAD_ALTA_EXITOSA}')
         return super().form_valid(form)
 

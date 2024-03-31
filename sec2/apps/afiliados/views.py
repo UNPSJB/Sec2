@@ -6,6 +6,7 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.views.generic.edit import CreateView, DeleteView, UpdateView
 from django.urls import reverse_lazy
 from apps.alquileres.models import Alquiler
+from apps.cursos.models import PagoAlumno
 from apps.personas.forms import PersonaForm, PersonaUpdateForm
 from apps.personas.models import Rol
 from utils.funciones import mensaje_advertencia, mensaje_error, mensaje_exito, registrar_fuentes  
@@ -101,6 +102,12 @@ class AfiliadoCreateView(CreateView):
         return super().form_invalid(form)
 
 # ----------------------------- AFILIADO DETALLE ----------------------------------- #
+    
+def obtenerPagos(afiliado):
+    #Obtengo el rol de mi afiliado
+    rol = get_object_or_404(Rol, persona=afiliado.persona)
+    return PagoAlumno.objects.filter(rol=rol).order_by('-fecha')
+
 class AfiliadoDetailView (DeleteView):
     model = Afiliado
     template_name = 'afiliados/afiliado_detalle.html'
@@ -109,20 +116,16 @@ class AfiliadoDetailView (DeleteView):
         context = super().get_context_data(**kwargs)
         afiliado = self.object  # Access the Afiliado instance
 
-
         context['titulo'] = "Datos del afiliado"
         context['subtitulodetalle1'] = "Datos personales"
         context['subtitulodetalle2'] = "Datos de afiliación"
         context['tituloListado1'] = "Dictados Incritos"
         context['tituloListado2'] = "Alquileres"
-
-        relacion_familiar_list = afiliado.relacionfamiliar_set.all().order_by('familiar__persona__dni')
-        context['relacion_familiar_list'] = relacion_familiar_list
-
-        cuotas = PagoCuota.objects.filter(afiliado=afiliado)
-        context['cuotas'] = cuotas
-        alquileres = Alquiler.objects.filter(afiliado=afiliado)
-        context['alquileres'] = alquileres
+        
+        context['relacion_familiar_list'] = afiliado.relacionfamiliar_set.all().order_by('familiar__persona__dni')
+        context['pagos'] = obtenerPagos(afiliado)
+        context['cuotas'] = PagoCuota.objects.filter(afiliado=afiliado)
+        context['alquileres'] = Alquiler.objects.filter(afiliado=afiliado)
         return context
 
 # ----------------------------- AFILIADO UPDATE ----------------------------------- #

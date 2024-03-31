@@ -44,7 +44,7 @@
         <div class="modal-footer">
             {% if afiliado.estado == 1 or afiliado.estado == 2 %}
             <a href="{% url 'afiliados:crear_familiar' afiliado.pk %}" 
-                class="btn btn-primary btn-sm">
+                class="btn btn-outline-success btn-sm">
                 <i class="fa-solid fa-plus"></i> Nuevo Familiar
             {% endif %}
           </a>
