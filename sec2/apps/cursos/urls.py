@@ -102,15 +102,14 @@ urlpatterns = [
     #NO SE UTILIZARIA
     path('cursos/curso/<int:curso_pk>/dictados/dictado/<int:dictado_pk>/Alumnos/listaEspera', listaEspera , name="dictado_lista_espera"),
 
-    path('pago/listado', PagoProfesorListView.as_view() ,name="pago_cuota_listado"),
+    path('pago/listado/profesor', PagoProfesorListView.as_view() ,name="pago_cuota_profesor_listado"),
     path('pago/profesor/crear', PagoProfesorCreateView.as_view(), name="pago_profesor"),
     path('pago/profesor/<int:pk>', PagoProfesorDetailView.as_view(), name="pago_profesor_detalle"),
     path('get_dictados_por_titular/<int:titular_pk>/', get_dictados_por_titular, name='get_dictados_por_titular'),
 
+    path('pago/listado/alumno', PagoAlumnoListView.as_view() ,name="pago_cuota_alumno_listado"),
     path('pago/alumno/crear', PagoAlumnoCreateView.as_view(), name="pago_alumno_crear"),
     path('get_dictados_por_alumno/<int:rol_pk>/', get_dictados_por_alumno, name='get_dictados_por_alumno'),
-
-
 
 
 ]

@@ -87,7 +87,7 @@ function generarTablaHTML(dictadosSeleccionados, totalSubtotales) {
     tableHTML += '<th>Descripción</th>';
     tableHTML += '<th class="text-end">Precio</th>';
     tableHTML += '<th class="text-center">Desc</th>';
-    tableHTML += '<th class="text-end">Precio (desc)</th>';
+    tableHTML += '<th colspan="2" class="text-end">Precio (desc)</th>';
     tableHTML += '<th class="text-center">Cantidad</th>';
     tableHTML += '<th class="text-end">SubTotal</th>';
     tableHTML += '</tr>';
@@ -100,6 +100,7 @@ function generarTablaHTML(dictadosSeleccionados, totalSubtotales) {
         tableHTML += '<td class="text-end">$' + dictadosSeleccionados[i].precio + '</td>';
         tableHTML += '<td class="text-center">' + dictadosSeleccionados[i].descuento + '%</td>';
         tableHTML += '<td class="text-end">$' + dictadosSeleccionados[i].precioConDescuento + '</td>';
+        tableHTML += '<td class="text-end">' + dictadosSeleccionados[i].tipo_pago + '</td>';
         tableHTML += '<td class="text-center"><input type="number" class="cantidad form-control smaller-input" value="' + dictadosSeleccionados[i].cantidad + '" min="1" data-index="' + i + '"></td>';
 
         var precioTotal = dictadosSeleccionados[i].precioConDescuento * dictadosSeleccionados[i].cantidad;

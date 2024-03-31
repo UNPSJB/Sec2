@@ -283,7 +283,7 @@ from django.http import FileResponse
 
 class PagoProfesor(models.Model):
     profesor = models.ForeignKey(Profesor, on_delete=models.CASCADE, related_name='pagos_profesor')
-    total = models.DecimalField(max_digits=10, decimal_places=2, null=True, validators=[MinValueValidator(0, 'El monto debe ser un valor positivo.')])
+    total = models.DecimalField(max_digits=10, decimal_places=2, null=True)
     fecha = models.DateTimeField(auto_now_add=True)
     pre_factura = models.FileField(upload_to='prefacturas/', null=True, blank=True)
 
@@ -332,23 +332,58 @@ class DetallePagoProfesor(models.Model):
     total_clases = models.IntegerField()
     clases_asistidas = models.IntegerField()
     porcentaje_asistencia = models.IntegerField()
-    precioFinal = models.DecimalField(max_digits=10, decimal_places=2, null=True, validators=[MinValueValidator(0, 'El monto debe ser un valor positivo.')])
-
-
-# class Asistencia_profesor(models.Model):
-#     fecha_asistencia_profesor = models.DateTimeField(auto_now_add=True)
-#     titular = models.ForeignKey(Titular, related_name="asistencia_profesor", on_delete=models.CASCADE)
-
-# class Pago_alumno(models.Model):
-#     alumno = models.ForeignKey(Alumno, related_name="pago", on_delete=models.CASCADE)
-#     fecha_pago_alumno = models.DateField()
-#     monto= models.DecimalField(help_text="Monto pagado", max_digits=10, decimal_places=2)
-
-#     def get_nombre_alumno(self):
-#         return f'nombre de alumno: ({self.alumno.pk})'
+    precioFinal = models.DecimalField(max_digits=10, decimal_places=2, null=True)
 
 class PagoAlumno(models.Model):
     rol = models.ForeignKey(Rol, on_delete=models.CASCADE, related_name='pagos_rol', null=True, blank=True)
     total = models.DecimalField(max_digits=10, decimal_places=2, null=True, validators=[MinValueValidator(0, 'El monto debe ser un valor positivo.')])
     fecha = models.DateTimeField(auto_now_add=True)
     pre_factura = models.FileField(upload_to='prefacturas/', null=True, blank=True)
+    
+    def generarPreFactura(self):
+        buffer = self.generarPdf()
+        filename = "Comprobante-pre-factura.pdf"
+        self.pre_factura.save(filename, buffer)
+    
+    def descargarPreFactura(self):
+        # Llamar al método generarPreFactura para asegurarse de que el archivo esté generado
+        self.generarPreFactura()
+
+        # Abrir el archivo y enviarlo como una respuesta HTTP para descargarlo automáticamente
+        try:
+            with open(self.pre_factura.path, 'rb') as f:
+                response = FileResponse(f)
+                response['Content-Disposition'] = 'attachment; filename="Comprobante-pre-factura.pdf"'
+                return response
+        except FileNotFoundError:
+            raise Http404("El archivo no existe")
+    
+    def generarPdf(self):
+        registrar_fuentes()
+        
+        buffer = io.BytesIO()
+        pdf = canvas.Canvas(buffer)
+        titulo = "Comprobante de pago"
+
+        self.establecer_titulo(pdf, titulo)
+
+        pdf.showPage()
+        pdf.save()
+        buffer.seek(0)
+        return buffer
+
+    def establecer_titulo(self, pdf, titulo):
+        pdf.setFont('Times-Bold', 14)
+        pdf.drawCentredString(300, 770, "Sindicato de Empleado de Comercio 2")
+        pdf.drawCentredString(300, 745, titulo)
+
+class DetallePagoAlumno(models.Model):
+    pago_alumno = models.ForeignKey(PagoAlumno, on_delete=models.CASCADE, related_name='detalles_pago_alumno')
+    dictado = models.ForeignKey(Dictado, on_delete=models.CASCADE)
+    cantidad = models.IntegerField()
+    descuento = models.IntegerField()
+    tipo_pago = models.CharField(max_length=255)
+    precioFinal = models.DecimalField(max_digits=10, decimal_places=2, null=True, validators=[MinValueValidator(0, 'El monto debe ser un valor positivo.')])
+    precioConDescuento = models.DecimalField(max_digits=10, decimal_places=2, null=True, validators=[MinValueValidator(0, 'El monto debe ser un valor positivo.')])
+    total = models.DecimalField(max_digits=10, decimal_places=2, null=True, validators=[MinValueValidator(0, 'El monto debe ser un valor positivo.')])
+

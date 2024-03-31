@@ -2,7 +2,7 @@ from django.shortcuts import get_object_or_404, redirect
 from apps.afiliados.models import Afiliado, Familiar
 from apps.alquileres.models import Encargado
 from apps.cursos.forms.actividad_forms import ActividadForm
-from apps.cursos.models import Alumno, Curso, DetallePagoProfesor, Dictado, PagoAlumno, PagoProfesor, Profesor, Titular
+from apps.cursos.models import Alumno, Curso, DetallePagoAlumno, DetallePagoProfesor, Dictado, PagoAlumno, PagoProfesor, Profesor, Titular
 from apps.personas.models import Persona, Rol
 from utils.funciones import mensaje_advertencia, mensaje_error, mensaje_exito
 from ..forms.curso_forms import *
@@ -417,7 +417,7 @@ class PagoProfesorCreateView(CreateView):
             pago.generarPreFactura()
 
         mensaje_exito(self.request, f'{MSJ_CORRECTO_PAGO_REALIZADO}')
-        return super().form_invalid(form)
+        return super().form_valid(form)
 
 
     def form_invalid(self, form):
@@ -545,19 +545,47 @@ class PagoAlumnoCreateView(CreateView):
 
     def form_valid(self, form):
         pk = self.request.POST.get('alumno')
-        rol = get_object_or_404(Rol, pk=pk)
-        total_a_pagar = self.request.POST.get('total_a_pagar')
-        print("total_a_pagar", total_a_pagar)
         
-        dictados_seleccionados = self.request.POST.get('dictados_seleccionados')
-        dictados_seleccionados = json.loads(dictados_seleccionados)
+        if pk == '0':
+            mensaje_advertencia(self.request, f'Seleccione al alumno')
+            return super().form_invalid(form)
 
-        for dictado in dictados_seleccionados:
-            print(dictado)
-    
-        
-        mensaje_advertencia(self.request, f'sssss')
-        return super().form_invalid(form)
+        rol = get_object_or_404(Rol, pk=pk)
+        datos_dictados = self.request.POST.get('dictados_seleccionados')
+        total_a_pagar = self.request.POST.get('total_a_pagar')
+
+        if datos_dictados:
+            dictados_info = json.loads(datos_dictados)
+            pago = form.save(commit=False)
+            pago.rol_id = pk
+            pago.total = total_a_pagar
+            pago.save()
+
+            for dictado_info in dictados_info:
+                dictado_pk = dictado_info.get('valor')
+                dictado = get_object_or_404(Dictado, pk=dictado_pk)
+                
+                precioConDescuento = dictado_info.get('precioConDescuento')
+                cantidad = dictado_info.get('cantidad')
+
+                total = precioConDescuento * cantidad
+
+
+               # Crear una instancia de DetallePagoAlumno para cada dictado asociado al pago
+                DetallePagoAlumno.objects.create(
+                    pago_alumno=pago,
+                    dictado=dictado,
+                    cantidad = cantidad,
+                    precioFinal = dictado_info.get('precio'),
+                    descuento = dictado_info.get('descuento'),
+                    tipo_pago = dictado_info.get('tipo_pago'),
+                    precioConDescuento = precioConDescuento,
+                    total = total,
+                )
+
+        pago.generarPreFactura
+        mensaje_exito(self.request, f'{MSJ_CORRECTO_PAGO_REALIZADO}')
+        return super().form_valid(form)
 
     def form_invalid(self, form):
         mensaje_advertencia(self.request, MSJ_CORRECTION)
@@ -568,3 +596,30 @@ class PagoAlumnoCreateView(CreateView):
                 print(f"Error en el campo '{field}': {error}")
         print("")
         return super().form_invalid(form)
+    
+
+class PagoAlumnoListView(ListFilterView):
+    model = PagoAlumno
+    filter_class = PagoProfesorFilterForm
+    template_name = 'pago/pago_alumno_listado.html'
+    paginate_by = MAXIMO_PAGINATOR
+    success_url = reverse_lazy('afiliados:pago_cuota_listado')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['titulo'] = "Pago de alumnos"
+        return context
+        
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        # afiliado_dni = self.request.GET.get('afiliado__persona__dni')
+        # cuit_empleador = self.request.GET.get('afiliado__cuit_empleador')  # Add this line
+
+        # if afiliado_dni:
+            # queryset = queryset.filter(afiliado__persona__dni=afiliado_dni)
+
+        # if cuit_empleador:
+            # Use Q objects to perform OR filtering on afiliado__cuit_empleador and familiar__cuit_empleador
+            # queryset = queryset.filter(Q(afiliado__cuit_empleador=cuit_empleador))
+        
+        return queryset

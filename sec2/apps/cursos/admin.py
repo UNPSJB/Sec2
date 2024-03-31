@@ -1,7 +1,7 @@
 from django.contrib import admin
 
 from apps.cursos.forms.curso_forms import ListaEsperaAdminForm
-from .models import Actividad, Alumno, Clase, Curso, Aula, DetallePagoProfesor, Dictado, Horario, ListaEspera, PagoProfesor, Reserva, Profesor, Titular
+from .models import Actividad, Alumno, Clase, Curso, Aula, DetallePagoAlumno, DetallePagoProfesor, Dictado, Horario, ListaEspera, PagoAlumno, PagoProfesor, Reserva, Profesor, Titular
 
 class AulaAdmin(admin.ModelAdmin):
     list_display = ('numero', 'tipo', 'capacidad')
@@ -36,6 +36,8 @@ admin.site.register(Profesor)
 admin.site.register(Titular)
 admin.site.register(PagoProfesor)
 admin.site.register(DetallePagoProfesor)
+admin.site.register(PagoAlumno)
+admin.site.register(DetallePagoAlumno)
 
 class ListaEsperaAdmin(admin.ModelAdmin):
     form = ListaEsperaAdminForm
