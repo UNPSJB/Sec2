@@ -61,12 +61,13 @@ class FiltrosForm(forms.Form):
         self.helper.layout = Layout(
             *fields,
             HTML('<div class="row">'),
-            HTML('<div class="col-md-6 text-center">'),
-            HTML('<button type="submit" class="btn btn-primary btn-sm"><i class="fa-solid fa-filter fa-xs"></i> Filtrar</button>'),
-            HTML('</div>'),
-            HTML('<div class="col-md-6">'),
-            HTML('<a class="btn btn-secondary btn-sm" href="?"><i class="fa-solid fa-broom fa-xs"></i> Clear</a>'),
-            HTML('</div>'),
+                HTML('<div class="col-md-6 text-center">'),
+                    HTML('<button type="submit" class="btn btn-primary">Filtrar</button>'),
+                HTML('</div>'),
+                
+                HTML('<div class="col-md-6">'),
+                    HTML('<a class="btn btn-secondary" href="?">Borrar</a>'),
+                HTML('</div>'),
             HTML('</div>')
         )
 class ListFilterView(ListView):

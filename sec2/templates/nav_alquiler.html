@@ -21,25 +21,40 @@
 
 <div class="menu">
   <!-- Botón desplegable para Curso -->
-  <button class="submenu-toggle" data-submenu="curso">Encargado <i class="fa-solid fa-caret-down"></i></button>
+  <button class="submenu-toggle" data-submenu="curso">
+    <div class="button-content">
+    <span><i class="fa-solid fa-person-shelter"></i> Encargado </span>
+  </div>
+
+    <i class="fa-solid fa-caret-down"></i>
+  
+  </button>
   <ul class="submenu" id="curso-submenu">
     <li>
       <a href="{% url 'alquiler:encargado_alta' %}"><i class="fa-solid fa-plus item-subMenu"></i> Alta de encargado</a>
     </li>
     <li>
-      <a href="{% url 'alquiler:encargado_listar' %}"><i class="fa-solid fa-list item-subMenu"></i> Lista de encargados</a>
+      <a href="{% url 'alquiler:encargado_listar' %}"><i class="fa-solid fa-list item-subMenu"></i> Lista encargados</a>
     </li>
   </ul>
 </div>
 <hr>
 
 {% comment %} BOTON DE SERVICIO {% endcomment %}
-<a class="enlace" id="enlaceActividad" href="{% url 'alquiler:gestion_servicio' %}"> Servicio</a>
+<a class="enlace" id="enlaceActividad" href="{% url 'alquiler:gestion_servicio' %}"><i class="fa-solid fa-clipboard-list"></i> Servicio</a>
 <hr>
 
 <div class="menu">
   <!-- Botón desplegable para Salon -->
-  <button class="submenu-toggle" data-submenu="profesor">Salon <i class="fa-solid fa-caret-down"></i></button>
+  <button class="submenu-toggle" data-submenu="profesor">
+    <div class="button-content">
+
+    <span> <i class="fa-solid fa-house"></i> Salon </span>
+    </div>
+    
+    <i class="fa-solid fa-caret-down"></i>
+  
+  </button>
   <ul class="submenu" id="curso-submenu">
     <li>
       <a href="{% url 'alquiler:salon_crear' %}"><i class="fa-solid fa-plus item-subMenu"></i> Crear salon</a>
@@ -54,10 +69,18 @@
   
 <div class="menu">
 
-<button class="submenu-toggle" data-submenu="curso" style="background-color: #2D9596;">Alquiler <i class="fa-solid fa-caret-down"></i></button>
+<button class="submenu-toggle" data-submenu="curso" style="background-color: #124076;">
+  <div class="button-content">
+
+  <span><i class="fa-solid fa-file-contract"></i>  Alquiler </span>
+  </div>
+
+  <i class="fa-solid fa-caret-down"></i>
+
+</button>
   <ul class="submenu" id="profesor-submenu">
     <li>
-      <a href="{% url 'alquiler:alquiler_listar' %}"><i class="fa-solid fa-house-chimney-user"></i> Alquilar</a>
+      <a href="{% url 'alquiler:alquiler_listar' %}"><i class="fa-solid fa-plus item-subMenu"></i> Crear alquiler</a>
 
     </li>
   </ul>

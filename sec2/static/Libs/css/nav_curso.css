@@ -67,6 +67,7 @@
 }
 
 /* Estilos generales para los botones desplegables */
+/* Estilos generales para los botones desplegables */
 .submenu-toggle {
     background-color: #333;
     color: #fff;
@@ -78,9 +79,13 @@
     width: 100%;
     display: flex;
     justify-content: space-between;
+    align-items: center; /* Alinea verticalmente los elementos */
     transition: background-color 0.3s, color 0.3s;
-    /* margin-top: 2.5%; */
-    /* Agrega transiciones suaves */
+}
+
+.button-content {
+    display: flex;
+    align-items: center; /* Alinea verticalmente los elementos */
 }
 
 .submenu-toggle i {

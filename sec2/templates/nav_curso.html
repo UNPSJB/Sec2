@@ -18,7 +18,11 @@
 
 <div class="menu">
   <!-- Botón desplegable para Curso -->
-  <button class="submenu-toggle" data-submenu="curso">Curso <i class="fa-solid fa-caret-down"></i></button>
+  <button class="submenu-toggle" data-submenu="curso">
+    <div class="button-content">
+      <span><i class="fa-solid fa-graduation-cap"></i> Curso </span>
+    </div>
+    <i class="fa-solid fa-caret-down"></i></button>
   <ul class="submenu" id="curso-submenu">
     <li>
       <a href="{% url 'cursos:curso_crear' %}"><i class="fa-solid fa-plus item-subMenu"></i> Crear curso</a>
@@ -31,20 +35,33 @@
 <hr />
 
 {% comment %} BOTON DE ACTIVIAD {% endcomment %}
-<a class="enlace" id="enlaceActividad" href="{% url 'cursos:gestion_actividad' %}"> Actividad</a>
+<a class="enlace" id="enlaceActividad" href="{% url 'cursos:gestion_actividad' %}">
+  <i class="fa-regular fa-rectangle-list"></i> Actividad</a>
 <hr />
 
 {% comment %} BOTON DE ALUMNO {% endcomment %}
-<a class="enlace" id="enlaceAlumno" href="{% url 'cursos:alumnos_listado' %}"> Alumno</a>
+<a class="enlace" id="enlaceAlumno" href="{% url 'cursos:alumnos_listado' %}">
+  <i class="fa-solid fa-chalkboard-user"></i> Alumno</a>
 <hr />
 
 {% comment %} BOTON DE AULA {% endcomment %}
-<a class="enlace" id="enlaceAula" href="{% url 'cursos:gestion_aula' %}"> Aula</a>
+<a class="enlace" id="enlaceAula" href="{% url 'cursos:gestion_aula' %}">
+  <i class="fa-solid fa-chair"></i>
+   Aula</a>
 <hr />
 
 <div class="menu">
   <!-- Botón desplegable para Profesor -->
-  <button class="submenu-toggle" data-submenu="profesor">Profesor <i class="fa-solid fa-caret-down"></i></button>
+  <button class="submenu-toggle" data-submenu="profesor"> 
+    <div class="button-content">
+      <span>
+        <i class="fa-solid fa-person-chalkboard"></i>
+         Profesor</span>
+    </div>
+
+    
+    <i class="fa-solid fa-caret-down"></i>
+  </button>
   <ul class="submenu" id="profesor-submenu">
     <li>
       <a href="{% url 'cursos:profesor_crear' %}"><i class="fa-solid fa-plus item-subMenu"></i> Alta de profesor</a>
@@ -60,7 +77,11 @@
 
 <div class="menu">
   <!-- Botón desplegable para Pago -->
-  <button class="submenu-toggle" data-submenu="pago">Pago <i class="fa-solid fa-caret-down"></i></button>
+  <button class="submenu-toggle" data-submenu="pago">
+    <div class="button-content">
+      <span><i class="fa-solid fa-dollar-sign"></i> Pagos</span>
+    </div>
+    <i class="fa-solid fa-caret-down"></i></button>
   <ul class="submenu" id="pago-submenu">
     <li>
       <a href="{% url 'cursos:pago_profesor' %}"><i class="fa-solid fa-sack-dollar item-subMenu"></i> Pago de profesor</a>
