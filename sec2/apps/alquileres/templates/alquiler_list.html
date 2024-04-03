@@ -24,7 +24,9 @@
         text-decoration: none; /* Quitar subrayado */
 
       }
-
+      thead{
+        background-color: #99BC85;
+      }
     </style>
 
 {% endblock %}
@@ -35,7 +37,11 @@
 
 <div class="container-sm">
   <a href="{% url 'alquiler:alquiler_crear' %}" class="btn btn-outline-success btn-sm "><i class="fa-solid fa-plus"></i> Alquilar</a>
-  <div id='calendar' style="width: 90%; color: black;">
+  <br>
+  <br>
+  <div style="border: 1px solid #ccc; padding: 10px; background-color: #AEBDCA; border-radius: 10px;">
+    <div id='calendar' style="width: 100%; color: black;">
+    </div>
   </div>
 </div>
 
