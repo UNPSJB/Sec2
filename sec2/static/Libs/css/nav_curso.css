@@ -105,12 +105,14 @@
 
 /* Estilos personalizados para los botones de cada submenú */
 .submenu-toggle[data-submenu="curso"] {
-    background-color: #009688;
+    /* background-color: #009688; */
+    background-color: #627254;
+    
     /* Color de fondo para el botón de Curso */
 }
 
 .submenu-toggle[data-submenu="profesor"] {
-    background-color: #4B0082;
+    background-color: #240A34;
     /* Color de fondo para el botón de Profesor (Indigo) */
 }
 
@@ -120,7 +122,7 @@
 }
 
 .submenu-toggle[data-submenu="pago"] {
-    background-color: #8B4513;
+    background-color: #5F374B;
     /* Color de fondo para el botón de Pago (Saddle Brown) */
 }
 
@@ -229,17 +231,17 @@ hr {
 }
 
 #enlaceActividad{
-    background-color: #FF7043;
-    border: 2px solid #FF7043;
+    background-color: #9B3922;
+    border: 2px solid #9B3922;
     
 }
 
 #enlaceAula{
-    background-color: #8B0000;
-    border: 2px solid #8B0000;
+    background-color: #C08B5C;
+    border: 2px solid #C08B5C;
 }
 
 #enlaceAlumno{
-    background-color: #881979;
-    border: 2px solid #881979;
+    background-color: #8644A2;
+    border: 2px solid #8644A2;
 }
