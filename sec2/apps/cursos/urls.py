@@ -101,7 +101,6 @@ urlpatterns = [
 
     #NO SE UTILIZARIA
     path('cursos/curso/<int:curso_pk>/dictados/dictado/<int:dictado_pk>/Alumnos/listaEspera', listaEspera , name="dictado_lista_espera"),
-
     path('pago/listado/profesor', PagoProfesorListView.as_view() ,name="pago_cuota_profesor_listado"),
     path('pago/profesor/crear', PagoProfesorCreateView.as_view(), name="pago_profesor"),
     path('pago/profesor/<int:pk>', PagoProfesorDetailView.as_view(), name="pago_profesor_detalle"),

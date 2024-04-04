@@ -53,8 +53,8 @@
       <thead>
         <tr>
           {% include "tabla_persona_cabecera.html" %}
-          <th>Rol</th>
-          <th class="text-center">Asistencia</th>
+          <th colspan="1">Rol</th>
+          <th class="text-end">Asistencia</th>
         </tr>
       </thead>
       
@@ -64,7 +64,7 @@
           {% include "tabla_persona_cuerpo.html" with persona=inscrito.persona%}
           <td>{{ inscrito.persona.obtenerTipo }}</td>
 
-          <td class="text-center">
+          <td class="text-end">
             <input 
             class="form-check-input"
             type="checkbox"
@@ -79,19 +79,23 @@
     </table>
     <br>
     <h5 class="subtitulo"> {{tituloListado2}}</h5>
+
     <table class="table table-sm table-hover">
       <thead>
         <tr>
           <th>Dni</th>
-          <th class="col-6">Nombre</th>
-          <th class="text-center">Asistencia</th>
+          <th >Nombre</th>
+          <th colspan="2"></th>
+          <th class="text-end">Asistencia</th>
         </tr>
       </thead>
       <tbody>
         {% for titular in titulares %}
         <tr>
           {% include "tabla_persona_cuerpo.html" with persona=titular.profesor.persona%}
-          <td class="text-center">
+          <td colspan="2"></td>
+
+          <td class="text-end">
             <input 
             class="form-check-input"
             type="checkbox"

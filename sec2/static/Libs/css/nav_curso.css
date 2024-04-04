@@ -229,7 +229,7 @@ hr {
     display: block; width: 100%;
 
 }
-
+#enlaceAlumno:hover,
 #enlaceActividad:hover,
 #enlaceAula:hover {
     color: #FFA500; /* Cambiar el color en el hover */
