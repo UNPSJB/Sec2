@@ -56,6 +56,10 @@ class Alquiler(models.Model):
     # lista_espera=models.ManyToManyField(Afiliado, blank=True)
     #crear lista de espera para agregar afiliado interesado que solamente mostrara para el afiliado que esta en espera, el sistea no se encarga de la actulizacion del cliente de manera automatica a la hora actulizar el cliente que contrata el salon
     #servicios[1..n] no se detallan los servicios "extras" que ofrece el sindicato porque solamente hace de nexo entre la empresa que lo ofrece y el afiliado
+    
+    class Meta:
+        permissions = [('gestion_alquileres', 'gestion de alquileres')]
+
 
     def __str__(self):
         return f"{self.fecha_alquiler, self.turno, self.afiliado.persona, self.salon}"
