@@ -5,9 +5,11 @@ from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.views.generic.edit import CreateView, DeleteView, UpdateView
 from django.urls import reverse_lazy
+from apps.alquileres.models import Alquiler
+from apps.cursos.models import PagoAlumno
 from apps.personas.forms import PersonaForm, PersonaUpdateForm
 from apps.personas.models import Rol
-from utils.funciones import mensaje_advertencia, mensaje_error, mensaje_exito  
+from utils.funciones import mensaje_advertencia, mensaje_error, mensaje_exito, registrar_fuentes  
 from .models import Afiliado, Familiar, PagoCuota, RelacionFamiliar
 from .forms import *
 from sec2.utils import ListFilterView
@@ -23,6 +25,7 @@ from reportlab.pdfgen import canvas
 from reportlab.pdfbase.ttfonts import TTFont
 from reportlab.pdfbase import pdfmetrics
 
+
 #CONSTANTE
 from utils.constants import *
 
@@ -34,9 +37,8 @@ def index(request):
     return HttpResponse(template.render())
 
 def existe_persona_activa(self, dni):
-    existing_person = Rol.objects.filter(persona__dni=dni).first()
-    return  existing_person and existing_person.hasta is None
-
+    latest_person = Rol.objects.filter(persona__dni=dni).order_by('-id').first()
+    return latest_person and latest_person.hasta is None
 
 # ----------------------------- AFILIADO CREATE ----------------------------------- #
 class AfiliadoCreateView(LoginRequiredMixin,PermissionRequiredMixin,CreateView):
@@ -97,9 +99,15 @@ class AfiliadoCreateView(LoginRequiredMixin,PermissionRequiredMixin,CreateView):
                 desde = current_datetime
             )
             afiliado.save()
-            detail_url = reverse('afiliados:afiliado_detalle', kwargs={'pk': afiliado.pk})
+
             mensaje_exito(self.request, f'{MSJ_CORRECTO_ALTA_AFILIADO}')
-            return redirect(detail_url)
+            self.object = form.save()
+
+            if 'guardar_y_recargar' in self.request.POST:
+                return self.render_to_response(self.get_context_data(form=self.form_class()))   
+            elif 'guardar_y_listar' in self.request.POST:
+                return redirect('afiliados:afiliado_listar')
+            return super().form_valid(form)
 
     def form_invalid(self, form):
         mensaje_advertencia(self.request, f'{MSJ_CORRECTION}')
@@ -112,6 +120,12 @@ class AfiliadoCreateView(LoginRequiredMixin,PermissionRequiredMixin,CreateView):
         return super().form_invalid(form)
 
 # ----------------------------- AFILIADO DETALLE ----------------------------------- #
+    
+def obtenerPagos(afiliado):
+    #Obtengo el rol de mi afiliado
+    rol = get_object_or_404(Rol, persona=afiliado.persona)
+    return PagoAlumno.objects.filter(rol=rol).order_by('-fecha')
+
 class AfiliadoDetailView (LoginRequiredMixin , PermissionRequiredMixin ,DeleteView):
     model = Afiliado
     template_name = 'afiliados/afiliado_detalle.html'
@@ -121,17 +135,17 @@ class AfiliadoDetailView (LoginRequiredMixin , PermissionRequiredMixin ,DeleteVi
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         afiliado = self.object  # Access the Afiliado instance
+
         context['titulo'] = "Datos del afiliado"
         context['subtitulodetalle1'] = "Datos personales"
         context['subtitulodetalle2'] = "Datos de afiliación"
-        context['tituloListado'] = "Dictados Incritos"
-
-        relacion_familiar_list = afiliado.relacionfamiliar_set.all().order_by('familiar__persona__dni')
-        context['relacion_familiar_list'] = relacion_familiar_list
-
-        cuotas = PagoCuota.objects.filter(afiliado=afiliado)
-        context['cuotas'] = cuotas
-
+        context['tituloListado1'] = "Dictados Incritos"
+        context['tituloListado2'] = "Alquileres"
+        
+        context['relacion_familiar_list'] = afiliado.relacionfamiliar_set.all().order_by('familiar__persona__dni')
+        context['pagos'] = obtenerPagos(afiliado)
+        context['cuotas'] = PagoCuota.objects.filter(afiliado=afiliado)
+        context['alquileres'] = Alquiler.objects.filter(afiliado=afiliado)
         return context
 
 # ----------------------------- AFILIADO UPDATE ----------------------------------- #
@@ -145,6 +159,7 @@ class AfiliadoUpdateView(LoginRequiredMixin, PermissionRequiredMixin ,UpdateView
     
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        context['editar'] = True
         context['titulo'] = "Modicacion de Afiliación"
         return context
     
@@ -251,8 +266,6 @@ def afiliado_afiliar_desafiliar(request, pk, accion, origen):
 #------------------------------------------------------------------------------------------
 
 
-
-
 @login_required(login_url='/login/')
 @permission_required('afiliados.permission_gestion_afiliado', raise_exception=True)
 def confeccionarNota(request, pk):
@@ -285,11 +298,6 @@ def generate_pdf(afiliado):
     buffer.seek(0)
     return buffer
 
-def registrar_fuentes():
-    pdfmetrics.registerFont(TTFont('Calibri', 'calibri.ttf'))
-    pdfmetrics.registerFont(TTFont('TituloFont', 'times.ttf'))
-    pdfmetrics.registerFont(TTFont('Times-Italic', 'timesi.ttf'))
-    pdfmetrics.registerFont(TTFont('Times-Bold', 'timesbd.ttf'))
 
 def establecer_fuente_titulo(pdf):
     pdf.setFont('Times-Bold', 14)
@@ -358,19 +366,20 @@ def agregar_firma_y_aclaracion(pdf):
 
 
 def es_menor_de_edad(self, fecha_nacimiento):
-    # Verificar si la fecha de nacimiento es menor de edad (menor de 18 años)
+    # Verificar si la fecha de nacimiento corresponde a una persona menor de 40 años
     hoy = date.today()
-    return (hoy - fecha_nacimiento).days < 365 * 18
+    edad = hoy.year - fecha_nacimiento.year - ((hoy.month, hoy.day) < (fecha_nacimiento.month, fecha_nacimiento.day))
+    return edad <= 40
 
 
 @permission_required('afiliados.permission_gestion_afiliado', raise_exception=True)
 @login_required(login_url='/login/')
 def alta_familiar(request):
     if request.method == 'POST':
-
         form = AfiliadoSelectForm(request.POST)
         if form.is_valid():
             dni = form.cleaned_data["dni"]
+
             if existe_persona_activa(request, dni):
                 mensaje_error(request, f'{MSJ_PERSONA_EXISTE}')
                 form = AfiliadoSelectForm(request.POST)
@@ -378,8 +387,9 @@ def alta_familiar(request):
             else:
                 afiliado_seleccionado_id = request.POST.get('enc_cliente')
                 afiliado = get_object_or_404(Afiliado, pk=afiliado_seleccionado_id)
+
                 if afiliado.tiene_esposo() and form.cleaned_data["tipo"] == '1':
-                    mensaje_error(request, f'{MSJ_PERSONA_EXISTE}')
+                    mensaje_error(request, f'{MSJ_FAMILIAR_ESPOSA_EXISTE}')
                     form = AfiliadoSelectForm(request.POST)
                 else:
                     if form.cleaned_data["tipo"] == '2' and not es_menor_de_edad(request,form.cleaned_data["fecha_nacimiento"]):
@@ -391,7 +401,6 @@ def alta_familiar(request):
                             'titulo': 'Alta de Familiar',  # Replace with your desired title
                         }
                         return render(request, 'grupoFamiliar/grupo_familiar_alta_directa.html', context)
-
 
                     else:
                         persona = Persona(
@@ -424,8 +433,22 @@ def alta_familiar(request):
                             tipo_relacion =form.cleaned_data["tipo"],
                         )
                         relacion.save()
+                        
                         mensaje_exito(request, f'{MSJ_FAMILIAR_CARGA_CORRECTA}')
+
                         form = AfiliadoSelectForm(request.POST)
+                        context = {
+                        'form': form,
+                        'clientes': Afiliado.objects.filter(estado__in=[1, 2]),
+                        'titulo': 'Alta de Familiar',  # Replace with your desired title
+                        }
+
+                        if 'guardar_y_recargar' in request.POST:
+                            return render(request, 'grupoFamiliar/grupo_familiar_alta_directa.html', context)
+                        elif 'guardar_y_listar' in request.POST:
+                            return redirect('afiliados:grupo_familiar_listar')
+                        return render(request, 'grupoFamiliar/grupo_familiar_alta_directa.html', context)
+
     else:
         afiliados_pendientes_activos = Afiliado.objects.filter(estado__in=[1, 2])
         form = AfiliadoSelectForm()
@@ -457,7 +480,6 @@ class FamiliaCreateView(LoginRequiredMixin,PermissionRequiredMixin, CreateView):
         afiliado = get_object_or_404(Afiliado, pk=self.kwargs.get('pk'))
         existing_person = Rol.objects.filter(persona__dni=dni).first()
         
-        print(existing_person)
         # Si existe la persona y no tiene fecha hasta (esta activa)
         if existing_person and existing_person.hasta is None:
             mensaje_error(self.request, f'{MSJ_PERSONA_EXISTE}')
@@ -733,7 +755,7 @@ class FamiliarUpdateView_(LoginRequiredMixin, PermissionRequiredMixin, UpdateVie
                     return self.render_to_response(self.get_context_data(form=persona_form))
             else:
                 # El afiliado no tiene al familiar
-                mensaje_error(self.request, f'{MSJ_AFILIADO_NO_FAMILIAR}')
+                # mensaje_error(self.request, f'{MSJ_AFILIADO_NO_FAMILIAR}')
                 return self.render_to_response(self.get_context_data(form=form))
         else:
             mensaje_error(self.request, f'{MSJ_PERSONA_NO_EXISTE}')
@@ -822,12 +844,12 @@ class PagoCuotaCreateView(LoginRequiredMixin, PermissionRequiredMixin, CreateVie
     def form_valid(self, form):
         afiliado_id = self.request.POST.get('enc_afiliado')
         cuit_empleador = self.request.POST.get('enc_cuit')
-
+        pdf = self.request.POST.get('pdf_transferencia')
+        
         if afiliado_id == '0' or cuit_empleador == '0':
             mensaje_advertencia(self.request, f'Seleccione la empresa y al afiliado')
             return super().form_invalid(form)
 
-        pdf = self.request.POST.get('pdf_transferencia')
         afiliado = get_object_or_404(Afiliado, pk=afiliado_id)
 
         if afiliado.cuit_empleador != cuit_empleador:
@@ -835,6 +857,7 @@ class PagoCuotaCreateView(LoginRequiredMixin, PermissionRequiredMixin, CreateVie
             return super().form_invalid(form)
 
         existe_cuotas = PagoCuota.objects.filter(afiliado=afiliado).exists()
+
         if not existe_cuotas:
             form.instance.afiliado_id = afiliado_id
             form.instance.pdf_transferencia = pdf
@@ -848,29 +871,29 @@ class PagoCuotaCreateView(LoginRequiredMixin, PermissionRequiredMixin, CreateVie
 
             else:
                 mensaje_exito(self.request, f'{MSJ_CORRECTO_PAGO_REALIZADO}')
+            
+            if 'guardar_y_recargar' in self.request.POST:
+                return self.render_to_response(self.get_context_data(form=self.form_class()))   
+            elif 'guardar_y_listar' in self.request.POST:
+                return redirect('afiliados:pago_cuota_listado')
+
         else:
+            # Si ya existen cuotas obtengo mi ultima cuota por fecha de pago
             ultima_cuota = PagoCuota.objects.filter(afiliado=afiliado).latest('fecha_pago')
-            fecha_actual = datetime.now().date()
-            fecha_dos_meses_atras = fecha_actual - relativedelta(months=2)
+            fecha_pago = form.instance.fecha_pago
+            fecha_pago_un_mes_atras = fecha_pago - relativedelta(months=1)
 
-            if ultima_cuota.fecha_pago < fecha_dos_meses_atras and afiliado.estado != 5:
-                mensaje_advertencia(self.request, 'El afiliado tiene cuotas vencidas. Comuníquese con soporte')
-                return super().form_invalid(form)
+            if fecha_pago_un_mes_atras.month == ultima_cuota.fecha_pago.month:
+                form.instance.afiliado_id = afiliado_id
+                form.instance.pdf_transferencia = pdf
+                form.save()
+                mensaje_exito(self.request, f'{MSJ_CORRECTO_PAGO_REALIZADO}')
+                return super().form_valid(form)
             else:
-                fecha_mes_anterior = fecha_actual - relativedelta(months=1)
+                mensaje_advertencia(self.request, 'El mes anterior esta sin pagar.')
+                return super().form_invalid(form)
 
-                ## FALTA REALIZARLE EL SEGUIMIENTO PARA SABER SI TIENE CUOTAS VENCIDAS
 
-                # FALTA PREGUNTAR SI LA ULTIMA DEL MES ANTENIOR ESTA PAGADA
-                if fecha_actual.month == ultima_cuota.fecha_pago.month:
-                    form.instance.afiliado_id = afiliado_id
-                    form.instance.pdf_transferencia = pdf
-                    form.save()
-                    mensaje_exito(self.request, f'{MSJ_CORRECTO_PAGO_REALIZADO}')
-                    return super().form_valid(form)
-                else: 
-                    mensaje_advertencia(self.request, 'Al afiliado le falta pagar el mes anterior')
-                    return super().form_invalid(form)
 
 
     def form_invalid(self, form):
@@ -919,13 +942,8 @@ def cuota_sindical_actualizar_estado(request):
     fecha_actual = datetime.now().date()
     fecha_dos_meses_atras = fecha_actual - relativedelta(months=2)
 
-    print(fecha_actual)
-    print(fecha_dos_meses_atras)
-
     for afiliado in afiliados_vinculados:
-        print("")
         ultima_cuota = PagoCuota.objects.filter(afiliado=afiliado).latest('fecha_pago')
-        print("ULTIMA CUOTA", ultima_cuota)
         if ultima_cuota.fecha_pago < fecha_dos_meses_atras:
             if afiliado.estado == 2:
                 #se lo marca como Moroso

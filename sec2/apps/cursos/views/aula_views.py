@@ -3,12 +3,13 @@ from django.views.generic.edit import CreateView, UpdateView
 from django.views.generic import DetailView, ListView
 
 from utils.funciones import mensaje_advertencia, mensaje_exito
-from ..models import Aula
+from ..models import Aula, Reserva
 from ..forms.aula_forms import *
 from django.urls import reverse_lazy
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.contrib.auth.decorators import permission_required , login_required
+from datetime import date
 
 ## ------------  CREATE AND LIST AULA -------------------
 class GestionAulaView(PermissionRequiredMixin, LoginRequiredMixin, CreateView, ListView):
@@ -62,6 +63,7 @@ class GestionAulaView(PermissionRequiredMixin, LoginRequiredMixin, CreateView, L
         return queryset
 
 ## ------------ ACTIVIDAD DETALLE -------------------
+
 class AulaDetailView(PermissionRequiredMixin, LoginRequiredMixin, DetailView):
     model = Aula
     template_name = "aula/aula_detalle.html"
@@ -70,7 +72,13 @@ class AulaDetailView(PermissionRequiredMixin, LoginRequiredMixin, DetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        aula = self.object
+        current_date = date.today()  # Get the current date
+
+
+        context['reservas'] = Reserva.objects.filter(aula=aula, fecha__gte=current_date).order_by('fecha', 'horario__hora_inicio')
         context['titulo'] = 'Detalle de Aula'
+        context['tituloListado'] = 'Proximas reservas del aula'
         return context
 
 ## ------------ UPDATE -------------------

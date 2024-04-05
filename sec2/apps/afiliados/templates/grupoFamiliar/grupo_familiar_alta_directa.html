@@ -1,5 +1,4 @@
-{% extends 'alta_gestion_afiliados.html' %}  <!-- Ajusta según tu estructura de templates base -->
-<!-- Incluir archivos estáticos de Select2 desde CDN -->
+{% extends 'alta_gestion_afiliados.html' %}
 
 {% block formulario %}
   <form method="post" enctype="multipart/form-data">
@@ -35,10 +34,9 @@
       </div>
 
       <div class="row">
-        <div class="col-12">
-          <div class="text-center mt-3">
-            <button type="submit" class="btn btn-success" >Guardar</button>
-          </div>
+        <div class="col text-center">
+            <button type="submit" class="btn btn-success" name="guardar_y_recargar" >Guardar y agregar otro</button>
+            <button type="submit" class="btn btn-success" name="guardar_y_listar" >Guardar y listar </button>
         </div>
       </div>
   </form>

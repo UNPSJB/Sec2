@@ -5,7 +5,7 @@
 
 {% block extracss_intermedia %}
   <link href="{% static 'css/listado.css' %}" rel="stylesheet" />
-  <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.10/index.global.min.js'></script>
+  {% comment %} <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.10/index.global.min.js'></script> {% endcomment %}
     <script>
 
       document.addEventListener('DOMContentLoaded', function() {
@@ -17,33 +17,49 @@
       });
 
     </script>
+
+    <style>
+      #calendar a{
+        color: black;
+        text-decoration: none; /* Quitar subrayado */
+
+      }
+      thead{
+        background-color: #99BC85;
+      }
+    </style>
+
 {% endblock %}
 
 {% block dinamica %}
+{% comment %} <h3 class="titulo">{{ titulo }}</h3> {% endcomment %}
+<br>
+
+<div class="container-sm">
+  <a href="{% url 'alquiler:alquiler_crear' %}" class="btn btn-outline-success btn-sm "><i class="fa-solid fa-plus"></i> Alquilar</a>
+  <br>
+  <br>
+  <div style="border: 1px solid #ccc; padding: 10px; background-color: #AEBDCA; border-radius: 10px;">
+    <div id='calendar' style="width: 100%; color: black;">
+    </div>
+  </div>
+</div>
+
 
 <br>
-  <h3 class="titulo">{{ titulo }}</h3>
-
-  <br />
-  
-  <div class="container-sm" id='calendar'></div>
-
-
-  <div class="container-sm">
+<div class="container-sm">
     <div class="table-responsive">
-
-    {% block tabla_listado %}
-    <table class="table table-sm table-hover">
+      <table class="table table-sm table-hover">
         <thead>
           <tr>
             <th>#</th>
-            <th scope="col">salon</th>
-            <th scope="col">fecha_alquiler</th>
-            <th scope="col">turno</th>
-            <th scope="col">Capacidad</th>
-            <th scope="col">afiliado</th>
-            <th scope="col">Precio</th>
-            <th scope="col"></th>
+            <th>salon</th>
+            <th>fecha_alquiler</th>
+            <th>turno</th>
+            <th>Capacidad</th>
+            <th>afiliado</th>
+            <th>Precio</th>
+            <th></th>
           </tr>
         </thead>
     
@@ -65,16 +81,6 @@
           {% endfor %}
         </tbody>
       </table>
-    {% endblock %}
-    </div>
-  </div>
-
-
-  <div class="container ">
-    <div class="row row-cols-1 row-cols-sm-2 row-cols-md-1">
-      <div class="col" id="btn-new-alquiler">
-        <a href="{% url 'alquiler:alquiler_crear' %}" class="btn btn-primary"><i class="fa-solid fa-plus"></i> Nuevo</a>
-      </div>
     </div>
   </div>
 </div>
@@ -87,8 +93,8 @@
         conectarBotonesAModal('.btn-eliminar')
         </script>
 
-        <script src="{% static 'libs/fullcalendar/main.js' %}"> </script>
-        <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.10/locales/es.js'></script>
+        {% comment %} <script src="{% static 'libs/fullcalendar/main.js' %}"> </script> {% endcomment %}
+        {% comment %} <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.10/locales/es.js'></script> {% endcomment %}
 
         <script>
             // Paso 1: Inicializar el calendario
@@ -110,6 +116,8 @@
                             title: "{{alquiler.salon}}",
                             start: "{{alquiler.fecha_alquiler | date:'c'}}",
                             url: '/home/app_alquileres/alquiler/{{alquiler.pk}}',
+                            eventColor: '#FF5733' // Cambiar color del evento
+
                             //url: '/ordenes/ordenesTurnos/listarTurnos/detalleTurno/{{orden.pk}}',
                            // classNames: '{{orden.get_class_dot}}',
                             },

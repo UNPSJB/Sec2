@@ -15,44 +15,14 @@ from django.contrib.auth import logout
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 
 
-def obtenerPermiso(name):
-# Precondicion: {name} Exits in {"administador","cliente","empleadoPublico"}
-        
-        if name == "gestion_afiliados":
-            content_type = ContentType.objects.get_for_model(Afiliado)
-            permiso, creado = Permission.objects.get_or_create(
-                codename='permission_gestion_afiliado',
-                name='Control total afiliado',
-                content_type=content_type,
-            )
-            return permiso
-        
-        if name == "gestion_cursos":
-            content_type = ContentType.objects.get_for_model(Curso)
-            permiso, creado = Permission.objects.get_or_create(
-                codename='permission_gestion_curso',
-                name='Control total curso',
-                content_type=content_type,
-            )
-            return permiso
-        
-        if name == "gestion_alquileres":
-            content_type = ContentType.objects.get_for_model(Alquiler)
-            permiso, creado = Permission.objects.get_or_create(
-                codename='permission_gestion_alquiler',
-                name='Control total alquiler',
-                content_type=content_type,
-            )
-            return permiso
-        
-        if name == "gestion_usuarios":
-            content_type = ContentType.objects.get_for_model(User)
-            permiso, creado = Permission.objects.get_or_create(
-                codename='permission_gestion_usuario',
-                name='Control total user',
-                content_type=content_type,
-            )
-            return permiso
+def obtenerPermisoUsuarios():
+      content_type = ContentType.objects.get_for_model(User)
+      permiso, creado = Permission.objects.get_or_create(
+                                                          codename='permission_gestion_usuario',
+                                                          name='Control total user',
+                                                          content_type=content_type,          
+                                                        )
+      return permiso
         
 
 
@@ -97,30 +67,26 @@ class CreacionUsuarios(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
         user = User.objects.get(username=username)
 
         if form.cleaned_data['permiso_gestion_afiliados'] :
-                user = User.objects.get(username=form.cleaned_data["username"])
-                permiso = obtenerPermiso("gestion_afiliados")
+                permiso = Permission.objects.get(codename='permission_gestion_afiliado')
                 user.user_permissions.add(permiso)
         
         
         if form.cleaned_data['permiso_gestion_cursos'] :
-                user = User.objects.get(username=form.cleaned_data["username"])
-                permiso = obtenerPermiso("gestion_cursos")
+                permiso = Permission.objects.get(codename='permission_gestion_curso')
                 user.user_permissions.add(permiso)
         
 
         
         if form.cleaned_data['permiso_gestion_salon'] :
-                user = User.objects.get(username=form.cleaned_data["username"])
-                permiso = obtenerPermiso("gestion_alquileres")
+                permiso = Permission.objects.get(codename='permission_gestion_alquiler')
                 user.user_permissions.add(permiso)
 
         
         if form.cleaned_data['permiso_gestion_usuarios'] :
-                user = User.objects.get(username=form.cleaned_data["username"])
-                permiso = obtenerPermiso("gestion_usuarios")
+                permiso = obtenerPermisoUsuarios()
                 user.user_permissions.add(permiso)
 
-        
+        user.save()        
         messages.success(self.request, 'Usuario creado exitosamente')
         return redirect('users:user_register')
         

@@ -4,7 +4,7 @@
 {% load static %}
 
 {% block botones %}
-  <a href="{% url 'afiliados:crear_familiar_directo' %}" class="btn btn-primary btn-sm btn-detalle"><i class="fa-solid fa-plus"></i> Nuevo</a>
+  <a href="{% url 'afiliados:crear_familiar_directo' %}" class="btn btn-outline-success btn-sm btn-detalle"><i class="fa-solid fa-plus"></i> Nuevo</a>
 {% endblock %}
 
 {% block tabla_listado %}
@@ -28,7 +28,7 @@
     <tbody>
       {% for relacion in page_obj %}
         <tr>
-            <td class="negrita">{{ forloop.counter }}</td>
+            <td class="negrita">{{ forloop.counter }}</td>77
             {% include "tabla_persona_cuerpo.html" with persona=relacion.familiar.persona %}
             <td >{{ relacion.get_tipo_relacion_display }}</td>
             {% include "tabla_persona_cuerpo.html" with persona=relacion.afiliado.persona %}
@@ -38,7 +38,7 @@
               {% if relacion.afiliado.estado == 3 %}<i class="fa-solid fa-circle-minus" style="color: #a80000;"></i>{% endif %}
             </td>
             <td class="text-end">
-              <a href="{% url 'afiliados:familiar_detalle' pk=relacion.afiliado.pk familiar_pk=relacion.familiar.pk ventana='misma_ventana' %}" class="btn btn-primary btn-sm btn-detalle"; return false;"> <i class="fa-regular fa-eye"></i> Detalle</a>
+              <a href="{% url 'afiliados:familiar_detalle' pk=relacion.afiliado.pk familiar_pk=relacion.familiar.pk ventana='misma_ventana' %}" class="btn btn-info btn-sm btn-detalle"; return false;"> <i class="fa-regular fa-eye"></i> Detalle</a>
             </td>
         </tr>
         {% endfor %}

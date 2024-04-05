@@ -25,18 +25,18 @@
                   <button type="button" class="btn btn-danger btn-sm btn-detalle" 
                   onclick="gestionInscripcion{% if inscrito.persona.es_afiliado %}Afiliado{% elif inscrito.persona.es_grupo_familiar %}Familiar{% elif inscrito.persona.es_profesor %}Profesor{% elif inscrito.persona.es_alumno %}Alumno{% endif %}('desinscribir', {{ dictado.curso.pk }}, {{ dictado.pk }}, {{ inscrito.persona.pk }})">Desinscribir</button>
                   {% else %}
-                  <a href="{% url 'cursos:generar_pdf_dictado_finalizado_afiliado' dictado_pk=dictado.pk  persona_pk=inscrito.persona.pk %}" class="btn btn-success btn-sm btn-detalle"><i class="fa-solid fa-file-pdf"></i> PDF</a>
+                  <a href="{% url 'cursos:generar_pdf_dictado_finalizado_afiliado' dictado_pk=dictado.pk  persona_pk=inscrito.persona.pk %}" class="btn btn-light btn-sm btn-detalle"><i class="fa-solid fa-file-pdf"></i> PDF</a>
                   {% endif %}
 
 
                   {% if inscrito.persona.es_afiliado %}
-                  <a href="{% url 'afiliados:afiliado_detalle' inscrito.pk %}" class="btn btn-primary btn-sm btn-detalle"><i class="fa-regular fa-eye"></i> Detalle</a>
+                  <a href="{% url 'afiliados:afiliado_detalle' inscrito.pk %}" class="btn btn-info btn-sm btn-detalle"><i class="fa-regular fa-eye"></i> Detalle</a>
                   {% comment %} {% elif inscrito.persona.es_grupo_familiar %} {% endcomment %}
-                  {% comment %} <a href="{% url 'afiliados:familiar_detalle_' inscrito.pk %}" class="btn btn-primary btn-sm btn-detalle"><i class="fa-regular fa-eye"></i> Detalle</a> {% endcomment %}
+                  {% comment %} <a href="{% url 'afiliados:familiar_detalle_' inscrito.pk %}" class="btn btn-info btn-sm btn-detalle"><i class="fa-regular fa-eye"></i> Detalle</a> {% endcomment %}
                   {% elif inscrito.persona.es_profesor %}
-                  <a href="{% url 'cursos:profesor_detalle' inscrito.pk %}" class="btn btn-primary btn-sm btn-detalle"><i class="fa-regular fa-eye"></i> Detalle</a>
+                  <a href="{% url 'cursos:profesor_detalle' inscrito.pk %}" class="btn btn-info btn-sm btn-detalle"><i class="fa-regular fa-eye"></i> Detalle</a>
                   {% elif inscrito.persona.es_alumno %}
-                  <a href="{% url 'cursos:alumno_detalle' pk=inscrito.pk %}" class="btn btn-primary btn-sm btn-detalle"><i class="fa-regular fa-eye"></i> Detalle</a>
+                  <a href="{% url 'cursos:alumno_detalle' pk=inscrito.pk %}" class="btn btn-info btn-sm btn-detalle"><i class="fa-regular fa-eye"></i> Detalle</a>
                   {% endif %}
                 </td>
               </tr>

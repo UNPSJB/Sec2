@@ -4,7 +4,7 @@
 {% load static %}
 
 {% block botones %}
-  <a href="{% url 'afiliados:afiliado_crear' %}" class="btn btn-primary btn-sm btn-detalle"><i class="fa-solid fa-plus"></i> Nuevo</a>
+  <a href="{% url 'afiliados:afiliado_crear' %}" class="btn btn-outline-success btn-sm btn-detalle"><i class="fa-solid fa-plus"></i> Nuevo</a>
 {% endblock %}
 
 {% block tabla_listado %}
@@ -26,6 +26,7 @@
             {% if afiliado.estado == 1 %}<i class="fa-solid fa-circle-exclamation" style="color: #FF8000;"></i>{% endif %}
             {% if afiliado.estado == 2 %}<i class="fa-regular fa-circle-check" style="color: #008f00;"></i>{% endif %}
             {% if afiliado.estado == 3 %}<i class="fa-solid fa-circle-minus" style="color: #a80000;"></i>{% endif %}
+            {% if afiliado.estado == 5 %}<i class="fa-solid fa-ban"></i>{% endif %}
           </td>
 
           <td class="text-end">
@@ -36,7 +37,7 @@
               <button type="button" class="btn btn-danger btn-sm btn-detalle" data-bs-toggle="modal" data-bs-target="#modal_desafiliar_{{ afiliado.pk }}"><i class="fa-regular fa-circle-down"></i> Desafiliar</button>
               {% include 'modal_confirm_baja.html' with object=afiliado detalleAfiliadoParam='listadoAfiliado'%}
             {% endif %}
-            <a href="{% url 'afiliados:afiliado_detalle' afiliado.pk %}" class="btn btn-primary btn-sm btn-detalle"><i class="fa-regular fa-eye"></i> Detalle</a>            
+            <a href="{% url 'afiliados:afiliado_detalle' afiliado.pk %}" class="btn btn-info btn-sm btn-detalle"><i class="fa-regular fa-eye"></i> Detalle</a>            
           </td>
         </tr>
       {% endfor %}

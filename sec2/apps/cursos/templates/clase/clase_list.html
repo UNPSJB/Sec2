@@ -4,9 +4,8 @@
 
 {% block dinamica %}
 <head>
-    <meta charset='utf-8' />
-    <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js'></script>
-    <h1>listado de calses</h1>
+    {% comment %} <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js'></script> {% endcomment %}
+    <h1>listado de clases</h1>
 
   </head>
   <body>
@@ -40,7 +39,7 @@
         </tbody>
     </table>
     {% crispy filtros %}
-    <a href="{% url 'cursos:curso_crear' %}"class="btn btn-primary">Nuevo Curso</a>
+    <a href="{% url 'cursos:curso_crear' %}"class="btn btn-outline-success">Nuevo Curso</a>
 {% endblock %}
 
 

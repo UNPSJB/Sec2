@@ -1,8 +1,10 @@
 from django.shortcuts import get_object_or_404, redirect
+from apps.afiliados.models import Afiliado, Familiar
+from apps.alquileres.models import Encargado
 from apps.cursos.forms.actividad_forms import ActividadForm
-from apps.cursos.models import Curso, Dictado
+from apps.cursos.models import Alumno, Curso, DetallePagoAlumno, DetallePagoProfesor, Dictado, PagoAlumno, PagoProfesor, Profesor, Titular
 from apps.personas.models import Persona, Rol
-from utils.funciones import mensaje_error, mensaje_exito
+from utils.funciones import mensaje_advertencia, mensaje_error, mensaje_exito
 from ..forms.curso_forms import *
 from django.views.generic.edit import CreateView, UpdateView
 from django.views.generic import DetailView
@@ -58,10 +60,9 @@ class CursoCreateView(LoginRequiredMixin, PermissionRequiredMixin,CreateView):
 
     def form_valid(self, form):
         tipo_curso = self.request.GET.get('tipo', None)
-    # Obtener el ID de la actividad seleccionada en el formulario
+
+        # Obtener el ID de la actividad seleccionada en el formulario
         actividad_id = self.request.POST.get('enc_cliente')        
-        print("ACTIVIDAAAAD----")
-        print(actividad_id)
         actividad = get_object_or_404(Actividad, pk=actividad_id)
 
         # Actualizar el valor de es_convenio en base al tipo de curso
@@ -75,10 +76,18 @@ class CursoCreateView(LoginRequiredMixin, PermissionRequiredMixin,CreateView):
         
         form.instance.actividad = actividad
         form.instance.descripcion = form.cleaned_data['descripcion'].capitalize()
+        form.instance.cupo_estimativo = form.cleaned_data['cupo_estimativo']
+        form.instance.precio_total = form.cleaned_data['precio_total']
+        form.instance.precio_estimativo_profesor = form.cleaned_data['precio_estimativo_profesor']
+
         # form.instance.descripcion = form.cleaned_data['descripcion'].capitalize()
         form.instance.nombre = form.cleaned_data['nombre'].title()
         form.save()
         messages.success(self.request, f'{ICON_CHECK} Alta de curso exitosa!')
+        if 'guardar_agregar_otro' in self.request.POST:
+                return redirect('cursos:curso_crear')
+        elif 'guardar_listar' in self.request.POST:
+                return redirect('cursos:curso_listado')
         return result
 
     def form_invalid(self, form):
@@ -321,10 +330,362 @@ def curso_eliminar(request, pk):
 @login_required(login_url='/login/')
 def dictadosFinalizados(curso):
     dictados = Dictado.objects.all().filter(curso=curso)
-    print(dictados)
     for dictado in dictados:
-        print(dictado.estado)
         if not dictado.estado == 3:
             return False
-    
     return True
+
+def obtenerTitularesVigente(profesores_titulares):
+    for profesor in profesores_titulares:
+        profesor = Profesor.objects.get(pk=profesor.pk)
+        titulares = Titular.objects.filter(profesor=profesor)
+    return True
+
+from django.utils import timezone
+from datetime import datetime, timedelta
+
+from django.db.models import Q
+
+def obtenerProfesoresActivos():
+    roles_sin_fecha_hasta = Rol.objects.filter(hasta__isnull=True)
+     # Obtener personas asociadas a los roles sin fecha de finalización
+    personas = Persona.objects.filter(roles__in=roles_sin_fecha_hasta)
+    # Obtener profesor asociados a las personas obtenidas
+    return Profesor.objects.filter(persona__in=personas)
+
+def obtenerUltimoDiaMesAnterior():
+    hoy = timezone.now()
+    primer_dia_mes_actual = hoy.replace(day=1)
+    return primer_dia_mes_actual - timedelta(days=1)
+
+def obtenerProfesoresConDictados(titulares_ya_finalizados, titulares_vigentes):
+    # Obtener profesores asociados a titulares con dictados finalizados el mes pasado
+    profesores_finalizados = Profesor.objects.filter(titular__in=titulares_ya_finalizados).distinct()
+    
+    # Obtener profesores asociados a titulares con dictados vigentes
+    profesores_vigentes = Profesor.objects.filter(titular__in=titulares_vigentes).distinct()
+    
+    # Combinar los profesores de ambos grupos
+    profesores = profesores_finalizados | profesores_vigentes
+    
+    return profesores
+
+import json
+
+class PagoProfesorCreateView(CreateView):
+    model = PagoProfesor
+    form_class = PagoProfesorForm
+    template_name = 'pago/pago_profesor.html'
+    success_url = reverse_lazy('cursos:pago_profesor')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        profesores = obtenerProfesoresActivos()
+        ultimo_dia_mes_anterior = obtenerUltimoDiaMesAnterior()
+        primer_dia_mes_anterior = ultimo_dia_mes_anterior.replace(day=1)
+        
+        # Obtengo los titulaes que tienen dictado vigente
+        titulares_vigentes = Titular.objects.all().filter(dictado__estado=2)
+        # Obtener los titulares cuyos dictados han finalizado y cuya fecha de finalización está entre el primer día y el último día del mes anterior
+        titulares_ya_finalizados = Titular.objects.filter(
+            dictado__estado=3,  # Filtrar los titulares cuyos dictados tienen un estado de 3
+            dictado__fecha_fin__range=(primer_dia_mes_anterior, ultimo_dia_mes_anterior)  # Filtrar los titulares cuyos dictados tienen una fecha de finalización dentro del rango del mes anterior
+        )
+
+        # Obtener los profesores asociados a los titulares con dictados
+        profesores = obtenerProfesoresConDictados(titulares_ya_finalizados, titulares_vigentes)
+
+        context['profesores'] = profesores
+        context['titulo'] = "Comprobante de pago"
+        return context
+
+    def form_valid(self, form):
+        enc_profesor = self.request.POST.get('profesor')
+        total_a_pagar = self.request.POST.get('total_a_pagar')
+        datos_dictados = self.request.POST.get('datos_dictados')
+
+        if enc_profesor == '0':
+            mensaje_advertencia(self.request, f'Seleccione al profesor')
+            return super().form_invalid(form)
+        
+        if datos_dictados:
+            dictados_info = json.loads(datos_dictados)
+            pago = form.save(commit=False)
+            pago.profesor_id = enc_profesor
+            pago.total = total_a_pagar
+            pago.save()
+
+            for dictado_info in dictados_info:
+                pk = dictado_info.get('pk')
+                dictado = get_object_or_404(Dictado, pk=pk)
+
+               # Crear una instancia de DetallePagoProfesor para cada dictado asociado al pago
+                DetallePagoProfesor.objects.create(
+                    pago_profesor=pago,
+                    dictado=dictado,
+                    total_clases=dictado_info.get('total_clases'),
+                    clases_asistidas=dictado_info.get('clases_asistidas'),
+                    porcentaje_asistencia=dictado_info.get('porcentaje_asistencia'),
+                    precioFinal=dictado_info.get('precioFinal'),
+                )
+            pago.generarPreFactura()
+
+        mensaje_exito(self.request, f'{MSJ_CORRECTO_PAGO_REALIZADO}')
+        self.object = form.save()
+
+        if 'guardar_y_recargar' in self.request.POST:
+            return self.render_to_response(self.get_context_data(form=self.form_class()))   
+        elif 'guardar_y_listar' in self.request.POST:
+            return redirect('cursos:pago_cuota_profesor_listado')
+        return super().form_valid(form)
+
+    def form_invalid(self, form):
+        mensaje_advertencia(self.request, MSJ_CORRECTION)
+        print("")
+        print("ERRORES DEL FORMULARIO")
+        for field, errors in form.errors.items():
+            for error in errors:
+                print(f"Error en el campo '{field}': {error}")
+        print("")
+        return super().form_invalid(form)
+    
+
+
+class PagoProfesorListView(ListFilterView):
+    model = PagoProfesor
+    filter_class = PagoProfesorFilterForm
+    template_name = 'pago/pago_profesor_listado.html'
+    paginate_by = MAXIMO_PAGINATOR
+    success_url = reverse_lazy('afiliados:pago_cuota_listado')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['titulo'] = "Pago de profesor"
+        return context
+        
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        # afiliado_dni = self.request.GET.get('afiliado__persona__dni')
+        # cuit_empleador = self.request.GET.get('afiliado__cuit_empleador')  # Add this line
+
+        # if afiliado_dni:
+            # queryset = queryset.filter(afiliado__persona__dni=afiliado_dni)
+
+        # if cuit_empleador:
+            # Use Q objects to perform OR filtering on afiliado__cuit_empleador and familiar__cuit_empleador
+            # queryset = queryset.filter(Q(afiliado__cuit_empleador=cuit_empleador))
+        
+        return queryset
+    
+
+from django.http import HttpResponse
+
+class PagoProfesorDetailView(DetailView):
+    model = PagoProfesor
+    template_name = 'pago/pago_profesor_detalle.html'
+    paginate_by = MAXIMO_PAGINATOR
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        pago = self.object  # El objeto de curso obtenido de la vista
+
+        context['titulo'] = "Detalle del pago"
+        context['tituloListado'] = "Clases pagadas"
+        context['pago'] = pago
+        
+        return context
+
+    def render_to_response(self, context, **response_kwargs):
+        # Si se solicita un PDF, generamos y devolvemos el PDF
+        if 'pdf' in self.request.GET:
+            pago = context['pago']
+            pdf = pago.generarPdf()
+            response = HttpResponse(pdf, content_type='application/pdf')
+            response['Content-Disposition'] = 'attachment; filename="Comprobante-pre-factura.pdf"'
+            return response
+        else:
+            # De lo contrario, renderizamos la plantilla normalmente
+            return super().render_to_response(context, **response_kwargs)
+
+def getObjectRolTipo(rol):
+
+    if rol.tipo == 1: 
+        return get_object_or_404(Afiliado, persona__pk=rol.persona.pk), False
+    elif rol.tipo == 2:
+        return get_object_or_404(Familiar, persona__pk=rol.persona.pk), False
+    elif rol.tipo == 3:
+        return get_object_or_404(Alumno, persona__pk=rol.persona.pk), False
+    elif rol.tipo == 4: 
+        return get_object_or_404(Profesor, persona__pk=rol.persona.pk), True
+    elif rol.tipo == 5:
+        return get_object_or_404(Encargado, persona__pk=rol.persona.pk), False
+
+def obtenerDictados(persona, es_profesor):
+    
+    if es_profesor:
+        return persona.dictados_inscriptos.all()
+    else:
+        return persona.dictados.all()
+
+def estaEnDictadoActivo(persona, es_profesor):
+
+    dictados = obtenerDictados(persona, es_profesor)
+
+    if dictados.exists():
+        for dictado in dictados:
+            if not dictado.estado == 3:
+                return True
+    return False
+
+def obtenerAlumnosEnDictado():
+    #Obtengo todos los roles activos
+    roles_sin_fecha_hasta = Rol.objects.filter(hasta__isnull=True)
+    resultados = []
+
+    for rol in roles_sin_fecha_hasta:
+        persona, es_profesor = getObjectRolTipo(rol)
+        
+        if estaEnDictadoActivo(persona, es_profesor):
+            resultados.append({"alumnos": persona})
+    return resultados
+
+class PagoAlumnoCreateView(CreateView):
+    model = PagoAlumno
+    form_class = PagoRolForm
+    template_name = 'pago/pago_alumno.html'
+    success_url = reverse_lazy('cursos:pago_profesor')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        alumnos = obtenerAlumnosEnDictado()
+        context['titulo'] = "Comprobante de pago"
+        context['alumnos'] = alumnos
+        return context
+
+    def form_valid(self, form):
+        pk = self.request.POST.get('alumno')
+        
+        if pk == '0':
+            mensaje_advertencia(self.request, f'Seleccione al alumno')
+            return super().form_invalid(form)
+
+        rol = get_object_or_404(Rol, pk=pk)
+        datos_dictados = self.request.POST.get('dictados_seleccionados')
+        total_a_pagar = self.request.POST.get('total_a_pagar')
+
+        if datos_dictados:
+            dictados_info = json.loads(datos_dictados)
+            pago = form.save(commit=False)
+            print("pk",pk)
+            print("total_a_pagar",total_a_pagar)
+            pago.rol_id = pk
+            pago.total = total_a_pagar
+            pago.save()
+
+            for dictado_info in dictados_info:
+                dictado_pk = dictado_info.get('valor')
+                dictado = get_object_or_404(Dictado, pk=dictado_pk)
+                
+                precioConDescuento = dictado_info.get('precioConDescuento')
+                cantidad = dictado_info.get('cantidad')
+
+                total = precioConDescuento * cantidad
+
+
+               # Crear una instancia de DetallePagoAlumno para cada dictado asociado al pago
+                DetallePagoAlumno.objects.create(
+                    pago_alumno=pago,
+                    dictado=dictado,
+                    cantidad = cantidad,
+                    precioFinal = dictado_info.get('precio'),
+                    descuento = dictado_info.get('descuento'),
+                    periodo_pago = dictado.periodo_pago,
+                    precioConDescuento = precioConDescuento,
+                    total = total,
+                )
+
+            pago.generarPreFactura()
+            mensaje_exito(self.request, f'{MSJ_CORRECTO_PAGO_REALIZADO}')
+            self.object = form.save()
+
+            if 'guardar_y_recargar' in self.request.POST:
+                return self.render_to_response(self.get_context_data(form=self.form_class()))   
+            elif 'guardar_y_listar' in self.request.POST:
+                return redirect('cursos:pago_cuota_alumno_listado')
+            return super().form_valid(form)
+    
+    def form_invalid(self, form):
+        mensaje_advertencia(self.request, MSJ_CORRECTION)
+        print("")
+        print("ERRORES DEL FORMULARIO")
+        for field, errors in form.errors.items():
+            for error in errors:
+                print(f"Error en el campo '{field}': {error}")
+        print("")
+        return super().form_invalid(form)
+    
+
+class PagoAlumnoListView(ListFilterView):
+    model = PagoAlumno
+    filter_class = PagoProfesorFilterForm
+    template_name = 'pago/pago_alumno_listado.html'
+    paginate_by = MAXIMO_PAGINATOR
+    success_url = reverse_lazy('afiliados:pago_cuota_listado')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['titulo'] = "Pago de alumnos"
+        return context
+        
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        # afiliado_dni = self.request.GET.get('afiliado__persona__dni')
+        # cuit_empleador = self.request.GET.get('afiliado__cuit_empleador')  # Add this line
+
+        # if afiliado_dni:
+            # queryset = queryset.filter(afiliado__persona__dni=afiliado_dni)
+
+        # if cuit_empleador:
+            # Use Q objects to perform OR filtering on afiliado__cuit_empleador and familiar__cuit_empleador
+            # queryset = queryset.filter(Q(afiliado__cuit_empleador=cuit_empleador))
+        
+        return queryset
+    def render_to_response(self, context, **response_kwargs):
+        # Si se solicita un PDF, generamos y devolvemos el PDF
+        if 'pdf' in self.request.GET:
+            pago = context['pago']
+            pdf = pago.generarPdf()
+            response = HttpResponse(pdf, content_type='application/pdf')
+            response['Content-Disposition'] = 'attachment; filename="Comprobante-pre-factura.pdf"'
+            return response
+        else:
+            # De lo contrario, renderizamos la plantilla normalmente
+            return super().render_to_response(context, **response_kwargs)
+
+class PagoAlumnoDetailView(DetailView):
+    model = PagoAlumno
+    template_name = 'pago/pago_profesor_detalle.html'
+    paginate_by = MAXIMO_PAGINATOR
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        pago = self.object  # El objeto de curso obtenido de la vista
+
+        context['titulo'] = "Detalle del pago"
+        context['tituloListado'] = "Clases pagadas"
+        context['pago'] = pago
+        
+        return context
+
+    def render_to_response(self, context, **response_kwargs):
+        # Si se solicita un PDF, generamos y devolvemos el PDF
+        if 'pdf' in self.request.GET:
+            pago = context['pago']
+            pdf = pago.generarPdf()
+            response = HttpResponse(pdf, content_type='application/pdf')
+            response['Content-Disposition'] = 'attachment; filename="Comprobante-pre-factura.pdf"'
+            return response
+        else:
+            # De lo contrario, renderizamos la plantilla normalmente
+            return super().render_to_response(context, **response_kwargs)
+

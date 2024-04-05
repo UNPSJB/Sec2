@@ -14,7 +14,7 @@
         </div>
       </div>  
       <div class="col align-self-center">
-        <button type="submit" class="btn btn-success btn-sm">Crear actividad</button>
+        <button type="submit" class="btn btn-success btn-sm">Crear</button>
       </div>
     </div>
   </form>
@@ -34,8 +34,8 @@
           <td class="negrita"> {{ page_obj.start_index|add:forloop.counter0 }}</td>
           <td>{{ actividad }}</td>
           <td class="text-end">
-            <a href="{% url 'cursos:actividad_detalle' actividad.pk %}" class="btn btn-primary btn-sm btn-detalle"><i class="fa-regular fa-eye"></i> Detalle</a>
-            <a href="{% url 'cursos:actividad_editar' actividad.pk %}" class="btn btn-primary btn-sm btn-detalle"><i class="fa-regular fa-pen-to-square"></i> Modificar</a>
+            <a href="{% url 'cursos:actividad_detalle' actividad.pk %}" class="btn btn-info btn-sm btn-detalle"><i class="fa-regular fa-eye"></i> Detalle</a>
+            {% comment %} <a href="{% url 'cursos:actividad_editar' actividad.pk %}" class="btn btn-primary btn-sm btn-detalle"><i class="fa-regular fa-pen-to-square"></i> Modificar</a> {% endcomment %}
             <button type="button" class="btn btn-danger btn-sm btn-detalle" data-bs-toggle="modal" data-bs-target="#exampleModal_dar_de_baja_{{ actividad.pk }}"><i class="fa-regular fa-circle-down"></i> Eliminar</button>
             {% include 'actividad/modal_confirm_baja.html' with object=actividad %}        
           </td>

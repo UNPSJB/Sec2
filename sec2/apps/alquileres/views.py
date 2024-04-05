@@ -1,4 +1,5 @@
 from django.shortcuts import get_object_or_404, render
+from apps.afiliados.views import existe_persona_activa
 from apps.alquileres.forms import *
 from django.template import loader
 from django.http import HttpResponse
@@ -11,7 +12,7 @@ from datetime import datetime
 from django.views.generic import DetailView, ListView
 from apps.personas.models import Rol
 
-from utils.funciones import mensaje_advertencia, mensaje_exito  
+from utils.funciones import mensaje_advertencia, mensaje_error, mensaje_exito  
 from .models import Alquiler, Salon, Servicio, Encargado, Afiliado, Pago_alquiler
 from .forms import *
 from sec2.utils import ListFilterView
@@ -48,10 +49,8 @@ class EncargadoCreateView(LoginRequiredMixin, PermissionRequiredMixin, CreateVie
 
     def form_valid(self, form):
         dni = form.cleaned_data["dni"]
-        existing_person = Persona.objects.filter(dni=dni).first()
-
-        if existing_person:
-            messages.error(self.request, f'{ICON_ERROR} El encargado ya está registrada en el sistema.')
+        if existe_persona_activa(self, dni):
+            mensaje_error(self.request, f'{MSJ_PERSONA_EXISTE}')
             form = EncargadorForm(self.request.POST)
             return self.render_to_response(self.get_context_data(form=form))
         else:
@@ -69,14 +68,26 @@ class EncargadoCreateView(LoginRequiredMixin, PermissionRequiredMixin, CreateVie
                 es_encargado = True
             )
             persona.save()
+
+            current_datetime = timezone.now()
+
             encargado = Encargado(
                 persona=persona,
-                tipo = Encargado.TIPO
-            
+                tipo = Encargado.TIPO,
+                desde = current_datetime,
             )
             encargado.save()
-            mensaje_exito(self.request, f'{MSJ_CORRECTO_ALTA_AFILIADO}')
-            return redirect('alquiler:encargado_listar')
+            if 'guardar_y_recargar' in self.request.POST:
+                mensaje_exito(self.request, f'{MSJ_CORRECTO_ALTA_AFILIADO}')
+                self.object = form.save()
+                return self.render_to_response(self.get_context_data(form=self.form_class()))   
+
+            elif 'guardar_y_listar' in self.request.POST:
+                # Guarda el objeto y redirige a la página de listar
+                self.object = form.save()    
+                return redirect('alquiler:encargado_listar')
+        
+        return super().form_valid(form)
 
     def form_invalid(self, form):
         messages.warning(self.request, '<i class="fa-solid fa-triangle-exclamation fa-flip"></i> Por favor, corrija los errores a continuación.')
@@ -154,7 +165,7 @@ class EncargadoUpdateView(LoginRequiredMixin, PermissionRequiredMixin, UpdateVie
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['titulo'] = "Modificar Profesor"
+        context['titulo'] = "Modificar Encargado"
         return context
 
     def form_valid(self, form):
@@ -300,6 +311,7 @@ class SalonCreateView(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
     permission_required = 'alquileres.permission_gestion_alquiler'
     login_url = '/home/'
 
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['titulo'] = self.title
@@ -321,9 +333,19 @@ class SalonCreateView(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
         
         form.instance.encargado = encargado
         form.save()
+        if 'guardar_y_recargar' in self.request.POST:
+                mensaje_exito(self.request, f'{MSJ_CORRECTO_ALTA_ENCARGADO}')
+                self.object = form.save()
+                return self.render_to_response(self.get_context_data(form=self.form_class()))   
 
+        elif 'guardar_y_listar' in self.request.POST:
+                # Guarda el objeto y redirige a la página de listar
+                mensaje_exito(self.request, f'{MSJ_CORRECTO_ALTA_ENCARGADO}')
+                self.object = form.save()    
+                return redirect('alquiler:salon_listar')
+        
         mensaje_exito(self.request, f'{MSJ_CORRECTO_ALTA_SALON}')
-        return super().form_valid(form)
+        return redirect('alquiler:salon_listar')
 
     def form_invalid(self, form):
         mensaje_advertencia(self.request, f'{MSJ_CORRECTION}')
@@ -332,14 +354,15 @@ class SalonCreateView(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
 # ----------------------------- DETAIL DE SALON  ----------------------------------- #
 class SalonDetailView(LoginRequiredMixin, PermissionRequiredMixin, DetailView):
     model = Salon
-    template_name = 'Alquiler/salon_detalle.html'
     permission_required = 'alquileres.permission_gestion_alquiler'
     login_url = '/home/'
+    template_name = 'salon_detalle.html'
+
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['titulo'] = f"Salon: {self.object.nombre}"
-        #context['tituloListado'] = 'Dictados Asociados'
+
         return context
     
 # ----------------------------- LIST DE SALON  ----------------------------------- #
@@ -379,9 +402,9 @@ class SalonUpdateView(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
         return context
     
     def form_valid(self, form):
-        curso = form.save()
+     
         messages.success(self.request, '<i class="fa-solid fa-square-check fa-beat-fade"></i> salon modificado con éxito')
-        return redirect('alquiler:salon_detalle', pk=curso.pk)
+        return redirect('alquiler:Salon_detalle')
 
     def form_invalid(self, form):
         messages.warning(self.request, '<i class="fa-solid fa-triangle-exclamation fa-flip"></i> Por favor, corrija los errores a continuación.')
@@ -397,9 +420,10 @@ class AlquilerCreateView(LoginRequiredMixin, PermissionRequiredMixin, CreateView
     form_class = AlquilerForm
     template_name = 'alquiler_form.html'
     success_url = reverse_lazy('alquiler:pagar_alquiler_crear')
-    title = "Formulario de Alquiler de Salon"  # Agrega un título
     permission_required = 'alquileres.permission_gestion_alquiler'
     login_url = '/home/'
+    title = "Alquiler de Salón" 
+
 
 
     def get_context_data(self, **kwargs):
@@ -407,38 +431,80 @@ class AlquilerCreateView(LoginRequiredMixin, PermissionRequiredMixin, CreateView
         context['titulo'] = self.title  # Agrega el título al contexto
         # Verificar si hay alguna actividad
         return context
-
+    
+   
     
     def form_valid(self, form):
         salon = form.cleaned_data["salon"]
         fecha = form.cleaned_data["fecha_alquiler"]
         turno = form.cleaned_data["turno"]
         alquiler = Alquiler.objects.first()
-        print("ALQUILER EXISTENTE", alquiler)
-        if alquiler is not None:
-            if alquiler.verificar_existencia_alquiler(salon, fecha, turno):
-                #el alquiler ya existe
-                messages.error(self.request, f'{ICON_ERROR} Ya existía un alquiler del salón {salon} en la fecha {fecha} en el turno {turno}.')
-                return self.render_to_response(self.get_context_data(form=form))
-            else:
-                #el alquiler no exite y se puede alquilar. Guardar el nuevo alquiler
-                messages.success(self.request, f'{ICON_CHECK} Alquiler exitosa!')
+        if Alquiler.fecha_valida(fecha):
+            if alquiler is not None:
+                if alquiler.verificar_existencia_alquiler(salon, fecha, turno):
+                    #el alquiler ya existe
+                    messages.error(self.request, f'{ICON_ERROR} Ya existía un alquiler del salón {salon} en la fecha {fecha} en el turno {turno}.')
+                    return self.render_to_response(self.get_context_data(form=form))
+                else:
+                    #el alquiler no exite y se puede alquilar. Guardar el nuevo alquiler
+                    messages.success(self.request, f'{ICON_CHECK} Alquiler exitosa!')
+                    return super().form_valid(form)
+            else: 
+                # es el primer alquiler y se guarda
+                messages.success(self.request, f'{ICON_CHECK} Alquiler creado con éxito!')
                 return super().form_valid(form)
-        else: 
-            # es el primer alquiler y se guarda
-            messages.success(self.request, f'{ICON_CHECK} Alquiler creado con éxito!')
-            return super().form_valid(form)
+        else:
+             messages.error(self.request, f'{ICON_ERROR} La fecha {fecha.strftime("%d-%m-%Y")} es anterior a la fehca de hoy.')
+             return self.render_to_response(self.get_context_data(form=form))
+       
         
+            
     def form_invalid(self, form):
         messages.warning(self.request, '<i class="fa-solid fa-triangle-exclamation fa-flip"></i> Por favor, corrija los errores a continuación.')
         return super().form_invalid(form)
     
+    def fecha_valida(fecha):
+        """Verifica que la fecha sea mayor a la de hoy"""
+        hoy = datetime.today()
+        try:
+            fecha_formateada = datetime.strptime(fecha, '%Y-%m-%d').date()
+            if fecha_formateada >= hoy.date():
+                return True
+            else:
+                raise ValueError('La fecha debe ser superior a la actual')
+        except ValueError as e:
+            raise forms.ValidationError(e)
+            
+   
+def agregar_lista_espera(request, pk):
+    alquiler = get_object_or_404(Alquiler, pk=pk)
+    
+    roles_sin_fecha_hasta = Rol.objects.filter(hasta__isnull=True, tipo=1)
 
+    # Obtener personas asociadas a los roles sin fecha de finalización
+    personas = Persona.objects.filter(roles__in=roles_sin_fecha_hasta)
+
+    # Obtener afiliados asociados a las personas obtenidas
+    afiliados = Afiliado.objects.filter(persona__in=personas)
+    
+    if request.method == 'POST':
+        enc_afiliado_id = request.POST.get('enc_afiliado')
+        afiliado = get_object_or_404(Afiliado, pk=enc_afiliado_id)
+        alquiler.lista_espera.add(afiliado)
+        alquiler.save()
+        mensaje_exito(request, 'Agregado a la lista de espera con exito')
+    
+    context = {
+        'alquiler': alquiler,
+        'afiliados': afiliados,
+    }
+    
+    return render(request, 'lista_espera_alquiler.html', context)
 
 # ----------------------------- LIST DE ALQUILER  ----------------------------------- #
 class AlquilieresListView(PermissionRequiredMixin, LoginRequiredMixin, ListFilterView):
     model = Alquiler
-    paginate_by = 100
+    paginate_by = MAXIMO_PAGINATOR
     filter_class = AlquilerFilterForm
     success_url = reverse_lazy('alquiler:alquiler_listar')
     template_name = 'alquiler_list.html'
@@ -447,7 +513,7 @@ class AlquilieresListView(PermissionRequiredMixin, LoginRequiredMixin, ListFilte
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['titulo'] = "Listado de Alquileres"
+        # context['titulo'] = "Listado de Alquileres"
         return context
     
     def get_success_url(self):
@@ -470,7 +536,9 @@ class AlquilerDetailView (LoginRequiredMixin, PermissionRequiredMixin, DetailVie
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['titulo'] = "Datos del alquiler"
+        context['titulo'] = "Detalle de alquiler"
+        context['tituloListado1'] = "Lista de espera"
+        
         return context
     
 
@@ -481,9 +549,10 @@ class PagoAlquilerCreateView(LoginRequiredMixin, PermissionRequiredMixin, Create
     form_class = PagoForm
     template_name = 'pago_form.html'
     success_url = reverse_lazy('alquiler:alquiler_listar')
-    title = "Formulario Alta de Pago"  # Agrega un título
     permission_required = 'alquileres.permission_gestion_alquiler'
     login_url = '/home/'
+    title = "Formulario Alta de Pago"
+
 
 
     def get_context_data(self, **kwargs):

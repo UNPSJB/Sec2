@@ -34,7 +34,7 @@ MSJ_AFILIADO_NO_FAMILIAR = 'El afiliado no tiene a este familiar.'
 #MENSAJES ESPECIFICOS FAMILIAR
 MSJ_FAMILIAR_CARGA_CORRECTA = 'Carga de familiar exitosa!'
 MSJ_FAMILIAR_ELIMINADO = 'Familiar dado de baja.'
-MSJ_FAMILIAR_ESPOSA_EXISTE = 'Ya existe un esposo/a para el afiliado asociado.'
+MSJ_FAMILIAR_ESPOSA_EXISTE = 'Ya existe esposo/a para el afiliado asociado.'
 MSJ_HIJO_MAYOR_EDAD = 'El Hijo/a debe ser menor de edad.'
 
 #MENSAJE ESPECIFICO PARA AULAS

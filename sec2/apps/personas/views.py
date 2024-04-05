@@ -12,16 +12,12 @@ from django.views.generic.edit import CreateView
 
 def mostrarPersona(request):
     persona_id = request.GET.get('enc_cliente')
-    print(persona_id)
     if persona_id is not None or persona_id != 0:
         # Obtener la persona seleccionada
         persona = get_object_or_404(Persona, pk=persona_id)
         
         # Obtener el rol asociado a la persona
         rol = get_object_or_404(Rol, persona=persona)
-
-        print("ROLEEEES")
-        print(rol.tipo)
 
         if rol.tipo == ROL_TIPO_AFILIADO:
             afiliado = get_object_or_404(Afiliado, persona=persona)

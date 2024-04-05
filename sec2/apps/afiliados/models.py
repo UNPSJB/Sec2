@@ -22,6 +22,9 @@ Rol.register(Familiar)
 
 # -------------------- AFILIADO ------------------
 class Afiliado(Rol):
+    class Meta:
+        permissions = [("permission_gestion_afiliado", "Control total afiliado")]
+
     #Utilizado para Rol
     TIPO = ROL_TIPO_AFILIADO
     estado = models.PositiveSmallIntegerField(choices=AFILIADO_ESTADO, default=1)

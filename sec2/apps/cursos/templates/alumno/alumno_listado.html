@@ -25,7 +25,7 @@
             <td>{{ alumno.persona.apellido }}</td>
             <td>{{ alumno.persona.nombre }}</td>
             <td class="text-end">
-                <a href="{% url 'cursos:alumno_detalle' pk=alumno.pk %}" class="btn btn-primary btn-sm btn-detalle"><i class="fa-regular fa-eye"></i> Detalle</a>
+                <a href="{% url 'cursos:alumno_detalle' pk=alumno.pk %}" class="btn btn-info btn-sm btn-detalle"><i class="fa-regular fa-eye"></i> Detalle</a>
             </td>
         </tr>
         {% endfor %}

@@ -3,6 +3,8 @@ from django.views import View
 from django.views.generic import DetailView
 from django.views.generic.edit import CreateView, UpdateView
 from apps.afiliados.models import Afiliado, Familiar
+from apps.alquileres.models import Encargado
+from apps.cursos.views.curso_views import getObjectRolTipo, obtenerDictados, obtenerUltimoDiaMesAnterior
 from apps.personas.forms import PersonaForm
 
 from apps.personas.models import Persona, Rol
@@ -39,9 +41,16 @@ class DictadoCreateView(PermissionRequiredMixin, LoginRequiredMixin, CreateView)
     def form_valid(self, form):
         # Obtén el curso asociado al dictado
         curso = get_object_or_404(Curso, pk=self.kwargs.get('pk'))
+        cupo_maximo = curso.cupo_estimativo
+        
 
         # Guarda el dictado en la base de datos sin commit
         dictado = form.save(commit=False)
+
+        if dictado.cupo_real > cupo_maximo:
+            messages.warning(self.request, f'{ICON_TRIANGLE} El cupo supera el cupo maximo del dictado')
+            return self.form_invalid(form)
+
         dictado.curso = curso  # Asigna el curso al dictado
 
         # Verifica la validez del formulario
@@ -85,9 +94,7 @@ class DictadoCreateView(PermissionRequiredMixin, LoginRequiredMixin, CreateView)
 
     def form_invalid(self, form):
         messages.warning(self.request, f'{ICON_TRIANGLE} {MSJ_CORRECTION}')
-        print("ESTOY AQUIII")
         context = self.get_context_data()
-        print("Errores del formulario:", form.errors)
         return self.render_to_response(context)
 
 ##--------------- DICTADO DETALLE --------------------------------
@@ -121,6 +128,7 @@ class DictadoDetailView(PermissionRequiredMixin, LoginRequiredMixin, DetailView)
 
         # Obtener todos los horarios asociados al dictado
         horarios = dictado.horarios.all().order_by('dia_semana', 'hora_inicio')
+    
         context['horarios'] = horarios
 
         # Obtener el nombre del profesor asociado al dictado
@@ -145,7 +153,7 @@ class DictadoDetailView(PermissionRequiredMixin, LoginRequiredMixin, DetailView)
         context['todos_los_horarios_con_aula'] = todos_los_horarios_con_aula
         # Obtener todas las clases asociadas al dictado a través de los horarios
         clases = Clase.objects.filter(reserva__horario__dictado=dictado).order_by('reserva__fecha')
-        
+        todas_clases = clases
         existen_clases =  clases.exists()
 
          # Configurar la paginación
@@ -197,23 +205,23 @@ class DictadoDetailView(PermissionRequiredMixin, LoginRequiredMixin, DetailView)
                 # PERIODO DE PAGO POR CLASE
                 cantidad_clase = Decimal(curso.modulos_totales) / Decimal(dictado.modulos_por_clase)
                 cantidad_clase = Decimal(math.ceil(cantidad_clase))
-                result = round(curso.costo / cantidad_clase, 2)
+                result = round(curso.precio_total / cantidad_clase, 2)
                 context['costo_parcial'] = f"${result} AR por {dictado.get_periodo_pago_display()}"
             else:
                 # PERIODO DE PAGO POR MES
-                # if not existen_clases:
-                #     # Obtén las fechas de la primera y última clase
-                #     primera_fecha_clase = clases.first().reserva.fecha
-                #     ultima_fecha_clase = clases.last().reserva.fecha
-                #     # Calcula la diferencia de tiempo entre la primera y última fecha de clases
-                #     diferencia_tiempo = ultima_fecha_clase - primera_fecha_clase
-                #     # Calcula el número de meses
-                #     meses_transcurridos = round(diferencia_tiempo.days / 30)  # Suponiendo 30 días por mes para simplificar
-                #     # Realiza el cálculo del costo basado en el número de meses
-                #     result = round(curso.costo / meses_transcurridos, 2)
-                #     context['costo_parcial'] = f"${result} AR por {dictado.get_periodo_pago_display()}"
-                # else:
-                context['costo_parcial'] = 'Primero tiene generar las clases'
+                if existen_clases:
+                    # Obtén las fechas de la primera y última clase
+                    primera_fecha_clase = todas_clases.first().reserva.fecha
+                    ultima_fecha_clase = todas_clases.last().reserva.fecha
+                    # Calcula la diferencia de tiempo entre la primera y última fecha de clases
+                    diferencia_tiempo = ultima_fecha_clase - primera_fecha_clase
+                    # Calcula el número de meses
+                    meses_transcurridos = round(diferencia_tiempo.days / 30)  # Suponiendo 30 días por mes para simplificar
+                    # Realiza el cálculo del costo basado en el número de meses
+                    result = round(curso.precio_total / meses_transcurridos, 2)
+                    context['costo_parcial'] = f"${result} AR por {dictado.get_periodo_pago_display()} | {meses_transcurridos} Meses"
+                else:
+                    context['costo_parcial'] = 'Primero tiene generar las clases'
         return context
 
     def get_reserva(self, horario):
@@ -313,7 +321,6 @@ class BuscarPersonaView(LoginRequiredMixin, PermissionRequiredMixin, View):
 
     def get(self, request, *args, **kwargs):
         id_rol = request.GET.get('id_rol', '')
-        print("ID ROL: ",id_rol)
         try:
             # FILTRA EL PRIMERO QUE ENCUENTRA POR QUE LO GUARDA DOS VECES EN LA BASE
             rol = Rol.objects.filter(pk=id_rol).first()
@@ -386,12 +393,6 @@ class VerificarInscripcionView(PermissionRequiredMixin,LoginRequiredMixin, View)
         # Obtener roles asociados a los inscritos en los dictados
         rolesEnDictado_ids = Rol.objects.filter(persona__pk__in=incritosEnDictado_dni).values_list('id', flat=True)
 
-        print("")
-        print("")
-        print("")
-        print("")
-        print("ROLES IDS")
-        print(rolesEnDictado_ids)
         # Obtener todos los roles
 
         # familiares_inscritos_listaEspera = Familiar.objects.filter(lista_espera=dictado)    
@@ -422,10 +423,8 @@ class VerificarInscripcionView(PermissionRequiredMixin,LoginRequiredMixin, View)
         
         # personas = Persona.objects.all()
         
-        print("INSCRITOS EN ESPERA: ", inscritosEspera_ids)
         total_en_espera = inscritosEspera_ids.count()
-        print("INSCRITOS EN ESPERA: ", total_en_espera)
-                
+
         context = {
             'titulo': 'Incorporación a la lista de espera',
             'curso_pk': curso_pk,
@@ -457,10 +456,6 @@ class VerificarInscripcionView(PermissionRequiredMixin,LoginRequiredMixin, View)
             'curso_pk': curso_pk,
             'dictado_pk': dictado_pk,
         }
-
-        if persona_exists:
-            print("PERSONA EXISTE")
-
         return render(request, self.template_name, context)
 
 @permission_required('cursos.permission_gestion_curso', raise_exception=True)
@@ -536,8 +531,7 @@ def gestionListaEspera(request, pk, rol_pk, accion):
         elif rol.tipo == 4: 
             persona = get_object_or_404(Profesor, persona__pk=rol.persona.pk)
         elif rol.tipo == 5: 
-            # [FALTA: CREAR AL ENCARGADO]
-            persona = get_object_or_404(Profesor, persona__pk=rol.persona.pk)
+            persona = get_object_or_404(Encargado, persona__pk=rol.persona.pk)
         
         persona.dictados.add(dictado)
         persona.persona.es_alumno = True
@@ -553,7 +547,6 @@ def gestionListaEspera(request, pk, rol_pk, accion):
         return redirect('cursos:curso_lista_espera', pk=pk)
 
     if accion == 'agregar_lista':
-        # Verifica si el rol aún no está en ListaEspera para el Curso dado
         if not ListaEspera.objects.filter(curso=curso, rol=rol).exists():
             # Crea una nueva instancia de ListaEspera y la guarda
             lista_espera_instance = ListaEspera(curso=curso, rol=rol)
@@ -698,9 +691,6 @@ def finalizarDictado(request, curso_pk, dictado_pk):
         asistencia_tomada=True
     ).order_by('-reserva__fecha').first()
 
-    print("ULTIMA CLASE")
-    print(ultima_clase_con_asistencia)
-
     #OBTENEMOS LA FECHA QUE SE REALIZO LA CLASE
     fecha = ultima_clase_con_asistencia.reserva.fecha
     #Le asignamos la fecha de fin a mi dictado
@@ -806,7 +796,6 @@ def generarPDF_Afiliado(request, dictado_pk, persona_pk):
 
     # Calcular el porcentaje de asistencia
     porcentaje_asistencia = round((clases_asistidas.count() / clases.count()) * 100)
-    print(porcentaje_asistencia)
     # Verificar si el alumno cumple con el 80% de asistencia
     # if porcentaje_asistencia >= 80:
     buffer = generate_pdf(dictado, persona, porcentaje_asistencia)
@@ -814,3 +803,143 @@ def generarPDF_Afiliado(request, dictado_pk, persona_pk):
     # else:
         # Puedes manejar aquí el caso en el que el alumno no cumple con el 80% de asistencia
         # return HttpResponse("El alumno no cumple con el 80% de asistencia requerido.")
+
+
+from django.db.models import Count, F
+
+
+def obtenerPorcentajeAsistencia(dictado,profesor):
+
+    # ultimo_dia_mes_anterior = obtenerUltimoDiaMesAnterior()
+    # primer_dia_mes_anterior = ultimo_dia_mes_anterior.replace(day=1)
+    #Por mes actual
+    ultimo_dia_mes_actual = timezone.now().replace(day=30, month=4)
+    primer_dia_mes_actual = ultimo_dia_mes_actual.replace(day=1)
+
+    clases_dictado = Clase.objects.filter(asistencia_tomada=True, 
+                                          reserva__horario__dictado=dictado,
+                                          reserva__fecha__range=(primer_dia_mes_actual, ultimo_dia_mes_actual)
+                                          )
+
+    # Contar el número total de clases en el mes actual
+    total_clases_mes_actual = clases_dictado.count()
+
+    # Contar el número de clases donde el profesor estuvo presente
+    clases_profesor_presente = clases_dictado.filter(asistencia_profesor=profesor)
+
+    # Contar el número total de clases donde el profesor debería haber estado presente
+    total_clases_profesor = clases_dictado.annotate(
+        total_asistentes_profesor=Count('asistencia_profesor')
+    ).filter(total_asistentes_profesor__gt=0).count()
+
+    # Calcular el porcentaje de asistencia del profesor
+    if total_clases_profesor > 0:
+        porcentaje_asistencia = ((total_clases_profesor/total_clases_mes_actual) * 100 )
+    else:
+        porcentaje_asistencia = 0
+    
+    # Tengo que devolver la cantidad de clases, porcentaje de asistencia
+    return total_clases_mes_actual, total_clases_profesor,  porcentaje_asistencia
+
+from django.http import JsonResponse
+from django.utils import timezone
+
+def calcularPrecioPagar(precio_base, porcentaje_asistencia):
+
+    if porcentaje_asistencia == 100:
+        return precio_base
+    elif porcentaje_asistencia > 0:
+        return float(precio_base) * (porcentaje_asistencia / 100)
+    else:
+        return 0
+    
+def get_dictados_por_titular(request, titular_pk):
+    if request.method == 'GET':
+        try:
+            data = {'dictados': []} 
+            valor_total = 0
+
+            # Obtener al profesor y sus titulares
+            profesor = Profesor.objects.get(pk=titular_pk)
+            titulares = Titular.objects.filter(profesor=profesor)
+
+            for titular in titulares:
+                dictado = titular.dictado
+                precio = dictado.precio_real_profesor
+                cantidad_clases, clases_asistidas, porcentaje_asistencia = obtenerPorcentajeAsistencia(dictado,profesor)
+                precio_pagar = calcularPrecioPagar(precio, porcentaje_asistencia)
+                data['dictados'].append({
+                    'pk' : dictado.pk,
+                    'nombre': dictado.curso.nombre,
+                    'estado': dictado.get_estado_display(),
+                    'precio': precio,
+                    'total_clases' : cantidad_clases,
+                    'clases_asistidas': clases_asistidas,
+                    'porcentaje_asistencia': porcentaje_asistencia,
+                    'precioFinal': precio_pagar,
+                })
+                valor_total += precio_pagar
+
+            # Agregar el valor total al diccionario
+            data['valor_total'] = valor_total
+
+            return JsonResponse(data)
+
+        except Profesor.DoesNotExist:
+            return JsonResponse({'error': 'Profesor no encontrado'}, status=404)
+        except Titular.DoesNotExist:
+            return JsonResponse({'error': 'Titular no encontrado'}, status=404)
+
+def calcularPrecioxMes(dictado):
+    clases = Clase.objects.filter(reserva__horario__dictado=dictado).order_by('reserva__fecha')
+    # Obtén las fechas de la primera y última clase
+    primera_fecha_clase = clases.first().reserva.fecha
+    ultima_fecha_clase = clases.last().reserva.fecha
+    # Calcula la diferencia de tiempo entre la primera y última fecha de clases
+    diferencia_tiempo = ultima_fecha_clase - primera_fecha_clase
+    # Calcula el número de meses
+    meses_transcurridos = round(diferencia_tiempo.days / 30)  # Suponiendo 30 días por mes para simplificar
+    # Realiza el cálculo del costo basado en el número de meses
+    return round(dictado.curso.precio_total / meses_transcurridos, 2)
+
+def calcularPrecioxClase(dictado):
+    cantidad_clase = Decimal(dictado.curso.modulos_totales) / Decimal(dictado.modulos_por_clase)
+    cantidad_clase = Decimal(math.ceil(cantidad_clase))
+    return round(dictado.curso.precio_total / cantidad_clase, 2)
+
+def aplicarDescuento(dictado,precio, es_afiliado):
+    if es_afiliado:
+        descuento = Decimal(dictado.descuento)  # Convertir descuento a Decimal
+        precio_con_descuento = round(precio * (descuento / Decimal(100)), 2)
+    else:
+        descuento = 0
+        precio_con_descuento = precio
+
+    return descuento, precio_con_descuento
+
+def get_dictados_por_alumno(request, rol_pk):
+    if request.method == 'GET':
+        data = {'dictados': []}
+        rol = get_object_or_404(Rol, pk=rol_pk)
+        es_afiliado = True if rol.tipo == 1 else False
+        persona, es_profesor = getObjectRolTipo(rol)
+        dictados = obtenerDictados(persona, es_profesor)
+
+        for dictado in dictados:
+            if not dictado.estado == 3:
+                if dictado.periodo_pago == 1:
+                    precio = calcularPrecioxMes(dictado)
+                else:
+                    precio = calcularPrecioxClase(dictado)
+
+                descuento, precio_con_descuento = aplicarDescuento(dictado,precio,es_afiliado)
+
+                data['dictados'].append({
+                    'pk' : dictado.pk,
+                    'nombre': dictado.curso.nombre,
+                    'precio': precio,
+                    'descuento': descuento,
+                    'precio_con_descuento': precio_con_descuento ,
+                    'tipo_pago': dictado.periodo_pago,
+                })
+        return JsonResponse(data)

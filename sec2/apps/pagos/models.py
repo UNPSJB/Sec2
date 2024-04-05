@@ -1,6 +1,4 @@
 from django.db import models
-from apps.cursos.models import Alumno
+from apps.cursos.models import Alumno, Profesor
 
-# class Pago_alumno(models.Model):
-#     alumno = models.ForeignKey(
-#         Alumno, related_name="pagos", on_delete=models.CASCADE)
+

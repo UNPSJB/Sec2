@@ -6,6 +6,8 @@ from apps.afiliados.models import *
 from utils.choices import LOCALIDADES_CHUBUT
 from apps.personas.models import Rol, Persona
 from django.db.models import Count
+from django import forms
+from datetime import datetime
 
 # Create your models here.
 
@@ -17,6 +19,7 @@ class Servicio (models.Model):
     
 class Encargado (Rol):
     TIPO=ROL_TIPO_ENCARGADO
+    dictados = models.ManyToManyField(Dictado, related_name="encargados", blank=True)
 
     def __str__(self):
         return f"{self.persona.dni} | {self.persona.nombre} {self.persona.apellido}"
@@ -43,9 +46,13 @@ class Salon(models.Model):
     
 
 class Alquiler(models.Model):
+    class Meta:
+         permissions = [("permission_gestion_alquiler", "Control total alquiler")]
+
+         
     turnos=[
-        ('mañana','Mañana'),
-        ('noche','Noche')
+        ('Mañana','Mañana'),
+        ('Noche','Noche')
     ]
     afiliado=models.ForeignKey(Afiliado, related_name="alquileres", on_delete=models.CASCADE)
     salon=models.ForeignKey(Salon, related_name="alquileres", on_delete=models.CASCADE)
@@ -53,7 +60,7 @@ class Alquiler(models.Model):
     fecha_alquiler=models.DateTimeField(null=True, blank=True) 
     turno=models.CharField(max_length=50, choices=turnos) #verificar bien la forma de los turnos
     seguro=models.DecimalField(help_text="costo del alquiler", max_digits=10, decimal_places=2)
-    # lista_espera=models.ManyToManyField(Afiliado, blank=True)
+    lista_espera=models.ManyToManyField(Afiliado, blank=True)
     #crear lista de espera para agregar afiliado interesado que solamente mostrara para el afiliado que esta en espera, el sistea no se encarga de la actulizacion del cliente de manera automatica a la hora actulizar el cliente que contrata el salon
     #servicios[1..n] no se detallan los servicios "extras" que ofrece el sindicato porque solamente hace de nexo entre la empresa que lo ofrece y el afiliado
 
@@ -66,6 +73,16 @@ class Alquiler(models.Model):
        # Devolver True si existe al menos un alquiler que cumple con las condiciones
         return alquiler_existente
 
+    def fecha_valida(fecha):
+            #Verifica que la fecha sea mayor a la de hoy
+            hoy = datetime.today()
+                
+            if fecha.date() > hoy.date():
+                return True
+            else:
+                return False
+            
+            
 class Pago_alquiler(models.Model):
     alquiler=models.ForeignKey(Alquiler, related_name="pagos", on_delete=models.CASCADE)
     fecha_pago=models.DateTimeField(auto_now_add=True, null=True, blank=True)

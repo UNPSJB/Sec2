@@ -33,14 +33,25 @@
           </div>
         </div>
       </div>
+      
+      <div class="row text-center">
+        <div class="col">
+          {% if editar %}
+          <button type="submit" class="btn btn-success" style="display: none;">Guardar</button>
+          {% else %}
+          <button type="submit" class="btn btn-success" style="display: none;" name="guardar_y_recargar">Guardar y agregar otro</button>
+          <button type="submit" class="btn btn-success" style="display: none;" name="guardar_y_listar">Guardar y listar</button>
+          {% endif %}
+        </div>
+      </div>
 
       <div class="row">
-        <div class="col-12">
-          <div class="text-center mt-3">
-            <button id="prev-button" class="btn btn-primary" style="display: none;">Anterior</button>
-            <button id="next-button" class="btn btn-primary">Siguiente</button>
-            <button type="submit" class="btn btn-success" style="display: none;">Guardar</button>
-          </div>
+        <div class="col">
+          <button id="prev-button" class="btn btn-info" style="display: none;"><i class="fa-solid fa-arrow-left"></i> Anterior </button>
+        </div>
+        
+        <div class="col text-end">
+          <button id="next-button" class="btn btn-info">Siguiente <i class="fa-solid fa-arrow-right"></i></button>
         </div>
       </div>
     </div>

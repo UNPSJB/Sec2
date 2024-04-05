@@ -1,4 +1,4 @@
-{% extends 'detalle_listado.html' %}
+{% extends 'detalle_listado_app_cursos.html' %}
 {% load crispy_forms_tags %}
 {% load static %}
 
@@ -24,7 +24,7 @@
     <p class="negrita">Valor:</p>
   </div>
   <div class="col-md-3">
-    <p>{{costo_parcial}} </p>
+    <p>{{costo_parcial}}</p> 
   </div>
   <div class="col-md-2">
     <p class="negrita">Módulos por Clase:</p>
@@ -45,7 +45,7 @@
     <p class="negrita">Total de cupos:</p>
   </div>
   <div class="col-md-3">
-    <p>{{ total_inscritos }}/{{ dictado.cupo }} participantes</p>
+    <p>{{ total_inscritos }}/{{ dictado.cupo_real }} participantes</p>
   </div>
   <div class="col-md-2">
     <p class="negrita">Fecha de inicio:</p>
@@ -74,6 +74,15 @@
   {% endif %}
 </div>
 
+
+<div class="row">
+  <div class="col-md-2">
+    <p class="negrita">Precio del profesor:</p>
+  </div>
+  <div class="col-md-3">
+    <p>${{dictado.precio_real_profesor}}</p>
+  </div>
+</div>
 {% endblock %}
 
 {% block horarios %}
@@ -178,7 +187,7 @@
             </td>
             {% comment %} <a href="{% url 'cursos:clase_detalle' curso_pk = curso.pk dictado_pk = dictado.pk clase_pk = clase.pk %}" class="btn btn-primary btn-detalle"><i class="fa-regular fa-eye"></i> Detalle</a> {% endcomment %}
             <td class="text-end">
-              <a href="{% url 'cursos:clase_detalle' curso_pk=curso.pk dictado_pk=dictado.pk clase_pk=clase.pk %}" class="btn btn-primary btn-detalle btn-sm"><i class="fa-regular fa-eye"></i> Detalle</a>
+              <a href="{% url 'cursos:clase_detalle' curso_pk=curso.pk dictado_pk=dictado.pk clase_pk=clase.pk %}" class="btn btn-info btn-detalle btn-sm"><i class="fa-regular fa-eye"></i> Detalle</a>
               {% comment %} <a href="{% url 'cursos:clase_detalle' curso_pk = curso.pk dictado_pk = dictado.pk clase_pk = clase.pk %}" class="btn btn-primary btn-detalle"><i class="fa-regular fa-eye"></i> Detalle</a> {% endcomment %}
             </td>
           </tr>
