@@ -291,11 +291,18 @@ def cursoListaEspera(request, pk):
 from django.utils import timezone
 
 ##--------------- CURSO ELIMINAR --------------------------------
+def dictadoFinalizado(dictado):
+    return dictado.estado == 3
+
+def todosDictadosFinalizados(curso):
+    dictados = Dictado.objects.filter(curso=curso)
+    return all(dictadoFinalizado(dictado) for dictado in dictados)
+
 def curso_eliminar(request, pk):
     curso = get_object_or_404(Curso, pk=pk)
 
     try:
-        if dictadosFinalizados(curso):
+        if todosDictadosFinalizados(curso):
             curso.fechaBaja = timezone.now()
             curso.save()
             mensaje_exito(request, f'El curso ha sido deshabilitado con exito')
@@ -304,7 +311,7 @@ def curso_eliminar(request, pk):
 
     except Exception as e:
         messages.error(request, 'Ocurrió un error al intentar eliminar el aula.')
-    return redirect('cursos:curso_listado') 
+    return redirect('cursos:curso_detalle', pk=pk)
 
 
 def dictadosFinalizados(curso):

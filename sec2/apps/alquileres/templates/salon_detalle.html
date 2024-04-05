@@ -9,21 +9,21 @@
 
 <div class="row row-cols-2 row-cols-sm-4 row-cols-md-6">
   <div class="col">
-    <p class="negrita"> Salón: </p>
+    <p class="negrita">Salón: </p>
   </div>
   <div class="col">
     <p>{{ salon.nombre }}</p>
   </div>
 
   <div class="col">
-    <p class="negrita">localidad: </p>
+    <p class="negrita">Localidad: </p>
   </div>
   <div class="col">
     <p>{{ salon.localidad }}</p>
   </div>
 
   <div class="col">
-    <p class="negrita">direccion: </p>
+    <p class="negrita">Direccion: </p>
   </div>
   <div class="col">
     <p>{{ salon.direccion }}</p>
@@ -33,14 +33,14 @@
 
 <div class="row row-cols-2 row-cols-sm-4 row-cols-md-6">
   <div class="col">
-    <p class="negrita"> capacidad: </p>
+    <p class="negrita">Capacidad: </p>
   </div>
   <div class="col">
     <p>{{ salon.capacidad }}</p>
   </div>
 
   <div class="col">
-    <p class="negrita"> encargado: </p>
+    <p class="negrita">Encargado: </p>
   </div>
   <div class="col">
     <p>{{ salon.encargado }}</p>
@@ -50,18 +50,26 @@
 
 <div class="row row-cols-2 row-cols-sm-4 row-cols-md-6">
     <div class="col">
-      <p class="negrita"> precio: </p>
+      <p class="negrita"> Precio: </p>
     </div>
     <div class="col">
       <p>{{ salon.precio }}</p>
     </div>
   
     <div class="col">
-      <p class="negrita"> tipo_salon: </p>
+      <p class="negrita">Tipo salon: </p>
     </div>
     <div class="col">
-      <p>{{ salon.tipo_salon }}</p>
+      <p>{{ salon.get_tipo_salon_display }}</p>
     </div>
+    {% if salon.fechaBaja %}
+    <div class="col">
+      <p class="negrita">Fecha baja: </p>
+    </div>
+    <div class="col">
+      <p>{{ salon.fechaBaja }}</p>
+    </div>
+    {% endif %}
   </div>
 {% endblock %}
 
@@ -69,16 +77,13 @@
 
 <div class="col">
   <a href="{% url 'alquiler:salon_listar' %}" class="btn btn-sm btn-secondary btn-detalle">
-  <i class="fa-solid fa-arrow-left"></i> Volver
+  <i class="fa-solid fa-arrow-left"></i> Ir al listado
   </a>
 </div>
-
-
 
 <div class="col d-flex justify-content-end">
   <button type="button" class="btn btn-danger btn-sm btn-detalle" data-bs-toggle="modal" data-bs-target="#exampleModal_eliminar_salon"><i class="fa-regular fa-circle-down"></i> Dar de Baja</button>
   {% include 'modal_confirm_baja_salon.html' %}
-
 </div>
 
 {% endblock %}

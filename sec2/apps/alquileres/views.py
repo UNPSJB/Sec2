@@ -267,6 +267,21 @@ class ServiciosListView(ListFilterView):
             return reverse_lazy('alquiler:servicio_crear', args=[self.object.pk])
         return super().get_success_url()            
 
+# ## ------------ ACTIVIDAD DELETE -------------------
+def servicio_eliminar(request, pk):
+    servicio = get_object_or_404(Servicio, pk=pk)
+    salones = Salon.objects.filter(servicios=servicio)
+    if salones.exists():
+        mensaje_error(request, f'No puede ser eliminado porque está siendo utilizado por al menos un salón.')
+        return redirect('alquiler:gestion_servicio')
+    try:
+        # Realiza aquí cualquier acción necesaria antes de eliminar el servicio
+        servicio.delete()
+        mensaje_exito(request, f'El servicio ha sido eliminado exitosamente.')
+    except Exception as e:
+        mensaje_error(request, f'Ocurrió un error al intentar eliminar la el servicio.')
+    return redirect('alquiler:gestion_servicio')
+
 # ----------------------------- CREATE DE SALON  ----------------------------------- #
 class SalonCreateView(CreateView):
     model = Salon
@@ -323,8 +338,7 @@ class SalonDetailView(DetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['titulo'] = f"Salon: {self.object.nombre}"
-
+        context['titulo'] = f"{self.object.nombre}"
         return context
     
 # ----------------------------- LIST DE SALON  ----------------------------------- #
@@ -371,6 +385,23 @@ class SalonUpdateView(UpdateView):
         return super().form_invalid(form) 
     
 
+
+
+def salon_eliminar(request, pk):
+    salon = get_object_or_404(Salon, pk=pk)
+    alquileres = Alquiler.objects.filter(salon=salon)
+
+    if alquileres.exists():
+        mensaje_error(request, f'No puede ser eliminado porque tiene alquileres asociados.')
+        return redirect('alquiler:Salon_detalle', pk=salon.pk)
+    try:
+        salon.fechaBaja = timezone.now()
+        salon.save()
+        mensaje_exito(request, f'El salon ha sido dado de baja con exito')
+    except Exception as e:
+        messages.error(request, 'Ocurrió un error al intentar eliminar el aula.')
+    return redirect('alquiler:Salon_detalle', pk=salon.pk)
+
 # ----------------------------- CREATE DE ALQUILER  ----------------------------------- #
 
 class AlquilerCreateView(CreateView):
@@ -380,19 +411,17 @@ class AlquilerCreateView(CreateView):
     success_url = reverse_lazy('alquiler:pagar_alquiler_crear')
     title = "Alquiler de Salón" 
 
-
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['titulo'] = self.title  # Agrega el título al contexto
-        # Verificar si hay alguna actividad
         return context
-    
-   
-    
+
     def form_valid(self, form):
         salon = form.cleaned_data["salon"]
         fecha = form.cleaned_data["fecha_alquiler"]
         turno = form.cleaned_data["turno"]
+
+        print("TURNO", turno)
         alquiler = Alquiler.objects.first()
         if Alquiler.fecha_valida(fecha):
             if alquiler is not None:
@@ -409,7 +438,7 @@ class AlquilerCreateView(CreateView):
                 messages.success(self.request, f'{ICON_CHECK} Alquiler creado con éxito!')
                 return super().form_valid(form)
         else:
-             messages.error(self.request, f'{ICON_ERROR} La fecha {fecha.strftime("%d-%m-%Y")} es anterior a la fehca de hoy.')
+             messages.error(self.request, f'{ICON_ERROR} La fecha {fecha.strftime("%d-%m-%Y")} es anterior a la fecha de hoy.')
              return self.render_to_response(self.get_context_data(form=form))
        
         
