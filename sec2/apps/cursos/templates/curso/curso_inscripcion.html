@@ -120,11 +120,11 @@ function mostrarResultados(rol) {
         //ya existen inscritos
         if (!existeEnListaEspera(rol)) {
 
-          if (!existeEnDictadoActivo(rol)){
+          //if (!existeEnDictadoActivo(rol)){
             resultadosDiv.innerHTML += mostrarBotonListaEspera(rol, 'Agregar a la lista de espera');
-          }else{
-            resultadosDiv.innerHTML += `<p>La persona ya existe inscrita en uno de los dictados activos.</p>`;
-          }
+          //}else{
+//            resultadosDiv.innerHTML += `<p>La persona ya existe inscrita en uno de los dictados activos.</p>`;
+          //}
         }else{
           resultadosDiv.innerHTML += `<p>La persona ya existe en la lista de espera.</p>`;
         }

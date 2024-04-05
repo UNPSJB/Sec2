@@ -1,5 +1,6 @@
 from django import forms
 from django.forms import ValidationError
+from apps.afiliados.models import Afiliado
 from apps.personas.forms import PersonaForm,PersonaUpdateForm
 from apps.personas.models import Persona
 from utils.choices import ESTADO_CIVIL, MAX_LENGTHS, NACIONALIDADES
@@ -141,6 +142,10 @@ class AlquilerForm(forms.ModelForm):
     
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        self.fields['afiliado'].queryset = Afiliado.objects.filter(estado=2)  # Filtra por estado activo (2)
+        self.fields['afiliado'].label_from_instance = lambda obj: f"{obj.persona.dni} | {obj.persona.apellido} {obj.persona.nombre} | {obj.razon_social}" if obj.persona else obj.razon_social
+        self.fields['salon'].label_from_instance = lambda obj: f"{obj.nombre} | Capacidad: {obj.capacidad} | ${obj.precio}"
+
         
 class AlquilerFilterForm(FiltrosForm):
     alquiler_salon_nombre = forms.CharField(required=False)

@@ -78,7 +78,7 @@
                                     html += '<th class="text-end">Precio</th>';
                                     html += '<th class="text-center">Clases (total)</th>';
                                     html += '<th class="text-center">Clases (Asistidas)</th>';
-                                    html += '<th class="text-end">% Asistencia</th>';
+                                    html += '<th class="text-center">% Asistencia</th>';
                                     html += '<th class="text-end">Total</th>';
                                 html += '</tr>';
                             html += '</thead>';
@@ -90,7 +90,7 @@
                                     html += '<td class="text-end">$' + dictado.precio + '</td>';
                                     html += '<td class="text-center">' + dictado.total_clases + '</td>';
                                     html += '<td class="text-center">' + dictado.clases_asistidas + '</td>';
-                                    html += '<td class="text-end">' + dictado.porcentaje_asistencia + '%</td>';
+                                    html += '<td class="text-center">' + dictado.porcentaje_asistencia + '%</td>';
                                     html += '<td class="text-end">$' + dictado.precioFinal + '</td>';
                                 html += '</tr>';
                             });

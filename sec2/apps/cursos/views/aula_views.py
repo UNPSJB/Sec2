@@ -59,18 +59,33 @@ class GestionAulaView(CreateView, ListView):
 
 ## ------------ ACTIVIDAD DETALLE -------------------
 from datetime import date
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
 class AulaDetailView(DetailView):
     model = Aula
     template_name = "aula/aula_detalle.html"
+    paginate_by = MAXIMO_PAGINATOR
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         aula = self.object
         current_date = date.today()  # Get the current date
+        
+        reservas = Reserva.objects.filter(aula=aula, fecha__gte=current_date).order_by('fecha', 'horario__hora_inicio')
+        
+        # Configurar la paginación
+        paginator = Paginator(reservas, self.paginate_by)
+        page = self.request.GET.get('page')
 
+        try:
+            reservas = paginator.page(page)
+        except PageNotAnInteger:
+            reservas = paginator.page(1)
+        except EmptyPage:
+            reservas = paginator.page(paginator.num_pages)
 
-        context['reservas'] = Reserva.objects.filter(aula=aula, fecha__gte=current_date).order_by('fecha', 'horario__hora_inicio')
+        context['reservas'] = reservas
+
         context['titulo'] = 'Detalle de Aula'
         context['tituloListado'] = 'Proximas reservas del aula'
         return context

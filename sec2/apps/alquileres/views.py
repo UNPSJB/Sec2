@@ -141,6 +141,7 @@ class EncargadoUpdateView(UpdateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        context['editar'] = True
         context['titulo'] = "Modificar Encargado"
         return context
 
@@ -285,12 +286,15 @@ class SalonCreateView(CreateView):
 
     def form_valid(self, form):
         encargado_id = self.request.POST.get('enc_encargado')
+        print("encargado_id", encargado_id)
+        print(encargado_id)
         if encargado_id == '0':
             mensaje_advertencia(self.request, f'Seleccione al encargado')
             return super().form_invalid(form)
         
-        rol = get_object_or_404(Encargado, persona=encargado_id)
-        encargado = get_object_or_404(Encargado, persona=rol.persona)
+        rol = get_object_or_404(Rol, pk=encargado_id)
+
+        encargado = get_object_or_404(Encargado, persona__pk=rol.persona.pk)
         
         form.instance.encargado = encargado
         form.save()
@@ -430,14 +434,14 @@ class AlquilerCreateView(CreateView):
 def agregar_lista_espera(request, pk):
     alquiler = get_object_or_404(Alquiler, pk=pk)
     
-    roles_sin_fecha_hasta = Rol.objects.filter(hasta__isnull=True, tipo=1)
+    afiliado_inquilino = alquiler.afiliado
 
+    roles_sin_fecha_hasta = Rol.objects.filter(hasta__isnull=True, tipo=1)
     # Obtener personas asociadas a los roles sin fecha de finalización
     personas = Persona.objects.filter(roles__in=roles_sin_fecha_hasta)
-
     # Obtener afiliados asociados a las personas obtenidas
-    afiliados = Afiliado.objects.filter(persona__in=personas)
-    
+    afiliados = Afiliado.objects.filter(persona__in=personas, estado=2).exclude(pk=afiliado_inquilino.pk)  # Excluir el afiliado inquilino
+
     if request.method == 'POST':
         enc_afiliado_id = request.POST.get('enc_afiliado')
         afiliado = get_object_or_404(Afiliado, pk=enc_afiliado_id)

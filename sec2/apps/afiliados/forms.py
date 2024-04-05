@@ -18,7 +18,7 @@ from datetime import date
 # ---------- Utilizado para el AFILIADO CRATE VIEW 
 class AfiliadoPersonaForm(forms.ModelForm):
     razon_social = forms.CharField(max_length=30, validators=[text_and_numeric_validator])
-    categoria_laboral = forms.CharField(max_length=20, validators=[text_and_numeric_validator])
+    categoria_laboral = forms.CharField(max_length=50, validators=[text_and_numeric_validator])
     rama = forms.CharField(max_length=50, validators=[text_and_numeric_validator])
     sueldo = forms.IntegerField(validators=[MinValueValidator(0, 'El sueldo debe ser un valor positivo.')])
     horaJornada = forms.IntegerField(
@@ -27,7 +27,7 @@ class AfiliadoPersonaForm(forms.ModelForm):
 
     )
     cuit_empleador = forms.CharField(max_length=11, validators=[numeric_validator], help_text='Cuit sin puntos y guiones. Ej: 01234567899')
-    domicilio_empresa = forms.CharField(max_length=50, validators=[text_and_numeric_validator], help_text='Calle y numero')
+    domicilio_empresa = forms.CharField(max_length=100, validators=[text_and_numeric_validator], help_text='Calle y numero')
     # fechaAfiliacion = forms.DateField(widget=forms.DateInput(attrs={'type': 'date'}))
     fechaIngresoTrabajo = forms.DateField(
         widget=forms.DateInput(attrs={'type': 'date'}),

@@ -564,12 +564,9 @@ class PagoAlumnoCreateView(CreateView):
             for dictado_info in dictados_info:
                 dictado_pk = dictado_info.get('valor')
                 dictado = get_object_or_404(Dictado, pk=dictado_pk)
-                
-                precioConDescuento = dictado_info.get('precioConDescuento')
-                cantidad = dictado_info.get('cantidad')
-
+                precioConDescuento = round(float(dictado_info.get('precioConDescuento')), 2)
+                cantidad = int(dictado_info.get('cantidad'))
                 total = precioConDescuento * cantidad
-
 
                # Crear una instancia de DetallePagoAlumno para cada dictado asociado al pago
                 DetallePagoAlumno.objects.create(

@@ -810,11 +810,18 @@ def obtenerPorcentajeAsistencia(dictado,profesor):
     # Calcular el porcentaje de asistencia del profesor
     if total_clases_profesor > 0:
         porcentaje_asistencia = ((total_clases_profesor/total_clases_mes_actual) * 100 )
+        porcentaje_asistencia_redondeado = round(porcentaje_asistencia, 0)
     else:
         porcentaje_asistencia = 0
     
     # Tengo que devolver la cantidad de clases, porcentaje de asistencia
-    return total_clases_mes_actual, total_clases_profesor,  porcentaje_asistencia
+    print("PRINTERES")
+    print("total_clases_mes_actual", total_clases_mes_actual)
+    print("total_clases_profesor", total_clases_profesor)
+    print("porcentaje_asistencia", porcentaje_asistencia)
+    print("porcentaje_asistencia_redondeado", porcentaje_asistencia_redondeado)
+
+    return total_clases_mes_actual, total_clases_profesor,  porcentaje_asistencia_redondeado
 
 from django.http import JsonResponse
 from django.utils import timezone
@@ -899,7 +906,6 @@ def get_dictados_por_alumno(request, rol_pk):
         es_afiliado = True if rol.tipo == 1 else False
         persona, es_profesor = getObjectRolTipo(rol)
         dictados = obtenerDictados(persona, es_profesor)
-
         for dictado in dictados:
             if not dictado.estado == 3:
                 if dictado.periodo_pago == 1:
@@ -908,7 +914,6 @@ def get_dictados_por_alumno(request, rol_pk):
                     precio = calcularPrecioxClase(dictado)
 
                 descuento, precio_con_descuento = aplicarDescuento(dictado,precio,es_afiliado)
-
                 data['dictados'].append({
                     'pk' : dictado.pk,
                     'nombre': dictado.curso.nombre,
