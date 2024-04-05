@@ -105,14 +105,17 @@ class SalonrForm(forms.ModelForm):
             'nombre': forms.TextInput(attrs={'class': 'form-control form-control-user', 'placeholder': 'Eje: PasaRatos'}),
             'direccion': forms.TextInput(attrs={'class': 'form-control form-control-user', 'placeholder': 'Eje: Pedro Pascal 150'}),
             'capacidad': forms.TextInput(attrs={'class': 'form-control form-control-user', 'placeholder': 'Eje: 50'}),
+            'tipo_salon': forms.RadioSelect(attrs={'class': 'tipo_salon-radio'}),  # Agrega la clase CSS personalizada al widget del campo de turno
+
             #'encargado': forms.TextInput(attrs={'class': 'form-control form-control-user', 'placeholder': 'encargado'}),
             'precio': forms.TextInput(attrs={'class': 'form-control form-control-user', 'placeholder': 'Eje: 1000'}),
-            'servicios': forms.CheckboxSelectMultiple
+            'servicios': forms.CheckboxSelectMultiple(attrs={'class': 'servicios-checkbox'}), 
         }
     
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        
+        self.fields['tipo_salon'].choices = [(1, 'Polideportivo'), (2, 'Multiuso')]
+
 
 
 class SalonFilterForm(FiltrosForm):

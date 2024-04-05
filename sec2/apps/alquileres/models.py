@@ -34,7 +34,7 @@ class Salon(models.Model):
     nombre = models.CharField(max_length=30)
     localidad= models.CharField(max_length =25,choices = LOCALIDADES_CHUBUT)
     direccion=models.CharField(max_length=50)
-    capacidad=models.PositiveIntegerField(help_text="capacidad maxima del salon")
+    capacidad=models.PositiveIntegerField()
     encargado=models.ForeignKey(Encargado, related_name="salon", on_delete=models.CASCADE)
     precio=models.DecimalField(help_text="costo del alquiler", max_digits=10, decimal_places=2)
     fechaBaja= models.DateField(
