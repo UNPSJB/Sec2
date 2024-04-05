@@ -210,6 +210,8 @@ class DictadoDetailView(DetailView):
                     # Calcula el número de meses
                     meses_transcurridos = round(diferencia_tiempo.days / 30)  # Suponiendo 30 días por mes para simplificar
                     # Realiza el cálculo del costo basado en el número de meses
+                    if meses_transcurridos == 0:
+                        meses_transcurridos = 1
                     result = round(curso.precio_total / meses_transcurridos, 2)
                     context['costo_parcial'] = f"${result} AR por {dictado.get_periodo_pago_display()} | {meses_transcurridos} Meses"
                 else:

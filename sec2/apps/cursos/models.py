@@ -204,6 +204,11 @@ class Alumno(Rol):
         """
         return self.dictados.filter(pk=dictado_pk).exists()
 
+    def darDeBaja(self):
+        self.hasta = date.today()
+        self.persona.save()
+        self.save()
+
 Rol.register(Alumno)
 
 #------------- PROFESOR --------------------
@@ -220,6 +225,13 @@ class Profesor(Rol):
         blank=False,
         validators=[validate_no_mayor_actual]
     )
+    
+    def esRolActivo(self):
+        rol = get_object_or_404(Rol, persona__pk=self.persona.pk)
+        if rol.hasta:
+            return False
+        else:
+            return True
 
     def __str__(self):
         if self.persona_id and hasattr(self, 'persona'):

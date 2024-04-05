@@ -133,7 +133,8 @@ class ProfesorListView(ListFilterView):
     paginate_by = MAXIMO_PAGINATOR
     filter_class = ProfesorFilterForm
     template_name = 'profesor/profesor_list.html'  
-    
+    ordering = ['persona__dni']  # Ordenar por el campo 'dni' de la relación 'persona'
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         filter_form = ProfesorFilterForm(self.request.GET)
