@@ -776,6 +776,15 @@ from dateutil.relativedelta import relativedelta
 from datetime import datetime
 from django.db.models import Q
 
+def obtenerAfiliadosMorososActivos():
+  # Filtrar roles sin fecha de finalización
+    roles_sin_fecha_hasta = Rol.objects.filter(hasta__isnull=True)
+        # Obtener personas asociadas a los roles sin fecha de finalización
+    personas = Persona.objects.filter(roles__in=roles_sin_fecha_hasta)
+        # Obtener afiliados asociados a las personas obtenidas
+    return Afiliado.objects.filter(persona__in=personas, estado__in=[2, 5])
+
+
 class PagoCuotaCreateView(CreateView):
     model = PagoCuota
     form_class = PagoCuotaForm
@@ -784,25 +793,17 @@ class PagoCuotaCreateView(CreateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        
-        # Filtrar roles sin fecha de finalización
-        roles_sin_fecha_hasta = Rol.objects.filter(hasta__isnull=True)
-        
-        # Obtener personas asociadas a los roles sin fecha de finalización
-        personas = Persona.objects.filter(roles__in=roles_sin_fecha_hasta)
-        
-        # Obtener afiliados asociados a las personas obtenidas
-        afiliados = Afiliado.objects.filter(persona__in=personas, estado__in=[2, 5])
-        
+        afiliados = obtenerAfiliadosMorososActivos()
+
         # Obtener todos los cuit_empleador únicos de los afiliados con sus respectivas razones sociales
         empleadores = Afiliado.objects.filter(
             Q(estado=2) | Q(estado=5),  # activos o morosos
             cuit_empleador__isnull=False
-        ).values('cuit_empleador', 'razon_social').distinct()
+        ).values('cuit_empleador').distinct()
 
         context['titulo'] = "Cuota Sindical"
-        context['afiliados'] = afiliados
         context['empleadores'] = empleadores
+        # context['afiliados'] = afiliados
         return context
     
     def form_valid(self, form):
@@ -920,3 +921,17 @@ def cuota_sindical_actualizar_estado(request):
     mensaje_exito(request, f'Estados de los afiliados actualizados')
     return redirect('afiliados:pago_cuota_listado')
 
+from django.http import JsonResponse
+
+def obtener_afiliados_por_cuit_empleador(request):
+    cuit_empleador = request.GET.get('cuit_empleador')
+    if cuit_empleador:
+        afiliados = Afiliado.objects.filter(
+            persona__roles__hasta__isnull=True,
+            cuit_empleador=cuit_empleador,
+            estado__in=[2, 5]  # Filtrar por estados 2 o 5
+        ).distinct()
+        afiliados_data = [{'id': afiliado.id, 'nombre_completo': f'{afiliado.persona.dni} {afiliado.persona.nombre} {afiliado.persona.apellido}'} for afiliado in afiliados]
+        return JsonResponse(afiliados_data, safe=False)
+    else:
+        return JsonResponse([], safe=False)
