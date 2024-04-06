@@ -133,7 +133,7 @@ class AlquilerForm(forms.ModelForm):
           # 'fecha_solicitud': forms.DateInput(attrs={'type': 'date'}),
            'fecha_alquiler': forms.DateInput(attrs={'type': 'date'}),
            'seguro': forms.TextInput(attrs={'class': 'form-control form-control-user', 'placeholder': 'Eje: 1000'}),
-            'turno': forms.RadioSelect(attrs={'class': 'turno-radio'}),  # Agrega la clase CSS personalizada al widget del campo de turno
+            # 'turno': forms.RadioSelect(attrs={'class': 'turno-radio'}),  # Agrega la clase CSS personalizada al widget del campo de turno
        }
     
     def __init__(self, *args, **kwargs):
@@ -143,7 +143,7 @@ class AlquilerForm(forms.ModelForm):
         
         self.fields['salon'].queryset = Salon.objects.filter(fechaBaja=None)
         self.fields['salon'].label_from_instance = lambda obj: f"{obj.nombre} | Capacidad: {obj.capacidad} | ${obj.precio}"
-        self.fields['turno'].choices = [('Mañana', 'Mañana'), ('Noche', 'Noche')]
+        # self.fields['turno'].choices = [('Mañana', 'Mañana'), ('Noche', 'Noche')]
 
         
 class AlquilerFilterForm(FiltrosForm):
@@ -164,8 +164,7 @@ class PagoForm(forms.ModelForm):
         widgets = {
            #'fecha_solicitud': forms.DateInput(attrs={'type': 'date'}),
            #'fecha_alquiler': forms.DateInput(attrs={'type': 'date'}),
-           #'seguro': forms.TextInput(attrs={'class': 'form-control form-control-user', 'placeholder': 'Eje: 1000'}),
-            
+           #'seguro': forms.TextInput(attrs={'class': 'form-control form-control-user', 'placeholder': 'Eje: 1000'}),   
        }
     
 

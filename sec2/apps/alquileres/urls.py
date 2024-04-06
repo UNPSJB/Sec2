@@ -17,29 +17,24 @@ urlpatterns = [
     # SERVICIO
     path('servicios/', GestionServicioView.as_view(), name="gestion_servicio"),
     path('servicio/servicio/<int:pk>/', ServicioDetailView.as_view(), name='servicio_detalle'),
-    # path('servicios/serviio/crearServicio/',ServicioCreateView.as_view(), name="servicio_crear"),
     path('aulas/aula/<int:pk>/editar', ServicioUpdateView.as_view(), name="servicio_editar"),
     path('aulas/aula/<int:pk>/eliminar', servicio_eliminar, name="servicio_eliminar"),
 
     # SALON
-    path('salones/listado',SalonesListView.as_view(), name="salon_listar"),
-    path('crear/',SalonCreateView.as_view(), name="salon_crear"),
-    path('salon/<int:pk>',SalonDetailView.as_view(), name="Salon_detalle"),
-    path('modificar/<int:pk>', SalonUpdateView.as_view(), name="salon_actualizar"),
-    path('salon/<int:pk>/eliminar', salon_eliminar, name="salon_eliminar"),
+    path('salones',SalonesListView.as_view(), name="salon_listar"),
+    path('salones/salon/crear/',SalonCreateView.as_view(), name="salon_crear"),
+    path('salones/salon/<int:pk>',SalonDetailView.as_view(), name="Salon_detalle"),
+    path('salones/salon/<int:pk>/editar', SalonUpdateView.as_view(), name="salon_actualizar"),
+    path('salones/salon/<int:pk>/eliminar', salon_eliminar, name="salon_eliminar"),
 
     # ALQUILER
-    path('crearAlquiler/',AlquilerCreateView.as_view(), name="alquiler_crear"),
-    path('alquiler/<int:pk>',AlquilerDetailView.as_view(), name="alquiler_detalle"),
+    path('alquileres/',AlquilieresListView.as_view(), name="alquiler_listar"),
+    path('alquileres/alquiler/crear',AlquilerCreateView.as_view(), name="alquiler_crear"),
+    path('alquileres/alquiler/<int:pk>',AlquilerDetailView.as_view(), name="alquiler_detalle"),
     # path('modificar/<int:pk>', AlquilerUpdateView.as_view(), name="alquiler_actualizar"),
-    path('mostrarAlquileres/',AlquilieresListView.as_view(), name="alquiler_listar"),
-    #path('mostrar/pendientes',AlquileresListPendienteView.as_view(), name="alquiler_listar_pendiente"),
-    #path('mostrar/activos',AlquileresListActivoView.as_view(), name="alquiler_listar_activos"),
-    path('alquiler/agregarlistaespera/<int:pk>/',agregar_lista_espera, name="agregar_lista_espera"),
+    path('alquileres/alquiler/<int:pk>/agregarlistaespera',agregar_lista_espera, name="agregar_lista_espera"),
+    path('alquileres/alquiler/<int:pk>/reemplazarinquilino', reemplazar_inquilino, name="reemplazar_inquilino"),
     
     # PAGO DE ALQUILER
     path('crearPago/',PagoAlquilerCreateView.as_view(), name="pagar_alquiler_crear"),
-   # path('alquiler/<int:pk>',PagoAlquilerDetailView.as_view(), name="Pago_alquiler"),
-  #  path('modificar/<int:pk>', PagoAlquilerUpdateView.as_view(), name="pago_alquiler_actualizar"),
-  #  path('mostrar/',PagosAlquilieresListView.as_view(), name="pago_alquiler_listar"),
 ]

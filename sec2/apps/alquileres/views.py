@@ -470,7 +470,7 @@ def agregar_lista_espera(request, pk):
     personas = Persona.objects.filter(roles__in=roles_sin_fecha_hasta)
     # Obtener afiliados asociados a las personas obtenidas
     afiliados = Afiliado.objects.filter(persona__in=personas, estado=2).exclude(pk=afiliado_inquilino.pk)  # Excluir el afiliado inquilino
-
+    
     if request.method == 'POST':
         enc_afiliado_id = request.POST.get('enc_afiliado')
         afiliado = get_object_or_404(Afiliado, pk=enc_afiliado_id)
@@ -486,6 +486,36 @@ def agregar_lista_espera(request, pk):
     return render(request, 'lista_espera_alquiler.html', context)
 
 # ----------------------------- LIST DE ALQUILER  ----------------------------------- #
+from .forms import PagoForm
+from django.shortcuts import redirect
+
+def reemplazar_inquilino(request, pk):
+    alquiler = get_object_or_404(Alquiler, pk=pk)
+    lista_espera = alquiler.lista_espera
+
+    if request.method == 'POST':
+        nuevo_afiliado_pk = request.POST.get('enc_afiliado')
+        if nuevo_afiliado_pk:  # Verifica si se ha seleccionado un nuevo afiliado
+            nuevo_afiliado = Afiliado.objects.get(pk=nuevo_afiliado_pk)
+            alquiler.afiliado = nuevo_afiliado
+            alquiler.lista_espera.remove(nuevo_afiliado)
+            alquiler.save()
+            # Realiza otras operaciones necesarias, como eliminar un pago existente y crear uno nuevo
+            # Construir la URL de la vista de detalle del alquiler
+
+            detalle_alquiler_url = reverse('alquiler:alquiler_detalle', args=[alquiler.pk])
+            mensaje_exito(request, "Inquilino reemplazado exitosamente y sacado de la lista de espera.")
+            return redirect(detalle_alquiler_url)
+    else:
+        print("ESTOY EN GET")
+
+    context = {
+        'titulo': "Reemplazo de inquilino",
+        'listaEspera': lista_espera,
+    }
+    return render(request, 'alquiler_reemplazar_inquilino.html', context)
+
+
 class AlquilieresListView(ListFilterView):
     model = Alquiler
     paginate_by = MAXIMO_PAGINATOR
@@ -514,9 +544,11 @@ class AlquilerDetailView (DetailView):
     template_name = 'alquiler_detail.html'
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+
+        pago = get_object_or_404(Pago_alquiler, alquiler=self.object)
+        context['pago'] = pago
         context['titulo'] = "Detalle de alquiler"
         context['tituloListado1'] = "Lista de espera"
-        
         return context
     
 

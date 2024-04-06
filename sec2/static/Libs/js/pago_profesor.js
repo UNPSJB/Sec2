@@ -17,7 +17,6 @@ $(document).ready(function() {
                 },
                 dataType: 'json',
                 success: function(data) {
-                    alert(data)
                     $('#enc_dictado').empty();
                     $.each(data, function(index, dictado) {
                         $('#enc_dictado').append('<option value="' + dictado.id + '">' + dictado.nombre + '</option>');

@@ -1,0 +1,23 @@
+{% extends 'alta.html' %}
+{% load crispy_forms_tags %}
+{% load static %}
+
+{% block formulario %}
+  <form  method="post">
+    {% csrf_token %}
+    <div class="row">
+        <div class="col">
+        <label>Ingrese el nuevo inquilino:</label>
+        <select name="enc_afiliado" id="enc_afiliado">
+            <option value="0"> --------------- </option>
+            {% for afiliado in listaEspera.all %}
+              <option value="{{afiliado.pk}}">
+                {{afiliado.persona.dni}} {{afiliado.persona.apellido}} {{afiliado.persona.nombre}}
+              </option>
+            {% endfor %}
+        </select>
+    </div>
+
+    <button type="submit">Guardar</button>
+
+{% endblock %}

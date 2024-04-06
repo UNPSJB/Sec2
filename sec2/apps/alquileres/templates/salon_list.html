@@ -18,21 +18,33 @@
       <th>Direccion</th>
       <th>Capacidad</th>
       <th>Precio</th>
+      <th class="text-center">Estado</th>
       <th></th>
     </tr>
   </thead>
   
   <tbody>
-    {% for Salon in object_list %}
+    {% for salon in object_list %}
       <tr class="bg-transition">
         <td>{{ forloop.counter }}</td>
-        <td>{{ Salon.localidad }}</td>
-        <td>{{ Salon.nombre }}</td>
-        <td>{{ Salon.direccion }}</td>
-        <td>{{ Salon.capacidad }}</td>
-        <td>{{ Salon.precio }}</td>
+        <td>{{ salon.localidad }}</td>
+        <td>{{ salon.nombre }}</td>
+        <td>{{ salon.direccion }}</td>
+        <td>{{ salon.capacidad }}</td>
+        <td>{{ salon.precio }}</td>
+
         <td class="text-center">
-          <a href="{% url 'alquiler:Salon_detalle' Salon.pk %}" class="btn btn-info btn-sm btn-detalle"><i class="fa-regular fa-eye"></i> Detalle</a>
+          {% if salon.fechaBaja %}
+          <i class="fa-solid fa-circle-minus" style="color: #a80000;"></i>
+          {% else %}
+          <i class="fa-regular fa-circle-check" style="color: #008f00;"></i>
+          {% endif %}
+          
+
+        </td>
+
+        <td class="text-center">
+          <a href="{% url 'alquiler:Salon_detalle' salon.pk %}" class="btn btn-info btn-sm btn-detalle"><i class="fa-regular fa-eye"></i> Detalle</a>
         </td>
       </tr>
     {% endfor %}

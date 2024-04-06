@@ -147,7 +147,6 @@ $(document).on('change', 'input[name="dictado"]', function () {
     actualizarInputDictados(dictadosSeleccionados);
 
     var totalSubtotales = calcularTotalSubtotales(dictadosSeleccionados);
-    alert(totalSubtotales)
     var tableHTML = generarTablaHTML(dictadosSeleccionados, totalSubtotales);
     $('#seleccionados').html(tableHTML);
 });

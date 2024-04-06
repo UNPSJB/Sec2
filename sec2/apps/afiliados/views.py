@@ -89,7 +89,6 @@ class AfiliadoCreateView(CreateView):
             afiliado.save()
 
             mensaje_exito(self.request, f'{MSJ_CORRECTO_ALTA_AFILIADO}')
-            self.object = form.save()
 
             if 'guardar_y_recargar' in self.request.POST:
                 return self.render_to_response(self.get_context_data(form=self.form_class()))   
