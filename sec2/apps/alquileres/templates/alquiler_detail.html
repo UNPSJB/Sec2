@@ -98,7 +98,7 @@
 
 <div class="col">
   {% if not alquiler.fechaBaja %}
-    <a href="{% url 'afiliados:afiliado_actualizar' alquiler.pk %}" class="btn btn-sm btn-primary btn-detalle "><i class="fas fa-pencil-alt"></i> Modificar</a>
+    {% comment %} <a href="{% url 'afiliados:afiliado_actualizar' alquiler.pk %}" class="btn btn-sm btn-primary btn-detalle "><i class="fas fa-pencil-alt"></i> Modificar</a> {% endcomment %}
   {% endif %}
 </div>
 

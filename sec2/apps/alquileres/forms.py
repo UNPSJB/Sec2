@@ -133,7 +133,7 @@ class AlquilerForm(forms.ModelForm):
           # 'fecha_solicitud': forms.DateInput(attrs={'type': 'date'}),
            'fecha_alquiler': forms.DateInput(attrs={'type': 'date'}),
            'seguro': forms.TextInput(attrs={'class': 'form-control form-control-user', 'placeholder': 'Eje: 1000'}),
-            # 'turno': forms.RadioSelect(attrs={'class': 'turno-radio'}),  # Agrega la clase CSS personalizada al widget del campo de turno
+            'turno': forms.RadioSelect(attrs={'class': 'turno-radio'}),  # Agrega la clase CSS personalizada al widget del campo de turno
        }
     
     def __init__(self, *args, **kwargs):
@@ -143,7 +143,7 @@ class AlquilerForm(forms.ModelForm):
         
         self.fields['salon'].queryset = Salon.objects.filter(fechaBaja=None)
         self.fields['salon'].label_from_instance = lambda obj: f"{obj.nombre} | Capacidad: {obj.capacidad} | ${obj.precio}"
-        # self.fields['turno'].choices = [('Mañana', 'Mañana'), ('Noche', 'Noche')]
+        self.fields['turno'].choices = [('Mañana', 'Mañana'), ('Noche', 'Noche')]
 
         
 class AlquilerFilterForm(FiltrosForm):
@@ -154,7 +154,7 @@ class AlquilerFilterForm(FiltrosForm):
 
 # ----------------------------- PAGO ----------------------------------- #
 class PagoForm(forms.ModelForm):
-    forma_pago = forms.ChoiceField(choices=[('total', 'Total'), ('cuota', 'Cuota')])
+    # forma_pago = forms.ChoiceField(choices=[('total', 'Total'), ('cuota', 'Cuota')])
     alquiler = forms.ChoiceField(choices=[])
    
 
@@ -162,6 +162,8 @@ class PagoForm(forms.ModelForm):
         model = Pago_alquiler
         fields = ('forma_pago', 'alquiler')
         widgets = {
+            'forma_pago': forms.RadioSelect(attrs={'class': 'turno-radio'}),  # Agrega la clase CSS personalizada al widget del campo de turno
+
            #'fecha_solicitud': forms.DateInput(attrs={'type': 'date'}),
            #'fecha_alquiler': forms.DateInput(attrs={'type': 'date'}),
            #'seguro': forms.TextInput(attrs={'class': 'form-control form-control-user', 'placeholder': 'Eje: 1000'}),   
@@ -173,6 +175,8 @@ class PagoForm(forms.ModelForm):
         alquileres_sin_pagos = Pago_alquiler.alquileres_sin_pago()
         choices = [(alquiler.id, f'{alquiler.afiliado.persona.nombre} - {alquiler.salon.nombre} - {alquiler.fecha_alquiler.strftime("%d/%m/%Y")} - {alquiler.turno}') for alquiler in alquileres_sin_pagos]
         self.fields['alquiler'].choices = choices
+        self.fields['forma_pago'].choices = [('total', 'Total'), ('cuota', 'Cuota')]
+
 
     def clean_alquiler(self):
         alquiler_id = self.cleaned_data['alquiler']

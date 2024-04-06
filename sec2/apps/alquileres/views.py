@@ -522,13 +522,16 @@ def actualizar_alquiler_y_pago(alquiler, nuevo_afiliado, post_data):
     alquiler.afiliado = nuevo_afiliado
     alquiler.lista_espera.remove(nuevo_afiliado)
     alquiler.cambio_inquilino = True
-    alquiler.save()
 
     pago_alquiler = obtener_pago_alquiler(alquiler)
+    alquiler.fecha_solicitud = timezone.now()
+    alquiler.save()
     if pago_alquiler:
         pago_form = PagoAlquilerForm(post_data, instance=pago_alquiler)
         if pago_form.is_valid():
+            pago_form.fecha_pago = timezone.now()
             pago_form.save()
+
 
 
 def obtener_pago_alquiler(alquiler):

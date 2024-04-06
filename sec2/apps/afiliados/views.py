@@ -420,7 +420,7 @@ def alta_familiar(request):
                         form = AfiliadoSelectForm(request.POST)
                         context = {
                         'form': form,
-                        'clientes': Afiliado.objects.filter(estado__in=[1, 2]),
+                        'clientes': Afiliado.objects.filter(estado__in=[1, 2, 5]),
                         'titulo': 'Alta de Familiar',  # Replace with your desired title
                         }
 
@@ -436,7 +436,7 @@ def alta_familiar(request):
 
     context = {
         'form': form,
-        'clientes': Afiliado.objects.filter(estado__in=[1, 2]),
+        'clientes': Afiliado.objects.filter(estado__in=[1, 2, 5]),
         'titulo': 'Alta de Familiar',  # Replace with your desired title
     }
     return render(request, 'grupoFamiliar/grupo_familiar_alta_directa.html', context)
@@ -792,11 +792,11 @@ class PagoCuotaCreateView(CreateView):
         personas = Persona.objects.filter(roles__in=roles_sin_fecha_hasta)
         
         # Obtener afiliados asociados a las personas obtenidas
-        afiliados = Afiliado.objects.filter(persona__in=personas)
+        afiliados = Afiliado.objects.filter(persona__in=personas, estado__in=[2, 5])
         
         # Obtener todos los cuit_empleador únicos de los afiliados con sus respectivas razones sociales
         empleadores = Afiliado.objects.filter(
-            Q(estado=1) | Q(estado=2) | Q(estado=5),  # Filtrar por estados 1 o 2
+            Q(estado=2) | Q(estado=5),  # activos o morosos
             cuit_empleador__isnull=False
         ).values('cuit_empleador', 'razon_social').distinct()
 
