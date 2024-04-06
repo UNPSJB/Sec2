@@ -75,7 +75,7 @@
 
 <div class="col">
   <a href="{% url 'alquiler:alquiler_listar' %}" class="btn btn-sm btn-secondary btn-detalle">
-  <i class="fa-solid fa-arrow-left"></i> Volver
+  <i class="fa-solid fa-arrow-left"></i> Ir al calendario
   </a>
 </div>
 
@@ -84,18 +84,18 @@
 </div>
 
 <div class="col"> 
-  <a href="{% url 'afiliados:afiliado_detalle' alquiler.afiliado.pk %}" class="btn btn-sm btn-primary btn-detalle">
+  <a href="{% url 'afiliados:afiliado_detalle' alquiler.afiliado.pk %}" class="btn btn-sm btn-info btn-detalle">
     <i class="fa-regular fa-user"></i> Ir al Afiliado
   </a>
 </div>
 
 <div class="col">
   {% if not alquiler.lista_espera.exists %}
-  <button class="btn btn-info btn-sm btn-detalle" disabled>
+  <button class="btn btn-primary btn-sm btn-detalle" disabled>
     <i class="fa-solid fa-repeat"></i> Cambiar de Arrendatario
   </button>
 {% else %}
-  <a href="{% url 'alquiler:reemplazar_inquilino' alquiler.pk %}" class="btn btn-info btn-sm btn-detalle"><i class="fa-solid fa-repeat"></i> Cambiar de Arrendatario</a>            
+  <a href="{% url 'alquiler:reemplazar_inquilino' alquiler.pk %}" class="btn btn-primary btn-sm btn-detalle"><i class="fa-solid fa-repeat"></i> Cambiar de Arrendatario</a>            
 {% endif %}
 </div>
 
@@ -112,7 +112,7 @@
   <h3 class="subtitulo">{{ tituloListado1 }}</h3>
   <a href={% url 'alquiler:agregar_lista_espera' alquiler.pk %} 
     class="btn btn-warning btn-sm btn-detalle" 
-    onclick="openOrFocusWindow(this.href, 'Lista de espera', 700, 400); return false;">
+    onclick="openOrFocusWindow(this.href, 'Lista de espera', 350, 200); return false;">
     <i class="fa-solid fa-list"></i>
     Agregar lista espera
   </a>
@@ -137,6 +137,7 @@
 
           <td class="text-end">
             <a href="{% url 'afiliados:afiliado_detalle' afiliado.pk %}" class="btn btn-info btn-sm btn-detalle"><i class="fa-regular fa-eye"></i> Detalle</a>            
+            <a href="{% url 'alquiler:quitar_lista_alquiler' alquiler_pk=alquiler.pk afiliado_pk=afiliado.pk %}" class="btn btn-outline-danger btn-sm btn-detalle"><i class="fa-regular fa-trash-can"></i> Quitar</a>
           </td>
         </tr>
         {% endfor %}

@@ -6,18 +6,26 @@
   <form  method="post">
     {% csrf_token %}
     <div class="row">
-        <div class="col">
+      <div class="col">
         <label>Ingrese el nuevo inquilino:</label>
         <select name="enc_afiliado" id="enc_afiliado">
-            <option value="0"> --------------- </option>
-            {% for afiliado in listaEspera.all %}
-              <option value="{{afiliado.pk}}">
-                {{afiliado.persona.dni}} {{afiliado.persona.apellido}} {{afiliado.persona.nombre}}
-              </option>
-            {% endfor %}
+          <option value="0"> --------------- </option>
+          {% for afiliado in listaEspera.all %}
+          <option value="{{afiliado.pk}}">
+            {{afiliado.persona.dni}} {{afiliado.persona.apellido}} {{afiliado.persona.nombre}}
+          </option>
+          {% endfor %}
         </select>
+      </div>
+      <div class="col">
+      </div>
     </div>
 
-    <button type="submit">Guardar</button>
 
+    <br>
+    <div class="row text-center">
+      <div class="col">
+        <button type="submit" class="btn btn-success" >Guardar</button>
+      </div>
+    </div>
 {% endblock %}

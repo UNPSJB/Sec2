@@ -470,7 +470,9 @@ def agregar_lista_espera(request, pk):
     personas = Persona.objects.filter(roles__in=roles_sin_fecha_hasta)
     # Obtener afiliados asociados a las personas obtenidas
     afiliados = Afiliado.objects.filter(persona__in=personas, estado=2).exclude(pk=afiliado_inquilino.pk)  # Excluir el afiliado inquilino
-    
+    afiliado_en_lista_espera = alquiler.lista_espera.all()
+    afiliados_no_en_lista_espera = afiliados.exclude(pk__in=afiliado_en_lista_espera.values_list('pk', flat=True))
+
     if request.method == 'POST':
         enc_afiliado_id = request.POST.get('enc_afiliado')
         afiliado = get_object_or_404(Afiliado, pk=enc_afiliado_id)
@@ -480,7 +482,7 @@ def agregar_lista_espera(request, pk):
     
     context = {
         'alquiler': alquiler,
-        'afiliados': afiliados,
+        'afiliados': afiliados_no_en_lista_espera,
     }
     
     return render(request, 'lista_espera_alquiler.html', context)
@@ -516,6 +518,18 @@ def reemplazar_inquilino(request, pk):
     return render(request, 'alquiler_reemplazar_inquilino.html', context)
 
 
+def quitar_lista_alquiler(request, alquiler_pk, afiliado_pk):
+    alquiler = get_object_or_404(Alquiler, pk=alquiler_pk)
+    afiliado = get_object_or_404(Afiliado, pk=afiliado_pk)
+
+    # Remover el afiliado de la lista de espera del alquiler
+    alquiler.lista_espera.remove(afiliado)
+
+    mensaje_exito(request, "Afiliado sacado de la lista de espera con exito.")
+    detalle_alquiler_url = reverse('alquiler:alquiler_detalle', args=[alquiler.pk])
+    return redirect(detalle_alquiler_url)
+
+
 class AlquilieresListView(ListFilterView):
     model = Alquiler
     paginate_by = MAXIMO_PAGINATOR
@@ -536,8 +550,7 @@ class AlquilieresListView(ListFilterView):
     def alquiler_confirm_delete (request, pk):
         alquiler = Alquiler.objects.get(pk=pk)
         return render (request,'alquileres/alquiler_confirm_delete.html',{'alquiler':alquiler})
-
-
+    
 # ----------------------------- DETAIL DE ALQUILER  ----------------------------------- #
 class AlquilerDetailView (DetailView):
     model = Alquiler

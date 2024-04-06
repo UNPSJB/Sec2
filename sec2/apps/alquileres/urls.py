@@ -34,6 +34,7 @@ urlpatterns = [
     # path('modificar/<int:pk>', AlquilerUpdateView.as_view(), name="alquiler_actualizar"),
     path('alquileres/alquiler/<int:pk>/agregarlistaespera',agregar_lista_espera, name="agregar_lista_espera"),
     path('alquileres/alquiler/<int:pk>/reemplazarinquilino', reemplazar_inquilino, name="reemplazar_inquilino"),
+    path('alquileres/alquiler/<int:alquiler_pk>/listaespera/quitar/<int:afiliado_pk>', quitar_lista_alquiler, name="quitar_lista_alquiler"),
     
     # PAGO DE ALQUILER
     path('crearPago/',PagoAlquilerCreateView.as_view(), name="pagar_alquiler_crear"),
