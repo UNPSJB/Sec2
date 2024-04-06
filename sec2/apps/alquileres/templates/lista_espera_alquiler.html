@@ -8,7 +8,7 @@
     <label>Ingrese DNI/nombre/apellido:</label>
     <div class="form-group">
       <select name="enc_afiliado" id="enc_afiliado">
-        <option value="0"> --------------- </option>
+        {% comment %} <option value="0"> --------------- </option> {% endcomment %}
         {% for afiliado in afiliados %}
           <option value="{{afiliado.pk}}">
             {{afiliado.persona.dni}} {{afiliado.persona.apellido}} {{afiliado.persona.nombre}}
@@ -18,11 +18,16 @@
     </div>
 
     <div class="row text-center mt-3">
+      <div class="col">
+      <button type="button" class="btn btn-sm btn-secondary" onclick="cerrarVentana()">Cerrar</button>
+      </div>
         <div class="col">
-            <button type="submit" class="btn btn-success" >Guardar</button>
+            <button type="submit" class="btn btn-sm btn-success" >Guardar</button>
         </div>
     </div>
 
 </form>
+<script src="{% static 'Libs/js/cerrar_ventana.js' %}"></script>
+
 {% endblock %}
 

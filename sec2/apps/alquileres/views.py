@@ -475,11 +475,13 @@ def agregar_lista_espera(request, pk):
 
     if request.method == 'POST':
         enc_afiliado_id = request.POST.get('enc_afiliado')
-        afiliado = get_object_or_404(Afiliado, pk=enc_afiliado_id)
-        alquiler.lista_espera.add(afiliado)
-        alquiler.save()
-        mensaje_exito(request, 'Agregado a la lista de espera con exito')
-    
+        print("ENC AFILIADO", enc_afiliado_id)
+        if enc_afiliado_id and enc_afiliado_id != '0':
+            afiliado = get_object_or_404(Afiliado, pk=enc_afiliado_id)
+            alquiler.lista_espera.add(afiliado)
+            alquiler.save()
+            mensaje_exito(request, 'Agregado a la lista de espera con exito')
+
     context = {
         'alquiler': alquiler,
         'afiliados': afiliados_no_en_lista_espera,
@@ -497,26 +499,40 @@ def reemplazar_inquilino(request, pk):
 
     if request.method == 'POST':
         nuevo_afiliado_pk = request.POST.get('enc_afiliado')
-        if nuevo_afiliado_pk:  # Verifica si se ha seleccionado un nuevo afiliado
-            nuevo_afiliado = Afiliado.objects.get(pk=nuevo_afiliado_pk)
-            alquiler.afiliado = nuevo_afiliado
-            alquiler.lista_espera.remove(nuevo_afiliado)
-            alquiler.save()
-            # Realiza otras operaciones necesarias, como eliminar un pago existente y crear uno nuevo
-            # Construir la URL de la vista de detalle del alquiler
+        if nuevo_afiliado_pk:  
+            nuevo_afiliado = get_object_or_404(Afiliado, pk=nuevo_afiliado_pk)
+            actualizar_alquiler_y_pago(alquiler, nuevo_afiliado, request.POST)
 
             detalle_alquiler_url = reverse('alquiler:alquiler_detalle', args=[alquiler.pk])
-            mensaje_exito(request, "Inquilino reemplazado exitosamente y sacado de la lista de espera.")
+            mensaje_exito(request, "Arrendatario actualizado y sacado de la lista de espera.")
             return redirect(detalle_alquiler_url)
-    else:
-        print("ESTOY EN GET")
+
+    pago_alquiler = obtener_pago_alquiler(alquiler)
+    pago_form = PagoAlquilerForm(instance=pago_alquiler) if pago_alquiler else None
 
     context = {
         'titulo': "Reemplazo de inquilino",
         'listaEspera': lista_espera,
+        'pago_form': pago_form,
     }
     return render(request, 'alquiler_reemplazar_inquilino.html', context)
 
+
+def actualizar_alquiler_y_pago(alquiler, nuevo_afiliado, post_data):
+    alquiler.afiliado = nuevo_afiliado
+    alquiler.lista_espera.remove(nuevo_afiliado)
+    alquiler.cambio_inquilino = True
+    alquiler.save()
+
+    pago_alquiler = obtener_pago_alquiler(alquiler)
+    if pago_alquiler:
+        pago_form = PagoAlquilerForm(post_data, instance=pago_alquiler)
+        if pago_form.is_valid():
+            pago_form.save()
+
+
+def obtener_pago_alquiler(alquiler):
+    return Pago_alquiler.objects.filter(alquiler=alquiler).first()
 
 def quitar_lista_alquiler(request, alquiler_pk, afiliado_pk):
     alquiler = get_object_or_404(Alquiler, pk=alquiler_pk)
@@ -528,6 +544,20 @@ def quitar_lista_alquiler(request, alquiler_pk, afiliado_pk):
     mensaje_exito(request, "Afiliado sacado de la lista de espera con exito.")
     detalle_alquiler_url = reverse('alquiler:alquiler_detalle', args=[alquiler.pk])
     return redirect(detalle_alquiler_url)
+
+
+def alquiler_eliminar(request, pk):
+    alquiler = get_object_or_404(Alquiler, pk=pk)
+
+    if alquiler.estado == 1:
+        alquiler.fechaBaja = timezone.now()
+        alquiler.estado = 4
+        alquiler.save()
+        mensaje_exito(request, f'El alquiler se ha cancelado con exito')
+    else:
+        mensaje_error(request, f'No se puede dar de baja el alquiler porque esta vigente')
+
+    return redirect('alquiler:alquiler_detalle', pk=pk)
 
 
 class AlquilieresListView(ListFilterView):
@@ -555,10 +585,18 @@ class AlquilieresListView(ListFilterView):
 class AlquilerDetailView (DetailView):
     model = Alquiler
     template_name = 'alquiler_detail.html'
+    
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        
+        # Obtenemos el objeto Alquiler actual
+        alquiler = self.object
 
-        pago = get_object_or_404(Pago_alquiler, alquiler=self.object)
+        # Intentamos obtener el objeto Pago_alquiler asociado al alquiler actual
+        pago = Pago_alquiler.objects.filter(alquiler=alquiler).first()  # Intentamos obtener el primer Pago_alquiler asociado, si existe
+
+        print("PAGO", pago)
+        # Agregamos el objeto Pago_alquiler al contexto
         context['pago'] = pago
         context['titulo'] = "Detalle de alquiler"
         context['tituloListado1'] = "Lista de espera"

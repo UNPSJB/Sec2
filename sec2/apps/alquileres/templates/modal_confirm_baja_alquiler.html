@@ -9,7 +9,7 @@
       <div class="modal-body text-center">¿Estás seguro de que deseas dar de baja al alquiler?</div>
       
       <div class="modal-footer">
-        {% comment %} <a href="{% url 'cursos:profesor_eliminar' profesor.pk %}" class="btn btn-danger">Eliminar</a> {% endcomment %}
+        <a href="{% url 'alquiler:alquiler_eliminar' alquiler.pk %}" class="btn btn-danger">Eliminar</a>
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
       </div>
     </div>

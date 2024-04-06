@@ -34,10 +34,7 @@ class Salon(models.Model):
     capacidad=models.PositiveIntegerField()
     encargado=models.ForeignKey(Encargado, related_name="salon", on_delete=models.CASCADE)
     precio=models.DecimalField(help_text="costo del alquiler", max_digits=10, decimal_places=2)
-    fechaBaja= models.DateField(
-        null=True,
-        blank=False,
-    )
+    fechaBaja= models.DateField(null=True,blank=False)
     tipo_salon = models.PositiveSmallIntegerField(choices=TIPO_SALON)
     servicios=models.ManyToManyField(Servicio, blank=True) 
     
@@ -47,17 +44,17 @@ class Salon(models.Model):
 
 class Alquiler(models.Model):
     ESTADOS = (
-        (1, 'Solicitado'),
-        (2, 'Confirmado'),
-        (3, 'En curso'),
-        (4, 'Finalizado'),
-        (5, 'Cancelado'),
+        (1, 'Confirmado'), # esta pactado la fecha 
+        (2, 'En curso'),  #es la fecha actual
+        (3, 'Finalizado'), # se reaizo el alquiler
+        (4, 'Cancelado'), # se cancelo antes de que se realice
     )
 
     TURNOS=[
         ('Mañana','Mañana'),
         ('Noche','Noche')
     ]
+    cambio_inquilino = models.BooleanField(default=False)  # Campo booleano para indicar si se realizó un cambio de inquilino
     estado = models.IntegerField(choices=ESTADOS, default=1)
     afiliado=models.ForeignKey(Afiliado, related_name="alquileres", on_delete=models.CASCADE)
     salon=models.ForeignKey(Salon, related_name="alquileres", on_delete=models.CASCADE)
@@ -66,6 +63,7 @@ class Alquiler(models.Model):
     turno=models.CharField(max_length=50, choices=TURNOS) #verificar bien la forma de los turnos
     seguro=models.DecimalField(help_text="costo del alquiler", max_digits=10, decimal_places=2)
     lista_espera=models.ManyToManyField(Afiliado, blank=True)
+    fechaBaja= models.DateField(null=True,blank=False)
     #crear lista de espera para agregar afiliado interesado que solamente mostrara para el afiliado que esta en espera, el sistea no se encarga de la actulizacion del cliente de manera automatica a la hora actulizar el cliente que contrata el salon
     #servicios[1..n] no se detallan los servicios "extras" que ofrece el sindicato porque solamente hace de nexo entre la empresa que lo ofrece y el afiliado
 

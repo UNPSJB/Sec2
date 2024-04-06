@@ -186,3 +186,9 @@ class AlquilerFilterForm(FiltrosForm):
     alquiler_salon_nombre = forms.CharField(required=False)
     fecha_alquiler = forms.DateField(required=False)
     turno = forms.CharField(required=False)
+
+
+class PagoAlquilerForm(forms.ModelForm):
+    class Meta:
+        model = Pago_alquiler
+        fields = ['forma_pago']

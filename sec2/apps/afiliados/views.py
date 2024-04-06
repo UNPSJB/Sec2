@@ -120,17 +120,22 @@ class AfiliadoDetailView (DeleteView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         afiliado = self.object  # Access the Afiliado instance
-
+        # Obtén todos los alquileres en lista de espera para el afiliado actual
+        alquileres_lista_espera = Alquiler.objects.filter(lista_espera=afiliado, estado=1)
+    
         context['titulo'] = "Datos del afiliado"
         context['subtitulodetalle1'] = "Datos personales"
         context['subtitulodetalle2'] = "Datos de afiliación"
         context['tituloListado1'] = "Dictados Incritos"
-        context['tituloListado2'] = "Alquileres"
+
+        context['tituloListado2'] = "Alquileres confirmados"
+        context['tituloListado3'] = "Alquileres en lista espera"
         
         context['relacion_familiar_list'] = afiliado.relacionfamiliar_set.all().order_by('familiar__persona__dni')
         context['pagos'] = obtenerPagos(afiliado)
         context['cuotas'] = PagoCuota.objects.filter(afiliado=afiliado)
         context['alquileres'] = Alquiler.objects.filter(afiliado=afiliado)
+        context['alquileres_lista_espera'] = alquileres_lista_espera  # Agrega los alquileres en lista de espera al contexto
         return context
 
 # ----------------------------- AFILIADO UPDATE ----------------------------------- #
