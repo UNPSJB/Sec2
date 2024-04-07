@@ -53,12 +53,15 @@ class AfiliadoPersonaForm(forms.ModelForm):
 ########### Utilizado para el AFILIADO fliadosListView ##############################################
 class AfiliadoFilterForm(FiltrosForm):
     persona__dni = forms.CharField(required=False, label="Dni" )
-    persona__nombre = forms.CharField(required=False, label="Nombre")
+    # persona__nombre = forms.CharField(required=False, label="Nombre y/o Apellido")
     cuit_empleador = forms.CharField(required=False)
-    estado = forms.ChoiceField(
+   # Obtener las opciones de estado ordenadas alfabéticamente
+    opciones_estado_ordenadas = sorted(AFILIADO_ESTADO, key=lambda x: x[1])
+
+    estado = forms.MultipleChoiceField(
         required=False,
-        choices=[('', '----------')] + list(AFILIADO_ESTADO),
-        widget=forms.Select(attrs={'class': 'form-control'}),
+        choices= opciones_estado_ordenadas,
+        widget=forms.CheckboxSelectMultiple(attrs={'class': 'form-check-input'}),
     )
     
 ########### Utilizado para el AFILIADO UPDATE ##############################################

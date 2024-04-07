@@ -35,3 +35,20 @@ def registrar_fuentes():
     pdfmetrics.registerFont(TTFont('TituloFont', 'times.ttf'))
     pdfmetrics.registerFont(TTFont('Times-Italic', 'timesi.ttf'))
     pdfmetrics.registerFont(TTFont('Times-Bold', 'timesbd.ttf'))
+
+
+#-------------- FILTROS ------------------------------
+def filter_by_persona_dni(queryset, dni):
+        if dni:
+            return queryset.filter(persona__dni=dni)
+        return queryset
+
+def filter_by_cuit_empleador(queryset, cuit_empleador):
+        if cuit_empleador:
+            return queryset.filter(cuit_empleador=cuit_empleador)
+        return queryset
+
+def filter_by_estado(queryset, estado):
+        if estado:
+            return queryset.filter(estado__in=estado)
+        return queryset

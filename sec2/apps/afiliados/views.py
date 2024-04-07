@@ -9,7 +9,7 @@ from apps.alquileres.models import Alquiler
 from apps.cursos.models import PagoAlumno
 from apps.personas.forms import PersonaForm, PersonaUpdateForm
 from apps.personas.models import Rol
-from utils.funciones import mensaje_advertencia, mensaje_error, mensaje_exito, registrar_fuentes  
+from utils.funciones import filter_by_cuit_empleador, filter_by_estado, filter_by_persona_dni, mensaje_advertencia, mensaje_error, mensaje_exito, registrar_fuentes  
 from .models import Afiliado, Familiar, PagoCuota, RelacionFamiliar
 from .forms import *
 from sec2.utils import ListFilterView
@@ -208,28 +208,16 @@ class AfliadosListView(ListFilterView):
     def get_queryset(self):
         queryset = super().get_queryset()
 
-        if self.request.GET.get('estado') is not None:
-            AfliadosListView.template_name = 'afiliado_list_aceptar.html'
-            queryset = Afiliado.objects.filter(
-                estado__startswith=self.request.GET['estado']
-            )
-
-        # Apply additional filters from the form
         form = AfiliadoFilterForm(self.request.GET)
         if form.is_valid():
             persona_dni = form.cleaned_data.get('persona__dni')
-            persona_nombre = form.cleaned_data.get('persona__nombre')
+            # persona_nombre = form.cleaned_data.get('persona__nombre')
             cuit_empleador = form.cleaned_data.get('cuit_empleador')
             estado = form.cleaned_data.get('estado')
 
-            if persona_dni:
-                queryset = queryset.filter(persona__dni=persona_dni)
-            if persona_nombre:
-                queryset = queryset.filter(persona__nombre__icontains=persona_nombre)
-            if cuit_empleador:
-                queryset = queryset.filter(cuit_empleador=cuit_empleador)
-            if estado:
-                queryset = queryset.filter(estado=estado)
+            queryset = filter_by_persona_dni(queryset, persona_dni)
+            queryset = filter_by_cuit_empleador(queryset, cuit_empleador)
+            queryset = filter_by_estado(queryset, estado)
         return queryset
 
 # ----------------------------- AFILIADO ACEPTAR ----------------------------------- #
