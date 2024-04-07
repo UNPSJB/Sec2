@@ -252,7 +252,7 @@ def marcar_asistencia(request, clase_id):
 #------------ LISTADO DE TODOS MIS ALUMNOS  --------------
 class AlumnosListView(ListFilterView):
     model = Alumno
-    paginate_by = 11
+    paginate_by = MAXIMO_PAGINATOR
     filter_class = AlumnoFilterForm
     template_name = 'alumno/alumno_listado.html'  
 
@@ -262,6 +262,12 @@ class AlumnosListView(ListFilterView):
         context['filtros'] = filter_form
         context['titulo'] = "Listado de Alumnos "
         return context
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        dni = self.request.GET.get('dni')
+        apellido = self.request.GET.get('apellido')
+        return queryset
 
 ##--------------- ALUMNO DETALLE --------------------------------
 from django.views.generic import DetailView

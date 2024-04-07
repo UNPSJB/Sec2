@@ -9,6 +9,12 @@ from django.urls import reverse
 
 ## ------------ FORMULARIO DE AULA --------------
 class AulaForm(forms.ModelForm):
+    tipo = forms.ChoiceField(
+        choices=TIPO_AULA,
+        widget=forms.RadioSelect,
+        label='Tipo de aula'
+    )
+    
     class Meta:
         model = Aula
         fields = '__all__'
@@ -35,6 +41,11 @@ class AulaForm(forms.ModelForm):
 
 ## ------------ FILTRO PARA AULA --------------
 class AulaFilterForm(FiltrosForm):
-    TIPO_AULA = [('', '-----')] + TIPO_AULA
-    tipo = forms.ChoiceField(choices=TIPO_AULA, required=False, label='Tipo de aula')
-    capacidad = forms.IntegerField(required=False, label='Capacidad máxima')
+    capacidad = forms.IntegerField(required=False, label='Capacidad deseada')
+    tipo = forms.ChoiceField(
+        choices=TIPO_AULA,
+        required=False,
+        label='Tipo de aula',
+        widget=forms.RadioSelect()  # Utilizamos RadioSelect para mostrar los botones de radio
+
+    )

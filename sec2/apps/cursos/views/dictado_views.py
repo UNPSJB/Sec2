@@ -8,7 +8,7 @@ from apps.cursos.views.curso_views import getObjectRolTipo, obtenerDictados, obt
 from apps.personas.forms import PersonaForm
 
 from apps.personas.models import Persona, Rol
-from utils.funciones import mensaje_advertencia, mensaje_exito
+from utils.funciones import mensaje_advertencia, mensaje_error, mensaje_exito
 from ..models import Actividad, Alumno, Clase, Curso, DetallePagoAlumno, Dictado, ListaEspera, PagoAlumno, Titular, Horario, Reserva
 from utils.constants import *
 from django.urls import reverse
@@ -90,7 +90,13 @@ class DictadoCreateView(CreateView):
         return reverse('cursos:curso_detalle', args=[self.object.curso.pk])
 
     def form_invalid(self, form):
-        messages.warning(self.request, f'{ICON_TRIANGLE} {MSJ_CORRECTION}')
+        mensaje_advertencia(self.request, f'{MSJ_CORRECTION}')
+        print("")
+        print("ERRORES DEL FORMULARIO")
+        for field, errors in form.errors.items():
+            for error in errors:
+                print(f"Error en el campo '{field}': {error}")
+        print("")
         context = self.get_context_data()
         return self.render_to_response(context)
 
@@ -495,6 +501,14 @@ from django.urls import reverse
 from django.urls import reverse
 from django.http import HttpResponseRedirect
 
+
+def esTitular(profesor, dictado):
+    try:
+        titular = Titular.objects.get(profesor=profesor, dictado=dictado)
+        return True
+    except Titular.DoesNotExist:
+        return False
+
 def gestionListaEspera(request, pk, rol_pk, accion):
     curso = get_object_or_404(Curso, pk=pk)
     
@@ -509,22 +523,16 @@ def gestionListaEspera(request, pk, rol_pk, accion):
         # Obtén el valor de dictado_id del formulario
         dictado_pk = request.POST.get('dictado_pk')
         dictado = get_object_or_404(Dictado, pk=dictado_pk)
-        
-        if rol.tipo == 1: 
-            persona = get_object_or_404(Afiliado, persona__pk=rol.persona.pk)
-        elif rol.tipo == 2: 
-            persona = get_object_or_404(Familiar, persona__pk=rol.persona.pk)
+        persona, es_profesor = getObjectRolTipo(rol)
+        if es_profesor:
+            if esTitular(persona, dictado):
+                mensaje_error(request, f'SAASDSADSAD')
+                return redirect('cursos:curso_lista_espera', pk=pk)
+            else: 
+                persona.dictados_inscriptos.add(dictado)
+        else:
+            persona.dictados.add(dictado)
 
-        elif rol.tipo == 3:
-            persona = get_object_or_404(Alumno, persona__pk=rol.persona.pk)
-            persona.es_potencial = False
-            persona.save
-        elif rol.tipo == 4: 
-            persona = get_object_or_404(Profesor, persona__pk=rol.persona.pk)
-        elif rol.tipo == 5: 
-            persona = get_object_or_404(Encargado, persona__pk=rol.persona.pk)
-        
-        persona.dictados.add(dictado)
         persona.persona.es_alumno = True
         persona.persona.save()                
         persona.save()
@@ -574,43 +582,6 @@ def gestionListaEspera(request, pk, rol_pk, accion):
 
         mensaje_exito(request, f'{MSJ_LISTAESPERA_ELIMINADO}')
         return redirect('cursos:curso_lista_espera', pk=pk)
-    
-    # if accion == 'inscribir':
-    #     # persona.lista_espera.remove(dictado)
-        
-    #     if tipo == 'Profesor':
-    #         persona.dictados_inscriptos.add(dictado)
-    #     else:
-    #         persona.dictados.add(dictado)
-
-    #     persona.persona.es_alumno = True
-    #     persona.persona.save()
-    #     messages.success(request, f'{ICON_CHECK} {tipo} inscrito al curso exitosamente!. Cierre la ventana y recargue el detalle del dictado')
-    
-    # elif accion == 'inscribir_alumno_nuevo':
-    #     url = reverse('cursos:alumno_nuevo_lista_espera', kwargs={'curso_pk': curso_pk, 'dictado_pk': dictado_pk})
-    #     return HttpResponseRedirect(url)
-    
-    # elif accion == 'quitar':
-    #     # persona.lista_espera.remove(dictado)
-    #     messages.success(request, f'{ICON_CHECK} {tipo} sacado de la lista de espera ')
-    
-    # elif accion == 'agregar_lista':
-    #     if tipo == 'Profesor':
-    #          # Verificar si existe un Titular con ese Profesor y ese Dictado
-    #         titular_existente = Titular.objects.filter(profesor=persona, dictado=dictado).exists()   
-    #         if titular_existente:
-    #             messages.error(request, f'{ICON_ERROR} Error: El profesor a inscribir es titular del dictado.')
-    #             return redirect('cursos:verificar_persona', curso_pk=curso_pk, dictado_pk=dictado_pk)
-
-    #     messages.success(request, f'{ICON_CHECK} {tipo} agregado a la lista de espera. Cierre la ventana y recargue el detalle del dictado')
-    #     # persona.lista_espera.add(dictado)
-    #     persona.save()
-    #     return redirect('cursos:verificar_persona', curso_pk=curso_pk, dictado_pk=dictado_pk)
-    
-    # persona.save()
-    # return redirect('cursos:dictado_lista_espera', curso_pk=curso_pk, dictado_pk=dictado_pk)
-
 
 # ----------- GESTION DE INSCRIPCION
 def gestionInscripcion(request, curso_pk, dictado_pk, persona_pk, tipo, accion):
@@ -795,27 +766,15 @@ def generarPDF_Afiliado(request, dictado_pk, persona_pk):
 from django.db.models import Count, F
 
 
-def obtenerPorcentajeAsistencia(dictado,profesor):
-
-    # ultimo_dia_mes_anterior = obtenerUltimoDiaMesAnterior()
-    # primer_dia_mes_anterior = ultimo_dia_mes_anterior.replace(day=1)
-    #Por mes actual
-    ultimo_dia_mes_actual = timezone.now().replace(day=30, month=4)
-    primer_dia_mes_actual = ultimo_dia_mes_actual.replace(day=1)
-
-    clases_dictado = Clase.objects.filter(asistencia_tomada=True, 
-                                          reserva__horario__dictado=dictado,
-                                          reserva__fecha__range=(primer_dia_mes_actual, ultimo_dia_mes_actual)
-                                          )
-
+def obtenerPorcentajeAsistencia(clases,profesor):
     # Contar el número total de clases en el mes actual
-    total_clases_mes_actual = clases_dictado.count()
+    total_clases_mes_actual = clases.count()
 
     # Contar el número de clases donde el profesor estuvo presente
-    clases_profesor_presente = clases_dictado.filter(asistencia_profesor=profesor)
+    clases_profesor_presente = clases.filter(asistencia_profesor=profesor)
 
     # Contar el número total de clases donde el profesor debería haber estado presente
-    total_clases_profesor = clases_dictado.annotate(
+    total_clases_profesor = clases.annotate(
         total_asistentes_profesor=Count('asistencia_profesor')
     ).filter(total_asistentes_profesor__gt=0).count()
 
@@ -839,33 +798,50 @@ def calcularPrecioPagar(precio_base, porcentaje_asistencia):
         return float(precio_base) * (porcentaje_asistencia / 100)
     else:
         return 0
-    
+
+def obtenerClasesMesAnterior(dictado):
+    ultimo_dia_mes_anterior = obtenerUltimoDiaMesAnterior()
+    primer_dia_mes_anterior = ultimo_dia_mes_anterior.replace(day=1)
+    #Por mes actual
+    # ultimo_dia_mes_actual = timezone.now().replace(day=30, month=4)
+    # primer_dia_mes_actual = ultimo_dia_mes_actual.replace(day=1)
+
+    clases_dictado = Clase.objects.filter(asistencia_tomada=True, 
+                                          reserva__horario__dictado=dictado,
+                                          reserva__fecha__range=(primer_dia_mes_anterior, ultimo_dia_mes_anterior)
+                                          )
+    return clases_dictado
+   
+
 def get_dictados_por_titular(request, titular_pk):
     if request.method == 'GET':
         try:
             data = {'dictados': []} 
             valor_total = 0
-
             # Obtener al profesor y sus titulares
             profesor = Profesor.objects.get(pk=titular_pk)
             titulares = Titular.objects.filter(profesor=profesor)
 
             for titular in titulares:
                 dictado = titular.dictado
-                precio = dictado.precio_real_profesor
-                cantidad_clases, clases_asistidas, porcentaje_asistencia = obtenerPorcentajeAsistencia(dictado,profesor)
-                precio_pagar = calcularPrecioPagar(precio, porcentaje_asistencia)
-                data['dictados'].append({
-                    'pk' : dictado.pk,
-                    'nombre': dictado.curso.nombre,
-                    'estado': dictado.get_estado_display(),
-                    'precio': precio,
-                    'total_clases' : cantidad_clases,
-                    'clases_asistidas': clases_asistidas,
-                    'porcentaje_asistencia': porcentaje_asistencia,
-                    'precioFinal': precio_pagar,
-                })
-                valor_total += precio_pagar
+                if not dictado.estado == 1:
+                    precio = dictado.precio_real_profesor
+                    clases = obtenerClasesMesAnterior(dictado)
+
+                    if clases.exists():
+                        cantidad_clases, clases_asistidas, porcentaje_asistencia = obtenerPorcentajeAsistencia(clases,profesor)
+                        precio_pagar = calcularPrecioPagar(precio, porcentaje_asistencia)
+                        data['dictados'].append({
+                            'pk' : dictado.pk,
+                            'nombre': dictado.curso.nombre,
+                            'estado': dictado.get_estado_display(),
+                            'precio': precio,
+                            'total_clases' : cantidad_clases,
+                            'clases_asistidas': clases_asistidas,
+                            'porcentaje_asistencia': porcentaje_asistencia,
+                            'precioFinal': precio_pagar,
+                        })
+                        valor_total += precio_pagar
 
             # Agregar el valor total al diccionario
             data['valor_total'] = valor_total
@@ -967,3 +943,14 @@ def get_dictados_por_alumno(request, rol_pk):
                     'tipo_pago': dictado.periodo_pago,
                 })
         return JsonResponse(data)
+    
+
+def obtenerDictadosEnCurso(request, pk):
+
+    dictados = Dictado.objects.filter(curso_id=pk, estado=2)  # Filtra los dictados por curso y estado
+    print("dictados", dictados)
+    options = '<option value="">---------</option>'
+    for dictado in dictados:
+        options += f'<option value="{dictado.id}">{dictado.legajo}</option>'
+        print("options",options)
+    return JsonResponse({'options': options})

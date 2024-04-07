@@ -52,10 +52,18 @@ class AfiliadoPersonaForm(forms.ModelForm):
 
 ########### Utilizado para el AFILIADO fliadosListView ##############################################
 class AfiliadoFilterForm(FiltrosForm):
-    persona__dni = forms.CharField(required=False, label="Dni" )
-    # persona__nombre = forms.CharField(required=False, label="Nombre y/o Apellido")
-    cuit_empleador = forms.CharField(required=False)
-   # Obtener las opciones de estado ordenadas alfabéticamente
+    persona__dni = forms.CharField(
+        required=False,
+        label="Dni",
+        widget=forms.NumberInput(attrs={'type': 'number'})
+    )    # persona__nombre = forms.CharField(required=False, label="Nombre y/o Apellido")
+    
+    cuit_empleador = forms.CharField(
+        required=False,
+        label="CUIT del Empleador",
+        widget=forms.TextInput(attrs={'type': 'number'}),
+    )
+
     opciones_estado_ordenadas = sorted(AFILIADO_ESTADO, key=lambda x: x[1])
 
     estado = forms.MultipleChoiceField(
@@ -272,8 +280,16 @@ class GrupoFamiliarPersonaUpdateForm(forms.ModelForm):
 
 ########### FILTER FORM FAMILIAR  ##############################################
 class RelacionFamiliarFilterForm(FiltrosForm):
-    familiar__persona__dni = forms.CharField(label='DNI del Familiar', required=False)
-    afiliado__persona__dni = forms.CharField(label='DNI del Afiliado', required=False)
+    familiar__persona__dni = forms.CharField(
+        label='DNI del Familiar',
+        required=False,
+        widget=forms.NumberInput(attrs={'type': 'number'})
+    )
+    afiliado__persona__dni = forms.CharField(
+        label='DNI del Afiliado',
+        required=False,
+        widget=forms.NumberInput(attrs={'type': 'number'})
+    )
     tipo_relacion = forms.ChoiceField(
         label='Tipo de Relación',
         choices=TIPOS_RELACION_FAMILIAR,
@@ -316,6 +332,13 @@ class PagoCuotaForm(forms.ModelForm):
     
 ########### FILTER FORM FAMILIAR  ##############################################
 class PagoCuotarFilterForm(FiltrosForm):
-    afiliado__persona__dni = forms.CharField(label='DNI del Afiliado', required=False)
-    afiliado__cuit_empleador = forms.CharField(label='Cuit del empleador', required=False)
-    
+    afiliado__persona__dni = forms.CharField(
+        label='DNI del Afiliado',
+        required=False,
+        widget=forms.NumberInput(attrs={'type': 'number'})
+    )
+    afiliado__cuit_empleador = forms.CharField(
+        label='Cuit del empleador',
+        required=False,
+        widget=forms.NumberInput(attrs={'type': 'number'})
+    )

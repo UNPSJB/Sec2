@@ -17,7 +17,7 @@ class DictadoForm(forms.ModelForm):
     class Meta:
         model = Dictado
         fields = '__all__'
-        exclude = ['curso','estado']
+        exclude = ['curso','estado', 'legajo']
 
     def clean_fecha(self):
         fecha = self.cleaned_data.get('fecha')

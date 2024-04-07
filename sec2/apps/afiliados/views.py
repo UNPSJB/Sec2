@@ -741,9 +741,11 @@ class RelacionFamiliarListView(ListFilterView):
         tipo_relacion = self.request.GET.get('tipo_relacion')
 
         if familiar_dni:
+            familiar_dni=familiar_dni.strip()
             queryset = queryset.filter(familiar__persona__dni=familiar_dni)
 
         if afiliado_dni:
+            familiar_dni=afiliado_dni.strip()
             queryset = queryset.filter(afiliado__persona__dni=afiliado_dni)
 
         if tipo_relacion:
@@ -781,7 +783,6 @@ class PagoCuotaCreateView(CreateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        afiliados = obtenerAfiliadosMorososActivos()
 
         # Obtener todos los cuit_empleador únicos de los afiliados con sus respectivas razones sociales
         empleadores = Afiliado.objects.filter(
@@ -791,7 +792,6 @@ class PagoCuotaCreateView(CreateView):
 
         context['titulo'] = "Cuota Sindical"
         context['empleadores'] = empleadores
-        # context['afiliados'] = afiliados
         return context
     
     def form_valid(self, form):
@@ -877,12 +877,12 @@ class PagoCuotaListView(ListFilterView):
         cuit_empleador = self.request.GET.get('afiliado__cuit_empleador')  # Add this line
 
         if afiliado_dni:
+            afiliado_dni=afiliado_dni.strip()
             queryset = queryset.filter(afiliado__persona__dni=afiliado_dni)
 
         if cuit_empleador:
-            # Use Q objects to perform OR filtering on afiliado__cuit_empleador and familiar__cuit_empleador
+            cuit_empleador=cuit_empleador.strip()
             queryset = queryset.filter(Q(afiliado__cuit_empleador=cuit_empleador))
-        
         return queryset
     
 def cuota_sindical_actualizar_estado(request):

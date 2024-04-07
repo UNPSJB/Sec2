@@ -38,13 +38,16 @@ def registrar_fuentes():
 
 
 #-------------- FILTROS ------------------------------
+
 def filter_by_persona_dni(queryset, dni):
         if dni:
+            dni = dni.strip()
             return queryset.filter(persona__dni=dni)
         return queryset
 
 def filter_by_cuit_empleador(queryset, cuit_empleador):
         if cuit_empleador:
+            cuit_empleador.strip()
             return queryset.filter(cuit_empleador=cuit_empleador)
         return queryset
 

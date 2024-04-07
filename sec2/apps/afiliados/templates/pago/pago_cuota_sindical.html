@@ -78,8 +78,6 @@
     jq('#enc_cuit').change(function() {
         var cuit_empleador = $(this).val();
         var url = 'ruta_para_actualizar_afiliados/';
-
-        console.log(cuit_empleador)
         jq.ajax({
 
             url: '../' + url,

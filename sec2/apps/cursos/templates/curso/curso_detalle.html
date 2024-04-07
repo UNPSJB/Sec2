@@ -203,6 +203,7 @@
     <thead>
       <tr>
         <th>#</th>
+        <th>Legajo</th>
         <th>Fecha Inicio</th>
         <th>Desc</th>
         <th>Duración</th>
@@ -214,6 +215,7 @@
       {% for dictado in dictados %}
       <tr>
         <td class="negrita"> {{ dictados.start_index|add:forloop.counter0 }}</td>
+        <td>{{ dictado.legajo }}</td>
         <td>{{ dictado.fecha }}</td>
         <td>{{ dictado.descuento }} %</td>
         <td>{{ dictado.modulos_por_clase }} hrs</td>
