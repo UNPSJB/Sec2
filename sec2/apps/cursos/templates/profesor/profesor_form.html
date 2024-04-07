@@ -3,6 +3,15 @@
 {% load static %}
 
 {% block formulario %}
+
+<style>
+/* Estilos para dividir en tres columnas */
+.actividades-columns {
+  -webkit-column-count: 3; /* Chrome, Safari, Opera */
+  -moz-column-count: 3; /* Firefox */
+  column-count: 3;
+}
+</style>
   <form method="post">
     {% csrf_token %}
     <div class="row">
@@ -25,15 +34,21 @@
                   <br />
                 </div>
               </div>
-
-              <div class="col">
-                {{ form.actividades }}
-            </div>
+              <div class="row">
+                <div class="col">
+                  {{ form.actividades }}
+                </div>
+              </div>
             </div>
           </div>
         </div>
       </div>
-      
+      <br>      
+      <br>      
+      <br>      
+      <br>      
+      <br>      
+      <br>      
       <div class="row text-center">
         <div class="col">
           {% if editar %}

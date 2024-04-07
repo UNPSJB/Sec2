@@ -20,8 +20,8 @@ class ProfesorPersonaForm(forms.ModelForm):
     
     actividades = forms.ModelMultipleChoiceField(
         queryset=Actividad.objects.all(),
-        widget=forms.CheckboxSelectMultiple,
-        required=False  # Puedes ajustar esto según tus necesidades
+        widget=forms.CheckboxSelectMultiple(attrs={'class': 'actividades-columns'}),
+        required=False
     )
 
     class Meta:

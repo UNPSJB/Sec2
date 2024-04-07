@@ -37,8 +37,6 @@ class DictadoCreateView(CreateView):
         # Obtén el curso asociado al dictado
         curso = get_object_or_404(Curso, pk=self.kwargs.get('pk'))
         cupo_maximo = curso.cupo_estimativo
-        
-
         # Guarda el dictado en la base de datos sin commit
         dictado = form.save(commit=False)
 
@@ -80,8 +78,12 @@ class DictadoCreateView(CreateView):
         # Guarda el horario en la base de datos
         horario.save()
         # Si la hora_fin está nula, asigna la hora de fin al horario usando el método clean
-        messages.success(self.request, f'{ICON_CHECK} Dictado creado exitosamente')
+        mensaje_exito(self.request, f'Dictado creado exitosamente')
         # Redirige a la vista de detalle del curso
+        if 'guardar_y_recargar' in self.request.POST:
+            return self.render_to_response(self.get_context_data(form=self.form_class()))   
+        elif 'guardar_y_listar' in self.request.POST:
+            return redirect('cursos:curso_detalle', pk=curso.pk)
         return super().form_valid(form)
 
     def get_success_url(self):
