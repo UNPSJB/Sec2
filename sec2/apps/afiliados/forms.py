@@ -274,8 +274,12 @@ class GrupoFamiliarPersonaUpdateForm(forms.ModelForm):
 class RelacionFamiliarFilterForm(FiltrosForm):
     familiar__persona__dni = forms.CharField(label='DNI del Familiar', required=False)
     afiliado__persona__dni = forms.CharField(label='DNI del Afiliado', required=False)
-    tipo_relacion = forms.ChoiceField(choices=TIPOS_RELACION_FAMILIAR, required=False)
-
+    tipo_relacion = forms.ChoiceField(
+        label='Tipo de Relación',
+        choices=TIPOS_RELACION_FAMILIAR,
+        required=False,
+        widget=forms.RadioSelect
+    )
 
 class PagoCuotaForm(forms.ModelForm):
     class Meta:
