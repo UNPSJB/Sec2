@@ -9,7 +9,7 @@ from apps.personas.forms import PersonaForm
 
 from apps.personas.models import Persona, Rol
 from utils.funciones import mensaje_advertencia, mensaje_exito
-from ..models import Actividad, Alumno, Clase, Curso, Dictado, ListaEspera, Titular, Horario, Reserva
+from ..models import Actividad, Alumno, Clase, Curso, DetallePagoAlumno, Dictado, ListaEspera, PagoAlumno, Titular, Horario, Reserva
 from utils.constants import *
 from django.urls import reverse
 from ..forms.dictado_forms import *
@@ -125,6 +125,14 @@ class DictadoDetailView(DetailView):
 
         # Obtener el nombre del profesor asociado al dictado
         titular = self.get_titular(context['object'])
+        # Verificar si hay alguna reserva asociada al dictado
+        hay_reserva = any(self.get_reserva(horario) for horario in context['horarios'])
+
+        context['titulo'] = "Detalle del dictado"
+        context['tituloListado'] = 'Clases Asociadas'
+        context['curso'] = curso
+        context['horarios'] = horarios
+        context['hay_reserva'] = hay_reserva
         context['nombre_profesor'] = (
             f"{titular.profesor.persona.nombre}, "
             f"{titular.profesor.persona.apellido}"
@@ -816,13 +824,6 @@ def obtenerPorcentajeAsistencia(dictado,profesor):
     else:
         porcentaje_asistencia = 0
     
-    # Tengo que devolver la cantidad de clases, porcentaje de asistencia
-    print("PRINTERES")
-    print("total_clases_mes_actual", total_clases_mes_actual)
-    print("total_clases_profesor", total_clases_profesor)
-    print("porcentaje_asistencia", porcentaje_asistencia)
-    print("porcentaje_asistencia_redondeado", porcentaje_asistencia_redondeado)
-
     return total_clases_mes_actual, total_clases_profesor,  porcentaje_asistencia_redondeado
 
 from django.http import JsonResponse
@@ -901,6 +902,45 @@ def aplicarDescuento(dictado,precio, es_afiliado):
 
     return descuento, precio_con_descuento
 
+def obtenerPrecioDictado(dictado):
+    return calcularPrecioxMes(dictado) if dictado.periodo_pago == 1 else calcularPrecioxClase(dictado)
+
+def obtenerCantidadPagosRealizados(rol, dictado):
+    try:
+        pagos_realizados = DetallePagoAlumno.objects.filter(pago_alumno__rol=rol, dictado=dictado)
+        acumulador = 0
+        for detalle in pagos_realizados:
+            acumulador += detalle.cantidad
+    except Exception as e:
+        acumulador = 0
+    return acumulador
+
+def calcularMesesTranscurridos(dictado):
+    clases = Clase.objects.filter(reserva__horario__dictado=dictado).order_by('reserva__fecha')
+    primera_fecha_clase = clases.first().reserva.fecha
+    ultima_fecha_clase = clases.last().reserva.fecha
+    diferencia_tiempo = ultima_fecha_clase - primera_fecha_clase
+    return round(diferencia_tiempo.days / 30)  # Suponiendo 30 días por mes para simplificar
+
+def calcularClasesTotales(dictado): 
+    cantidad_clase = Decimal(dictado.curso.modulos_totales) / Decimal(dictado.modulos_por_clase)
+    cantidad_clase = Decimal(math.ceil(cantidad_clase))
+    return cantidad_clase
+
+def calcularPeriodoPagoTotal(dictado):
+    # POR MES
+    if dictado.periodo_pago == 1:
+        cantidad = calcularMesesTranscurridos(dictado)
+    else:
+        cantidad = calcularClasesTotales(dictado)
+    return cantidad
+
+def calcularPagosFaltantes(rol,dictado):
+    pagos_realzados_por_dictado = obtenerCantidadPagosRealizados(rol, dictado)
+    pagos_totales_por_dictado = calcularPeriodoPagoTotal(dictado)
+    pagos_faltantes = pagos_totales_por_dictado - pagos_realzados_por_dictado
+    return pagos_realzados_por_dictado, pagos_totales_por_dictado, pagos_faltantes
+
 def get_dictados_por_alumno(request, rol_pk):
     if request.method == 'GET':
         data = {'dictados': []}
@@ -910,16 +950,16 @@ def get_dictados_por_alumno(request, rol_pk):
         dictados = obtenerDictados(persona, es_profesor)
         for dictado in dictados:
             if not dictado.estado == 3:
-                if dictado.periodo_pago == 1:
-                    precio = calcularPrecioxMes(dictado)
-                else:
-                    precio = calcularPrecioxClase(dictado)
-
+                precio = obtenerPrecioDictado(dictado)
                 descuento, precio_con_descuento = aplicarDescuento(dictado,precio,es_afiliado)
+                contPagosRealizados, contPagosTotalesDictado,  contPagosFatanes = calcularPagosFaltantes(rol,dictado)
                 data['dictados'].append({
                     'pk' : dictado.pk,
                     'nombre': dictado.curso.nombre,
                     'precio': precio,
+                    'contPagosRealizados': contPagosRealizados,
+                    'contPagosTotalesDictado': contPagosTotalesDictado,
+                    'contPagosFatanes': contPagosFatanes,
                     'descuento': descuento,
                     'precio_con_descuento': precio_con_descuento ,
                     'tipo_pago': dictado.periodo_pago,

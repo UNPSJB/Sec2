@@ -535,6 +535,16 @@ def obtenerAlumnosEnDictado():
             resultados.append({"alumnos": persona})
     return resultados
 
+def tienenCantidadApropiada(dictados_info):
+    for dictado_info in dictados_info:
+        pagos_faltantes = dictado_info.get('aux')
+        cantidad = dictado_info.get('cantidad')
+        if cantidad > pagos_faltantes:
+            return False
+
+    return True
+
+
 class PagoAlumnoCreateView(CreateView):
     model = PagoAlumno
     form_class = PagoRolForm
@@ -561,9 +571,12 @@ class PagoAlumnoCreateView(CreateView):
 
         if datos_dictados:
             dictados_info = json.loads(datos_dictados)
+
+            if not tienenCantidadApropiada(dictados_info):
+                mensaje_error(self.request, f'Ocurrio un error porque la cantidad supera los pagos faltantes')
+                return redirect('cursos:pago_alumno_crear')
+
             pago = form.save(commit=False)
-            print("pk",pk)
-            print("total_a_pagar",total_a_pagar)
             pago.rol_id = pk
             pago.total = total_a_pagar
             pago.save()

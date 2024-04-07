@@ -598,7 +598,6 @@ class AlquilerDetailView (DetailView):
         # Intentamos obtener el objeto Pago_alquiler asociado al alquiler actual
         pago = Pago_alquiler.objects.filter(alquiler=alquiler).first()  # Intentamos obtener el primer Pago_alquiler asociado, si existe
 
-        print("PAGO", pago)
         # Agregamos el objeto Pago_alquiler al contexto
         context['pago'] = pago
         context['titulo'] = "Detalle de alquiler"

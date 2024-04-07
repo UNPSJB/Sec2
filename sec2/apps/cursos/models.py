@@ -446,8 +446,6 @@ class PagoAlumno(models.Model):
         pdf.drawString(300, 655, f'{self.rol.persona.mail}')
         pdf.drawString(300, 635, f'{self.rol.persona.celular}')
 
-    
-
     def establecer_titulo(self, pdf, titulo):
         pdf.setFont('Times-Bold', 14)
         pdf.drawCentredString(300, 770, "Sindicato de Empleado de Comercio 2")

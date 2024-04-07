@@ -7,7 +7,6 @@ $(document).ready(function() {
         console.log(url)
 
         if (titular_id) {
-            //alert(titular_id)
             event.preventDefault();
             $.ajax({
                 type:'GET',

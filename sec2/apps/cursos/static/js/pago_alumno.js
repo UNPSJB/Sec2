@@ -40,15 +40,17 @@ function mostrarDictados(dictados) {
         }
 
         html += '<label>';
-        html += '<input type="checkbox" name="dictado" value="' + dictado.pk + '" data-precio="' + dictado.precio + '" data-precio_con_descuento="' + dictado.precio_con_descuento + '" data-tipo_pago="' + dictado.tipo_pago + '" data-nombre="' + dictado.nombre + '" data-descuento="' + dictado.descuento + '">';
+        html += '<input type="checkbox" name="dictado" value="' + dictado.pk + '" data-precio="' + dictado.precio + '" data-precio_con_descuento="' + dictado.precio_con_descuento + '" data-tipo_pago="' + dictado.tipo_pago + '" data-nombre="' + dictado.nombre + '" data-aux="' + dictado.contPagosFatanes + '" data-descuento="' + dictado.descuento + '">';
         html += ' ' + dictado.nombre;
         
         if (dictado.descuento > 0) {
             html += ' $' + dictado.precio_con_descuento + ' x ' + periodo;
-            html += ' (Descuento aplicado)';
+            html += ' (' + dictado.descuento + '% desc)';
         } else {
             html += ' $' + dictado.precio + ' x ' + periodo;
         }
+
+        html += ' Pago ' + dictado.contPagosRealizados + ' de ' + dictado.contPagosTotalesDictado + ' (' + dictado.contPagosFatanes + ' faltantes)';
         html += '</label>';
         html += '<br>';
 
@@ -74,6 +76,7 @@ function obtenerDictadosSeleccionados() {
             descuento: $(this).data('descuento'),
             precio: $(this).data('precio'), // Obtiene el precio desde el atributo data-precio
             cantidad: 1,
+            aux: $(this).data('aux'),
         });
     });
 
@@ -128,7 +131,6 @@ function generarTablaHTML(dictadosSeleccionados, totalSubtotales) {
 
     tableHTML += '</tbody>';
     tableHTML += '</table>';
-    tableHTML += '<br>';
     tableHTML += '<p class="text-end" id="totalSubtotales">TOTAL: <strong>$' + totalSubtotales + '</strong></p>';
     $('#total_a_pagar').val(totalSubtotales);
     return tableHTML;
