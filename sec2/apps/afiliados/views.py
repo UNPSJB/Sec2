@@ -815,7 +815,9 @@ class PagoCuotaCreateView(CreateView):
             form.instance.afiliado_id = afiliado_id
             form.instance.pdf_transferencia = pdf
             form.save()
-
+            # Llama al método actualizarSueldo() del afiliado con el monto de la cuota pagada
+            afiliado.actualizarSueldo(form.cleaned_data['monto'])
+            
             if afiliado.estado == 1:
                 afiliado.afiliar()
                 afiliado.save()
@@ -840,14 +842,12 @@ class PagoCuotaCreateView(CreateView):
                 form.instance.afiliado_id = afiliado_id
                 form.instance.pdf_transferencia = pdf
                 form.save()
+                afiliado.actualizarSueldo(form.cleaned_data['monto'])
                 mensaje_exito(self.request, f'{MSJ_CORRECTO_PAGO_REALIZADO}')
                 return super().form_valid(form)
             else:
                 mensaje_advertencia(self.request, 'El mes anterior esta sin pagar.')
                 return super().form_invalid(form)
-
-
-
 
     def form_invalid(self, form):
         mensaje_advertencia(self.request, MSJ_CORRECTION)
