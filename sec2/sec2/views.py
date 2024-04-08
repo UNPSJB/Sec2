@@ -4,14 +4,30 @@ from django.contrib.auth import logout as django_logout, login as django_login, 
 from django.urls import reverse_lazy
 from apps.afiliados.models import RelacionFamiliar
 
+from apps.alquileres.models import Alquiler
 from apps.personas.models import Persona, Rol
 from utils.funciones import mensaje_advertencia
 from .forms import SecAuthenticationForm
 from apps.personas.forms import BuscadorPersonasForm
 from django.contrib.auth.decorators import login_required
+from datetime import datetime, date
+
+def cambiar_estado_alquileres():
+    alquileres = Alquiler.objects.filter(estado=1, fecha_alquiler__lt=datetime.now())
+    alquileres_hoy = Alquiler.objects.filter(estado=1, fecha_alquiler__date=date.today())
+
+    for alquiler in alquileres:
+        alquiler.estado = 3  # Cambiar estado a "Finalizado"
+        alquiler.save()
+
+    for alquiler_hoy in alquileres_hoy:
+        alquiler_hoy.estado = 2  # Cambiar estado a "En curso"
+        alquiler_hoy.save()
+    
 
 @login_required
-def home(request):    
+def home(request):
+    cambiar_estado_alquileres()
     """Chequear si algún grupo familiar que sea hijo es mayor de edad"""
 
     # Filtrar roles sin fecha de finalización (hasta)

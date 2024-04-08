@@ -833,7 +833,8 @@ def get_dictados_por_titular(request, titular_pk):
                         precio_pagar = calcularPrecioPagar(precio, porcentaje_asistencia)
                         data['dictados'].append({
                             'pk' : dictado.pk,
-                            'nombre': dictado.curso.nombre,
+                            'curso': dictado.curso.nombre,
+                            'legajo': dictado.legajo,
                             'estado': dictado.get_estado_display(),
                             'precio': precio,
                             'total_clases' : cantidad_clases,

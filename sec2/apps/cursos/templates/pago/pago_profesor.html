@@ -73,7 +73,8 @@
                         html += '<table class="table table-sm table-hover">';
                             html += '<thead>';
                                 html += '<tr>';
-                                    html += '<th>Descripción</th>';
+                                    html += '<th>Curso</th>';
+                                    html += '<th>Dictado</th>';
                                     html += '<th>Estado</th>';
                                     html += '<th class="text-end">Precio</th>';
                                     html += '<th class="text-center">Clases (total)</th>';
@@ -85,7 +86,8 @@
                             html += '<tbody>';
                             data.dictados.forEach(function(dictado) {
                                 html += '<tr>';
-                                    html += '<td>' + dictado.nombre + '</td>';
+                                    html += '<td>' + dictado.curso + '</td>';
+                                    html += '<td>' + dictado.legajo + '</td>';
                                     html += '<td>' + dictado.estado + '</td>';
                                     html += '<td class="text-end">$' + dictado.precio + '</td>';
                                     html += '<td class="text-center">' + dictado.total_clases + '</td>';

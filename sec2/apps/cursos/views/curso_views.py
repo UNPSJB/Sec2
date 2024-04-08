@@ -2,7 +2,7 @@ from django.shortcuts import get_object_or_404, redirect
 from apps.afiliados.models import Afiliado, Familiar
 from apps.alquileres.models import Encargado
 from apps.cursos.forms.actividad_forms import ActividadForm
-from apps.cursos.models import Alumno, Curso, DetallePagoAlumno, DetallePagoProfesor, Dictado, PagoAlumno, PagoProfesor, Profesor, Titular
+from apps.cursos.models import Alumno, Clase, Curso, DetallePagoAlumno, DetallePagoProfesor, Dictado, PagoAlumno, PagoProfesor, Profesor, Titular
 from apps.personas.models import Persona, Rol
 from utils.funciones import mensaje_advertencia, mensaje_error, mensaje_exito
 from ..forms.curso_forms import *
@@ -332,6 +332,29 @@ def obtenerProfesoresConDictados(titulares_ya_finalizados, titulares_vigentes):
 
 import json
 
+def obtenerTitularesConClasesEnMesPasado():
+    titulares_con_clases = []
+
+    ultimo_dia_mes_anterior = obtenerUltimoDiaMesAnterior()
+    primer_dia_mes_anterior = ultimo_dia_mes_anterior.replace(day=1)
+
+    for titular in Titular.objects.all():
+        dictado = titular.dictado
+        clases = Clase.objects.filter(
+            reserva__horario__dictado=dictado,
+            reserva__fecha__range=(primer_dia_mes_anterior, ultimo_dia_mes_anterior)
+        )
+        if clases.exists():
+            titulares_con_clases.append(titular)
+
+    return titulares_con_clases
+
+def obtenerProfesoresUnicos(titulares):
+    profesores_unicos = set()
+    for titular in titulares:
+        profesores_unicos.add(titular.profesor)
+    return profesores_unicos
+
 class PagoProfesorCreateView(CreateView):
     model = PagoProfesor
     form_class = PagoProfesorForm
@@ -340,22 +363,11 @@ class PagoProfesorCreateView(CreateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        profesores = obtenerProfesoresActivos()
-        ultimo_dia_mes_anterior = obtenerUltimoDiaMesAnterior()
-    
-        primer_dia_mes_anterior = ultimo_dia_mes_anterior.replace(day=1)
-        
-        # Obtengo los titulaes que tienen dictado vigente
-        titulares_vigentes = Titular.objects.all().filter(dictado__estado=2)
-        # Obtener los titulares cuyos dictados han finalizado y cuya fecha de finalización está entre el primer día y el último día del mes anterior
-        titulares_ya_finalizados = Titular.objects.filter(
-            dictado__estado=3,  # Filtrar los titulares cuyos dictados tienen un estado de 3
-            dictado__fecha_fin__range=(primer_dia_mes_anterior, ultimo_dia_mes_anterior)  # Filtrar los titulares cuyos dictados tienen una fecha de finalización dentro del rango del mes anterior
-        )
-        # Obtener los profesores asociados a los titulares con dictados
-        profesores = obtenerProfesoresConDictados(titulares_ya_finalizados, titulares_vigentes)
-
-        context['profesores'] = profesores
+        titulares_con_clases_mes_pasado = obtenerTitularesConClasesEnMesPasado()
+        print("titulares_con_clases_mes_pasado", titulares_con_clases_mes_pasado)
+        profesores_unicos = obtenerProfesoresUnicos(titulares_con_clases_mes_pasado)
+        print("profesores_unicos", profesores_unicos)
+        context['profesores'] = profesores_unicos
         context['titulo'] = "Comprobante de pago"
         return context
 

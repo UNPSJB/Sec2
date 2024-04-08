@@ -129,7 +129,9 @@ class EncargadoDetailView(DetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+
         context['titulo'] = "Detalle del Encargado"
+        context['tituloListado1'] = "Salones a cargo"
         return context
 
 
@@ -339,6 +341,8 @@ class SalonDetailView(DetailView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['titulo'] = f"{self.object.nombre}"
+        context['tituloListado1'] = "Alquileres a cargo"
+
         return context
     
 # ----------------------------- LIST DE SALON  ----------------------------------- #
@@ -359,6 +363,23 @@ class SalonesListView(ListFilterView):
             return reverse_lazy('alquiler:salon_crear', args=[self.object.pk])
         return super().get_success_url()        
     
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        # Obtén los parámetros de filtro del formulario
+        nombre = self.request.GET.get('nombre')
+        localidad = self.request.GET.get('localidad')
+        capacidad = self.request.GET.get('capacidad')
+
+        # Filtrar los salones según los parámetros ingresados
+        if capacidad:
+            capacidad = int(capacidad)  # Convertir la capacidad a entero
+            queryset = queryset.filter(capacidad__gte=capacidad)
+        if nombre:
+            queryset = queryset.filter(nombre__icontains=nombre)
+        if localidad:
+            queryset = queryset.filter(localidad=localidad)
+
+        return queryset
 
 # ----------------------------- UPDATE DE SALON  ----------------------------------- #
 
@@ -376,7 +397,7 @@ class SalonUpdateView(UpdateView):
     def form_valid(self, form):
      
         messages.success(self.request, '<i class="fa-solid fa-square-check fa-beat-fade"></i> salon modificado con éxito')
-        return redirect('alquiler:Salon_detalle')
+        return redirect('alquiler:salon_detalle')
 
     def form_invalid(self, form):
         messages.warning(self.request, '<i class="fa-solid fa-triangle-exclamation fa-flip"></i> Por favor, corrija los errores a continuación.')
@@ -393,14 +414,14 @@ def salon_eliminar(request, pk):
 
     if alquileres.exists():
         mensaje_error(request, f'No puede ser eliminado porque tiene alquileres asociados.')
-        return redirect('alquiler:Salon_detalle', pk=salon.pk)
+        return redirect('alquiler:salon_detalle', pk=salon.pk)
     try:
         salon.fechaBaja = timezone.now()
         salon.save()
         mensaje_exito(request, f'El salon ha sido dado de baja con exito')
     except Exception as e:
         messages.error(request, 'Ocurrió un error al intentar eliminar el aula.')
-    return redirect('alquiler:Salon_detalle', pk=salon.pk)
+    return redirect('alquiler:salon_detalle', pk=salon.pk)
 
 # ----------------------------- CREATE DE ALQUILER  ----------------------------------- #
 
@@ -574,6 +595,14 @@ class AlquilieresListView(ListFilterView):
         context = super().get_context_data(**kwargs)
         # context['titulo'] = "Listado de Alquileres"
         return context
+    
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        # Aplicar los filtros si se han enviado
+        filter_form = AlquilerFilterForm(self.request.GET)
+        if filter_form.is_valid():
+            queryset = filter_form.filter_queryset(queryset)
+        return queryset
     
     def get_success_url(self):
         if self.request.POST['submit'] == "Guardar y Crear Alquiler":

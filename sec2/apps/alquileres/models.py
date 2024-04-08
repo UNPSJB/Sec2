@@ -72,7 +72,7 @@ class Alquiler(models.Model):
     
     def verificar_existencia_alquiler(self, salon, fecha_alquiler, turno):
         # Verificar si existe algún alquiler que cumple con las condiciones dadas
-        alquiler_existente = Alquiler.objects.filter(salon=salon, fecha_alquiler=fecha_alquiler, turno=turno).exists()
+        alquiler_existente = Alquiler.objects.filter(salon=salon, fecha_alquiler=fecha_alquiler, turno=turno, estado=1).exists()
        # Devolver True si existe al menos un alquiler que cumple con las condiciones
         return alquiler_existente
 

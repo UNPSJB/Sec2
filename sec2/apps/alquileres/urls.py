@@ -23,7 +23,7 @@ urlpatterns = [
     # SALON
     path('salones',SalonesListView.as_view(), name="salon_listar"),
     path('salones/salon/crear/',SalonCreateView.as_view(), name="salon_crear"),
-    path('salones/salon/<int:pk>',SalonDetailView.as_view(), name="Salon_detalle"),
+    path('salones/salon/<int:pk>',SalonDetailView.as_view(), name="salon_detalle"),
     path('salones/salon/<int:pk>/editar', SalonUpdateView.as_view(), name="salon_actualizar"),
     path('salones/salon/<int:pk>/eliminar', salon_eliminar, name="salon_eliminar"),
 

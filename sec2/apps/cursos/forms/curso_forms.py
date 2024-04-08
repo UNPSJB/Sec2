@@ -116,6 +116,18 @@ class PagoProfesorFilterForm(FiltrosForm):
         label='Curso',
         widget=forms.Select(attrs={'class': 'form-control'})
     )
+    profesor__dictados = forms.ModelChoiceField(
+        queryset=Dictado.objects.filter(estado=2),
+        required=False,
+        label='Dictado',
+        widget=forms.Select(attrs={'class': 'form-control'})
+    )
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['profesor__dictados'].label_from_instance = self.label_from_instance
+
+    def label_from_instance(self, obj):
+        return f'{obj.legajo}'
     
 class PagoAlumnoFilterForm(FiltrosForm):
     rol__persona__dni = forms.CharField(
