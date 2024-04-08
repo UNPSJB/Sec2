@@ -2,7 +2,10 @@ from apps.personas.models import Persona
 from django.forms import ModelForm, modelformset_factory, ValidationError, BaseFormSet
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit
+from selectable.forms import AutoCompleteSelectField
+from .lookups import NacionalidadLookup, PersonaLookup                  
 from django import forms
+
 
 class PersonaForm(ModelForm):
     class Meta:
@@ -11,8 +14,10 @@ class PersonaForm(ModelForm):
         exclude=['persona', 'tipo']
         Widgets ={
             'fechaNacimiento': forms.DateInput(attrs={'type':'datetime-local'}),
-            }
+            'nacionalidad': AutoCompleteSelectField(lookup_class=NacionalidadLookup),
 
+            }
+          
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 PersonaForm.base_fields.update(PersonaForm.base_fields)
@@ -33,6 +38,7 @@ from django import forms
 from dal import autocomplete  # Asegúrate de tener django-autocomplete-light instalado
 from tkinter.ttk import Widget
 from django_select2 import forms as s2forms
+from selectable.forms import AutoCompleteWidget
 
 class PersonaWidget(s2forms.ModelSelect2Widget):
     search_fields = [
@@ -41,5 +47,7 @@ class PersonaWidget(s2forms.ModelSelect2Widget):
         "apellido__icontains",
     ]
 
-class BuscadorPersonasForm(forms.Form):
-   buscar = forms.ModelChoiceField(queryset=Persona.objects.all(), widget=PersonaWidget)
+from selectable.forms import AutoCompleteWidget
+
+class PersonaFormSearch(forms.Form):
+   persona= AutoCompleteSelectField(lookup_class=PersonaLookup, label='Buscar Persona')

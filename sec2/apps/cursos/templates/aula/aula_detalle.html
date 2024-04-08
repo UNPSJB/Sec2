@@ -60,6 +60,8 @@
       {% endfor %}
     </tbody>
   </table>
+  {% include 'pagination.html' with page_obj=reservas %}
+
 </div>
 {% endif %}
 

@@ -2,6 +2,7 @@
 var jq = $.noConflict();
 var dictadosJson;
 var dictadosArray
+
 // Función para obtener los dictados por alumno
 function obtenerDictadosPorAlumno() {
     jq('#enc_alumno').change(function() {
@@ -49,6 +50,8 @@ function mostrarDictados(dictados) {
             html += ' $' + dictado.precio + ' x ' + periodo;
         }
         html += '</label>';
+        html += '<br>';
+
     });
     html += '</ul>';
     datosDiv.html(html);
@@ -81,9 +84,10 @@ function calcularTotalSubtotales(dictadosSeleccionados) {
     var totalSubtotales = 0;
 
     for (var i = 0; i < dictadosSeleccionados.length; i++) {
-        totalSubtotales += dictadosSeleccionados[i].precioConDescuento;
+        totalSubtotales += parseFloat(dictadosSeleccionados[i].precioConDescuento);
     }
-
+    // Redondear el resultado a dos decimales
+    totalSubtotales = totalSubtotales.toFixed(2);
     return totalSubtotales;
 }
 
@@ -125,8 +129,8 @@ function generarTablaHTML(dictadosSeleccionados, totalSubtotales) {
     tableHTML += '</tbody>';
     tableHTML += '</table>';
     tableHTML += '<br>';
-    tableHTML += '<p class="text-end" id="totalSubtotales">TOTAL: <strong>$' + totalSubtotales.toFixed(2) + '</strong></p>';
-    $('#total_a_pagar').val(totalSubtotales.toFixed(2));
+    tableHTML += '<p class="text-end" id="totalSubtotales">TOTAL: <strong>$' + totalSubtotales + '</strong></p>';
+    $('#total_a_pagar').val(totalSubtotales);
     return tableHTML;
 }
 
@@ -143,6 +147,7 @@ $(document).on('change', 'input[name="dictado"]', function () {
     actualizarInputDictados(dictadosSeleccionados);
 
     var totalSubtotales = calcularTotalSubtotales(dictadosSeleccionados);
+    alert(totalSubtotales)
     var tableHTML = generarTablaHTML(dictadosSeleccionados, totalSubtotales);
     $('#seleccionados').html(tableHTML);
 });
@@ -163,6 +168,7 @@ $(document).on('change', '.cantidad', function () {
     // Verifica si la cantidad es aceptada
     if (!cantidadAceptada(cantidad)) {
         $(this).val(1); // Establece la cantidad a 1 si no es aceptada
+        cantidad = 1;
     }
 
     // Calcula el subtotal

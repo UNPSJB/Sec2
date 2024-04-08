@@ -19,15 +19,14 @@ urlpatterns = [
     path('servicio/servicio/<int:pk>/', ServicioDetailView.as_view(), name='servicio_detalle'),
     # path('servicios/serviio/crearServicio/',ServicioCreateView.as_view(), name="servicio_crear"),
     path('aulas/aula/<int:pk>/editar', ServicioUpdateView.as_view(), name="servicio_editar"),
+    path('aulas/aula/<int:pk>/eliminar', servicio_eliminar, name="servicio_eliminar"),
 
     # SALON
     path('salones/listado',SalonesListView.as_view(), name="salon_listar"),
     path('crear/',SalonCreateView.as_view(), name="salon_crear"),
-
     path('salon/<int:pk>',SalonDetailView.as_view(), name="Salon_detalle"),
     path('modificar/<int:pk>', SalonUpdateView.as_view(), name="salon_actualizar"),
-
-    path('modificar/<int:pk>', SalonUpdateView.as_view(), name="salon_actualizar"),
+    path('salon/<int:pk>/eliminar', salon_eliminar, name="salon_eliminar"),
 
     # ALQUILER
     path('crearAlquiler/',AlquilerCreateView.as_view(), name="alquiler_crear"),
@@ -43,4 +42,5 @@ urlpatterns = [
    # path('alquiler/<int:pk>',PagoAlquilerDetailView.as_view(), name="Pago_alquiler"),
   #  path('modificar/<int:pk>', PagoAlquilerUpdateView.as_view(), name="pago_alquiler_actualizar"),
   #  path('mostrar/',PagosAlquilieresListView.as_view(), name="pago_alquiler_listar"),
+   
 ]

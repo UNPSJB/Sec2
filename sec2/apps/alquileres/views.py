@@ -165,6 +165,7 @@ class EncargadoUpdateView(LoginRequiredMixin, PermissionRequiredMixin, UpdateVie
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        context['editar'] = True
         context['titulo'] = "Modificar Encargado"
         return context
 
@@ -301,6 +302,21 @@ class ServiciosListView(PermissionRequiredMixin,LoginRequiredMixin,ListFilterVie
             return reverse_lazy('alquiler:servicio_crear', args=[self.object.pk])
         return super().get_success_url()            
 
+# ## ------------ ACTIVIDAD DELETE -------------------
+def servicio_eliminar(request, pk):
+    servicio = get_object_or_404(Servicio, pk=pk)
+    salones = Salon.objects.filter(servicios=servicio)
+    if salones.exists():
+        mensaje_error(request, f'No puede ser eliminado porque está siendo utilizado por al menos un salón.')
+        return redirect('alquiler:gestion_servicio')
+    try:
+        # Realiza aquí cualquier acción necesaria antes de eliminar el servicio
+        servicio.delete()
+        mensaje_exito(request, f'El servicio ha sido eliminado exitosamente.')
+    except Exception as e:
+        mensaje_error(request, f'Ocurrió un error al intentar eliminar la el servicio.')
+    return redirect('alquiler:gestion_servicio')
+
 # ----------------------------- CREATE DE SALON  ----------------------------------- #
 class SalonCreateView(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
     model = Salon
@@ -324,12 +340,15 @@ class SalonCreateView(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
 
     def form_valid(self, form):
         encargado_id = self.request.POST.get('enc_encargado')
+        print("encargado_id", encargado_id)
+        print(encargado_id)
         if encargado_id == '0':
             mensaje_advertencia(self.request, f'Seleccione al encargado')
             return super().form_invalid(form)
         
-        rol = get_object_or_404(Encargado, persona=encargado_id)
-        encargado = get_object_or_404(Encargado, persona=rol.persona)
+        rol = get_object_or_404(Rol, pk=encargado_id)
+
+        encargado = get_object_or_404(Encargado, persona__pk=rol.persona.pk)
         
         form.instance.encargado = encargado
         form.save()
@@ -361,8 +380,7 @@ class SalonDetailView(LoginRequiredMixin, PermissionRequiredMixin, DetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['titulo'] = f"Salon: {self.object.nombre}"
-
+        context['titulo'] = f"{self.object.nombre}"
         return context
     
 # ----------------------------- LIST DE SALON  ----------------------------------- #
@@ -413,6 +431,23 @@ class SalonUpdateView(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
         return super().form_invalid(form) 
     
 
+
+
+def salon_eliminar(request, pk):
+    salon = get_object_or_404(Salon, pk=pk)
+    alquileres = Alquiler.objects.filter(salon=salon)
+
+    if alquileres.exists():
+        mensaje_error(request, f'No puede ser eliminado porque tiene alquileres asociados.')
+        return redirect('alquiler:Salon_detalle', pk=salon.pk)
+    try:
+        salon.fechaBaja = timezone.now()
+        salon.save()
+        mensaje_exito(request, f'El salon ha sido dado de baja con exito')
+    except Exception as e:
+        messages.error(request, 'Ocurrió un error al intentar eliminar el aula.')
+    return redirect('alquiler:Salon_detalle', pk=salon.pk)
+
 # ----------------------------- CREATE DE ALQUILER  ----------------------------------- #
 
 class AlquilerCreateView(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
@@ -424,20 +459,17 @@ class AlquilerCreateView(LoginRequiredMixin, PermissionRequiredMixin, CreateView
     login_url = '/home/'
     title = "Alquiler de Salón" 
 
-
-
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['titulo'] = self.title  # Agrega el título al contexto
-        # Verificar si hay alguna actividad
         return context
-    
-   
-    
+
     def form_valid(self, form):
         salon = form.cleaned_data["salon"]
         fecha = form.cleaned_data["fecha_alquiler"]
         turno = form.cleaned_data["turno"]
+
+        print("TURNO", turno)
         alquiler = Alquiler.objects.first()
         if Alquiler.fecha_valida(fecha):
             if alquiler is not None:
@@ -454,7 +486,7 @@ class AlquilerCreateView(LoginRequiredMixin, PermissionRequiredMixin, CreateView
                 messages.success(self.request, f'{ICON_CHECK} Alquiler creado con éxito!')
                 return super().form_valid(form)
         else:
-             messages.error(self.request, f'{ICON_ERROR} La fecha {fecha.strftime("%d-%m-%Y")} es anterior a la fehca de hoy.')
+             messages.error(self.request, f'{ICON_ERROR} La fecha {fecha.strftime("%d-%m-%Y")} es anterior a la fecha de hoy.')
              return self.render_to_response(self.get_context_data(form=form))
        
         
@@ -479,14 +511,14 @@ class AlquilerCreateView(LoginRequiredMixin, PermissionRequiredMixin, CreateView
 def agregar_lista_espera(request, pk):
     alquiler = get_object_or_404(Alquiler, pk=pk)
     
-    roles_sin_fecha_hasta = Rol.objects.filter(hasta__isnull=True, tipo=1)
+    afiliado_inquilino = alquiler.afiliado
 
+    roles_sin_fecha_hasta = Rol.objects.filter(hasta__isnull=True, tipo=1)
     # Obtener personas asociadas a los roles sin fecha de finalización
     personas = Persona.objects.filter(roles__in=roles_sin_fecha_hasta)
-
     # Obtener afiliados asociados a las personas obtenidas
-    afiliados = Afiliado.objects.filter(persona__in=personas)
-    
+    afiliados = Afiliado.objects.filter(persona__in=personas, estado=2).exclude(pk=afiliado_inquilino.pk)  # Excluir el afiliado inquilino
+
     if request.method == 'POST':
         enc_afiliado_id = request.POST.get('enc_afiliado')
         afiliado = get_object_or_404(Afiliado, pk=enc_afiliado_id)

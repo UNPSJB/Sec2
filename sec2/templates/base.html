@@ -1,4 +1,10 @@
 {% load static %}
+{% load selectable_tags %}
+{% load selectable_tags %}
+{% include_ui_theme %}
+{% include_jquery_libs %}
+{{ block.super }}
+
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
@@ -14,7 +20,9 @@
     <link href="{% static 'Libs/fontawesome-free-6.4.2-web/fontawesome-free-6.4.2-web/css/solid.css' %}" rel="stylesheet" />
     <!-- Icono de la pestaña del navegador desde archivos estáticos -->
     <link rel="icon" type="image/x-icon" href="{% static 'images/logo.png' %}" />
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <link href="{% static 'selectable/css/dj.selectable.css' %}" type="text/css" media="all" rel="stylesheet">
     {% block extracss %}
     {% endblock %}
   </head>
@@ -30,8 +38,9 @@
     <script src="{% static 'Libs/js/popper.min.js' %}"></script>
     <script src="{% static 'Libs/js/main.js' %}"></script>
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
-
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
     <script src="{% static 'Libs/fullcalendar-6.1.11/dists/index.global.min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'selectable/js/jquery.dj.selectable.js' %}"></script>
 
 
     {% block extrajs %}

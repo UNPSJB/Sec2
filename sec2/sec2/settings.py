@@ -55,6 +55,7 @@ INSTALLED_APPS = [
     "django_extensions",
     'fontawesomefree',
     'django_select2',
+    'selectable',
 
 ]
 

@@ -2,12 +2,13 @@ from django.urls import reverse
 from django.shortcuts import render, redirect
 from django.contrib.auth import logout as django_logout, login as django_login, authenticate
 from django.urls import reverse_lazy
-from apps.afiliados.models import RelacionFamiliar
+from apps.afiliados.models import Afiliado, RelacionFamiliar
 
 from apps.personas.models import Persona, Rol
+from apps.afiliados.forms import AfiliadoFormSearch
 from utils.funciones import mensaje_advertencia
 from .forms import SecAuthenticationForm
-from apps.personas.forms import BuscadorPersonasForm
+from apps.personas.forms import PersonaFormSearch
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
     
@@ -17,8 +18,6 @@ from django.contrib.auth.models import User
     
 #     return render(request, 'home.html', {'buscador': BuscadorPersonasForm() })
 # =======
-
-
 
 
 def obtener_permisos_user_string(user):
@@ -37,6 +36,8 @@ def home(request):
     # Filtrar roles sin fecha de finalización (hasta)
     roles_sin_fecha_hasta = Rol.objects.filter(hasta__isnull=True)
 
+    form = PersonaFormSearch()
+
     
     # Filtrar relaciones familiares tipo 2 relacionadas con roles sin fecha de finalización
     relaciones_tipo_2 = RelacionFamiliar.objects.filter(tipo_relacion=2, familiar__in=roles_sin_fecha_hasta)
@@ -46,6 +47,6 @@ def home(request):
            mensaje_advertencia(request, f"Atencion! El familiar con el DNI: {relacion.familiar.persona.dni} es mayor de edad"  )
 
     personas = personas = Persona.objects.filter(roles__in=roles_sin_fecha_hasta)
-    return render(request, 'home.html', {'clientes': personas, "permisos":permisos})
+    return render(request, 'home.html', {'clientes': personas, "permisos":permisos, "form":form})
 
      

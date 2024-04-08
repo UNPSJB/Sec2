@@ -15,6 +15,7 @@ from django.urls import reverse_lazy
 from django.shortcuts import render
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.contrib.auth.decorators import permission_required , login_required 
+from django.utils import timezone
 
 #--------------- CREATE DE CURSOS--------------------------------
 class CursoCreateView(LoginRequiredMixin, PermissionRequiredMixin,CreateView):
@@ -306,16 +307,28 @@ def cursoListaEspera(request, pk):
     return render(request, 'curso/curso_lista_espera.html', context)
 
 
-from django.utils import timezone
+
 
 ##--------------- CURSO ELIMINAR --------------------------------
+
+def dictadoFinalizado(dictado):
+    return dictado.estado == 3
+
+def todosDictadosFinalizados(curso):
+    dictados = Dictado.objects.filter(curso=curso)
+    return all(dictadoFinalizado(dictado) for dictado in dictados)
+
+
+
+
+
 @permission_required('cursos.permission_gestion_curso', raise_exception=True)
 @login_required(login_url='/login/')
 def curso_eliminar(request, pk):
     curso = get_object_or_404(Curso, pk=pk)
 
     try:
-        if dictadosFinalizados(curso):
+        if todosDictadosFinalizados(curso):
             curso.fechaBaja = timezone.now()
             curso.save()
             mensaje_exito(request, f'El curso ha sido deshabilitado con exito')
@@ -324,7 +337,7 @@ def curso_eliminar(request, pk):
 
     except Exception as e:
         messages.error(request, 'Ocurrió un error al intentar eliminar el aula.')
-    return redirect('cursos:curso_listado') 
+    return redirect('cursos:curso_detalle', pk=pk)
 
 @permission_required('cursos.permission_gestion_curso', raise_exception=True)
 @login_required(login_url='/login/')
@@ -585,12 +598,9 @@ class PagoAlumnoCreateView(CreateView):
             for dictado_info in dictados_info:
                 dictado_pk = dictado_info.get('valor')
                 dictado = get_object_or_404(Dictado, pk=dictado_pk)
-                
-                precioConDescuento = dictado_info.get('precioConDescuento')
-                cantidad = dictado_info.get('cantidad')
-
+                precioConDescuento = round(float(dictado_info.get('precioConDescuento')), 2)
+                cantidad = int(dictado_info.get('cantidad'))
                 total = precioConDescuento * cantidad
-
 
                # Crear una instancia de DetallePagoAlumno para cada dictado asociado al pago
                 DetallePagoAlumno.objects.create(

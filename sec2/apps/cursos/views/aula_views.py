@@ -2,14 +2,15 @@ from django.shortcuts import get_object_or_404, redirect
 from django.views.generic.edit import CreateView, UpdateView
 from django.views.generic import DetailView, ListView
 
-from utils.funciones import mensaje_advertencia, mensaje_exito
-from ..models import Aula, Reserva
+from utils.funciones import mensaje_advertencia, mensaje_error, mensaje_exito
+from ..models import Aula, Clase, Dictado, Horario, Reserva
 from ..forms.aula_forms import *
 from django.urls import reverse_lazy
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.contrib.auth.decorators import permission_required , login_required
 from datetime import date
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
 ## ------------  CREATE AND LIST AULA -------------------
 class GestionAulaView(PermissionRequiredMixin, LoginRequiredMixin, CreateView, ListView):
@@ -69,14 +70,29 @@ class AulaDetailView(PermissionRequiredMixin, LoginRequiredMixin, DetailView):
     template_name = "aula/aula_detalle.html"
     permission_required = 'cursos.permission_gestion_curso'
     login_url = '/home/'
+    paginate_by = MAXIMO_PAGINATOR
+
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         aula = self.object
         current_date = date.today()  # Get the current date
+        
+        reservas = Reserva.objects.filter(aula=aula, fecha__gte=current_date).order_by('fecha', 'horario__hora_inicio')
+        
+        # Configurar la paginación
+        paginator = Paginator(reservas, self.paginate_by)
+        page = self.request.GET.get('page')
 
+        try:
+            reservas = paginator.page(page)
+        except PageNotAnInteger:
+            reservas = paginator.page(1)
+        except EmptyPage:
+            reservas = paginator.page(paginator.num_pages)
 
-        context['reservas'] = Reserva.objects.filter(aula=aula, fecha__gte=current_date).order_by('fecha', 'horario__hora_inicio')
+        context['reservas'] = reservas
+
         context['titulo'] = 'Detalle de Aula'
         context['tituloListado'] = 'Proximas reservas del aula'
         return context
@@ -109,12 +125,30 @@ class AulaUpdateView(PermissionRequiredMixin, LoginRequiredMixin, UpdateView):
             print(f"Campo: {field}, Errores: {', '.join(errors)}")
         return super().form_invalid(form)
 
+
+def obtenerDictadosAsociados(aula):
+    # Obtener las reservas relacionadas con el aula específica
+    reservas = Reserva.objects.filter(aula=aula)
+    horarios = Horario.objects.filter(reservass__in=reservas)
+    # Obtener los dictados distintos asociados a los horarios
+    dictados_distintos = horarios.values('dictado').distinct()
+    dictados = Dictado.objects.filter(id__in=dictados_distintos)
+    return dictados
+
+def existenDictadosVigentes(dictados):
+    return any(dictado.estado in [1, 2] for dictado in dictados)
+
 ## ------------ ELIMINAR -------------------
 def aula_eliminar(request, pk):
+    # Se va a eliminar siempre cuando no existan dictados vigentes con reserva en el aula
     aula = get_object_or_404(Aula, pk=pk)
+    dictados = obtenerDictadosAsociados(aula)
     try:
+        if existenDictadosVigentes(dictados):
+            mensaje_error(request, "El aula tiene futuras reservas para dictados.")
+            return redirect('cursos:gestion_aula')
         aula.delete()
-        messages.success(request, f'{ICON_CHECK} El aula se eliminó correctamente!')
+        mensaje_exito(request, "El aula se eliminó correctamente!")
     except Exception as e:
-        messages.error(request, 'Ocurrió un error al intentar eliminar el aula.')
+            mensaje_error(request, "Ocurrió un error al intentar eliminar el aula.")
     return redirect('cursos:gestion_aula')

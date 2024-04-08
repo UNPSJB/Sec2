@@ -70,8 +70,6 @@ urlpatterns = [
     path('cursos/curso/<int:curso_pk>/dictados/dictado/<int:dictado_id>/generarclaeses/', generar_clases, name="generar_clases"),
     path('cursos/curso/<int:curso_pk>/dictados/dictado/<int:dictado_pk>/clases/clase/<int:clase_pk>', ClaseDetailView.as_view(), name="clase_detalle"),
     
-
-
     # ALUMNO (accedido desde el dictado)
 
     #CONTROL DE ASISTENCIA
@@ -80,25 +78,15 @@ urlpatterns = [
     #ALUMNNOS POR CURSO
     path('cursos/curso/<int:curso_pk>/dictados/dictado/<int:dictado_pk>/Alumnos', AlumnosEnDictadoList.as_view(), name="alumno_inscripto"),
 
-
     # GESTION DE INSCRIPCION
     path('cursos/curso/<int:curso_pk>/dictados/dictado/<int:dictado_pk>/<str:tipo>/<int:persona_pk>/Incripcion/<str:accion>/', gestionInscripcion, name="gestion_inscripcion"),
     path('cursos/curso/<int:curso_pk>/dictados/dictado/<int:dictado_pk>/AlumnoNuevo/inscribir', AlumnoCreateView.as_view(), name="alumno_nuevo_inscribir"),
-
     path('alumnos', AlumnosListView.as_view(), name="alumnos_listado"),
     path('alumnos/<int:pk>/', AlumnoDetailView.as_view(), name="alumno_detalle"),
 
     #GENERAR PDF
     path('generar-pdf-afiliado-dictado/<int:dictado_pk>/<int:persona_pk>', generarPDF_Afiliado , name="generar_pdf_dictado_finalizado_afiliado"),
     
-    # path('<int:pk>/dictado/profesor',  ProfesorDelDictadoListView.as_view(), name="profesor_dictado"),
-    # path('<int:pk>/dictado/   alumnos/<int:apk>/asistencia', registrarAsistenciaAlumno, name="asistencia_alumno"),
-    # path('<int:pk>/inscriptos', AlumnosListView.as_view(), name="ver_inscriptos"),
-    # path('<int:dpk>/dictado/<int:pk>/asistencia', registrarAsistenciaAlumno, name="asistencia_alumno"),
-    # path('<int:pk>/inscriptos', AlumnosListView.as_view(), name="ver_inscriptos"),
-    # path('<int:pk>/inscriptos', alumno_inscribir, name="completar_inscripcion"),
-    # path('pagoalumno', PagoAlumnoCreateView.as_view(), name="pago_alumno"),
-
     #NO SE UTILIZARIA
     path('cursos/curso/<int:curso_pk>/dictados/dictado/<int:dictado_pk>/Alumnos/listaEspera', listaEspera , name="dictado_lista_espera"),
     path('pago/listado/profesor', PagoProfesorListView.as_view() ,name="pago_cuota_profesor_listado"),
@@ -111,6 +99,4 @@ urlpatterns = [
     path('pago/alumno/<int:pk>', PagoAlumnoDetailView.as_view(), name="pago_alumno_detalle"),
 
     path('get_dictados_por_alumno/<int:rol_pk>/', get_dictados_por_alumno, name='get_dictados_por_alumno'),
-
-
 ]

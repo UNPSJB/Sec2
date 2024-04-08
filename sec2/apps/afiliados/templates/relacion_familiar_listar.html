@@ -28,13 +28,13 @@
     <tbody>
       {% for relacion in page_obj %}
         <tr>
-            <td class="negrita">{{ forloop.counter }}</td>77
+            <td class="negrita">{{ forloop.counter }}</td>
             {% include "tabla_persona_cuerpo.html" with persona=relacion.familiar.persona %}
             <td >{{ relacion.get_tipo_relacion_display }}</td>
             {% include "tabla_persona_cuerpo.html" with persona=relacion.afiliado.persona %}
             <td class="text-center">
               {% if relacion.afiliado.estado == 1 %}<i class="fa-solid fa-circle-exclamation" style="color: #FF8000;"></i>{% endif %}
-              {% if relaciona.apyfiliado.estado == 2 %}<i class="fa-regular fa-circle-check" style="color: #008f00;"></i>{% endif %}
+              {% if relacion.afiliado.estado == 2 %}<i class="fa-regular fa-circle-check" style="color: #008f00;"></i>{% endif %}
               {% if relacion.afiliado.estado == 3 %}<i class="fa-solid fa-circle-minus" style="color: #a80000;"></i>{% endif %}
             </td>
             <td class="text-end">

@@ -14,6 +14,8 @@
           <label for="{{ form.nombre.id_for_label }}">Nombre:</label>
           {{ form.nombre }}
         </div>
+        {% include "error_campo.html" with field=form.nombre %}
+
       </div>
       <div class="col-md-6">
         <div class="form-group">
@@ -27,14 +29,14 @@
         <div class="form-group">
           <label for="{{ form.direccion.id_for_label }}">Dirección:</label>
           {{ form.direccion }}
-          <small class="error-text" style="color: red;">{{ form.direccion.error }}</small>
+          {% include "error_campo.html" with field=form.direccion %}
         </div>
       </div>
       <div class="col">
         <div class="form-group">
           {{ form.capacidad.label_tag }}
           {{ form.capacidad }}
-          <small class="error-text" style="color: red;">{{ form.capacidad.error }}</small>
+          {% include "error_campo.html" with field=form.capacidad %}
         </div>
       </div>
     </div>
@@ -57,7 +59,7 @@
         <div class="form-group">
           {{ form.precio.label_tag }}
           {{ form.precio }}
-          <small class="error-text" style="color: red;">{{ form.precio.error }}</small>
+          {% include "error_campo.html" with field=form.precio %}
         </div>
       </div>
     </div>
@@ -67,14 +69,14 @@
         <div class="form-group">
           {{ form.tipo_salon.label_tag }}
           {{ form.tipo_salon }}
-          <small class="error-text" style="color: red;">{{ form.tipo_salon.error }}</small>
+          {% include "error_campo.html" with field=form.tipo_salon %}
         </div>
       </div>
       <div class="col">
         <div class="form-group">
           <label for="{{ form.servicios.id_for_label }}">Servicios:</label>
           {{ form.servicios }}
-          <small class="error-text" style="color: red;">{{ form.servicios.error }}</small>
+          {% include "error_campo.html" with field=form.servicios %}
         </div>
       </div>
     </div>

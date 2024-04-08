@@ -16,7 +16,6 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
-from sec2.views import *
 from .views import *
 
 urlpatterns = [
@@ -34,6 +33,9 @@ urlpatterns = [
     path('home/app_alquileres/',include('apps.alquileres.urls')),
     path('',include('apps.users.urls')),
     path('select2/', include('django_select2.urls')),
+    path('selectable/', include('selectable.urls')),
+
+
 
     
 

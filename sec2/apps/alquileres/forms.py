@@ -1,5 +1,6 @@
 from django import forms
 from django.forms import ValidationError
+from apps.afiliados.models import Afiliado
 from apps.personas.forms import PersonaForm,PersonaUpdateForm
 from apps.personas.models import Persona
 from utils.choices import ESTADO_CIVIL, MAX_LENGTHS, NACIONALIDADES
@@ -122,13 +123,6 @@ class SalonFilterForm(FiltrosForm):
 
 # ----------------------------- ALQUILER ----------------------------------- #
 class AlquilerForm(forms.ModelForm):
-    #afiliado=forms.ForeignKey()
-    #salon=forms.ForeignKey(Salon, related_name="alquileres", on_delete=models.CASCADE)
-    #fecha_solicitud=forms.DateTimeField(auto_now_add=True, null=True, blank=True)
-    #fecha_alquiler=forms.DateTimeField(null=True, blank=True) 
-    #turno=forms.CharField(max_length=50, choices=turnos) #verificar bien la forma de los turnos
-    #seguro=forms.DecimalField(help_text="costo del alquiler", max_digits=10, decimal_places=2)
-    
     class Meta:
         model = Alquiler
         fields = ('afiliado', 'salon', 'turno', 'seguro','fecha_alquiler')
@@ -136,11 +130,18 @@ class AlquilerForm(forms.ModelForm):
           # 'fecha_solicitud': forms.DateInput(attrs={'type': 'date'}),
            'fecha_alquiler': forms.DateInput(attrs={'type': 'date'}),
            'seguro': forms.TextInput(attrs={'class': 'form-control form-control-user', 'placeholder': 'Eje: 1000'}),
-            
+            'turno': forms.RadioSelect(attrs={'class': 'turno-radio'}),  # Agrega la clase CSS personalizada al widget del campo de turno
        }
     
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        self.fields['afiliado'].queryset = Afiliado.objects.filter(estado=2)  # Filtra por estado activo (2)
+        self.fields['afiliado'].label_from_instance = lambda obj: f"{obj.persona.dni} | {obj.persona.apellido} {obj.persona.nombre} | {obj.razon_social}" if obj.persona else obj.razon_social
+        
+        self.fields['salon'].queryset = Salon.objects.filter(fechaBaja=None)
+        self.fields['salon'].label_from_instance = lambda obj: f"{obj.nombre} | Capacidad: {obj.capacidad} | ${obj.precio}"
+        self.fields['turno'].choices = [('Mañana', 'Mañana'), ('Noche', 'Noche')]
+
         
 class AlquilerFilterForm(FiltrosForm):
     alquiler_salon_nombre = forms.CharField(required=False)

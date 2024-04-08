@@ -1,3 +1,5 @@
+# from sec2.sec2.lookups import AfiliadosLookup
+from .lookups import AfiliadoLookup
 from utils.choices import AFILIADO_ESTADO, ESTADO_CIVIL, LOCALIDADES_CHUBUT, MAX_LENGTHS, NACIONALIDADES, TIPOS_RELACION_FAMILIAR
 from utils.funciones import validate_no_mayor_actual
 from .models import Afiliado, Familiar, PagoCuota
@@ -15,10 +17,28 @@ from django import forms
 import datetime
 from datetime import date
 
+from selectable.forms import AutoCompleteSelectField
+
+from django import forms
+
+from selectable.forms import AutoCompleteWidget
+
+class AfiliadoFormSearch(forms.Form):
+   afiliado = AutoCompleteSelectField(lookup_class=AfiliadoLookup, label='Buscar Producto')
+ 
+
+
+# class AfiliadoFormSearch(forms.Form):
+#     autocomplete = forms.CharField(
+#         label='Type the name of a fruit (AutoCompleteWidget)',
+#         widget=AutoCompleteWidget(AfiliadoLookup),
+#         required=False,
+#     )
+
 # ---------- Utilizado para el AFILIADO CRATE VIEW 
 class AfiliadoPersonaForm(forms.ModelForm):
     razon_social = forms.CharField(max_length=30, validators=[text_and_numeric_validator])
-    categoria_laboral = forms.CharField(max_length=20, validators=[text_and_numeric_validator])
+    categoria_laboral = forms.CharField(max_length=50, validators=[text_and_numeric_validator])
     rama = forms.CharField(max_length=50, validators=[text_and_numeric_validator])
     sueldo = forms.IntegerField(validators=[MinValueValidator(0, 'El sueldo debe ser un valor positivo.')])
     horaJornada = forms.IntegerField(
@@ -27,7 +47,7 @@ class AfiliadoPersonaForm(forms.ModelForm):
 
     )
     cuit_empleador = forms.CharField(max_length=11, validators=[numeric_validator], help_text='Cuit sin puntos y guiones. Ej: 01234567899')
-    domicilio_empresa = forms.CharField(max_length=50, validators=[text_and_numeric_validator], help_text='Calle y numero')
+    domicilio_empresa = forms.CharField(max_length=100, validators=[text_and_numeric_validator], help_text='Calle y numero')
     # fechaAfiliacion = forms.DateField(widget=forms.DateInput(attrs={'type': 'date'}))
     fechaIngresoTrabajo = forms.DateField(
         widget=forms.DateInput(attrs={'type': 'date'}),
@@ -40,8 +60,8 @@ class AfiliadoPersonaForm(forms.ModelForm):
         model = Persona
         fields = ['dni', 'cuil', 'nombre', 'apellido', 'fecha_nacimiento', 'celular', 'direccion', 'nacionalidad', 'mail', 'estado_civil']
         widgets = {
-            'fecha_nacimiento': forms.DateInput(attrs={'type': 'date'}),
-        }
+                    'fecha_nacimiento': forms.DateInput(attrs={'type': 'date'}),
+                  }
 
     def clean_fecha_nacimiento(self):
         fecha_nacimiento = self.cleaned_data.get('fecha_nacimiento')

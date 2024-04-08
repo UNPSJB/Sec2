@@ -3,13 +3,9 @@
 <nav class="navbar navbar-expand-lg bg-body-tertiary">
   <div class="container-fluid">
     <div class="mx-auto">
-      <form class="d-flex" role="search" action="{% url 'personas:mostrar_detalle_persona' %}" method="get">
-        <select name="enc_cliente" id="enc_cliente">
-          <option value="0">Persona</option>
-          {% for persona in clientes %}
-            <option value="{{persona.id}}">{{persona.dni}} {{persona.nombre}} {{persona.apellido}}</option>
-          {% endfor %}
-        </select>                    
+      <form class="d-flex" method="post">
+        {% csrf_token %}
+        {{ form.as_p }} 
         <button class="btn btn-outline-secondary" type="submit" id="button-addon2" disabled><i class="fa-solid fa-magnifying-glass"></i></button>
       </form>
     </div>

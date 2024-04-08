@@ -1,7 +1,8 @@
 # Importaciones del sistema
 from django.urls import path
 # Importaciones locales
-from apps.afiliados.views import *
+from selectable import urls as selectable_urls
+from .views import *
 from django.contrib.auth.decorators import login_required, permission_required
 
 
@@ -38,6 +39,6 @@ urlpatterns = [
     path('pago/afiliado/cuotas', PagoCuotaCreateView.as_view() ,name="pagar_cuota_sindical"),
     path('pago/listado', PagoCuotaListView.as_view() ,name="pago_cuota_listado"),
     path('pago/afiliado/actualizar', cuota_sindical_actualizar_estado ,name="actualizar_estado"),
-
-
+    path('buscar/', buscar_afiliado, name='buscar-producto'),
+ 
 ]

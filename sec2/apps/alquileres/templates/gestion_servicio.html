@@ -34,12 +34,14 @@
     <tr class="bg-transition fila-personalizada">
         <td class="negrita"> {{ page_obj.start_index|add:forloop.counter0 }}</td>
         <td>{{ obj }}</td>
-       {% comment %} <td class="text-end">
-          <a href="{% url 'alquiler:servicio_detalle' pk=obj.pk %}" class="btn btn-info btn-sm btn-detalle"><i class="fa-regular fa-eye"></i> Detalle</a>
-          <a href="{% url 'alquiler:servicio_editar' obj.pk %}" class="btn btn-primary btn-sm btn-detalle"><i class="fa-regular fa-pen-to-square"></i> Modificar</a>
-           <button type="button" class="btn btn-danger btn-sm btn-detalle" data-bs-toggle="modal" data-bs-target="#exampleModal_dar_de_baja_{{ obj.pk }}"><i class="fa-regular fa-circle-down"></i> Eliminar</button> {% endcomment %}
-          {% comment %} {% include 'aula/modal_confirm_baja.html' with object=obj %}            
-        </td> {% endcomment %}
+
+       <td class="text-end">
+         <button type="button" class="btn btn-danger btn-sm btn-detalle" data-bs-toggle="modal" data-bs-target="#exampleModal_dar_de_baja_{{ obj.pk }}"><i class="fa-regular fa-circle-down"></i> Eliminar</button>
+         {% include 'modal_confirm_baja_servicio.html' with object=obj %}            
+
+          {% comment %} <a href="{% url 'alquiler:servicio_detalle' pk=obj.pk %}" class="btn btn-info btn-sm btn-detalle"><i class="fa-regular fa-eye"></i> Detalle</a> {% endcomment %}
+          {% comment %} <a href="{% url 'alquiler:servicio_editar' obj.pk %}" class="btn btn-primary btn-sm btn-detalle"><i class="fa-regular fa-pen-to-square"></i> Modificar</a> {% endcomment %}
+        </td>
       </tr>
     {% endfor %}
   </tbody>

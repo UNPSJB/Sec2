@@ -37,7 +37,10 @@ class Salon(models.Model):
     capacidad=models.PositiveIntegerField(help_text="capacidad maxima del salon")
     encargado=models.ForeignKey(Encargado, related_name="salon", on_delete=models.CASCADE)
     precio=models.DecimalField(help_text="costo del alquiler", max_digits=10, decimal_places=2)
-    fecha_baja=models.DateTimeField(auto_now_add=True, null=True, blank=True)
+    fechaBaja= models.DateField(
+        null=True,
+        blank=False,
+    )
     tipo_salon = models.PositiveSmallIntegerField(choices=tipos_salon)
     servicios=models.ManyToManyField(Servicio, blank=True) 
     

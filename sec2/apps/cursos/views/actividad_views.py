@@ -1,8 +1,9 @@
 from django.views.generic.edit import CreateView, UpdateView
 from django.views.generic import ListView
 
+from apps.cursos.views.aula_views import existenDictadosVigentes
 from utils.funciones import mensaje_advertencia, mensaje_error, mensaje_exito
-from ..models import Actividad, Curso
+from ..models import Actividad, Curso, Dictado
 from ..forms.actividad_forms import *
 from django.urls import reverse_lazy
 from django.contrib import messages
@@ -105,13 +106,27 @@ class ActividadUpdateView(LoginRequiredMixin, PermissionRequiredMixin, UpdateVie
             print(f"Campo: {field}, Errores: {', '.join(errors)}")
         return super().form_invalid(form)
 
+
+def obtenerCursosAsociados(actividad):
+    return Curso.objects.all().filter(actividad=actividad)
+
 # ## ------------ ACTIVIDAD DELETE -------------------
     
 @permission_required('cursos.permission_gestion_curso', raise_exception=True)
 @login_required(login_url='/login/')
 def actividad_eliminar(request, pk):
     actividad = get_object_or_404(Actividad, pk=pk)
+    cursos = obtenerCursosAsociados(actividad)
+    dictados = Dictado.objects.filter(curso__in=cursos)
+
+    dictados = Dictado.objects.filter(id__in=dictados)
+
+    print("CURSOS", cursos)
+    print("DICTAODS", dictados)
     try:
+        if existenDictadosVigentes(dictados):
+            mensaje_error(request, "La actividad tiene cursos que tienen dictados vigentes.")
+            return redirect('cursos:gestion_actividad')
         actividad.delete()
         mensaje_exito(request, f'{MSJ_ACTIVIDAD_EXITO_BAJA}')
     except Exception as e:

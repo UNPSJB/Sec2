@@ -19,7 +19,7 @@
         
         {% if horario.reserva %}
         <td>
-          <a href="{% url 'cursos:aula_detalle' horario.reserva.aula.pk %}" class="btn btn-info btn-sm btn-detalle"><i class="fa-regular fa-eye"></i> Ir al Aula</a>
+          <a href="{% url 'cursos:aula_detalle' horario.reserva.aula.pk %}" class="btn btn-info btn-sm btn-detalle"><i class="fa-solid fa-chair"></i> Ir al Aula</a>
         </td>
         {% endif %}
 
@@ -47,7 +47,7 @@
       <!-- Modal -->
       {% if not horario.reserva %}
       <div class="modal fade" id="exampleModal{{ horario.pk }}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
+        <div class="modal-dialog modal-dialog-centered">
           <div class="modal-content">
             <div class="modal-header">
               <h1 class="modal-title fs-5" id="exampleModalLabel">Reserva de aula</h1>

@@ -31,6 +31,21 @@ from utils.constants import *
 
 from django.contrib.auth.decorators import login_required
 
+
+def buscar_afiliado(request):
+    print("ENTRE")
+    form = AfiliadoFormSearch()
+    if request.method == 'POST':
+        form = AfiliadoFormSearch(request.POST)
+        print(form)
+        if form.is_valid():
+            producto_id = request.POST.get('afiliado_1')
+            print(producto_id)
+            # Realiza cualquier acción que necesites con el ID del producto
+           
+        
+    return render(request, 'afiliados/buscar_afiliado.html', {'form': form})
+
 @login_required(login_url='/login/')
 def index(request):
     template = loader.get_template('home.html')
