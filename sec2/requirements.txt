@@ -18,6 +18,7 @@ django-crispy-forms==1.14.0
 django-extensions==3.2.1
 django-filter==23.5
 django-select2==8.0.0
+django-selectable==1.4.0
 docopt==0.6.2
 exceptiongroup==1.2.0
 fastapi==0.96.1
