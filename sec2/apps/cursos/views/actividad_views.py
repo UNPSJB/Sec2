@@ -118,11 +118,8 @@ def actividad_eliminar(request, pk):
     actividad = get_object_or_404(Actividad, pk=pk)
     cursos = obtenerCursosAsociados(actividad)
     dictados = Dictado.objects.filter(curso__in=cursos)
-
     dictados = Dictado.objects.filter(id__in=dictados)
 
-    print("CURSOS", cursos)
-    print("DICTAODS", dictados)
     try:
         if existenDictadosVigentes(dictados):
             mensaje_error(request, "La actividad tiene cursos que tienen dictados vigentes.")

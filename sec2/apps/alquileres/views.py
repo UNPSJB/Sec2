@@ -151,7 +151,9 @@ class EncargadoDetailView(LoginRequiredMixin, PermissionRequiredMixin, DetailVie
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+
         context['titulo'] = "Detalle del Encargado"
+        context['tituloListado1'] = "Salones a cargo"
         return context
 
 
@@ -381,6 +383,8 @@ class SalonDetailView(LoginRequiredMixin, PermissionRequiredMixin, DetailView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['titulo'] = f"{self.object.nombre}"
+        context['tituloListado1'] = "Alquileres a cargo"
+
         return context
     
 # ----------------------------- LIST DE SALON  ----------------------------------- #
@@ -403,6 +407,23 @@ class SalonesListView(LoginRequiredMixin, PermissionRequiredMixin, ListFilterVie
             return reverse_lazy('alquiler:salon_crear', args=[self.object.pk])
         return super().get_success_url()        
     
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        # Obtén los parámetros de filtro del formulario
+        nombre = self.request.GET.get('nombre')
+        localidad = self.request.GET.get('localidad')
+        capacidad = self.request.GET.get('capacidad')
+
+        # Filtrar los salones según los parámetros ingresados
+        if capacidad:
+            capacidad = int(capacidad)  # Convertir la capacidad a entero
+            queryset = queryset.filter(capacidad__gte=capacidad)
+        if nombre:
+            queryset = queryset.filter(nombre__icontains=nombre)
+        if localidad:
+            queryset = queryset.filter(localidad=localidad)
+
+        return queryset
 
 # ----------------------------- UPDATE DE SALON  ----------------------------------- #
 
@@ -422,7 +443,7 @@ class SalonUpdateView(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
     def form_valid(self, form):
      
         messages.success(self.request, '<i class="fa-solid fa-square-check fa-beat-fade"></i> salon modificado con éxito')
-        return redirect('alquiler:Salon_detalle')
+        return redirect('alquiler:salon_detalle')
 
     def form_invalid(self, form):
         messages.warning(self.request, '<i class="fa-solid fa-triangle-exclamation fa-flip"></i> Por favor, corrija los errores a continuación.')
@@ -439,14 +460,14 @@ def salon_eliminar(request, pk):
 
     if alquileres.exists():
         mensaje_error(request, f'No puede ser eliminado porque tiene alquileres asociados.')
-        return redirect('alquiler:Salon_detalle', pk=salon.pk)
+        return redirect('alquiler:salon_detalle', pk=salon.pk)
     try:
         salon.fechaBaja = timezone.now()
         salon.save()
         mensaje_exito(request, f'El salon ha sido dado de baja con exito')
     except Exception as e:
         messages.error(request, 'Ocurrió un error al intentar eliminar el aula.')
-    return redirect('alquiler:Salon_detalle', pk=salon.pk)
+    return redirect('alquiler:salon_detalle', pk=salon.pk)
 
 # ----------------------------- CREATE DE ALQUILER  ----------------------------------- #
 
@@ -518,22 +539,100 @@ def agregar_lista_espera(request, pk):
     personas = Persona.objects.filter(roles__in=roles_sin_fecha_hasta)
     # Obtener afiliados asociados a las personas obtenidas
     afiliados = Afiliado.objects.filter(persona__in=personas, estado=2).exclude(pk=afiliado_inquilino.pk)  # Excluir el afiliado inquilino
+    afiliado_en_lista_espera = alquiler.lista_espera.all()
+    afiliados_no_en_lista_espera = afiliados.exclude(pk__in=afiliado_en_lista_espera.values_list('pk', flat=True))
 
     if request.method == 'POST':
         enc_afiliado_id = request.POST.get('enc_afiliado')
-        afiliado = get_object_or_404(Afiliado, pk=enc_afiliado_id)
-        alquiler.lista_espera.add(afiliado)
-        alquiler.save()
-        mensaje_exito(request, 'Agregado a la lista de espera con exito')
-    
+        print("ENC AFILIADO", enc_afiliado_id)
+        if enc_afiliado_id and enc_afiliado_id != '0':
+            afiliado = get_object_or_404(Afiliado, pk=enc_afiliado_id)
+            alquiler.lista_espera.add(afiliado)
+            alquiler.save()
+            mensaje_exito(request, 'Agregado a la lista de espera con exito')
+
     context = {
         'alquiler': alquiler,
-        'afiliados': afiliados,
+        'afiliados': afiliados_no_en_lista_espera,
     }
     
     return render(request, 'lista_espera_alquiler.html', context)
 
 # ----------------------------- LIST DE ALQUILER  ----------------------------------- #
+
+from .forms import PagoForm
+from django.shortcuts import redirect
+
+def reemplazar_inquilino(request, pk):
+    alquiler = get_object_or_404(Alquiler, pk=pk)
+    lista_espera = alquiler.lista_espera
+
+    if request.method == 'POST':
+        nuevo_afiliado_pk = request.POST.get('enc_afiliado')
+        if nuevo_afiliado_pk:  
+            nuevo_afiliado = get_object_or_404(Afiliado, pk=nuevo_afiliado_pk)
+            actualizar_alquiler_y_pago(alquiler, nuevo_afiliado, request.POST)
+
+            detalle_alquiler_url = reverse('alquiler:alquiler_detalle', args=[alquiler.pk])
+            mensaje_exito(request, "Arrendatario actualizado y sacado de la lista de espera.")
+            return redirect(detalle_alquiler_url)
+
+    pago_alquiler = obtener_pago_alquiler(alquiler)
+    pago_form = PagoAlquilerForm(instance=pago_alquiler) if pago_alquiler else None
+
+    context = {
+        'titulo': "Reemplazo de inquilino",
+        'listaEspera': lista_espera,
+        'pago_form': pago_form,
+    }
+    return render(request, 'alquiler_reemplazar_inquilino.html', context)
+
+
+def actualizar_alquiler_y_pago(alquiler, nuevo_afiliado, post_data):
+    alquiler.afiliado = nuevo_afiliado
+    alquiler.lista_espera.remove(nuevo_afiliado)
+    alquiler.cambio_inquilino = True
+
+    pago_alquiler = obtener_pago_alquiler(alquiler)
+    alquiler.fecha_solicitud = timezone.now()
+    alquiler.save()
+    if pago_alquiler:
+        pago_form = PagoAlquilerForm(post_data, instance=pago_alquiler)
+        if pago_form.is_valid():
+            pago_form.fecha_pago = timezone.now()
+            pago_form.save()
+
+
+
+def obtener_pago_alquiler(alquiler):
+    return Pago_alquiler.objects.filter(alquiler=alquiler).first()
+
+def quitar_lista_alquiler(request, alquiler_pk, afiliado_pk):
+    alquiler = get_object_or_404(Alquiler, pk=alquiler_pk)
+    afiliado = get_object_or_404(Afiliado, pk=afiliado_pk)
+
+    # Remover el afiliado de la lista de espera del alquiler
+    alquiler.lista_espera.remove(afiliado)
+
+    mensaje_exito(request, "Afiliado sacado de la lista de espera con exito.")
+    detalle_alquiler_url = reverse('alquiler:alquiler_detalle', args=[alquiler.pk])
+    return redirect(detalle_alquiler_url)
+
+
+def alquiler_eliminar(request, pk):
+    alquiler = get_object_or_404(Alquiler, pk=pk)
+
+    if alquiler.estado == 1:
+        alquiler.fechaBaja = timezone.now()
+        alquiler.estado = 4
+        alquiler.save()
+        mensaje_exito(request, f'El alquiler se ha cancelado con exito')
+    else:
+        mensaje_error(request, f'No se puede dar de baja el alquiler porque esta vigente')
+
+    return redirect('alquiler:alquiler_detalle', pk=pk)
+
+
 class AlquilieresListView(PermissionRequiredMixin, LoginRequiredMixin, ListFilterView):
     model = Alquiler
     paginate_by = MAXIMO_PAGINATOR
@@ -548,6 +647,14 @@ class AlquilieresListView(PermissionRequiredMixin, LoginRequiredMixin, ListFilte
         # context['titulo'] = "Listado de Alquileres"
         return context
     
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        # Aplicar los filtros si se han enviado
+        filter_form = AlquilerFilterForm(self.request.GET)
+        if filter_form.is_valid():
+            queryset = filter_form.filter_queryset(queryset)
+        return queryset
+    
     def get_success_url(self):
         if self.request.POST['submit'] == "Guardar y Crear Alquiler":
             return reverse_lazy('alquiler:alquiler_crear', args=[self.object.pk])
@@ -556,8 +663,7 @@ class AlquilieresListView(PermissionRequiredMixin, LoginRequiredMixin, ListFilte
     def alquiler_confirm_delete (request, pk):
         alquiler = Alquiler.objects.get(pk=pk)
         return render (request,'alquileres/alquiler_confirm_delete.html',{'alquiler':alquiler})
-
-
+    
 # ----------------------------- DETAIL DE ALQUILER  ----------------------------------- #
 class AlquilerDetailView (LoginRequiredMixin, PermissionRequiredMixin, DetailView):
     model = Alquiler
@@ -568,9 +674,17 @@ class AlquilerDetailView (LoginRequiredMixin, PermissionRequiredMixin, DetailVie
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        
+        # Obtenemos el objeto Alquiler actual
+        alquiler = self.object
+
+        # Intentamos obtener el objeto Pago_alquiler asociado al alquiler actual
+        pago = Pago_alquiler.objects.filter(alquiler=alquiler).first()  # Intentamos obtener el primer Pago_alquiler asociado, si existe
+
+        # Agregamos el objeto Pago_alquiler al contexto
+        context['pago'] = pago
         context['titulo'] = "Detalle de alquiler"
         context['tituloListado1'] = "Lista de espera"
-        
         return context
     
 

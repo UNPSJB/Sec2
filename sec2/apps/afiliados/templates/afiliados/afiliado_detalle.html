@@ -88,5 +88,12 @@
 </div>
 {% endif %}
 
+{% if alquileres %}
+<div class="container-sm">
+  <h3 class="subtitulo">{{ tituloListado3 }}</h3>
+  {% include "afiliados/afiliado_alquiler.html" with alquileres=alquileres_lista_espera.all %}
+</div>
+{% endif %}
+
 
 {% endblock %}

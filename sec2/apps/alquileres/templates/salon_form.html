@@ -3,6 +3,16 @@
 {% load static %}
 
 {% block formulario %}
+
+<style> 
+  .servicios-checkbox {
+    column-count: 3; /* Divide las opciones en dos columnas */
+    
+  }
+    .tipo_salon-radio {
+      column-count: 2;
+}
+</style>
   <form method="post">
     {% csrf_token %}
     {{ form.non_field_errors }}
@@ -32,13 +42,26 @@
           {% include "error_campo.html" with field=form.direccion %}
         </div>
       </div>
+
+
       <div class="col">
-        <div class="form-group">
-          {{ form.capacidad.label_tag }}
-          {{ form.capacidad }}
-          {% include "error_campo.html" with field=form.capacidad %}
+        <div class="row">
+          <div class="col">
+            <div class="form-group">
+              {{ form.capacidad.label_tag }}
+              {{ form.capacidad }}
+              {% include "error_campo.html" with field=form.capacidad %}
+            </div>
+          </div>
+
+          <div class="col">
+            <div class="form-group">
+              {{ form.precio.label_tag }}
+              {{ form.precio }}
+              {% include "error_campo.html" with field=form.precio %}
+            </div>
+          </div>
         </div>
-      </div>
     </div>
 
     <div class="row">
@@ -55,23 +78,16 @@
           {{ form.encargado }}
         </div>
       </div>
-      <div class="col">
-        <div class="form-group">
-          {{ form.precio.label_tag }}
-          {{ form.precio }}
-          {% include "error_campo.html" with field=form.precio %}
-        </div>
-      </div>
-    </div>
-
-    <div class="row">
-      <div class="col">
+      <div class="col text-center">
         <div class="form-group">
           {{ form.tipo_salon.label_tag }}
           {{ form.tipo_salon }}
           {% include "error_campo.html" with field=form.tipo_salon %}
         </div>
       </div>
+    </div>
+
+    <div class="row">
       <div class="col">
         <div class="form-group">
           <label for="{{ form.servicios.id_for_label }}">Servicios:</label>

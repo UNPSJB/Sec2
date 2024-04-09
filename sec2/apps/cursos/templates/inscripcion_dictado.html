@@ -3,7 +3,7 @@
     <tr>
       <th>#</th>
       <th>Fecha Inicio</th>
-      {% comment %} <th>Cupo</th> {% endcomment %}
+      <th>Legajo</th>
       <th>Desc</th>
       <th>Duración</th>
       <th>Estado</th>
@@ -14,6 +14,7 @@
     {% for dictado in dictados %}
     <tr>
       <td>{{ forloop.counter }}</td>
+      <td>{{ dictado.legajo }}</td>
       <td>{{ dictado.fecha }}</td>
       {% comment %} <td>{{ dictado.cupo_real }}</td> {% endcomment %}
       <td>{{ dictado.descuento }} %</td>

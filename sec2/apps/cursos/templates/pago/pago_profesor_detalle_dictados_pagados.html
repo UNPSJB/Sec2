@@ -2,6 +2,7 @@
     <thead>
       <tr>
         <th>#</th>
+        <th>Curso</th>
         <th>Dictado</th>
         <th>Precio base</th>
         <th>Clases en el mes</th>
@@ -16,6 +17,7 @@
       <tr>
         <td>{{ forloop.counter }}</td>
         <td>{{ detalle.dictado.curso.nombre }}</td>
+        <td>{{ detalle.dictado.legajo }}</td>
         <td>${{ detalle.dictado.precio_real_profesor }}</td>
         <td>{{ detalle.total_clases }}</td>
         <td>{{ detalle.clases_asistidas }}</td>

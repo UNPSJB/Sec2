@@ -46,43 +46,8 @@
 </div>
 
 
-<br>
-<div class="container-sm">
-    <div class="table-responsive">
-      <table class="table table-sm table-hover">
-        <thead>
-          <tr>
-            <th>#</th>
-            <th>salon</th>
-            <th>fecha_alquiler</th>
-            <th>turno</th>
-            <th>Capacidad</th>
-            <th>afiliado</th>
-            <th>Precio</th>
-            <th></th>
-          </tr>
-        </thead>
-    
-        <tbody>
-          {% for Alquiler in object_list %}
-            <tr class="bg-transition fila-personalizada">
-              <td>{{ forloop.counter }}</td>
-              <td>{{ Alquiler.salon }}</td>
-              <td>{{ Alquiler.fecha_alquiler }}</td>
-              <td>{{ Alquiler.turno }}</td>
-              <td>{{ Alquiler.salon.capacidad }}</td>
-              <td>{{ Alquiler.afiliado }}</td>
-              <td>{{ Alquiler.salon.precio }}</td>
-              
-              {% comment %} <td>
-                <a href="{% url 'cursos:curso_detalle' curso.pk %}" class="btn btn-primary btn-detalle"><i class="fa-regular fa-eye"></i> Detalle</a>
-              </td>{% endcomment %}
-            </tr>
-          {% endfor %}
-        </tbody>
-      </table>
-    </div>
-  </div>
+{% comment %} {% include 'lista_alquileres.html' %} {% endcomment %}
+
 </div>
 
 {% block nav_lateral_filtro %}
@@ -111,17 +76,23 @@
                     initialView: 'dayGridMonth', // Vista inicial del calendario
                     // Paso 3: Definir eventos
                     events: [ 
-                        {% for alquiler in object_list %}
-                            {
-                            title: "{{alquiler.salon}}",
-                            start: "{{alquiler.fecha_alquiler | date:'c'}}",
-                            url: '/home/app_alquileres/alquiler/{{alquiler.pk}}',
-                            eventColor: '#FF5733' // Cambiar color del evento
-
-                            //url: '/ordenes/ordenesTurnos/listarTurnos/detalleTurno/{{orden.pk}}',
-                           // classNames: '{{orden.get_class_dot}}',
-                            },
-                        {% endfor %}
+                    {% for alquiler in object_list %}
+                    {
+                        title: "{{alquiler.salon}}",
+                        start: "{{alquiler.fecha_alquiler | date:'c'}}",
+                        url: '/home/app_alquileres/alquileres/alquiler/{{alquiler.pk}}',
+                        {% if alquiler.estado == 1 %}
+                        backgroundColor: '#459C0C', // Verde para estado "En curso"
+                          //backgroundColor: '#FF5733', // Naranja para estado "Confirmado"
+                        {% elif alquiler.estado == 2 %}
+                          backgroundColor: '#459C0C', // Verde para estado "En curso"
+                        {% elif alquiler.estado == 3 %}
+                          backgroundColor: '#459C0C', // Verde para estado "Finalizado"
+                        {% elif alquiler.estado == 4 %}
+                          backgroundColor: '#FF0000', // Rojo para estado "Cancelado"
+                        {% endif %}
+                    },
+                {% endfor %}
                     ]
                 });
                 // Paso 4: Renderizar el calendario

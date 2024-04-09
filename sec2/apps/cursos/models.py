@@ -110,10 +110,12 @@ class Curso(models.Model):
             return 'sec'
 
 #------------- DICTADO --------------------
+from django.utils.crypto import get_random_string
+
 class Dictado(models.Model):
     # ForeignKey
     curso = models.ForeignKey(Curso, related_name="dictado_set", on_delete=models.CASCADE, null=True, blank=True)
-    
+    legajo = models.CharField(max_length=4, null=True, default=get_random_string(length=4, allowed_chars='1234567890'))
     modulos_por_clase= models.PositiveIntegerField(help_text="Horas por clase")
     asistencia_obligatoria = models.BooleanField(default=False)
     periodo_pago=models.PositiveSmallIntegerField(choices=PERIODO_PAGO)
@@ -208,6 +210,11 @@ class Alumno(Rol):
         """
         return self.dictados.filter(pk=dictado_pk).exists()
 
+    def darDeBaja(self):
+        self.hasta = date.today()
+        self.persona.save()
+        self.save()
+
 Rol.register(Alumno)
 
 #------------- PROFESOR --------------------
@@ -224,6 +231,13 @@ class Profesor(Rol):
         blank=False,
         validators=[validate_no_mayor_actual]
     )
+    
+    def esRolActivo(self):
+        rol = get_object_or_404(Rol, persona__pk=self.persona.pk)
+        if rol.hasta:
+            return False
+        else:
+            return True
 
     def __str__(self):
         if self.persona_id and hasattr(self, 'persona'):
@@ -437,8 +451,6 @@ class PagoAlumno(models.Model):
         pdf.drawString(300, 675, f'{self.rol.persona.nombre} {self.rol.persona.apellido}')
         pdf.drawString(300, 655, f'{self.rol.persona.mail}')
         pdf.drawString(300, 635, f'{self.rol.persona.celular}')
-
-    
 
     def establecer_titulo(self, pdf, titulo):
         pdf.setFont('Times-Bold', 14)

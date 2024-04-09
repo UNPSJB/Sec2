@@ -81,8 +81,10 @@ urlpatterns = [
     # GESTION DE INSCRIPCION
     path('cursos/curso/<int:curso_pk>/dictados/dictado/<int:dictado_pk>/<str:tipo>/<int:persona_pk>/Incripcion/<str:accion>/', gestionInscripcion, name="gestion_inscripcion"),
     path('cursos/curso/<int:curso_pk>/dictados/dictado/<int:dictado_pk>/AlumnoNuevo/inscribir', AlumnoCreateView.as_view(), name="alumno_nuevo_inscribir"),
+
     path('alumnos', AlumnosListView.as_view(), name="alumnos_listado"),
-    path('alumnos/<int:pk>/', AlumnoDetailView.as_view(), name="alumno_detalle"),
+    path('alumnos/alumnno/<int:pk>/', AlumnoDetailView.as_view(), name="alumno_detalle"),
+    path('alumnos/alumno/<int:pk>/eliminar', alumno_eliminar, name="alumno_eliminar"),
 
     #GENERAR PDF
     path('generar-pdf-afiliado-dictado/<int:dictado_pk>/<int:persona_pk>', generarPDF_Afiliado , name="generar_pdf_dictado_finalizado_afiliado"),
@@ -95,6 +97,8 @@ urlpatterns = [
     path('get_dictados_por_titular/<int:titular_pk>/', get_dictados_por_titular, name='get_dictados_por_titular'),
 
     path('pago/listado/alumno', PagoAlumnoListView.as_view() ,name="pago_cuota_alumno_listado"),
+    path('pago/obtenerDictadosEnCurso/<int:pk>', obtenerDictadosEnCurso ,name="obtenerDictadoEnCurso"),
+
     path('pago/alumno/crear', PagoAlumnoCreateView.as_view(), name="pago_alumno_crear"),
     path('pago/alumno/<int:pk>', PagoAlumnoDetailView.as_view(), name="pago_alumno_detalle"),
 

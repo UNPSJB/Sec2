@@ -2,7 +2,7 @@ from django.shortcuts import get_object_or_404, redirect
 from apps.afiliados.models import Afiliado, Familiar
 from apps.alquileres.models import Encargado
 from apps.cursos.forms.actividad_forms import ActividadForm
-from apps.cursos.models import Alumno, Curso, DetallePagoAlumno, DetallePagoProfesor, Dictado, PagoAlumno, PagoProfesor, Profesor, Titular
+from apps.cursos.models import Alumno, Clase, Curso, DetallePagoAlumno, DetallePagoProfesor, Dictado, PagoAlumno, PagoProfesor, Profesor, Titular
 from apps.personas.models import Persona, Rol
 from utils.funciones import mensaje_advertencia, mensaje_error, mensaje_exito
 from ..forms.curso_forms import *
@@ -271,38 +271,12 @@ def cursoListaEspera(request, pk):
     # Obtener la lista de espera ordenada por tipo y fecha de inscripción
     lista_espera = ListaEspera.objects.filter(curso=curso).order_by('rol__tipo', 'fechaInscripcion')
 
-    # OBTENGO A TODOS MIS ALUMNOS (Alumnos, Afiliado, GrupoFamiliar, Profeosres como alumno)
-    # afiliado_inscritos = Afiliado.objects.filter(dictados=dictado)
-    # familiares_inscritos = Familiar.objects.filter(dictados=dictado)    
-    # profesores_inscritos = Profesor.objects.filter(dictados_inscriptos=dictado)
-    # alumnos_inscritos = Alumno.objects.filter(dictados=dictado)
-    # Calculo la suma total de inscritos
-    # total_inscritos = (
-    #     afiliado_inscritos.count() +
-    #     familiares_inscritos.count() +
-    #     profesores_inscritos.count() +
-    #     alumnos_inscritos.count()
-    # )
-    # OBTENGO A TODOS MIS PERSONAS EN LISTA DE ESPERA(Alumnos, Afiliado, GrupoFamiliar, Profeosres como alumno)
-    # afiliado_inscritos_listaEspera = Afiliado.objects.filter(lista_espera=dictado)
-    # familiares_inscritos_listaEspera = Familiar.objects.filter(lista_espera=dictado)    
-    # profesores_inscritos_listaEspera = Profesor.objects.filter(lista_espera=dictado)
-    # alumnos_inscritos_listaEspera = Alumno.objects.filter(lista_espera=dictado)
-    
-    # Combino todos los objetos en una lista
-    # todos_inscritos_listaEspera = list(afiliado_inscritos_listaEspera) + list(familiares_inscritos_listaEspera) + list(profesores_inscritos_listaEspera) + list(alumnos_inscritos_listaEspera)
-    # hay_cupo = total_inscritos < dictado.cupo
-
     context = {
         'curso': curso,
         'dictados': dictados,
-        # 'todos_inscritos_listaEspera': todos_inscritos_listaEspera,
         'titulo': titulo,
         'lista_espera': lista_espera,
-
-        # 'hay_cupo': hay_cupo,
         'curso_pk': pk,
-
     }
     return render(request, 'curso/curso_lista_espera.html', context)
 
@@ -385,6 +359,29 @@ def obtenerProfesoresConDictados(titulares_ya_finalizados, titulares_vigentes):
 
 import json
 
+def obtenerTitularesConClasesEnMesPasado():
+    titulares_con_clases = []
+
+    ultimo_dia_mes_anterior = obtenerUltimoDiaMesAnterior()
+    primer_dia_mes_anterior = ultimo_dia_mes_anterior.replace(day=1)
+
+    for titular in Titular.objects.all():
+        dictado = titular.dictado
+        clases = Clase.objects.filter(
+            reserva__horario__dictado=dictado,
+            reserva__fecha__range=(primer_dia_mes_anterior, ultimo_dia_mes_anterior)
+        )
+        if clases.exists():
+            titulares_con_clases.append(titular)
+
+    return titulares_con_clases
+
+def obtenerProfesoresUnicos(titulares):
+    profesores_unicos = set()
+    for titular in titulares:
+        profesores_unicos.add(titular.profesor)
+    return profesores_unicos
+
 class PagoProfesorCreateView(CreateView):
     model = PagoProfesor
     form_class = PagoProfesorForm
@@ -393,22 +390,11 @@ class PagoProfesorCreateView(CreateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        profesores = obtenerProfesoresActivos()
-        ultimo_dia_mes_anterior = obtenerUltimoDiaMesAnterior()
-        primer_dia_mes_anterior = ultimo_dia_mes_anterior.replace(day=1)
-        
-        # Obtengo los titulaes que tienen dictado vigente
-        titulares_vigentes = Titular.objects.all().filter(dictado__estado=2)
-        # Obtener los titulares cuyos dictados han finalizado y cuya fecha de finalización está entre el primer día y el último día del mes anterior
-        titulares_ya_finalizados = Titular.objects.filter(
-            dictado__estado=3,  # Filtrar los titulares cuyos dictados tienen un estado de 3
-            dictado__fecha_fin__range=(primer_dia_mes_anterior, ultimo_dia_mes_anterior)  # Filtrar los titulares cuyos dictados tienen una fecha de finalización dentro del rango del mes anterior
-        )
-
-        # Obtener los profesores asociados a los titulares con dictados
-        profesores = obtenerProfesoresConDictados(titulares_ya_finalizados, titulares_vigentes)
-
-        context['profesores'] = profesores
+        titulares_con_clases_mes_pasado = obtenerTitularesConClasesEnMesPasado()
+        print("titulares_con_clases_mes_pasado", titulares_con_clases_mes_pasado)
+        profesores_unicos = obtenerProfesoresUnicos(titulares_con_clases_mes_pasado)
+        print("profesores_unicos", profesores_unicos)
+        context['profesores'] = profesores_unicos
         context['titulo'] = "Comprobante de pago"
         return context
 
@@ -462,8 +448,6 @@ class PagoProfesorCreateView(CreateView):
         print("")
         return super().form_invalid(form)
     
-
-
 class PagoProfesorListView(ListFilterView):
     model = PagoProfesor
     filter_class = PagoProfesorFilterForm
@@ -478,21 +462,13 @@ class PagoProfesorListView(ListFilterView):
         
     def get_queryset(self):
         queryset = super().get_queryset()
-        # afiliado_dni = self.request.GET.get('afiliado__persona__dni')
-        # cuit_empleador = self.request.GET.get('afiliado__cuit_empleador')  # Add this line
-
-        # if afiliado_dni:
-            # queryset = queryset.filter(afiliado__persona__dni=afiliado_dni)
-
-        # if cuit_empleador:
-            # Use Q objects to perform OR filtering on afiliado__cuit_empleador and familiar__cuit_empleador
-            # queryset = queryset.filter(Q(afiliado__cuit_empleador=cuit_empleador))
-        
+        form = PagoProfesorFilterForm(self.request.GET)
+        if form.is_valid():
+            persona_dni = form.cleaned_data.get('profesor__persona__dni')
+            curso = form.cleaned_data.get('curso')
         return queryset
-    
 
 from django.http import HttpResponse
-
 class PagoProfesorDetailView(DetailView):
     model = PagoProfesor
     template_name = 'pago/pago_profesor_detalle.html'
@@ -546,11 +522,13 @@ def estaEnDictadoActivo(persona, es_profesor):
 
     if dictados.exists():
         for dictado in dictados:
-            if not dictado.estado == 3:
+            print("dictado", dictado)
+            if dictado.estado == 2:
+                print("ESTA ACTIVO")
                 return True
     return False
 
-def obtenerAlumnosEnDictado():
+def obtenerAlumnosEnDictadoActivo():
     #Obtengo todos los roles activos
     roles_sin_fecha_hasta = Rol.objects.filter(hasta__isnull=True)
     resultados = []
@@ -562,6 +540,16 @@ def obtenerAlumnosEnDictado():
             resultados.append({"alumnos": persona})
     return resultados
 
+def tienenCantidadApropiada(dictados_info):
+    for dictado_info in dictados_info:
+        pagos_faltantes = dictado_info.get('aux')
+        cantidad = dictado_info.get('cantidad')
+        if cantidad > pagos_faltantes:
+            return False
+
+    return True
+
+
 class PagoAlumnoCreateView(CreateView):
     model = PagoAlumno
     form_class = PagoRolForm
@@ -570,7 +558,7 @@ class PagoAlumnoCreateView(CreateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        alumnos = obtenerAlumnosEnDictado()
+        alumnos = obtenerAlumnosEnDictadoActivo()
         context['titulo'] = "Comprobante de pago"
         context['alumnos'] = alumnos
         return context
@@ -588,9 +576,12 @@ class PagoAlumnoCreateView(CreateView):
 
         if datos_dictados:
             dictados_info = json.loads(datos_dictados)
+
+            if not tienenCantidadApropiada(dictados_info):
+                mensaje_error(self.request, f'Ocurrio un error porque la cantidad supera los pagos faltantes')
+                return redirect('cursos:pago_alumno_crear')
+
             pago = form.save(commit=False)
-            print("pk",pk)
-            print("total_a_pagar",total_a_pagar)
             pago.rol_id = pk
             pago.total = total_a_pagar
             pago.save()
@@ -637,7 +628,7 @@ class PagoAlumnoCreateView(CreateView):
 
 class PagoAlumnoListView(ListFilterView):
     model = PagoAlumno
-    filter_class = PagoProfesorFilterForm
+    filter_class = PagoAlumnoFilterForm
     template_name = 'pago/pago_alumno_listado.html'
     paginate_by = MAXIMO_PAGINATOR
     success_url = reverse_lazy('afiliados:pago_cuota_listado')
@@ -649,17 +640,13 @@ class PagoAlumnoListView(ListFilterView):
         
     def get_queryset(self):
         queryset = super().get_queryset()
-        # afiliado_dni = self.request.GET.get('afiliado__persona__dni')
-        # cuit_empleador = self.request.GET.get('afiliado__cuit_empleador')  # Add this line
-
-        # if afiliado_dni:
-            # queryset = queryset.filter(afiliado__persona__dni=afiliado_dni)
-
-        # if cuit_empleador:
-            # Use Q objects to perform OR filtering on afiliado__cuit_empleador and familiar__cuit_empleador
-            # queryset = queryset.filter(Q(afiliado__cuit_empleador=cuit_empleador))
-        
+        form = PagoProfesorFilterForm(self.request.GET)
+        if form.is_valid():
+            persona_dni = form.cleaned_data.get('profesor__persona__dni')
+            curso = form.cleaned_data.get('curso')
+            print("CURSO", curso)
         return queryset
+    
     def render_to_response(self, context, **response_kwargs):
         # Si se solicita un PDF, generamos y devolvemos el PDF
         if 'pdf' in self.request.GET:

@@ -12,11 +12,14 @@
     {% comment %} <a href="{% url 'cursos:profesor_editar' profesor.pk %}" class="btn btn-primary btn-sm btn-detalle"><i class="fa-regular fa-pen-to-square"></i> Modificar</a> {% endcomment %}
   </div>
 
+  {% if not rol.hasta %}
   <div class="col d-flex justify-content-end">
-    {% comment %} <button type="button" class="btn btn-danger btn-sm btn-detalle" data-bs-toggle="modal" data-bs-target="#exampleModal_eliminar"><i class="fa-regular fa-circle-down"></i> Dar de Baja</button> {% endcomment %}
-    {% comment %} {% include 'curso/modal_confirm_baja.html' %} {% endcomment %}
+    <button type="button" class="btn btn-danger btn-sm btn-detalle" data-bs-toggle="modal" data-bs-target="#exampleModal_eliminar"><i class="fa-regular fa-circle-down"></i> Dar de Baja</button>
+    {% include 'alumno/modal_confirm_baja.html' %}
   </div>
-{% endblock %}
+  {% endif %}
+  
+  {% endblock %}
 
 {% block listado_asociado %}
 {% if alumno.dictados.all %}

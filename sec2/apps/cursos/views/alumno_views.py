@@ -264,7 +264,7 @@ def marcar_asistencia(request, clase_id):
 #------------ LISTADO DE TODOS MIS ALUMNOS  --------------
 class AlumnosListView(LoginRequiredMixin,PermissionRequiredMixin, ListFilterView):
     model = Alumno
-    paginate_by = 11
+    paginate_by = MAXIMO_PAGINATOR
     filter_class = AlumnoFilterForm
     template_name = 'alumno/alumno_listado.html'
     permission_required = 'cursos.permission_gestion_curso'
@@ -277,6 +277,12 @@ class AlumnosListView(LoginRequiredMixin,PermissionRequiredMixin, ListFilterView
         context['titulo'] = "Listado de Alumnos "
         return context
 
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        dni = self.request.GET.get('dni')
+        apellido = self.request.GET.get('apellido')
+        return queryset
+
 ##--------------- ALUMNO DETALLE --------------------------------
 from django.views.generic import DetailView
 
@@ -287,8 +293,22 @@ class AlumnoDetailView(PermissionRequiredMixin, LoginRequiredMixin, DetailView):
     login_url = '/home/'
     
     def get_context_data(self, **kwargs):
+        rol = get_object_or_404(Rol, persona__pk=self.object.persona.pk)
         context = super().get_context_data(**kwargs)
         context['titulo'] = "Detalle del alumno"
+        context['rol'] = rol
         context['tituloListado'] = 'Dicados Inscriptos'
-        alumno = self.object  # El objeto de dictado obtenido de la vista
         return context
+    
+
+def alumno_eliminar(request, pk):
+
+    alumno = get_object_or_404(Alumno,pk=pk)
+    dictados_en_estado_2 = alumno.dictados.filter(estado=2).exists()
+    if dictados_en_estado_2:
+        mensaje_error(request, "El alumno esta inscrito en dictados que no han finalizado.")
+    else:
+        rol = get_object_or_404(Rol, persona__pk=alumno.pk)
+        alumno.darDeBaja()
+        mensaje_exito(request, f'Alumno dado de baja con exito')
+    return redirect('cursos:alumno_detalle', pk=alumno.pk)

@@ -84,6 +84,10 @@ class Afiliado(Rol):
     def valorCuota(self):
         # Calcular el 1% del sueldo
         return self.sueldo * 0.01
+    
+    def actualizarSueldo(self, monto):
+        self.sueldo = monto * 100
+        self.save()
 
     def afiliar(self):
         self.fechaAfiliacion = date.today()

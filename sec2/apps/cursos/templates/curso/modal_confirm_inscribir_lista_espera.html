@@ -18,9 +18,8 @@
           {{dictado}}
           <div class="container row">
             <select name="dictado_pk" class="form-select" aria-label="Default select example">
-              <option selected>Dictados Disponibles</option>
               {% for dictado in dictados %}
-              <option value="{{ dictado.id }}"> {{ dictado.get_estado_display }} | Inicio: {{ dictado.fecha }} | Desc:{{dictado.descuento}}%</option>
+              <option value="{{ dictado.id }}"> Legajo: {{ dictado.legajo}} {{ dictado.get_estado_display }} | Inicio: {{ dictado.fecha }} | Desc:{{dictado.descuento}}%</option>
               {% endfor %}
             </select>
           </div>

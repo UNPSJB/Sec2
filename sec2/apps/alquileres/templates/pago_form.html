@@ -3,6 +3,12 @@
 {% load static %}
 
 {% block formulario %}
+
+<style>
+  .turno-radio {
+    column-count: 2; /* Divide las opciones en dos columnas */
+}
+</style>
   <form  method="post">
     {% csrf_token %}
     {{ form.non_field_errors }}

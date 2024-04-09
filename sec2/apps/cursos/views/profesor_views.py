@@ -145,6 +145,10 @@ class ProfesorListView(PermissionRequiredMixin, LoginRequiredMixin, ListFilterVi
     permission_required = 'cursos.permission_gestion_curso'
     login_url = '/home/'
     
+
+    ordering = ['persona__dni']  # Ordenar por el campo 'dni' de la relación 'persona'
+
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         filter_form = ProfesorFilterForm(self.request.GET)

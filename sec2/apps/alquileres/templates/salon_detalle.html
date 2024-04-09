@@ -81,13 +81,32 @@
   </a>
 </div>
 
+<div class="col">
+  <a href="{% url 'alquiler:encargado_detalle' pk=salon.encargado.pk %}" class="btn btn-sm btn-info btn-detalle">
+    <i class="fa-solid fa-person-shelter"></i> Ir al encargado
+  </a>
+</div>
+
+
+{% if not salon.fechaBaja %}
 <div class="col d-flex justify-content-end">
   <button type="button" class="btn btn-danger btn-sm btn-detalle" data-bs-toggle="modal" data-bs-target="#exampleModal_eliminar_salon"><i class="fa-regular fa-circle-down"></i> Dar de Baja</button>
   {% include 'modal_confirm_baja_salon.html' %}
 </div>
+{% endif %}
 
 {% endblock %}
 
+
+{% block listado_asociado %}
+{% if salon.alquileres.all %}
+<div class="container-sm">
+    <h3 class="subtitulo">{{ tituloListado1 }}</h3>
+    {% include "lista_alquileres.html" with alquileres=salon.alquileres.all %}
+</div>
+{% endif %}
+
+{% endblock %}
 
 {% block extrajs_intermedia %}
 <script>

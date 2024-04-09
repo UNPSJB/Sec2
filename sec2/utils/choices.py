@@ -230,6 +230,7 @@ ESTADO_CIVIL = (
     )
 
 LOCALIDADES_CHUBUT = [
+        ('', '--------'),  # Opción vacía
         ("RAWSON", "Rawson"),
         ("PUERTO MADRYN", "Puerto Madryn"),
         ("GAIMAN", "Gaiman"),
