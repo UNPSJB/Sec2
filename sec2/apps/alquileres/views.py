@@ -662,33 +662,7 @@ class PagoAlquilerCreateView(CreateView):
         messages.warning(self.request, '<i class="fa-solid fa-triangle-exclamation fa-flip"></i> Por favor, corrija los errores a continuación.')
         return super().form_invalid(form)
 
-# ----------------------------- REPORTES  ----------------------------------- #
 
-class reportesView(TemplateView):
-    template_name = 'reportes.html'
-    
-    def get_graph_alquileres(self):
-        data = []
-        year = datetime.now().year
-        
-        try:
-            for m in range(1, 13):
-                cont = 0
-                if Alquiler.objects.filter(fecha_alquiler__year = year, fecha_alquiler__month = m):
-                    cont =+ 1            
-                    data.append(cont)
-        except:
-            pass
-        return data
-    
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['titulo'] = 'Reportes de alquileres'
-        context['graph_alquileres'] = []
-        return context
-        
-        
 
 
 

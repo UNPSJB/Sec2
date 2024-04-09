@@ -1,14 +1,6 @@
-{% load static %}
-{% block extrajs %}
-    <script src="{% static 'Libs/highcharts/code/highcharts.js' %}"></script>
-    <script src="{% static 'Libs/highcharts/code/modules/exporting.js' %}"></script>
-    <script src="{% static 'Libs/highcharts/code/modules/export-data.js' %}"></script>
-    <script src="{% static 'Libs/highcharts/code/modules/accessibility.js' %}"></script>
-    
+{% extends 'reporte_appAlquiler.html' %}
 
-{% endblock %}
-
-{% block content %}
+{% block grafico %}
 
     <div>
         <div class="container-fluid">
@@ -22,7 +14,12 @@
     </div>
 
     <script type="application/javascript">
+        // Obtén los datos y las categorías del contexto
+        var data_list = {{ graph_alquileres.data_list|safe }};
+        var categories = {{ graph_alquileres.categories|safe }};
+        var y_axis_title = "{{ graph_alquileres.y_axis_title }}";
         
+        alert(categories)
         Highcharts.chart('container', 
         {
             chart: {
@@ -37,7 +34,7 @@
                 align: 'left'
             },
             xAxis: {
-                categories: ['USA', 'China', 'Brazil', 'EU', 'India', 'Russia'],
+                categories: categories,  // Usa las categorías del contexto
                 crosshair: true,
                 accessibility: {
                     description: 'Countries'
@@ -46,7 +43,7 @@
             yAxis: {
                 min: 0,
                 title: {
-                    text: '1000 metric tons (MT)'
+                    text: y_axis_title  // Usa el título del eje Y del contexto
                 }
             },
             tooltip: {
@@ -62,8 +59,7 @@
             [
                 {
                     name: 'Cantidad de alquileres',
-                    data: [406292, 260000, 107000, 68300, 27500, 14500]
-                    //data: {{ alquileres_por_mes|safe }} 
+                    data: data_list
                 }
             ]
         });

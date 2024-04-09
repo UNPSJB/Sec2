@@ -33,11 +33,10 @@ urlpatterns = [
     path('home/app_cursos/',include('apps.cursos.urls')),
     path('home/app_personas/',include('apps.personas.urls')),
     path('home/app_alquileres/',include('apps.alquileres.urls')),
+    path('home/app_reportes/',include('apps.reportes.urls')),
+
     path('',include('apps.users.urls')),
     path('select2/', include('django_select2.urls')),
-
-    
-
 
     # path('cursos/',include('apps.cursos.urls')),
     # path('alquileres/',include('apps.alquileres.urls')),

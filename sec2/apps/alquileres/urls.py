@@ -41,6 +41,7 @@ urlpatterns = [
     # PAGO DE ALQUILER
     path('crearPago/',PagoAlquilerCreateView.as_view(), name="pagar_alquiler_crear"),
 
-    # REPORTES
-    path('reportes/',reportesView.as_view(), name="alquileres_por_mes"),
+
+    
+    
 ]
