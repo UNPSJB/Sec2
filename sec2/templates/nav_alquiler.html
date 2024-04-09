@@ -2,7 +2,6 @@
 
 {% block extracss %}
 <link href="{% static 'Libs/css/nav_principal.css' %}" rel="stylesheet" />
-{% comment %} <link href="{% static 'Libs/css/nav_salon.css' %}" rel="stylesheet" />  {% endcomment %}
 <link href="{% static 'Libs/css/nav_curso.css' %}" rel="stylesheet" />
 {% endblock %}
 
@@ -77,6 +76,11 @@
 
 {% comment %} BOTON DE SERVICIO {% endcomment %}
 <a class="enlace" id="enlaceActividad" href="{% url 'alquiler:gestion_servicio' %}"><i class="fa-solid fa-clipboard-list"></i> Servicio</a>
+
+<hr>
+{% comment %} BOTON DE SERVICIO {% endcomment %}
+<a class="enlace" id="enlaceReporte" href="{% url 'reportes:alquileres_por_mes' %}"><i class="fa-solid fa-chart-column"></i> Reportes</a>
+
 
 {% block extrajs %}
   <script src="{% static 'Libs/js/nav_salon.js' %}"></script>

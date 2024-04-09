@@ -50,6 +50,7 @@ INSTALLED_APPS = [
     'apps.cursos',
     'apps.pagos',
     'apps.users',
+    'apps.reportes',
     "crispy_forms",
     "crispy_bootstrap5",
     "django_extensions",

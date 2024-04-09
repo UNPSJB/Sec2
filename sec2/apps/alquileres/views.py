@@ -9,7 +9,7 @@ from django.views.generic import DetailView
 from django.contrib import messages
 from django.urls import reverse_lazy
 from datetime import datetime
-from django.views.generic import DetailView, ListView
+from django.views.generic import DetailView, ListView,TemplateView
 from apps.personas.models import Rol
 
 from utils.funciones import mensaje_advertencia, mensaje_error, mensaje_exito  
@@ -718,3 +718,9 @@ class PagoAlquilerCreateView(LoginRequiredMixin, PermissionRequiredMixin, Create
     def form_invalid(self, form):
         messages.warning(self.request, '<i class="fa-solid fa-triangle-exclamation fa-flip"></i> Por favor, corrija los errores a continuación.')
         return super().form_invalid(form)
+
+
+
+
+
+
