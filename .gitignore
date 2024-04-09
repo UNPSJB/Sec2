@@ -3,7 +3,7 @@
 
 # Ignorar carpetas de migraciones
 # Ignorar las migraciones de todas las aplicaciones
-**/migrations/
+
 # !*/migrations/__init__.py
 
 ### Django ###
@@ -14,8 +14,6 @@ __pycache__/
 local_settings.py
 db.sqlite3
 db.sqlite3-journal
-sec2/apps/afiliados/migrations/
-sec2/apps/afiliados/migrations/
 media
 
 # If your build process includes running collectstatic, then you probably don't need or want to include staticfiles/
