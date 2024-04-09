@@ -52,13 +52,24 @@ class AfiliadoPersonaForm(forms.ModelForm):
 
 ########### Utilizado para el AFILIADO fliadosListView ##############################################
 class AfiliadoFilterForm(FiltrosForm):
-    persona__dni = forms.CharField(required=False, label="Dni" )
-    persona__nombre = forms.CharField(required=False, label="Nombre")
-    cuit_empleador = forms.CharField(required=False)
-    estado = forms.ChoiceField(
+    persona__dni = forms.CharField(
         required=False,
-        choices=[('', '----------')] + list(AFILIADO_ESTADO),
-        widget=forms.Select(attrs={'class': 'form-control'}),
+        label="Dni",
+        widget=forms.NumberInput(attrs={'type': 'number'})
+    )    # persona__nombre = forms.CharField(required=False, label="Nombre y/o Apellido")
+    
+    cuit_empleador = forms.CharField(
+        required=False,
+        label="CUIT del Empleador",
+        widget=forms.TextInput(attrs={'type': 'number'}),
+    )
+
+    opciones_estado_ordenadas = sorted(AFILIADO_ESTADO, key=lambda x: x[1])
+
+    estado = forms.MultipleChoiceField(
+        required=False,
+        choices= opciones_estado_ordenadas,
+        widget=forms.CheckboxSelectMultiple(attrs={'class': 'form-check-input'}),
     )
     
 ########### Utilizado para el AFILIADO UPDATE ##############################################
@@ -269,10 +280,22 @@ class GrupoFamiliarPersonaUpdateForm(forms.ModelForm):
 
 ########### FILTER FORM FAMILIAR  ##############################################
 class RelacionFamiliarFilterForm(FiltrosForm):
-    familiar__persona__dni = forms.CharField(label='DNI del Familiar', required=False)
-    afiliado__persona__dni = forms.CharField(label='DNI del Afiliado', required=False)
-    tipo_relacion = forms.ChoiceField(choices=TIPOS_RELACION_FAMILIAR, required=False)
-
+    familiar__persona__dni = forms.CharField(
+        label='DNI del Familiar',
+        required=False,
+        widget=forms.NumberInput(attrs={'type': 'number'})
+    )
+    afiliado__persona__dni = forms.CharField(
+        label='DNI del Afiliado',
+        required=False,
+        widget=forms.NumberInput(attrs={'type': 'number'})
+    )
+    tipo_relacion = forms.ChoiceField(
+        label='Tipo de Relación',
+        choices=TIPOS_RELACION_FAMILIAR,
+        required=False,
+        widget=forms.RadioSelect
+    )
 
 class PagoCuotaForm(forms.ModelForm):
     class Meta:
@@ -309,6 +332,13 @@ class PagoCuotaForm(forms.ModelForm):
     
 ########### FILTER FORM FAMILIAR  ##############################################
 class PagoCuotarFilterForm(FiltrosForm):
-    afiliado__persona__dni = forms.CharField(label='DNI del Afiliado', required=False)
-    afiliado__cuit_empleador = forms.CharField(label='Cuit del empleador', required=False)
-    
+    afiliado__persona__dni = forms.CharField(
+        label='DNI del Afiliado',
+        required=False,
+        widget=forms.NumberInput(attrs={'type': 'number'})
+    )
+    afiliado__cuit_empleador = forms.CharField(
+        label='Cuit del empleador',
+        required=False,
+        widget=forms.NumberInput(attrs={'type': 'number'})
+    )

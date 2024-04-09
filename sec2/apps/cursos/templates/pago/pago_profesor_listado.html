@@ -38,4 +38,26 @@
 
     </tbody>
 </table>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+  var jq = $.noConflict();
+  jq(document).ready(function() {
+      // Cuando cambia la selección del campo de curso
+      jq('#id_profesor__dictados__curso').change(function() {
+        var selectedCurso = jq(this).val();
+
+        var url = 'obtenerDictadosEnCurso/';
+        jq.ajax({
+            url: '/home/app_cursos/pago/' + url + selectedCurso ,
+            dataType: 'json',
+            success: function(data) {
+                jq('#id_profesor__dictados').empty();
+                jq('#id_profesor__dictados').append(data.options);
+          },
+        });
+      });
+    });
+</script>
+
 {% endblock %}

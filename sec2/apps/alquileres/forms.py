@@ -3,7 +3,7 @@ from django.forms import ValidationError
 from apps.afiliados.models import Afiliado
 from apps.personas.forms import PersonaForm,PersonaUpdateForm
 from apps.personas.models import Persona
-from utils.choices import ESTADO_CIVIL, MAX_LENGTHS, NACIONALIDADES
+from utils.choices import ESTADO_CIVIL, LOCALIDADES_CHUBUT, MAX_LENGTHS, NACIONALIDADES
 from .models import Salon, Servicio, Alquiler, Pago_alquiler
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Fieldset, Submit, HTML
@@ -31,9 +31,11 @@ class EncargadorForm(forms.ModelForm):
 
 
 class EncargadoFilterForm(FiltrosForm):
-    persona__dni = forms.CharField(required=False, label="Dni" )
-    persona__apellido = forms.CharField(required=False, label="Apellido")
-
+    persona__dni = forms.CharField(
+        label='Dni',
+        required=False,
+        widget=forms.NumberInput(attrs={'type': 'number'})
+    )
 
 class EncargadoUpdateForm(forms.ModelForm):
 
@@ -119,11 +121,10 @@ class SalonrForm(forms.ModelForm):
 
 
 class SalonFilterForm(FiltrosForm):
-    salon__nombre = forms.CharField(required=False)
-    salon_localidad = forms.CharField(required=False)
-    salon_capacidad = forms.CharField(required=False)
-
-
+    nombre = forms.CharField(required=False)
+    localidad = forms.ChoiceField(required=False, choices=LOCALIDADES_CHUBUT, label='Localidad')
+    capacidad = forms.IntegerField(required=False, label='Capacidad mínima')
+    
 # ----------------------------- ALQUILER ----------------------------------- #
 class AlquilerForm(forms.ModelForm):
     class Meta:
@@ -154,7 +155,7 @@ class AlquilerFilterForm(FiltrosForm):
 
 # ----------------------------- PAGO ----------------------------------- #
 class PagoForm(forms.ModelForm):
-    forma_pago = forms.ChoiceField(choices=[('total', 'Total'), ('cuota', 'Cuota')])
+    # forma_pago = forms.ChoiceField(choices=[('total', 'Total'), ('cuota', 'Cuota')])
     alquiler = forms.ChoiceField(choices=[])
    
 
@@ -162,10 +163,11 @@ class PagoForm(forms.ModelForm):
         model = Pago_alquiler
         fields = ('forma_pago', 'alquiler')
         widgets = {
+            'forma_pago': forms.RadioSelect(attrs={'class': 'turno-radio'}),  # Agrega la clase CSS personalizada al widget del campo de turno
+
            #'fecha_solicitud': forms.DateInput(attrs={'type': 'date'}),
            #'fecha_alquiler': forms.DateInput(attrs={'type': 'date'}),
-           #'seguro': forms.TextInput(attrs={'class': 'form-control form-control-user', 'placeholder': 'Eje: 1000'}),
-            
+           #'seguro': forms.TextInput(attrs={'class': 'form-control form-control-user', 'placeholder': 'Eje: 1000'}),   
        }
     
 
@@ -174,6 +176,8 @@ class PagoForm(forms.ModelForm):
         alquileres_sin_pagos = Pago_alquiler.alquileres_sin_pago()
         choices = [(alquiler.id, f'{alquiler.afiliado.persona.nombre} - {alquiler.salon.nombre} - {alquiler.fecha_alquiler.strftime("%d/%m/%Y")} - {alquiler.turno}') for alquiler in alquileres_sin_pagos]
         self.fields['alquiler'].choices = choices
+        self.fields['forma_pago'].choices = [('total', 'Total'), ('cuota', 'Cuota')]
+
 
     def clean_alquiler(self):
         alquiler_id = self.cleaned_data['alquiler']
@@ -184,6 +188,34 @@ class PagoForm(forms.ModelForm):
             raise forms.ValidationError("El alquiler seleccionado no es válido.")
         
 class AlquilerFilterForm(FiltrosForm):
-    alquiler_salon_nombre = forms.CharField(required=False)
-    fecha_alquiler = forms.DateField(required=False)
-    turno = forms.CharField(required=False)
+    salon = forms.ModelChoiceField(queryset=Salon.objects.all(), required=False, label='Salon')
+    turno = forms.ChoiceField(
+        required=False,
+        label='Turno',
+        choices=(('Mañana', 'Mañana'), ('Noche', 'Noche')),
+        widget=forms.RadioSelect
+    )
+    cambio_inquilino = forms.BooleanField(required=False, label='Cambio de Inquilino')
+    estado = forms.MultipleChoiceField(
+        required=False,
+        label='Estado del Alquiler',
+        choices=Alquiler.ESTADOS,
+        widget=forms.CheckboxSelectMultiple
+    )
+    def filter_queryset(self, queryset):
+        if self.is_valid():
+            # Aplicar filtros si están presentes en el formulario
+            if self.cleaned_data['salon']:
+                queryset = queryset.filter(salon=self.cleaned_data['salon'])
+            if self.cleaned_data['turno']:
+                queryset = queryset.filter(turno=self.cleaned_data['turno'])
+            if self.cleaned_data['cambio_inquilino']:
+                queryset = queryset.filter(cambio_inquilino=self.cleaned_data['cambio_inquilino'])
+            if self.cleaned_data['estado']:
+                queryset = queryset.filter(estado__in=self.cleaned_data['estado'])
+        return queryset
+
+class PagoAlquilerForm(forms.ModelForm):
+    class Meta:
+        model = Pago_alquiler
+        fields = ['forma_pago']

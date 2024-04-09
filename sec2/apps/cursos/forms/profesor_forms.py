@@ -20,8 +20,8 @@ class ProfesorPersonaForm(forms.ModelForm):
     
     actividades = forms.ModelMultipleChoiceField(
         queryset=Actividad.objects.all(),
-        widget=forms.CheckboxSelectMultiple,
-        required=False  # Puedes ajustar esto según tus necesidades
+        widget=forms.CheckboxSelectMultiple(attrs={'class': 'actividades-columns'}),
+        required=False
     )
 
     class Meta:
@@ -156,7 +156,11 @@ FormularioProfesor.base_fields.update(ProfesorForm.base_fields)
 
 ## ------------ FILTRO DE PROFESOR --------------
 class ProfesorFilterForm(FiltrosForm):
-    nombre = forms.CharField(required=False)
+    persona__dni = forms.CharField(
+        label='Dni',
+        required=False,
+        widget=forms.NumberInput(attrs={'type': 'number'})
+    )
     actividades = forms.ModelChoiceField(
         queryset=Actividad.objects.all().order_by('nombre'),  # Ordenar por el campo 'nombre'
         required=False,

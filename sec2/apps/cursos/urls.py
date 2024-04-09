@@ -97,6 +97,8 @@ urlpatterns = [
     path('get_dictados_por_titular/<int:titular_pk>/', get_dictados_por_titular, name='get_dictados_por_titular'),
 
     path('pago/listado/alumno', PagoAlumnoListView.as_view() ,name="pago_cuota_alumno_listado"),
+    path('pago/obtenerDictadosEnCurso/<int:pk>', obtenerDictadosEnCurso ,name="obtenerDictadoEnCurso"),
+
     path('pago/alumno/crear', PagoAlumnoCreateView.as_view(), name="pago_alumno_crear"),
     path('pago/alumno/<int:pk>', PagoAlumnoDetailView.as_view(), name="pago_alumno_detalle"),
 

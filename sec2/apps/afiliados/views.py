@@ -9,7 +9,7 @@ from apps.alquileres.models import Alquiler
 from apps.cursos.models import PagoAlumno
 from apps.personas.forms import PersonaForm, PersonaUpdateForm
 from apps.personas.models import Rol
-from utils.funciones import mensaje_advertencia, mensaje_error, mensaje_exito, registrar_fuentes  
+from utils.funciones import filter_by_cuit_empleador, filter_by_estado, filter_by_persona_dni, mensaje_advertencia, mensaje_error, mensaje_exito, registrar_fuentes  
 from .models import Afiliado, Familiar, PagoCuota, RelacionFamiliar
 from .forms import *
 from sec2.utils import ListFilterView
@@ -89,7 +89,6 @@ class AfiliadoCreateView(CreateView):
             afiliado.save()
 
             mensaje_exito(self.request, f'{MSJ_CORRECTO_ALTA_AFILIADO}')
-            self.object = form.save()
 
             if 'guardar_y_recargar' in self.request.POST:
                 return self.render_to_response(self.get_context_data(form=self.form_class()))   
@@ -121,17 +120,22 @@ class AfiliadoDetailView (DeleteView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         afiliado = self.object  # Access the Afiliado instance
-
+        # Obtén todos los alquileres en lista de espera para el afiliado actual
+        alquileres_lista_espera = Alquiler.objects.filter(lista_espera=afiliado, estado=1)
+    
         context['titulo'] = "Datos del afiliado"
         context['subtitulodetalle1'] = "Datos personales"
         context['subtitulodetalle2'] = "Datos de afiliación"
         context['tituloListado1'] = "Dictados Incritos"
-        context['tituloListado2'] = "Alquileres"
+
+        context['tituloListado2'] = "Alquileres confirmados"
+        context['tituloListado3'] = "Alquileres en lista espera"
         
         context['relacion_familiar_list'] = afiliado.relacionfamiliar_set.all().order_by('familiar__persona__dni')
         context['pagos'] = obtenerPagos(afiliado)
         context['cuotas'] = PagoCuota.objects.filter(afiliado=afiliado)
         context['alquileres'] = Alquiler.objects.filter(afiliado=afiliado)
+        context['alquileres_lista_espera'] = alquileres_lista_espera  # Agrega los alquileres en lista de espera al contexto
         return context
 
 # ----------------------------- AFILIADO UPDATE ----------------------------------- #
@@ -204,28 +208,16 @@ class AfliadosListView(ListFilterView):
     def get_queryset(self):
         queryset = super().get_queryset()
 
-        if self.request.GET.get('estado') is not None:
-            AfliadosListView.template_name = 'afiliado_list_aceptar.html'
-            queryset = Afiliado.objects.filter(
-                estado__startswith=self.request.GET['estado']
-            )
-
-        # Apply additional filters from the form
         form = AfiliadoFilterForm(self.request.GET)
         if form.is_valid():
             persona_dni = form.cleaned_data.get('persona__dni')
-            persona_nombre = form.cleaned_data.get('persona__nombre')
+            # persona_nombre = form.cleaned_data.get('persona__nombre')
             cuit_empleador = form.cleaned_data.get('cuit_empleador')
             estado = form.cleaned_data.get('estado')
 
-            if persona_dni:
-                queryset = queryset.filter(persona__dni=persona_dni)
-            if persona_nombre:
-                queryset = queryset.filter(persona__nombre__icontains=persona_nombre)
-            if cuit_empleador:
-                queryset = queryset.filter(cuit_empleador=cuit_empleador)
-            if estado:
-                queryset = queryset.filter(estado=estado)
+            queryset = filter_by_persona_dni(queryset, persona_dni)
+            queryset = filter_by_cuit_empleador(queryset, cuit_empleador)
+            queryset = filter_by_estado(queryset, estado)
         return queryset
 
 # ----------------------------- AFILIADO ACEPTAR ----------------------------------- #
@@ -416,7 +408,7 @@ def alta_familiar(request):
                         form = AfiliadoSelectForm(request.POST)
                         context = {
                         'form': form,
-                        'clientes': Afiliado.objects.filter(estado__in=[1, 2]),
+                        'clientes': Afiliado.objects.filter(estado__in=[1, 2, 5]),
                         'titulo': 'Alta de Familiar',  # Replace with your desired title
                         }
 
@@ -432,7 +424,7 @@ def alta_familiar(request):
 
     context = {
         'form': form,
-        'clientes': Afiliado.objects.filter(estado__in=[1, 2]),
+        'clientes': Afiliado.objects.filter(estado__in=[1, 2, 5]),
         'titulo': 'Alta de Familiar',  # Replace with your desired title
     }
     return render(request, 'grupoFamiliar/grupo_familiar_alta_directa.html', context)
@@ -749,9 +741,11 @@ class RelacionFamiliarListView(ListFilterView):
         tipo_relacion = self.request.GET.get('tipo_relacion')
 
         if familiar_dni:
+            familiar_dni=familiar_dni.strip()
             queryset = queryset.filter(familiar__persona__dni=familiar_dni)
 
         if afiliado_dni:
+            familiar_dni=afiliado_dni.strip()
             queryset = queryset.filter(afiliado__persona__dni=afiliado_dni)
 
         if tipo_relacion:
@@ -772,6 +766,15 @@ from dateutil.relativedelta import relativedelta
 from datetime import datetime
 from django.db.models import Q
 
+def obtenerAfiliadosMorososActivos():
+  # Filtrar roles sin fecha de finalización
+    roles_sin_fecha_hasta = Rol.objects.filter(hasta__isnull=True)
+        # Obtener personas asociadas a los roles sin fecha de finalización
+    personas = Persona.objects.filter(roles__in=roles_sin_fecha_hasta)
+        # Obtener afiliados asociados a las personas obtenidas
+    return Afiliado.objects.filter(persona__in=personas, estado__in=[2, 5])
+
+
 class PagoCuotaCreateView(CreateView):
     model = PagoCuota
     form_class = PagoCuotaForm
@@ -780,24 +783,14 @@ class PagoCuotaCreateView(CreateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        
-        # Filtrar roles sin fecha de finalización
-        roles_sin_fecha_hasta = Rol.objects.filter(hasta__isnull=True)
-        
-        # Obtener personas asociadas a los roles sin fecha de finalización
-        personas = Persona.objects.filter(roles__in=roles_sin_fecha_hasta)
-        
-        # Obtener afiliados asociados a las personas obtenidas
-        afiliados = Afiliado.objects.filter(persona__in=personas)
-        
+
         # Obtener todos los cuit_empleador únicos de los afiliados con sus respectivas razones sociales
         empleadores = Afiliado.objects.filter(
-            Q(estado=1) | Q(estado=2) | Q(estado=5),  # Filtrar por estados 1 o 2
+            Q(estado=2) | Q(estado=5),  # activos o morosos
             cuit_empleador__isnull=False
-        ).values('cuit_empleador', 'razon_social').distinct()
+        ).values('cuit_empleador').distinct()
 
         context['titulo'] = "Cuota Sindical"
-        context['afiliados'] = afiliados
         context['empleadores'] = empleadores
         return context
     
@@ -822,7 +815,9 @@ class PagoCuotaCreateView(CreateView):
             form.instance.afiliado_id = afiliado_id
             form.instance.pdf_transferencia = pdf
             form.save()
-
+            # Llama al método actualizarSueldo() del afiliado con el monto de la cuota pagada
+            afiliado.actualizarSueldo(form.cleaned_data['monto'])
+            
             if afiliado.estado == 1:
                 afiliado.afiliar()
                 afiliado.save()
@@ -847,14 +842,12 @@ class PagoCuotaCreateView(CreateView):
                 form.instance.afiliado_id = afiliado_id
                 form.instance.pdf_transferencia = pdf
                 form.save()
+                afiliado.actualizarSueldo(form.cleaned_data['monto'])
                 mensaje_exito(self.request, f'{MSJ_CORRECTO_PAGO_REALIZADO}')
                 return super().form_valid(form)
             else:
                 mensaje_advertencia(self.request, 'El mes anterior esta sin pagar.')
                 return super().form_invalid(form)
-
-
-
 
     def form_invalid(self, form):
         mensaje_advertencia(self.request, MSJ_CORRECTION)
@@ -884,12 +877,12 @@ class PagoCuotaListView(ListFilterView):
         cuit_empleador = self.request.GET.get('afiliado__cuit_empleador')  # Add this line
 
         if afiliado_dni:
+            afiliado_dni=afiliado_dni.strip()
             queryset = queryset.filter(afiliado__persona__dni=afiliado_dni)
 
         if cuit_empleador:
-            # Use Q objects to perform OR filtering on afiliado__cuit_empleador and familiar__cuit_empleador
+            cuit_empleador=cuit_empleador.strip()
             queryset = queryset.filter(Q(afiliado__cuit_empleador=cuit_empleador))
-        
         return queryset
     
 def cuota_sindical_actualizar_estado(request):
@@ -916,3 +909,17 @@ def cuota_sindical_actualizar_estado(request):
     mensaje_exito(request, f'Estados de los afiliados actualizados')
     return redirect('afiliados:pago_cuota_listado')
 
+from django.http import JsonResponse
+
+def obtener_afiliados_por_cuit_empleador(request):
+    cuit_empleador = request.GET.get('cuit_empleador')
+    if cuit_empleador:
+        afiliados = Afiliado.objects.filter(
+            persona__roles__hasta__isnull=True,
+            cuit_empleador=cuit_empleador,
+            estado__in=[2, 5]  # Filtrar por estados 2 o 5
+        ).distinct()
+        afiliados_data = [{'id': afiliado.id, 'nombre_completo': f'{afiliado.persona.dni} {afiliado.persona.nombre} {afiliado.persona.apellido}'} for afiliado in afiliados]
+        return JsonResponse(afiliados_data, safe=False)
+    else:
+        return JsonResponse([], safe=False)

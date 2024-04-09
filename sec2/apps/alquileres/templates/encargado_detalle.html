@@ -18,3 +18,13 @@
     <a href="{% url 'alquiler:encargado_editar' encargado.pk %}" class="btn btn-primary btn-sm btn-detalle"><i class="fa-regular fa-pen-to-square"></i> Modificar</a>
 </div>
 {% endblock %}
+
+{% block listado_asociado %}
+{% if encargado.salon.all %}
+<div class="container-sm">
+    <h3 class="subtitulo">{{ tituloListado1 }}</h3>
+    {% include "listado_salones.html" with salones=encargado.salon.all %}
+</div>
+{% endif %}
+
+{% endblock %}

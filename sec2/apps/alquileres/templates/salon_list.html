@@ -9,33 +9,5 @@
 {% endblock %}
 
 {% block tabla_listado %}
-<table class="table table-sm table-hover">
-  <thead>
-    <tr>
-      <th>#</th>
-      <th>Localidad</th>
-      <th>Nombre</th>
-      <th>Direccion</th>
-      <th>Capacidad</th>
-      <th>Precio</th>
-      <th></th>
-    </tr>
-  </thead>
-  
-  <tbody>
-    {% for Salon in object_list %}
-      <tr class="bg-transition">
-        <td>{{ forloop.counter }}</td>
-        <td>{{ Salon.localidad }}</td>
-        <td>{{ Salon.nombre }}</td>
-        <td>{{ Salon.direccion }}</td>
-        <td>{{ Salon.capacidad }}</td>
-        <td>{{ Salon.precio }}</td>
-        <td class="text-center">
-          <a href="{% url 'alquiler:Salon_detalle' Salon.pk %}" class="btn btn-info btn-sm btn-detalle"><i class="fa-regular fa-eye"></i> Detalle</a>
-        </td>
-      </tr>
-    {% endfor %}
-    </tbody>
-  </table>
+{% include "listado_salones.html" with salones=object_list %}
 {% endblock %}

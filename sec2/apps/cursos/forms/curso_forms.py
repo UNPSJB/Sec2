@@ -1,6 +1,6 @@
 from datetime import timezone
 from django import forms
-from ..models import Actividad, Curso, ListaEspera, PagoAlumno, PagoProfesor
+from ..models import Actividad, Curso, Dictado, ListaEspera, PagoAlumno, PagoProfesor
 from utils.constants import *
 from utils.choices import *
 from sec2.utils import FiltrosForm
@@ -57,12 +57,6 @@ class CursoForm(forms.ModelForm):
 
 class CursoFilterForm(FiltrosForm):
     nombre = forms.CharField(required=False)
-    area = forms.ChoiceField(
-        label='Área',
-        choices=[('', '---------')] + list(AREAS),
-        required=False,
-        widget=forms.Select(attrs={'class': 'form-control'})
-    )
     actividad = forms.ModelChoiceField(
         queryset=Actividad.objects.all().order_by('nombre'),
         label='Actividad',
@@ -70,12 +64,13 @@ class CursoFilterForm(FiltrosForm):
         widget=forms.Select(attrs={'class': 'form-control'})
     )
     
-    # duracion = forms.ChoiceField(
-    #     label='Duración',
-    #     choices=[('', '---------')] + list(DURACION),
-    #     required=False,
-    #     widget=forms.Select(attrs={'class': 'form-control'})
-    # )
+    area = forms.MultipleChoiceField(
+        label='Área',
+        choices=list(AREAS),
+        required=False,
+        widget=forms.CheckboxSelectMultiple(attrs={'class': 'form-control'})
+    )
+
     es_convenio = forms.BooleanField(
         label='Conv. Provincial',
         required=False,
@@ -108,10 +103,58 @@ class PagoProfesorForm(forms.ModelForm):
         model = PagoProfesor
         fields = ['profesor']
 
-class PagoProfesorFilterForm(FiltrosForm):
-    pass
-    # monto = forms.DecimalField(max_digits=10, decimal_places=2)
 
+class PagoProfesorFilterForm(FiltrosForm):
+    profesor__persona__dni = forms.CharField(
+        required=False,
+        label='DNI del profesor',
+        widget=forms.NumberInput(attrs={'type': 'number'})
+    )
+    profesor__dictados__curso = forms.ModelChoiceField(
+        queryset=Curso.objects.all(),
+        required=False,
+        label='Curso',
+        widget=forms.Select(attrs={'class': 'form-control'})
+    )
+    profesor__dictados = forms.ModelChoiceField(
+        queryset=Dictado.objects.filter(estado=2),
+        required=False,
+        label='Dictado',
+        widget=forms.Select(attrs={'class': 'form-control'})
+    )
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['profesor__dictados'].label_from_instance = self.label_from_instance
+
+    def label_from_instance(self, obj):
+        return f'{obj.legajo}'
+    
+class PagoAlumnoFilterForm(FiltrosForm):
+    rol__persona__dni = forms.CharField(
+        required=False,
+        label='DNI del Alumno',
+        widget=forms.NumberInput(attrs={'type': 'number'})
+    )
+    # Filtrar por curso relacionado con los dictados de los detalles de pago del alumno
+    detalles_pago_alumno__dictado__curso = forms.ModelChoiceField(
+        queryset=Curso.objects.all(),
+        required=False,
+        label='Curso',
+        widget=forms.Select(attrs={'class': 'form-control'})
+    )
+    detalles_pago_alumno__dictado = forms.ModelChoiceField(
+        queryset=Dictado.objects.filter(estado=2),
+        required=False,
+        label='Dictado',
+        widget=forms.Select(attrs={'class': 'form-control'})
+    )
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['detalles_pago_alumno__dictado'].label_from_instance = self.label_from_instance
+
+    def label_from_instance(self, obj):
+        return f'{obj.legajo}'
 
 class PagoRolForm(forms.ModelForm):
     class Meta:

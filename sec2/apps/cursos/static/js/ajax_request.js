@@ -18,7 +18,7 @@ function loadDictadosPorAlumno() {
                     html += '<ul>';
                     data.dictados.forEach(function(dictado) {
                         html += '<label>';
-                        html += '<input type="checkbox" name="dictado" value="' + dictado.pk + '" data-precio="' + dictado.precio + '" data-precio_con_descuento="' + dictado.precio_con_descuento + '" data-tipo_pago="' + dictado.tipo_pago + '" data-nombre="' + dictado.nombre + '" data-descuento="' + dictado.descuento + '">';
+                        html += '<input type="checkbox" name="dictado" value="' + dictado.pk + '" data-precio="' + dictado.precio + '" data-precio_con_descuento="' + dictado.precio_con_descuento + '" data-tipo_pago="' + dictado.tipo_pago + '" data-nombre="' + dictado.nombre + '" data-contPagosFatanes="' + dictado.contPagosFatanes + " data-descuento="' + dictado.descuento + '">';
                         html += ' ' + dictado.nombre;
                         if (dictado.descuento > 0) {
                             html += ' $' + dictado.precio_con_descuento + ' ' + dictado.tipo_pago;

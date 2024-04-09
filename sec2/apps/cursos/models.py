@@ -106,10 +106,12 @@ class Curso(models.Model):
             return 'sec'
 
 #------------- DICTADO --------------------
+from django.utils.crypto import get_random_string
+
 class Dictado(models.Model):
     # ForeignKey
     curso = models.ForeignKey(Curso, related_name="dictado_set", on_delete=models.CASCADE, null=True, blank=True)
-    
+    legajo = models.CharField(max_length=4, null=True, default=get_random_string(length=4, allowed_chars='1234567890'))
     modulos_por_clase= models.PositiveIntegerField(help_text="Horas por clase")
     asistencia_obligatoria = models.BooleanField(default=False)
     periodo_pago=models.PositiveSmallIntegerField(choices=PERIODO_PAGO)
@@ -445,8 +447,6 @@ class PagoAlumno(models.Model):
         pdf.drawString(300, 675, f'{self.rol.persona.nombre} {self.rol.persona.apellido}')
         pdf.drawString(300, 655, f'{self.rol.persona.mail}')
         pdf.drawString(300, 635, f'{self.rol.persona.celular}')
-
-    
 
     def establecer_titulo(self, pdf, titulo):
         pdf.setFont('Times-Bold', 14)

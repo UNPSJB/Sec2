@@ -7,7 +7,6 @@ $(document).ready(function() {
         console.log(url)
 
         if (titular_id) {
-            //alert(titular_id)
             event.preventDefault();
             $.ajax({
                 type:'GET',
@@ -17,7 +16,6 @@ $(document).ready(function() {
                 },
                 dataType: 'json',
                 success: function(data) {
-                    alert(data)
                     $('#enc_dictado').empty();
                     $.each(data, function(index, dictado) {
                         $('#enc_dictado').append('<option value="' + dictado.id + '">' + dictado.nombre + '</option>');

@@ -45,12 +45,13 @@ class GestionAulaView(CreateView, ListView):
         queryset = Aula.objects.all()
         # Obtener los filtros del formulario
         filter_form = AulaFilterForm(self.request.GET)
+        
         if filter_form.is_valid():
             capacidad = filter_form.cleaned_data.get('capacidad')
             tipo = filter_form.cleaned_data.get('tipo')
             # Aplicar filtros según sea necesario
             if capacidad:
-                queryset = queryset.filter(capacidad__lte=capacidad)
+                queryset = queryset.filter(capacidad__gte=capacidad)  # Ajuste aquí
             if tipo:
                 queryset = queryset.filter(tipo=tipo)
         # Ordenar de forma descendente por tipo y luego por número

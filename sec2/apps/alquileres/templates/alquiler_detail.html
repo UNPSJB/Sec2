@@ -28,7 +28,7 @@
     <p class="negrita">Fecha de alquiler: </p>
   </div>
   <div class="col">
-    <p>{{ alquiler.fecha_alquiler }}</p>
+    <p>{{ alquiler.fecha_alquiler|date:"j F Y" }}</p>
   </div>
 </div>
 
@@ -42,10 +42,47 @@
   </div>
 
   <div class="col">
-    <p class="negrita"> Seguro: </p>
+    <p class="negrita">Seguro: </p>
   </div>
   <div class="col">
     <p>${{ alquiler.seguro }}</p>
+  </div>
+  <div class="col">
+    <p class="negrita">Estado: </p>
+  </div>
+  <div class="col">
+    <p class="status">
+      {% if alquiler.estado == 1 %} <span class="active-status">Confirmado</span>
+      {% elif alquiler.estado == 2 %}  <span class="active-status">EN CURSO</span>
+      {% elif alquiler.estado == 3 %} <span class="inactive-status">FINALIZADO</span>
+      {% elif alquiler.estado == 4 %} <span class="moroso-status">Cancelado</span>      
+      {% endif %}
+  </p>
+  </div>
+</div>
+
+<div class="row row-cols-2 row-cols-sm-4 row-cols-md-6">
+  <div class="col">
+    <p class="negrita">Tipo de afiliado : </p>
+  </div>
+  <div class="col">
+    <p>
+      {% if not alquiler.cambio_inquilino %} Original 
+      {% else %} Rectificado
+      {% endif %}
+    </p>
+  </div>
+  <div class="col">
+    <p class="negrita"> Fecha de pago: </p>
+  </div>
+  <div class="col">
+    <p>{{ pago.fecha_pago }}</p>
+  </div>
+  <div class="col">
+    <p class="negrita">Forma de pago: </p>
+  </div>
+  <div class="col">
+    <p>{{ pago.forma_pago }}</p>
   </div>
 </div>
 {% endblock %}
@@ -55,26 +92,33 @@
 
 <div class="col">
   <a href="{% url 'alquiler:alquiler_listar' %}" class="btn btn-sm btn-secondary btn-detalle">
-  <i class="fa-solid fa-arrow-left"></i> Volver
+  <i class="fa-solid fa-arrow-left"></i> Ir al calendario
   </a>
 </div>
 
-<div class="col d-flex justify-content-center"> 
-  <a href="{% url 'afiliados:afiliado_actualizar' alquiler.pk %}" class="btn btn-sm btn-primary btn-detalle "><i class="fas fa-pencil-alt"></i> Modificar</a>
-
+<div class="col">
+  {% if not alquiler.fechaBaja %}
+    {% comment %} <a href="{% url 'afiliados:afiliado_actualizar' alquiler.pk %}" class="btn btn-sm btn-primary btn-detalle "><i class="fas fa-pencil-alt"></i> Modificar</a> {% endcomment %}
+  {% endif %}
 </div>
 
-<div class="col d-flex justify-content-center"> 
-  {% comment %} CAMBIAR EL URL DEL DETALLE {% endcomment %}
-  <a href="{% url 'afiliados:afiliado_detalle' alquiler.afiliado.pk %}" class="btn btn-sm btn-primary btn-detalle">
+<div class="col"> 
+  <a href="{% url 'afiliados:afiliado_detalle' alquiler.afiliado.pk %}" class="btn btn-sm btn-info btn-detalle">
     <i class="fa-regular fa-user"></i> Ir al Afiliado
   </a>
 </div>
 
-<div class="col d-flex justify-content-end">
-  <button type="button" class="btn btn-danger btn-sm btn-detalle" data-bs-toggle="modal" data-bs-target="#exampleModal_eliminar_alquiler"><i class="fa-regular fa-circle-down"></i> Dar de Baja</button>
-  {% include 'modal_confirm_baja_alquiler.html' %}
+<div class="col">
+  {% if not alquiler.fechaBaja and alquiler.lista_espera.exists %}
+      <a href="{% url 'alquiler:reemplazar_inquilino' alquiler.pk %}" class="btn btn-primary btn-sm btn-detalle"><i class="fa-solid fa-repeat"></i> Cambiar de Arrendatario</a>            
+  {% endif %}
+</div>
 
+<div class="col">
+  {% if not alquiler.fechaBaja %}
+    <button type="button" class="btn btn-danger btn-sm btn-detalle" data-bs-toggle="modal" data-bs-target="#exampleModal_eliminar_alquiler"><i class="fa-regular fa-circle-down"></i> Dar de Baja</button>
+    {% include 'modal_confirm_baja_alquiler.html' %}
+  {% endif %}
 </div>
 
 {% endblock %}
@@ -82,12 +126,14 @@
 {% block listado_asociado %}
 <div class="container-sm">
   <h3 class="subtitulo">{{ tituloListado1 }}</h3>
-  <a href={% url 'alquiler:agregar_lista_espera' alquiler.pk %} 
+  {% if not alquiler.fechaBaja %}
+    <a href={% url 'alquiler:agregar_lista_espera' alquiler.pk %} 
     class="btn btn-warning btn-sm btn-detalle" 
-    onclick="openOrFocusWindow(this.href, 'Lista de espera', 700, 400); return false;">
+    onclick="openOrFocusWindow(this.href, 'Lista de espera', 250, 300); return false;">
     <i class="fa-solid fa-list"></i>
     Agregar lista espera
   </a>
+  {% endif %}
 
   {% if alquiler.lista_espera.all %}
   
@@ -109,6 +155,9 @@
 
           <td class="text-end">
             <a href="{% url 'afiliados:afiliado_detalle' afiliado.pk %}" class="btn btn-info btn-sm btn-detalle"><i class="fa-regular fa-eye"></i> Detalle</a>            
+            {% if not alquiler.fechaBaja %}
+            <a href="{% url 'alquiler:quitar_lista_alquiler' alquiler_pk=alquiler.pk afiliado_pk=afiliado.pk %}" class="btn btn-outline-danger btn-sm btn-detalle"><i class="fa-regular fa-trash-can"></i> Quitar</a>
+            {% endif %}
           </td>
         </tr>
         {% endfor %}

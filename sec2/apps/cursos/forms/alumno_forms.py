@@ -16,4 +16,9 @@ class AlumnoPersonaForm(forms.ModelForm):
 
 
 class AlumnoFilterForm(FiltrosForm):
-    nombre = forms.CharField(required=False)
+    dni = forms.CharField(
+        label='Dni',
+        required=False,
+        widget=forms.NumberInput(attrs={'type': 'number'})
+    )
+    apellido = forms.CharField(required=False, label='Apellido')
