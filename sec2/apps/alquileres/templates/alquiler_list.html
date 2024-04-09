@@ -82,10 +82,10 @@
                         start: "{{alquiler.fecha_alquiler | date:'c'}}",
                         url: '/home/app_alquileres/alquileres/alquiler/{{alquiler.pk}}',
                         {% if alquiler.estado == 1 %}
-                        backgroundColor: '#459C0C', // Verde para estado "En curso"
+                        backgroundColor: '#848685', // Verde para estado "En curso"
                           //backgroundColor: '#FF5733', // Naranja para estado "Confirmado"
                         {% elif alquiler.estado == 2 %}
-                          backgroundColor: '#459C0C', // Verde para estado "En curso"
+                          backgroundColor: '#2D7FF0', // Verde para estado "En curso"
                         {% elif alquiler.estado == 3 %}
                           backgroundColor: '#459C0C', // Verde para estado "Finalizado"
                         {% elif alquiler.estado == 4 %}

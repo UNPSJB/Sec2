@@ -10,41 +10,51 @@ class reportesView(TemplateView):
     template_name = 'reporte_alquileres_por_mes.html'
     
     def get_graph_alquileres(self):
-        alquileres = Alquiler.objects.all()
-        print("alquileres", alquileres)
 
-        data = Counter()
-        year = datetime.now().year
-        
-        # Fetching counts of rentals for each month
+        data_confirmados = Counter()
+        data_enCurso = Counter()
+        data_finalizados = Counter()
+        data_cancelados = Counter()
+
         alquileres_por_mes = Alquiler.objects.all()
         
-        # Counting rentals for each month
+        # Counting rentals for each month and state
         for alquiler in alquileres_por_mes:
             month = alquiler.fecha_alquiler.month
-            data[month] += 1
-            
-        # Converting the Counter to a list of counts for each month
-        data_list = [data[month] for month in range(1, 13)]
-        print("data_list", data_list)
-            
-            # Defining categories for X-axis
+            if alquiler.estado == 1:  # Confirmado
+                data_confirmados[month] += 1
+            elif alquiler.estado == 2:  # Cancelado
+                data_enCurso[month] += 1
+            elif alquiler.estado == 3:  # Cancelado
+                data_finalizados[month] += 1
+            elif alquiler.estado == 4:  # Finalizado
+                data_cancelados[month] += 1
+
+        # Converting the Counters to lists of counts for each month
+        data_confirmados_list = [data_confirmados[month] for month in range(1, 13)]
+        data_enCurso_list = [data_enCurso[month] for month in range(1, 13)]
+        data_finalizados_list = [data_finalizados[month] for month in range(1, 13)]
+        data_cancelados_list = [data_cancelados[month] for month in range(1, 13)]
+
+        # Defining categories for X-axis
         categories = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre']
         
-        return data_list, categories
+        return data_confirmados_list, data_enCurso_list,  data_finalizados_list, data_cancelados_list, categories
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['titulo'] = 'Reportes de alquileres'
         
-        # Obtiene los datos y las categorías del gráfico
-        data_list, categories = self.get_graph_alquileres()
+        # Get the data and categories for the graph
+        data_confirmados_list, data_enCurso_list, data_finalizados_list, data_cancelados_list, categories = self.get_graph_alquileres()
         
-        # Agrega los datos y las categorías al contexto
+        # Add the data and categories to the context
         context['graph_alquileres'] = {
-            'data_list': data_list,
+            'data_confirmados_list': data_confirmados_list,
+            'data_enCurso_list': data_enCurso_list,
+            'data_finalizados_list': data_finalizados_list,
+            'data_cancelados_list': data_cancelados_list,
             'categories': categories,
-            'y_axis_title': '1000 metric tons (MT)'  # Título del eje Y
+            'y_axis_title': 'Total de alquileres',  # Y-axis title
         }
         return context
-        
