@@ -1,0 +1,73 @@
+{% load static %}
+{% block extrajs %}
+    <script src="{% static 'Libs/highcharts/code/highcharts.js' %}"></script>
+    <script src="{% static 'Libs/highcharts/code/modules/exporting.js' %}"></script>
+    <script src="{% static 'Libs/highcharts/code/modules/export-data.js' %}"></script>
+    <script src="{% static 'Libs/highcharts/code/modules/accessibility.js' %}"></script>
+    
+
+{% endblock %}
+
+{% block content %}
+
+    <div>
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-lg-12">
+                    <div id="container"></div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <script type="application/javascript">
+        
+        Highcharts.chart('container', 
+        {
+            chart: {
+                type: 'column'
+            },
+            title: {
+                text: 'Reporte de alquileres del año', 
+                align: 'left'
+            },
+            subtitle: {
+                text:'Reporte',
+                align: 'left'
+            },
+            xAxis: {
+                categories: ['USA', 'China', 'Brazil', 'EU', 'India', 'Russia'],
+                crosshair: true,
+                accessibility: {
+                    description: 'Countries'
+                }
+            },
+            yAxis: {
+                min: 0,
+                title: {
+                    text: '1000 metric tons (MT)'
+                }
+            },
+            tooltip: {
+                valueSuffix: ' (1000 MT)'
+            },
+            plotOptions: {
+                column: {
+                    pointPadding: 0.2,
+                    borderWidth: 0
+                }
+            },
+            series: 
+            [
+                {
+                    name: 'Cantidad de alquileres',
+                    data: [406292, 260000, 107000, 68300, 27500, 14500]
+                    //data: {{ alquileres_por_mes|safe }} 
+                }
+            ]
+        });
+    </script>
+
+
+{% endblock %}

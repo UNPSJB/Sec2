@@ -42,4 +42,7 @@ urlpatterns = [
    # path('alquiler/<int:pk>',PagoAlquilerDetailView.as_view(), name="Pago_alquiler"),
   #  path('modificar/<int:pk>', PagoAlquilerUpdateView.as_view(), name="pago_alquiler_actualizar"),
   #  path('mostrar/',PagosAlquilieresListView.as_view(), name="pago_alquiler_listar"),
+  
+    # REPORTES
+    path('reportes/',reportesView.as_view(), name="alquileres_por_mes"),
 ]

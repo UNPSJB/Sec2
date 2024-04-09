@@ -78,6 +78,10 @@
 {% comment %} BOTON DE SERVICIO {% endcomment %}
 <a class="enlace" id="enlaceActividad" href="{% url 'alquiler:gestion_servicio' %}"><i class="fa-solid fa-clipboard-list"></i> Servicio</a>
 
+
+{% comment %} BOTON DE SERVICIO {% endcomment %}
+<a class="enlace" id="enlaceReporte" href="{% url 'alquiler:reportes' %}"><i class="fa-solid fa-clipboard-list"></i> Reportes</a>
+
 {% block extrajs %}
   <script src="{% static 'Libs/js/nav_salon.js' %}"></script>
 {% endblock %}
