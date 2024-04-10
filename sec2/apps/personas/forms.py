@@ -40,6 +40,12 @@ class RolFilterForm(forms.Form):
         widget=AutoComboboxSelectWidget(RolLookup, attrs={'class': 'form-control'})  # Proporcionar 'lookup_class' y 'attrs'
     )
     
+    def get_selected_rol(self):
+        selected_rol = None
+        if self.is_valid():
+            selected_rol = self.cleaned_data.get('dni')
+        return selected_rol
+    
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields['dni'].widget.attrs.update({'placeholder': 'Buscar Dni/nombre/apellido'})

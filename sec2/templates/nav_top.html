@@ -1,14 +1,16 @@
 {% load static %}
 {% load crispy_forms_tags %}
-
 <nav class="navbar navbar-expand-lg bg-body-tertiary">
   <div class="container-fluid">
     <div class="mx-auto">
-      <form class="d-flex" role="search" action="{% url 'personas:mostrar_detalle_persona' %}" method="get">
+      <form class="d-flex" role="search" method="get">
         {{filter_form.dni}}
-        <button class="btn btn-outline-secondary" type="submit" id="button-addon2" disabled><i class="fa-solid fa-magnifying-glass"></i></button>
+        <button class="btn btn-outline-success" type="submit"><i class="fa-solid fa-magnifying-glass"></i></button>
       </form>
     </div>
   </div>
 </nav>
-
+<link href="{% static 'selectable/css/dj.selectable.css' %}" type="text/css" media="all" rel="stylesheet">
+<script type="text/javascript" src="{% static 'Libs/js/jquery-1.11.2.min.js' %}"></script>
+<script type="text/javascript" src="{% static 'Libs/js/jquery-iu.js' %}"></script>
+<script type="text/javascript" src="{% static 'selectable/js/jquery.dj.selectable.js' %}"></script>

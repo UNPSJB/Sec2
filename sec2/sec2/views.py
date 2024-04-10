@@ -6,6 +6,7 @@ from apps.afiliados.models import RelacionFamiliar
 
 from apps.alquileres.models import Alquiler
 from apps.personas.models import Persona, Rol
+from sec2.utils import get_filtro_roles, get_selected_rol_pk, redireccionarDetalleRol
 from utils.funciones import mensaje_advertencia
 from .forms import SecAuthenticationForm
 from apps.personas.forms import RolFilterForm
@@ -41,13 +42,15 @@ def revisarGrupoFamiliar(request):
 def home(request):
     cambiar_estado_alquileres()
     revisarGrupoFamiliar(request)
-    
-    roles_sin_fecha_hasta = Rol.objects.filter(hasta__isnull=True)
-    personas = Persona.objects.filter(roles__in=roles_sin_fecha_hasta)
 
+    filter_rol = get_filtro_roles(request)
+    rol = get_selected_rol_pk(filter_rol)
+    
+    if rol is not None:
+        return redireccionarDetalleRol(rol)
+    
     contexto ={
-        'filter_form': RolFilterForm(request.GET),
-        'clientes' :personas
+        'filter_form': filter_rol,
     }
     
     return render(request, 'home.html', contexto)
