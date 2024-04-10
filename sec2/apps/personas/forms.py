@@ -1,3 +1,4 @@
+from apps.personas.lookups import RolLookup
 from apps.personas.models import Persona
 from django.forms import ModelForm, modelformset_factory, ValidationError, BaseFormSet
 from crispy_forms.helper import FormHelper
@@ -30,16 +31,15 @@ class PersonaUpdateForm(ModelForm):
 
 
 from django import forms
-from dal import autocomplete  # Asegúrate de tener django-autocomplete-light instalado
-from tkinter.ttk import Widget
-from django_select2 import forms as s2forms
+from selectable.forms import AutoCompleteSelectField, AutoComboboxSelectWidget
 
-class PersonaWidget(s2forms.ModelSelect2Widget):
-    search_fields = [
-        "dni__icontains",
-        "nombre__icontains",
-        "apellido__icontains",
-    ]
-
-class BuscadorPersonasForm(forms.Form):
-   buscar = forms.ModelChoiceField(queryset=Persona.objects.all(), widget=PersonaWidget)
+class RolFilterForm(forms.Form):
+    dni = AutoCompleteSelectField(
+        lookup_class=RolLookup,
+        required=False,
+        widget=AutoComboboxSelectWidget(RolLookup, attrs={'class': 'form-control'})  # Proporcionar 'lookup_class' y 'attrs'
+    )
+    
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['dni'].widget.attrs.update({'placeholder': 'Buscar Dni/nombre/apellido'})

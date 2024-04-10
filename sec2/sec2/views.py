@@ -8,7 +8,7 @@ from apps.alquileres.models import Alquiler
 from apps.personas.models import Persona, Rol
 from utils.funciones import mensaje_advertencia
 from .forms import SecAuthenticationForm
-from apps.personas.forms import BuscadorPersonasForm
+from apps.personas.forms import RolFilterForm
 from django.contrib.auth.decorators import login_required
 from datetime import datetime, date
 
@@ -24,12 +24,9 @@ def cambiar_estado_alquileres():
         alquiler_hoy.estado = 2  # Cambiar estado a "En curso"
         alquiler_hoy.save()
     
-
-@login_required
-def home(request):
-    cambiar_estado_alquileres()
+def revisarGrupoFamiliar(request):
+    
     """Chequear si algún grupo familiar que sea hijo es mayor de edad"""
-
     # Filtrar roles sin fecha de finalización (hasta)
     roles_sin_fecha_hasta = Rol.objects.filter(hasta__isnull=True)
     
@@ -40,6 +37,17 @@ def home(request):
         if relacion.familiar.persona.es_mayor_edad: 
             mensaje_advertencia(request, f"Atención! El familiar con el DNI: {relacion.familiar.persona.dni} es mayor de edad"  )
 
-    # Obtener personas asociadas a roles sin fecha de finalización
+@login_required
+def home(request):
+    cambiar_estado_alquileres()
+    revisarGrupoFamiliar(request)
+    
+    roles_sin_fecha_hasta = Rol.objects.filter(hasta__isnull=True)
     personas = Persona.objects.filter(roles__in=roles_sin_fecha_hasta)
-    return render(request, 'home.html', {'clientes': personas})
+
+    contexto ={
+        'filter_form': RolFilterForm(request.GET),
+        'clientes' :personas
+    }
+    
+    return render(request, 'home.html', contexto)

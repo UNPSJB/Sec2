@@ -1,4 +1,7 @@
-$(document).ready(function () {
+var jq = $.noConflict();
+
+
+jq(document).ready(function () {
     $('#mostrarMenuAfiliado').click(function () {
         $('#menu_principal').hide();
         $('#menu_afiliado_principal').show();

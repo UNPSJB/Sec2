@@ -526,7 +526,7 @@ def gestionListaEspera(request, pk, rol_pk, accion):
         persona, es_profesor = getObjectRolTipo(rol)
         if es_profesor:
             if esTitular(persona, dictado):
-                mensaje_error(request, f'SAASDSADSAD')
+                mensaje_error(request, f'El alumno a inscribir es titular del dictado seleccionado')
                 return redirect('cursos:curso_lista_espera', pk=pk)
             else: 
                 persona.dictados_inscriptos.add(dictado)

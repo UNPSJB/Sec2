@@ -54,7 +54,7 @@ INSTALLED_APPS = [
     "crispy_bootstrap5",
     "django_extensions",
     'fontawesomefree',
-    'django_select2',
+    'selectable',
 
 ]
 

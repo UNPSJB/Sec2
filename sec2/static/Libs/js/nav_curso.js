@@ -1,4 +1,3 @@
-// Agregar funcionalidad para mostrar/ocultar los submenús con un clic
 const submenuButtons = document.querySelectorAll('.submenu-toggle')
 
 submenuButtons.forEach((button) => {

@@ -3,12 +3,7 @@ from django.shortcuts import get_object_or_404, render
 from apps.afiliados.models import Afiliado, Familiar, RelacionFamiliar
 from .forms import *
 from .models import *
-from django.contrib import messages
-from django.views.generic.edit import CreateView, DeleteView, UpdateView
-from django.views.generic import DetailView, ListView
-from django.urls import reverse_lazy
 from django.shortcuts import redirect
-from django.views.generic.edit import CreateView
 
 def mostrarPersona(request):
     persona_id = request.GET.get('enc_cliente')

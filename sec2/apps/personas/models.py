@@ -104,7 +104,7 @@ class Rol(models.Model):
     # desde = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f"{self.__class__.__name__} {self.id}"
+        return f"{self.persona.dni} {self.persona.nombre} {self.persona.apellido}"
 
     def obtenerTipo(self):
         if self.tipo == 1: 

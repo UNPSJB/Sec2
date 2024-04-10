@@ -2,7 +2,7 @@
 
 {% block extracss %}
   <link href="{% static 'Libs/css/nav_principal.css' %}" rel="stylesheet" />
-  <link href="{% static 'Libs/css/nav_afiliado.css' %}" rel="stylesheet" />
+  {% comment %} <link href="{% static 'Libs/css/nav_afiliado.css' %}" rel="stylesheet" /> {% endcomment %}
   <link href="{% static 'Libs/css/nav_curso.css' %}" rel="stylesheet" />
 {% endblock %}
 
@@ -44,5 +44,6 @@
 </div>
 
 {% block extrajs %}
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
   <script src="{% static 'Libs/js/nav_principal.js' %}"></script>
 {% endblock %}
