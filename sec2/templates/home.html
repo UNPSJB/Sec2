@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-
+{% load crispy_forms_tags %}
 {% load static %}
 
 {% block extracss %}
@@ -28,17 +28,14 @@
 
       {% block dinamica %}
         {% include 'index.html' %}
+        {% include 'footer.html' %}
       {% endblock %}
+
     </div>
   </div>
+
 {% endblock %}
 
 {% block extrajs %}
-
 <script src="{% static 'Libs/js/nav_principal.js' %}"></script>
-
-{{ buscador.media.js }}
-<script type="text/javascript">
-    $('.django-select2').on("change", () => console.log("hola"));
-</script>
 {% endblock %}

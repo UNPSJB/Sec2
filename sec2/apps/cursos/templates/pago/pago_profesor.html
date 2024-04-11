@@ -3,8 +3,6 @@
 {% load static %}
 
 {% block formulario %}
-<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
-
 <form method="post">
     {% csrf_token %}
     
@@ -42,15 +40,9 @@
 
 <!-- Incluir archivo estático de Select2 desde CDN -->
 <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
-
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 
 <script>
-    $(function () {
-      //$("#enc_profesor").select2();
-    }); 
-
     var jq = $.noConflict();
 
     jq(document).ready(function() {

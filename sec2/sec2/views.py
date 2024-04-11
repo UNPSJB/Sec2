@@ -10,6 +10,10 @@ from apps.afiliados.forms import AfiliadoFormSearch
 from utils.funciones import mensaje_advertencia
 from .forms import SecAuthenticationForm
 from apps.personas.forms import PersonaFormSearch
+from sec2.utils import get_filtro_roles, get_selected_rol_pk, redireccionarDetalleRol
+from utils.funciones import mensaje_advertencia
+from .forms import SecAuthenticationForm
+from apps.personas.forms import RolFilterForm
 from django.contrib.auth.decorators import login_required
 from datetime import datetime, date
 from django.contrib.auth.models import User
@@ -37,13 +41,10 @@ def cambiar_estado_alquileres():
         alquiler_hoy.estado = 2  # Cambiar estado a "En curso"
         alquiler_hoy.save()
     
+
+def revisarGrupoFamiliar(request):
     
-@login_required(login_url='/login/')
-@login_required
-def home(request):
-    cambiar_estado_alquileres()
     """Chequear si algún grupo familiar que sea hijo es mayor de edad"""
-    permisos = obtener_permisos_user_string(request.user)
     # Filtrar roles sin fecha de finalización (hasta)
     roles_sin_fecha_hasta = Rol.objects.filter(hasta__isnull=True)
 
@@ -57,7 +58,24 @@ def home(request):
         if relacion.familiar.persona.es_mayor_edad: 
            mensaje_advertencia(request, f"Atencion! El familiar con el DNI: {relacion.familiar.persona.dni} es mayor de edad"  )
 
-    personas = personas = Persona.objects.filter(roles__in=roles_sin_fecha_hasta)
-    return render(request, 'home.html', {'clientes': personas, "permisos":permisos, "form":form})
+    
 
-     
+@login_required(login_url='/login/')
+def home(request):
+    cambiar_estado_alquileres()
+    """Chequear si algún grupo familiar que sea hijo es mayor de edad"""
+    permisos = obtener_permisos_user_string(request.user)
+    revisarGrupoFamiliar(request)
+
+    filter_rol = get_filtro_roles(request)
+    rol = get_selected_rol_pk(filter_rol)
+    
+    if rol is not None:
+        return redireccionarDetalleRol(rol)
+    contexto ={
+        'filter_form': filter_rol,
+        "permisos":permisos,
+    }
+    
+    return render(request, 'home.html', contexto)
+

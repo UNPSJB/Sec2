@@ -1,29 +1,16 @@
 {% load static %}
-
+{% load crispy_forms_tags %}
 <nav class="navbar navbar-expand-lg bg-body-tertiary">
   <div class="container-fluid">
     <div class="mx-auto">
-      <form class="d-flex" method="post">
-        {% csrf_token %}
-        {{ form.as_p }} 
-        <button class="btn btn-outline-secondary" type="submit" id="button-addon2" disabled><i class="fa-solid fa-magnifying-glass"></i></button>
+      <form class="d-flex" role="search" method="get">
+        {{filter_form.dni}}
+        <button class="btn btn-outline-success" type="submit"><i class="fa-solid fa-magnifying-glass"></i></button>
       </form>
     </div>
   </div>
 </nav>
-
-<!-- Incluir archivos estáticos de Select2 desde CDN -->
-<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
-<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
-
-<script>
-  $(function () {
-    $("#enc_cliente").select2();
-
-    // Agregar evento change al select
-    $("#enc_cliente").change(function() {
-      // Habilitar o deshabilitar el botón según el valor seleccionado
-      $("#button-addon2").prop("disabled", $(this).val() === '0');
-    });
-  });
-</script>
+<link href="{% static 'selectable/css/dj.selectable.css' %}" type="text/css" media="all" rel="stylesheet">
+<script type="text/javascript" src="{% static 'Libs/js/jquery-1.11.2.min.js' %}"></script>
+<script type="text/javascript" src="{% static 'Libs/js/jquery-iu.js' %}"></script>
+<script type="text/javascript" src="{% static 'selectable/js/jquery.dj.selectable.js' %}"></script>

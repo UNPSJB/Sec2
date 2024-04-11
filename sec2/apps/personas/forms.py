@@ -1,3 +1,4 @@
+from apps.personas.lookups import RolLookup
 from apps.personas.models import Persona
 from django.forms import ModelForm, modelformset_factory, ValidationError, BaseFormSet
 from crispy_forms.helper import FormHelper
@@ -51,3 +52,27 @@ from selectable.forms import AutoCompleteWidget
 
 class PersonaFormSearch(forms.Form):
    persona= AutoCompleteSelectField(lookup_class=PersonaLookup, label='Buscar Persona')
+
+
+
+
+
+from selectable.forms import AutoCompleteSelectField, AutoComboboxSelectWidget
+
+class RolFilterForm(forms.Form):
+    dni = AutoCompleteSelectField(
+        lookup_class=RolLookup,
+        required=False,
+        widget=AutoComboboxSelectWidget(RolLookup, attrs={'class': 'form-control'})  # Proporcionar 'lookup_class' y 'attrs'
+    )
+    
+    def get_selected_rol(self):
+        selected_rol = None
+        if self.is_valid():
+            selected_rol = self.cleaned_data.get('dni')
+        return selected_rol
+    
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['dni'].widget.attrs.update({'placeholder': 'Buscar Dni/nombre/apellido'})
+

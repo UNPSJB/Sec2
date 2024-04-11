@@ -2,9 +2,17 @@ from django import forms
 from django.db.models import Q, Model
 from decimal import Decimal
 from datetime import date
+from django.shortcuts import get_object_or_404, redirect
 from django.views.generic.list import ListView
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, HTML
+
+from apps.afiliados.models import Afiliado, Familiar
+from apps.alquileres.models import Encargado
+from apps.cursos.models import Alumno, Profesor
+from apps.personas.forms import RolFilterForm
+from apps.personas.models import Rol
+from utils.constants import ROL_TIPO_PROFESOR
 
 def dict_to_query(filtros_dict):
     filtro = Q()
@@ -86,3 +94,40 @@ class ListFilterView(ListView):
             return filtros.apply(qs)
         return qs
    
+def get_filtro_roles(request):
+    return RolFilterForm(request.GET)
+
+def get_selected_rol_pk(filter_form):
+    selected_rol_pk = None
+    if filter_form.is_valid():
+        selected_rol = filter_form.get_selected_rol()
+        if selected_rol:
+            selected_rol_pk = selected_rol.pk
+            return get_object_or_404(Rol, pk=selected_rol_pk)
+    return None
+
+
+def redireccionarDetalleRol(rol):
+    tipo = rol.tipo
+
+    if tipo == 1:
+        afiliado = get_object_or_404(Afiliado, persona__pk=rol.persona.pk)
+        return redirect('afiliados:afiliado_detalle', pk=afiliado.pk)
+
+    elif tipo == 2:
+        grupoFamiliar = get_object_or_404(Familiar, persona__pk=rol.persona.pk)
+        return redirect('afiliados:familiar_detalle', pk=grupoFamiliar.pk)
+
+    elif tipo == 3:
+        alumno = get_object_or_404(Alumno, persona__pk=rol.persona.pk)
+        return redirect('afiliados:alumno_detalle', pk=alumno.pk)
+
+    elif tipo == ROL_TIPO_PROFESOR:
+        profesor = get_object_or_404(Profesor, persona__pk=rol.persona.pk)
+        return redirect('cursos:profesor_detalle', pk=profesor.pk)
+
+    elif tipo == 5:
+        encargado = get_object_or_404(Encargado, persona__pk=rol.persona.pk)
+        return redirect('cursos:profesor_detalle', pk=encargado.pk)
+    return redirect('home')
+    
