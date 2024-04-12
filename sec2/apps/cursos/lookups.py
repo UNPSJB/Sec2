@@ -1,7 +1,7 @@
 from __future__ import unicode_literals
 
 from selectable.base import ModelLookup
-from apps.cursos.models import Actividad
+from apps.cursos.models import Actividad, Profesor
 
 from selectable.registry import registry
 
@@ -25,4 +25,3 @@ class PagoAlumnoLookup(ModelLookup):
         return queryset
 
 registry.register(PagoAlumnoLookup)
-

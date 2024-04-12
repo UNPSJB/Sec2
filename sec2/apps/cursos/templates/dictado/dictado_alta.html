@@ -3,23 +3,43 @@
 {% load crispy_forms_tags %}
 
 {% block formulario %}
-{% if profesores_capacitados %}
-  <form method="post" autocomplete="off">
+<style>
+  .radio-columns > ul {
+    display: flex;
+    flex-wrap: wrap;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.radio-columns > ul > li {
+    flex-basis: 50%; /* Divide en dos columnas */
+}
+</style>
+
+
+{% comment %} {% if profesores_capacitados %} {% endcomment %}
+  <form method="post">
     {% csrf_token %}
     <div class="row">
       <div class="col">
-        <div class="form-group">{{ form.periodo_pago.label_tag }}
-          {{ form.periodo_pago }}</div>
-      </div>
+        <div class="form-group text-center">
+            <label>{{ form.periodo_pago.label }}</label>
+            <div class="row">
+                <div class="col">
+                    {{ form.periodo_pago.0 }}
+                    {{ form.periodo_pago.0.label_tag }}
+                </div>
+                <div class="col">
+                    {{ form.periodo_pago.1 }}
+                    {{ form.periodo_pago.1.label_tag }}
+                </div>
+            </div>
+        </div>
+    </div>
         <div class="col">
-          <div class="form-group">
-            <label for="aula_seleccionada">Profesor asigado:</label>
-            <select name="profesor">
-                {% for profesor in profesores_capacitados %}
-                    <option value="{{ profesor.id }}">{{ profesor }}</option>
-                {% endfor %}
-            </select>
-          </div>
+          <label>Profesor asigado:</label>
+          {{ form.profesor }}
         </div>
     </div>
 
@@ -115,10 +135,10 @@
       </div>
     </div>
   </form>
-  {% else %}
-  No hay profesores capacitados para esta actividad.
-  <a href="{% url 'cursos:profesor_crear' %}" class="btn btn-primary btn-sm btn-detalle"><i class="fa-solid fa-plus"></i> Crear profesor</a>
+  {% comment %} {% else %} {% endcomment %}
+  {% comment %} No hay profesores capacitados para esta actividad. {% endcomment %}
+  {% comment %} <a href="{% url 'cursos:profesor_crear' %}" class="btn btn-primary btn-sm btn-detalle"><i class="fa-solid fa-plus"></i> Crear profesor</a> {% endcomment %}
 
-{% endif %}
+{% comment %} {% endif %} {% endcomment %}
 
 {% endblock %}

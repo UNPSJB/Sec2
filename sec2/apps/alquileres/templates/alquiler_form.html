@@ -5,8 +5,9 @@
 {% block formulario %}
 
 <style>
-  .turno-radio {
-    column-count: 2; /* Divide las opciones en dos columnas */
+  .two-columns {
+    column-count: 2;
+    column-gap: 20px; /* Espacio entre columnas */
 }
 </style>
 
@@ -64,4 +65,10 @@
       </div>
     </div>
   </form>
+
+  <script type="text/javascript" src="{% static 'Libs/js/jquery-1.11.2.min.js' %}"></script>
+<script type="text/javascript" src="{% static 'Libs/js/jquery-iu.js' %}"></script>
+<script type="text/javascript" src="{% static 'selectable/js/jquery.dj.selectable.js' %}"></script>
+<link href="{% static 'selectable/css/dj.selectable.css' %}" type="text/css" media="all" rel="stylesheet">
+
 {% endblock %}

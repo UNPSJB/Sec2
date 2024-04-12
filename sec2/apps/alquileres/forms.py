@@ -1,7 +1,9 @@
 from django import forms
 from django.forms import ValidationError
 from apps.afiliados.models import Afiliado
+from apps.alquileres.lookups import SalonLookup
 from apps.personas.forms import PersonaForm,PersonaUpdateForm
+from apps.personas.lookups import AfiLookup, EncargadoLookup
 from apps.personas.models import Persona
 from utils.choices import ESTADO_CIVIL, LOCALIDADES_CHUBUT, MAX_LENGTHS, NACIONALIDADES
 from .models import Salon, Servicio, Alquiler, Pago_alquiler
@@ -99,10 +101,17 @@ class ServicioFilterForm(FiltrosForm):
     nombre = forms.CharField(required=False)    
 
 # ----------------------------- SALON  ----------------------------------- #
+from selectable.forms import AutoCompleteSelectField, AutoComboboxSelectWidget
+
 class SalonrForm(forms.ModelForm):
+    encargado = AutoCompleteSelectField(
+        lookup_class=EncargadoLookup,
+        required=False,
+        widget=AutoComboboxSelectWidget(EncargadoLookup, attrs={'class': 'form-control'})  # Proporcionar 'lookup_class' y 'attrs'
+    )
     class Meta:
         model = Salon
-        fields = ('nombre', 'localidad', 'direccion', 'capacidad', 'precio','tipo_salon','servicios')
+        fields = ('nombre', 'localidad', 'direccion', 'capacidad', 'precio','tipo_salon','servicios', 'encargado')
         widgets = {
             'nombre': forms.TextInput(attrs={'class': 'form-control form-control-user', 'placeholder': 'Eje: PasaRatos'}),
             'direccion': forms.TextInput(attrs={'class': 'form-control form-control-user', 'placeholder': 'Eje: Pedro Pascal 150'}),
@@ -126,27 +135,36 @@ class SalonFilterForm(FiltrosForm):
     capacidad = forms.IntegerField(required=False, label='Capacidad mínima')
     
 # ----------------------------- ALQUILER ----------------------------------- #
+
 class AlquilerForm(forms.ModelForm):
+
+    afiliado = AutoCompleteSelectField(
+        lookup_class=AfiLookup,
+        required=False,
+        widget=AutoComboboxSelectWidget(AfiLookup, attrs={'class': 'form-control'})  # Proporcionar 'lookup_class' y 'attrs'
+    )
+    
+    salon = AutoCompleteSelectField(
+        lookup_class=SalonLookup,
+        required=False,
+        widget=AutoComboboxSelectWidget(SalonLookup, attrs={'class': 'form-control'})  # Proporcionar 'lookup_class' y 'attrs'
+    )
+    turno = forms.ChoiceField(
+        required=False,
+        label='Turno',
+        choices=(('Mañana', 'Mañana'), ('Noche', 'Noche')),
+        widget=forms.RadioSelect(attrs={'class': 'two-columns'})
+    )
     class Meta:
         model = Alquiler
         fields = ('afiliado', 'salon', 'turno', 'seguro','fecha_alquiler')
         widgets = {
-          # 'fecha_solicitud': forms.DateInput(attrs={'type': 'date'}),
            'fecha_alquiler': forms.DateInput(attrs={'type': 'date'}),
            'seguro': forms.TextInput(attrs={'class': 'form-control form-control-user', 'placeholder': 'Eje: 1000'}),
-            'turno': forms.RadioSelect(attrs={'class': 'turno-radio'}),  # Agrega la clase CSS personalizada al widget del campo de turno
        }
-    
     def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.fields['afiliado'].queryset = Afiliado.objects.filter(estado=2)  # Filtra por estado activo (2)
-        self.fields['afiliado'].label_from_instance = lambda obj: f"{obj.persona.dni} | {obj.persona.apellido} {obj.persona.nombre} | {obj.razon_social}" if obj.persona else obj.razon_social
-        
-        self.fields['salon'].queryset = Salon.objects.filter(fechaBaja=None)
-        self.fields['salon'].label_from_instance = lambda obj: f"{obj.nombre} | Capacidad: {obj.capacidad} | ${obj.precio}"
-        self.fields['turno'].choices = [('Mañana', 'Mañana'), ('Noche', 'Noche')]
+        super(AlquilerForm, self).__init__(*args, **kwargs)
 
-        
 class AlquilerFilterForm(FiltrosForm):
     alquiler_salon_nombre = forms.CharField(required=False)
     fecha_alquiler = forms.DateField(required=False)

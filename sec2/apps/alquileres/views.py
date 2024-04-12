@@ -334,34 +334,17 @@ class SalonCreateView(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
         context = super().get_context_data(**kwargs)
         context['titulo'] = self.title
         context['servicios'] = Servicio.objects.all()
-        
-        #Rol de encargado que no tienen fecha fin
-        encargados = Rol.objects.all().filter(tipo=ROL_TIPO_ENCARGADO, hasta__isnull=True)
-        context['encargados'] = encargados
         return context
 
     def form_valid(self, form):
-        encargado_id = self.request.POST.get('enc_encargado')
-        print("encargado_id", encargado_id)
-        print(encargado_id)
-        if encargado_id == '0':
-            mensaje_advertencia(self.request, f'Seleccione al encargado')
-            return super().form_invalid(form)
-        
-        rol = get_object_or_404(Rol, pk=encargado_id)
-
-        encargado = get_object_or_404(Encargado, persona__pk=rol.persona.pk)
-        
-        form.instance.encargado = encargado
-        form.save()
         if 'guardar_y_recargar' in self.request.POST:
-                mensaje_exito(self.request, f'{MSJ_CORRECTO_ALTA_ENCARGADO}')
+                mensaje_exito(self.request, f'Alta de salón exitoso')
                 self.object = form.save()
                 return self.render_to_response(self.get_context_data(form=self.form_class()))   
 
         elif 'guardar_y_listar' in self.request.POST:
                 # Guarda el objeto y redirige a la página de listar
-                mensaje_exito(self.request, f'{MSJ_CORRECTO_ALTA_ENCARGADO}')
+                mensaje_exito(self.request, f'Alta de salón exitoso')
                 self.object = form.save()    
                 return redirect('alquiler:salon_listar')
         
@@ -489,8 +472,9 @@ class AlquilerCreateView(LoginRequiredMixin, PermissionRequiredMixin, CreateView
         salon = form.cleaned_data["salon"]
         fecha = form.cleaned_data["fecha_alquiler"]
         turno = form.cleaned_data["turno"]
-
-        print("TURNO", turno)
+        print("salon", salon)
+        print("fecha", fecha)
+        print("turno", turno)
         alquiler = Alquiler.objects.first()
         if Alquiler.fecha_valida(fecha):
             if alquiler is not None:
