@@ -9,7 +9,6 @@ from apps.personas.models import Persona, Rol
 from apps.afiliados.forms import AfiliadoFormSearch
 from utils.funciones import mensaje_advertencia
 from .forms import SecAuthenticationForm
-from apps.personas.forms import PersonaFormSearch
 from sec2.utils import get_filtro_roles, get_selected_rol_pk, redireccionarDetalleRol
 from utils.funciones import mensaje_advertencia
 from .forms import SecAuthenticationForm
@@ -48,9 +47,6 @@ def revisarGrupoFamiliar(request):
     # Filtrar roles sin fecha de finalización (hasta)
     roles_sin_fecha_hasta = Rol.objects.filter(hasta__isnull=True)
 
-    form = PersonaFormSearch()
-
-    
     # Filtrar relaciones familiares tipo 2 relacionadas con roles sin fecha de finalización
     relaciones_tipo_2 = RelacionFamiliar.objects.filter(tipo_relacion=2, familiar__in=roles_sin_fecha_hasta)
 

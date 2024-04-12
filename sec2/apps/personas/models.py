@@ -104,7 +104,19 @@ class Rol(models.Model):
     # desde = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f"{self.persona.dni} {self.persona.nombre} {self.persona.apellido}"
+        return f"{self.abrevituraTipoRol() } {self.persona.dni} {self.persona.nombre} {self.persona.apellido}"
+
+    def abrevituraTipoRol(self):
+        if self.tipo == 1: 
+            return '(AF)'
+        elif self.tipo == 2: 
+            return '(F)'
+        elif self.tipo == 3:
+            return '(AL)'
+        elif self.tipo == 4: 
+            return '(P)'
+        elif self.tipo == 5: 
+            return '(E)'
 
     def obtenerTipo(self):
         if self.tipo == 1: 

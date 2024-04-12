@@ -1,6 +1,16 @@
 {% extends 'alta_gestion_afiliados.html' %}
+{% load static %}
 
 {% block formulario %}
+
+<style>
+  .tipo-radio label {
+    display: block;
+    float: left;
+    width: 50%;
+}
+</style>
+
   <form method="post" enctype="multipart/form-data">
     {% csrf_token %}
     
@@ -8,14 +18,10 @@
       <div class="col">
         <label>Seleccione al afiliado:</label>
         <div class="form-group">
-          <select name="enc_cliente" id="enc_cliente">
-            <option value="0"> --------------- </option>
-            {% for item in clientes %}
-              <option value="{{item.id}}">{{item.persona.dni}} {{item.persona.nombre}} {{item.persona.apellido}}</option>
-            {% endfor %}
-          </select>
+          {{ form.afiliado }}
         </div>
       </div>
+
       <div class="col">
         <div class="form-group">
           <label for="{{ form.tipo.id_for_label }}"> Seleccione el parentezco:</label>
@@ -40,5 +46,10 @@
         </div>
       </div>
   </form>
+
+<script type="text/javascript" src="{% static 'Libs/js/jquery-1.11.2.min.js' %}"></script>
+<script type="text/javascript" src="{% static 'Libs/js/jquery-iu.js' %}"></script>
+<script type="text/javascript" src="{% static 'selectable/js/jquery.dj.selectable.js' %}"></script>
+<link href="{% static 'selectable/css/dj.selectable.css' %}" type="text/css" media="all" rel="stylesheet">
 
 {% endblock %}

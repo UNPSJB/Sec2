@@ -261,13 +261,7 @@ AFILIADO_ESTADO = (
 TIPOS_RELACION_FAMILIAR = (
         (1, "Conyugue"),
         (2, "Hijo/a"),
-        # (3, "Padre"),
-        # (4, "Madre"),
-        # (5, "Hermano"),
-        # (6, "Tutor"),
     )
-
-
 
 #------------- AULA ------------
 TIPO_AULA = [

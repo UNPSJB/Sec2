@@ -8,9 +8,7 @@
 
 
 <div class="menu" id="menu_principal">
-  <span class="bi bi-person"></span>
-  <i class="fa-regular fa-user"></i> Hola, {{ user }}
-  <br/><br/>
+  <br>
   <h3 class="titulo-menu">SEC 2</h3>
   <ul class="menu">
     {% if 'permission_gestion_afiliado' in permisos %}
@@ -47,12 +45,8 @@
   
 
 
-</br></br></br>
-    <div class="btn-group">
-            <a class="btn btn-light" href="{% url 'users:cerrar_session' %}">
-              <i class="fa-solid fa-lock"></i>
-              Cerrar Sesión</a>
-    </div>
+
+
   </div>
 <div id="menu_afiliado_principal" style="display: none;">
   <!-- Menú Afiliados -->

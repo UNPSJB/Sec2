@@ -57,7 +57,7 @@ class Afiliado(Rol):
     familia = models.ManyToManyField(Familiar, through='RelacionFamiliar', blank=True)
     
     def __str__(self):
-        return f" Tipo: {self.TIPO} Razon social: {self.razon_social} CUIT:{self.cuit_empleador}"
+        return f"{self.persona.dni} {self.persona.apellido} {self.persona.nombre}. Estado: {self.get_estado_display()}"
     
     def __strextra__(self):
         # Define your new string representation here

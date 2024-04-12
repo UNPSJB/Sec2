@@ -9,6 +9,11 @@
     <input type="hidden" id="dictados_seleccionados" name="dictados_seleccionados">
     
     <div class="row">
+        <div class="col">
+            {{form.rol.label}}
+            {{form.rol}}
+        </div>
+
         <div class="col-12">
             <div class="tab-content" id="form-tabs-content">
                 {% comment %}SECCION 1{% endcomment %}
@@ -53,9 +58,10 @@
       </div>
 
 </form>
-
-<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<link href="{% static 'selectable/css/dj.selectable.css' %}" type="text/css" media="all" rel="stylesheet">
+  <script type="text/javascript" src="{% static 'selectable/js/jquery.dj.selectable.js' %}"></script>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  
 <script src="{% static 'js/tab_control.js' %}"></script>
 <script src="{% static 'js/pago_alumno.js' %}"></script>
 {% endblock %}
