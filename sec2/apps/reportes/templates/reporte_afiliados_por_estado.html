@@ -1,0 +1,126 @@
+{% extends 'reporte_appAfiliados.html' %}
+
+{% block grafico %}
+
+<div class="col">
+    <label>Seleccione al empleador:</label>
+    <div class="form-group">
+        <select name="enc_cuit" id="enc_cuit">
+            <option value="0"> --------------- </option>
+            {% for empleador in empleadores %}
+                <option value="{{ empleador.cuit_empleador }}">{{ empleador.cuit_empleador }} {{ empleador.razon_social }}</option>
+            {% endfor %}
+        </select>
+    </div>
+</div>
+<script>
+    var data_pendiene = {{ graph_afiliados.data_pendiente_list|safe }};
+    var data_activo = {{ graph_afiliados.data_activo_list|safe }};
+    var data_inactivo = {{ graph_afiliados.data_inactivo_list|safe }};
+    var data_baja = {{ graph_afiliados.data_baja_list|safe }};
+    var data_moroso = {{ graph_afiliados.data_moroso_list|safe }};
+
+    var categories = {{ graph_afiliados.categories|safe }};
+    var jq = $.noConflict();
+  
+    jq(document).ready(function() {
+        jq('#enc_cuit').change(function() {
+            var cuit_empleador = $(this).val();
+            var url = 'afiliados_por_estado/';
+            jq.ajax({
+
+                url: '../' + url,
+                data: {
+                    'cuit_empleador': cuit_empleador
+                },
+                dataType: 'json',
+                success: function(data) {
+                    jq('#enc_afiliado').empty();
+                    jq.each(data, function(key, value) {
+                        jq('#enc_afiliado').append($('<option></option>').attr('value', value.id).text(value.nombre_completo));
+                    });
+                    Highcharts.chart('container', {
+                        chart: {
+                            type: 'pie'
+                        },
+                        title: {
+                            text: 'Egg Yolk Composition'
+                        },
+                        tooltip: {
+                            valueSuffix: '%'
+                        },
+                        subtitle: {
+                            text:
+                            'Source:<a href="https://www.mdpi.com/2072-6643/11/3/684/htm" target="_default">MDPI</a>'
+                        },
+                        plotOptions: {
+                            series: {
+                                allowPointSelect: true,
+                                cursor: 'pointer',
+                                dataLabels: [{
+                                    enabled: true,
+                                    distance: 20
+                                }, {
+                                    enabled: true,
+                                    distance: -40,
+                                    format: '{point.percentage:.1f}%',
+                                    style: {
+                                        fontSize: '1.2em',
+                                        textOutline: 'none',
+                                        opacity: 0.7
+                                    },
+                                    filter: {
+                                        operator: '>',
+                                        property: 'percentage',
+                                        value: 10
+                                    }
+                                }]
+                            }
+                        },
+                        series: [
+                            {
+                                name: 'Percentage',
+                                colorByPoint: true,
+                                data: [
+                                    {
+                                        name: 'Water',
+                                        y: 55.02
+                                    },
+                                    {
+                                        name: 'Fat',
+                                        sliced: true,
+                                        selected: true,
+                                        y: 26.71
+                                    },
+                                    {
+                                        name: 'Carbohydrates',
+                                        y: 1.09
+                                    },
+                                    {
+                                        name: 'Protein',
+                                        y: 15.5
+                                    },
+                                    {
+                                        name: 'Ash',
+                                        y: 1.68
+                                    }
+                                ]
+                            }
+                        ]
+                    });
+                }
+            });
+        });
+        });
+
+</script>
+
+
+
+
+
+
+
+
+
+{% endblock %}

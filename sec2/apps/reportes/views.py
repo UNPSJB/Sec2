@@ -1,10 +1,14 @@
 from django.shortcuts import render
 
 from apps.alquileres.models import Alquiler
+from apps.afiliados.models import Afiliado
+
 from django.views.generic import TemplateView
 from datetime import datetime
 from collections import Counter
 from django.db.models import Count
+from django.http import JsonResponse
+
 
 class reportesView(TemplateView):
     template_name = 'reporte_alquileres_por_mes.html'
@@ -58,3 +62,51 @@ class reportesView(TemplateView):
             'y_axis_title': 'Total de alquileres',  # Y-axis title
         }
         return context
+    
+    
+class ReporteAfiliadoViews(TemplateView):
+    
+    def get_graph_afiliados(self):
+
+        data_activo = Counter()
+        data_inactivo = Counter()
+        data_pendiente = Counter()
+        data_baja = Counter()
+        data_moroso = Counter()
+
+        afiliados_por_estado = Afiliado.objects.all()
+        
+        
+        for afiliado in afiliados_por_estado:
+            estado = afiliado.estado
+            if afiliado.estado == 1:  # Pendiente
+                data_pendiente[estado] += 1
+            elif afiliado.estado == 2:  # Activo
+                data_activo[estado] += 1
+            elif afiliado.estado == 3:  # Inactivo
+                data_inactivo[estado] += 1
+            elif afiliado.estado == 4:  # Dado de baja
+                data_baja[estado] += 1
+            elif afiliado.estado == 5:  # Moroso
+                data_moroso[estado] += 1
+
+        categories = ['Pendiente','Activo','Inactivo','Dado de baja','Moroso']
+        
+        return data_pendiente, data_activo, data_inactivo, data_baja, data_moroso, categories
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['titulo'] = 'Reportes de afiliados'
+        
+        data_activo_list, data_inactivo_list, data_pendiente_list, data_baja_list, data_moroso_list, categories = self.get_graph_afiliados()
+        
+        context['graph_afiliados'] = {
+            'data_activo_list': data_activo_list,
+            'data_inactivo_list': data_inactivo_list,
+            'data_pendiente_list': data_pendiente_list,
+            'data_baja_list': data_baja_list,
+            'data_moroso_list':data_moroso_list,
+            'categories': categories,
+        }
+        return context
+    
