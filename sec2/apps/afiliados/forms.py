@@ -1,4 +1,5 @@
 # from sec2.sec2.lookups import AfiliadosLookup
+from apps.personas.lookups import AfiLookup, RolLookup
 from .lookups import AfiliadoLookup
 from utils.choices import AFILIADO_ESTADO, ESTADO_CIVIL, LOCALIDADES_CHUBUT, MAX_LENGTHS, NACIONALIDADES, TIPOS_RELACION_FAMILIAR
 from utils.funciones import validate_no_mayor_actual
@@ -25,15 +26,6 @@ from selectable.forms import AutoCompleteWidget
 
 class AfiliadoFormSearch(forms.Form):
    afiliado = AutoCompleteSelectField(lookup_class=AfiliadoLookup, label='Buscar afiliado')
- 
-
-
-# class AfiliadoFormSearch(forms.Form):
-#     autocomplete = forms.CharField(
-#         label='Type the name of a fruit (AutoCompleteWidget)',
-#         widget=AutoCompleteWidget(AfiliadoLookup),
-#         required=False,
-#     )
 
 # ---------- Utilizado para el AFILIADO CRATE VIEW 
 class AfiliadoPersonaForm(forms.ModelForm):
@@ -53,7 +45,6 @@ class AfiliadoPersonaForm(forms.ModelForm):
         widget=forms.DateInput(attrs={'type': 'date'}),
         validators=[validate_no_mayor_actual]
     )
-
     localidad_empresa = forms.ChoiceField(choices=LOCALIDADES_CHUBUT, initial="TRELEW")
 
     class Meta:
@@ -176,6 +167,8 @@ class AfiliadoUpdateForm(forms.ModelForm):
     
 
 ########### FAMILIAR ##############################################
+from selectable.forms import AutoCompleteSelectField, AutoComboboxSelectWidget
+
 class AfiliadoSelectForm(forms.Form):
     class Meta:
         model = Persona
@@ -183,8 +176,13 @@ class AfiliadoSelectForm(forms.Form):
         widgets = {
         'fecha_nacimiento': forms.DateInput(attrs={'type': 'date'}),
         }
-
-    tipo = forms.ChoiceField(choices=TIPOS_RELACION_FAMILIAR)
+    tipo = forms.ChoiceField(choices=TIPOS_RELACION_FAMILIAR, widget=forms.RadioSelect(attrs={'class': 'tipo-radio'}))
+    afiliado = AutoCompleteSelectField(
+        lookup_class=AfiLookup,
+        required=False,
+        widget=AutoComboboxSelectWidget(AfiLookup, attrs={'class': 'form-control'})  # Proporcionar 'lookup_class' y 'attrs'
+    )
+    
     dni = forms.CharField(
         max_length=8,
         help_text='Sin puntos',
@@ -318,6 +316,7 @@ class RelacionFamiliarFilterForm(FiltrosForm):
     )
 
 class PagoCuotaForm(forms.ModelForm):
+    
     class Meta:
         model = PagoCuota
         fields = '__all__'
@@ -350,6 +349,7 @@ class PagoCuotaForm(forms.ModelForm):
         # Por ejemplo, verificar el tamaño del archivo, el tipo, etc.
         return pdf_transferencia
     
+
 ########### FILTER FORM FAMILIAR  ##############################################
 class PagoCuotarFilterForm(FiltrosForm):
     afiliado__persona__dni = forms.CharField(

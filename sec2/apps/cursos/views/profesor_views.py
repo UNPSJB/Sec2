@@ -72,7 +72,7 @@ class ProfesorCreateView(LoginRequiredMixin,PermissionRequiredMixin, CreateView)
             profesor.actividades.set(actividades_seleccionadas)
             mensaje_exito(self.request, f'{MSJ_CORRECTO_ALTA_PROFESOR}')
             self.object = form.save()
-
+            print("ESTOY AQUI")
             if 'guardar_y_recargar' in self.request.POST:
                 return self.render_to_response(self.get_context_data(form=self.form_class()))
             elif 'guardar_y_listar' in self.request.POST:

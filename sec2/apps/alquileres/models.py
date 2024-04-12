@@ -39,7 +39,7 @@ class Salon(models.Model):
     servicios=models.ManyToManyField(Servicio, blank=True) 
     
     def __str__(self):
-        return f"{self.nombre}"
+        return f"{self.nombre} | Capacidad: {self.capacidad} personas"
     
 
 class Alquiler(models.Model):

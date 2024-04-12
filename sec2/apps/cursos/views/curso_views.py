@@ -29,7 +29,6 @@ class CursoCreateView(LoginRequiredMixin, PermissionRequiredMixin,CreateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         tipo_curso = self.request.GET.get('tipo', None)
-        context['actividades'] = Actividad.objects.all().order_by('nombre')
         if tipo_curso == 'sec':
             context['titulo'] = "Alta de Curso del SEC 2"
         elif tipo_curso == 'convenio':
@@ -61,11 +60,6 @@ class CursoCreateView(LoginRequiredMixin, PermissionRequiredMixin,CreateView):
 
     def form_valid(self, form):
         tipo_curso = self.request.GET.get('tipo', None)
-
-        # Obtener el ID de la actividad seleccionada en el formulario
-        actividad_id = self.request.POST.get('enc_cliente')        
-        actividad = get_object_or_404(Actividad, pk=actividad_id)
-
         # Actualizar el valor de es_convenio en base al tipo de curso
         if tipo_curso == 'convenio':
             form.instance.es_convenio = True
@@ -75,7 +69,7 @@ class CursoCreateView(LoginRequiredMixin, PermissionRequiredMixin,CreateView):
         # form.instance.actividad = actividad
         result = super().form_valid(form)
         
-        form.instance.actividad = actividad
+        form.instance.actividad = form.cleaned_data['actividad']
         form.instance.descripcion = form.cleaned_data['descripcion'].capitalize()
         form.instance.cupo_estimativo = form.cleaned_data['cupo_estimativo']
         form.instance.precio_total = form.cleaned_data['precio_total']
@@ -391,9 +385,7 @@ class PagoProfesorCreateView(CreateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         titulares_con_clases_mes_pasado = obtenerTitularesConClasesEnMesPasado()
-        print("titulares_con_clases_mes_pasado", titulares_con_clases_mes_pasado)
         profesores_unicos = obtenerProfesoresUnicos(titulares_con_clases_mes_pasado)
-        print("profesores_unicos", profesores_unicos)
         context['profesores'] = profesores_unicos
         context['titulo'] = "Comprobante de pago"
         return context

@@ -10,13 +10,10 @@
 
     <div class="row">
       <div class="col">
-        <label>Actividad</label>
-        <select name="enc_cliente" id="enc_cliente">
-            <option value="{{ object.actividad.id }}">{{ object.actividad.nombre }}</option>
-            {% for actividad in actividades %}
-                <option value="{{ actividad.id }}" {% if actividad.id == object.actividad.id %}selected{% endif %}>{{ actividad.nombre }}</option>
-            {% endfor %}
-        </select>
+        <div class="form-group">
+          <label for="{{ form.actividad.id_for_label }}">Actividad:</label>
+          {{ form.actividad }}
+        </div>
       </div>
       <div class="col">
         <div class="form-group">
@@ -86,5 +83,7 @@
     </div>
   </form>
 
-    
+  <link href="{% static 'selectable/css/dj.selectable.css' %}" type="text/css" media="all" rel="stylesheet">
+  <script type="text/javascript" src="{% static 'selectable/js/jquery.dj.selectable.js' %}"></script>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 {% endblock %}

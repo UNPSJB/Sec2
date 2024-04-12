@@ -58,13 +58,11 @@ def existe_persona_activa(self, dni):
 # ----------------------------- AFILIADO CREATE ----------------------------------- #
 class AfiliadoCreateView(LoginRequiredMixin,PermissionRequiredMixin,CreateView):
     model = Persona
-    form_class = AfiliadoPersonaForm #utiliza un formulario unificado
+    form_class = AfiliadoPersonaForm
     template_name = 'afiliados/afiliado_formulario.html'
     success_url = reverse_lazy('afiliados:afiliado_crear')
     login_url = '/login/'
     permission_required = "afiliados.permission_gestion_afiliado"
-    
-
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -382,6 +380,8 @@ def es_menor_de_edad(self, fecha_nacimiento):
 @permission_required('afiliados.permission_gestion_afiliado', raise_exception=True)
 @login_required(login_url='/login/')
 def alta_familiar(request):
+    titulo = 'Alta de Familiar'
+
     if request.method == 'POST':
         form = AfiliadoSelectForm(request.POST)
         if form.is_valid():
@@ -392,7 +392,7 @@ def alta_familiar(request):
                 form = AfiliadoSelectForm(request.POST)
 
             else:
-                afiliado_seleccionado_id = request.POST.get('enc_cliente')
+                afiliado_seleccionado_id = form.cleaned_data["afiliado"]
                 afiliado = get_object_or_404(Afiliado, pk=afiliado_seleccionado_id)
 
                 if afiliado.tiene_esposo() and form.cleaned_data["tipo"] == '1':
@@ -404,8 +404,7 @@ def alta_familiar(request):
                         form = AfiliadoSelectForm(request.POST)
                         context = {
                             'form': form,
-                            'clientes': Afiliado.objects.filter(estado__in=[1, 2]),
-                            'titulo': 'Alta de Familiar',  # Replace with your desired title
+                            'titulo': titulo,  # Replace with your desired title
                         }
                         return render(request, 'grupoFamiliar/grupo_familiar_alta_directa.html', context)
 
@@ -446,8 +445,7 @@ def alta_familiar(request):
                         form = AfiliadoSelectForm(request.POST)
                         context = {
                         'form': form,
-                        'clientes': Afiliado.objects.filter(estado__in=[1, 2, 5]),
-                        'titulo': 'Alta de Familiar',  # Replace with your desired title
+                        'titulo': titulo,
                         }
 
                         if 'guardar_y_recargar' in request.POST:
@@ -462,8 +460,7 @@ def alta_familiar(request):
 
     context = {
         'form': form,
-        'clientes': Afiliado.objects.filter(estado__in=[1, 2, 5]),
-        'titulo': 'Alta de Familiar',  # Replace with your desired title
+        'titulo': titulo,
     }
     return render(request, 'grupoFamiliar/grupo_familiar_alta_directa.html', context)
 

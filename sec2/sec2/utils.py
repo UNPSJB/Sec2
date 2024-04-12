@@ -128,6 +128,6 @@ def redireccionarDetalleRol(rol):
 
     elif tipo == 5:
         encargado = get_object_or_404(Encargado, persona__pk=rol.persona.pk)
-        return redirect('cursos:profesor_detalle', pk=encargado.pk)
+        return redirect('alquiler:encargado_detalle', pk=encargado.pk)
     return redirect('home')
     

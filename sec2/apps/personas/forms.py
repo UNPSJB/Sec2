@@ -4,7 +4,6 @@ from django.forms import ModelForm, modelformset_factory, ValidationError, BaseF
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit
 from selectable.forms import AutoCompleteSelectField
-from .lookups import NacionalidadLookup, PersonaLookup                  
 from django import forms
 
 
@@ -15,7 +14,6 @@ class PersonaForm(ModelForm):
         exclude=['persona', 'tipo']
         Widgets ={
             'fechaNacimiento': forms.DateInput(attrs={'type':'datetime-local'}),
-            'nacionalidad': AutoCompleteSelectField(lookup_class=NacionalidadLookup),
 
             }
           
@@ -49,13 +47,6 @@ class PersonaWidget(s2forms.ModelSelect2Widget):
     ]
 
 from selectable.forms import AutoCompleteWidget
-
-class PersonaFormSearch(forms.Form):
-   persona= AutoCompleteSelectField(lookup_class=PersonaLookup, label='Buscar Persona')
-
-
-
-
 
 from selectable.forms import AutoCompleteSelectField, AutoComboboxSelectWidget
 

@@ -67,15 +67,8 @@
     <div class="row">
       <div class="col">
         <div class="form-group">
-        <label class="form-label negrita">Encargado:</label>
-          <select name="enc_encargado" id="enc_encargado" >
-            <option value="0">  </option>
-            {% for encargado in encargados %}
-            <option value="{{ encargado.id }}">{{ encargado.persona.dni }} | {{encargado.persona.apellido}} {{encargado.persona.nombre}}</option>
-            {% endfor %}
-          </select>
-
-          {{ form.encargado }}
+          <label class="form-label negrita">Encargado:</label>
+          {{form.encargado}}
         </div>
       </div>
       <div class="col text-center">
@@ -106,5 +99,11 @@
       </div>
     </div>
   </form>
+
+  <script type="text/javascript" src="{% static 'Libs/js/jquery-1.11.2.min.js' %}"></script>
+<script type="text/javascript" src="{% static 'Libs/js/jquery-iu.js' %}"></script>
+<script type="text/javascript" src="{% static 'selectable/js/jquery.dj.selectable.js' %}"></script>
+<link href="{% static 'selectable/css/dj.selectable.css' %}" type="text/css" media="all" rel="stylesheet">
+
 
 {% endblock %}

@@ -1,9 +1,13 @@
 from datetime import timezone
 from django import forms
+
+from apps.cursos.lookups import ActividadLookup
+from apps.personas.lookups import RolLookup
 from ..models import Actividad, Curso, Dictado, ListaEspera, PagoAlumno, PagoProfesor
 from utils.constants import *
 from utils.choices import *
 from sec2.utils import FiltrosForm
+from selectable.forms import AutoCompleteSelectField, AutoComboboxSelectWidget
 
 #----------------------- CURSO --------------------
 class CursoForm(forms.ModelForm):
@@ -14,8 +18,13 @@ class CursoForm(forms.ModelForm):
 
     area = forms.ChoiceField(
         choices=[('', '---------')] + AREAS,  # Agrega el valor por defecto a las opciones de AREAS
-        widget=forms.Select(attrs={'class': 'form-control'}),
+        widget=forms.RadioSelect(attrs={'class': 'form-check-input'}),
         required=True
+    )
+    actividad = AutoCompleteSelectField(
+        lookup_class=ActividadLookup,
+        required=False,
+        widget=AutoComboboxSelectWidget(ActividadLookup, attrs={'class': 'form-control'})  # Proporcionar 'lookup_class' y 'attrs'
     )
 
     def clean_nombre(self):
@@ -157,6 +166,11 @@ class PagoAlumnoFilterForm(FiltrosForm):
         return f'{obj.legajo}'
 
 class PagoRolForm(forms.ModelForm):
+    rol = AutoCompleteSelectField(
+        lookup_class=RolLookup,
+        required=False,
+        widget=AutoComboboxSelectWidget(lookup_class=RolLookup, attrs={'class': 'form-control', 'id': 'enc_alumno_aux'})
+    )
     class Meta:
         model = PagoAlumno
         fields = ['rol']
