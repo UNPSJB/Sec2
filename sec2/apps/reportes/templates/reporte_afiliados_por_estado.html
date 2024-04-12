@@ -19,7 +19,7 @@
     var data_inactivo = {{ graph_afiliados.data_inactivo_list|safe }};
     var data_baja = {{ graph_afiliados.data_baja_list|safe }};
     var data_moroso = {{ graph_afiliados.data_moroso_list|safe }};
-
+    var titulo = {{ graph_afiliados.titulo }};
     var categories = {{ graph_afiliados.categories|safe }};
     var jq = $.noConflict();
   
@@ -29,10 +29,8 @@
             var url = 'afiliados_por_estado/';
             jq.ajax({
 
-                url: '../' + url,
-                data: {
-                    'cuit_empleador': cuit_empleador
-                },
+                url: url,
+                data: {'cuit_empleador': cuit_empleador},
                 dataType: 'json',
                 success: function(data) {
                     jq('#enc_afiliado').empty();
@@ -44,14 +42,10 @@
                             type: 'pie'
                         },
                         title: {
-                            text: 'Egg Yolk Composition'
+                            text: "{{ graph_afiliados.titulo }}"
                         },
                         tooltip: {
-                            valueSuffix: '%'
-                        },
-                        subtitle: {
-                            text:
-                            'Source:<a href="https://www.mdpi.com/2072-6643/11/3/684/htm" target="_default">MDPI</a>'
+                            valueSuffix: ''
                         },
                         plotOptions: {
                             series: {
@@ -63,7 +57,7 @@
                                 }, {
                                     enabled: true,
                                     distance: -40,
-                                    format: '{point.percentage:.1f}%',
+                                    format: '',
                                     style: {
                                         fontSize: '1.2em',
                                         textOutline: 'none',
@@ -71,7 +65,7 @@
                                     },
                                     filter: {
                                         operator: '>',
-                                        property: 'percentage',
+                                        property: 'cantidad',
                                         value: 10
                                     }
                                 }]
@@ -79,30 +73,30 @@
                         },
                         series: [
                             {
-                                name: 'Percentage',
+                                name: 'Cantidad',
                                 colorByPoint: true,
                                 data: [
                                     {
-                                        name: 'Water',
-                                        y: 55.02
+                                        name: 'Pendientes',
+                                        y: data_pendiene
                                     },
                                     {
-                                        name: 'Fat',
+                                        name: 'Activos',
                                         sliced: true,
                                         selected: true,
-                                        y: 26.71
+                                        y: data_activo
                                     },
                                     {
-                                        name: 'Carbohydrates',
-                                        y: 1.09
+                                        name: 'Inactivos',
+                                        y: data_inactivo
                                     },
                                     {
-                                        name: 'Protein',
-                                        y: 15.5
+                                        name: 'Dados de baja',
+                                        y: data_baja
                                     },
                                     {
-                                        name: 'Ash',
-                                        y: 1.68
+                                        name: 'Morosos',
+                                        y: data_moroso
                                     }
                                 ]
                             }

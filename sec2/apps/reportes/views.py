@@ -107,6 +107,7 @@ class ReporteAfiliadoViews(TemplateView):
             'data_baja_list': data_baja_list,
             'data_moroso_list':data_moroso_list,
             'categories': categories,
+            'titulo': 'Afiliados por estado',
         }
         return context
     
