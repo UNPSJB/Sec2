@@ -12,6 +12,23 @@
             {% endfor %}
         </select>
     </div>
+
+
+</div>
+<figure class="highcharts-figure">
+    <div id="container"></div>
+    <p class="highcharts-description">
+        
+    </p>
+</figure>
+<div>
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-lg-12">
+                <div id="container"></div>
+            </div>
+        </div>
+    </div>
 </div>
 <script>
     var data_pendiene = {{ graph_afiliados.data_pendiente_list|safe }};
@@ -33,79 +50,82 @@
                 data: {'cuit_empleador': cuit_empleador},
                 dataType: 'json',
                 success: function(data) {
-                    jq('#enc_afiliado').empty();
-                    jq.each(data, function(key, value) {
-                        jq('#enc_afiliado').append($('<option></option>').attr('value', value.id).text(value.nombre_completo));
-                    });
-                    Highcharts.chart('container', {
-                        chart: {
-                            type: 'pie'
-                        },
-                        title: {
-                            text: "{{ graph_afiliados.titulo }}"
-                        },
-                        tooltip: {
-                            valueSuffix: ''
-                        },
-                        plotOptions: {
-                            series: {
-                                allowPointSelect: true,
-                                cursor: 'pointer',
-                                dataLabels: [{
-                                    enabled: true,
-                                    distance: 20
-                                }, {
-                                    enabled: true,
-                                    distance: -40,
-                                    format: '',
-                                    style: {
-                                        fontSize: '1.2em',
-                                        textOutline: 'none',
-                                        opacity: 0.7
-                                    },
-                                    filter: {
-                                        operator: '>',
-                                        property: 'cantidad',
-                                        value: 10
-                                    }
-                                }]
-                            }
-                        },
-                        series: [
-                            {
-                                name: 'Cantidad',
-                                colorByPoint: true,
-                                data: [
-                                    {
-                                        name: 'Pendientes',
-                                        y: data_pendiene
-                                    },
-                                    {
-                                        name: 'Activos',
-                                        sliced: true,
-                                        selected: true,
-                                        y: data_activo
-                                    },
-                                    {
-                                        name: 'Inactivos',
-                                        y: data_inactivo
-                                    },
-                                    {
-                                        name: 'Dados de baja',
-                                        y: data_baja
-                                    },
-                                    {
-                                        name: 'Morosos',
-                                        y: data_moroso
-                                    }
-                                ]
-                            }
-                        ]
-                    });
+                    jq('#container').empty();
+                    graficar(data)
+                    
+                    
                 }
             });
         });
         });
+    
+    function graficar(data){
+        Highcharts.chart('container', {
+            chart: {
+                type: 'pie'
+            },
+            title: {
+                text: "{{ graph_afiliados.titulo }}"
+            },
+            tooltip: {
+                valueSuffix: ''
+            },
+            plotOptions: {
+                series: {
+                    allowPointSelect: true,
+                    cursor: 'pointer',
+                    dataLabels: [{
+                        enabled: true,
+                        distance: 20
+                    }, {
+                        enabled: true,
+                        distance: -40,
+                        format: '',
+                        style: {
+                            fontSize: '1.2em',
+                            textOutline: 'none',
+                            opacity: 0.7
+                        },
+                        filter: {
+                            operator: '>',
+                            property: 'cantidad',
+                            value: 10
+                        }
+                    }]
+                }
+            },
+            series: [
+                {
+                    name: 'Cantidad',
+                    colorByPoint: true,
+                    data: [
+                        {
+                            name: 'Pendientes',
+                            y: data_pendiene
+                        },
+                        {
+                            name: 'Activos',
+                            sliced: true,
+                            selected: true,
+                            y: data_activo
+                        },
+                        {
+                            name: 'Inactivos',
+                            y: data_inactivo
+                        },
+                        {
+                            name: 'Dados de baja',
+                            y: data_baja
+                        },
+                        {
+                            name: 'Morosos',
+                            y: data_moroso
+                        }
+                    ]
+                }
+            ]
+        });
+    }
 
 </script>
 

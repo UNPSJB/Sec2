@@ -65,6 +65,7 @@ class reportesView(TemplateView):
     
     
 class ReporteAfiliadoViews(TemplateView):
+    template_name = 'reporte_afiliados_por_estado.html'
     
     def get_graph_afiliados(self):
 
@@ -75,7 +76,6 @@ class ReporteAfiliadoViews(TemplateView):
         data_moroso = Counter()
 
         afiliados_por_estado = Afiliado.objects.all()
-        
         
         for afiliado in afiliados_por_estado:
             estado = afiliado.estado
@@ -100,14 +100,15 @@ class ReporteAfiliadoViews(TemplateView):
         
         data_activo_list, data_inactivo_list, data_pendiente_list, data_baja_list, data_moroso_list, categories = self.get_graph_afiliados()
         
-        context['graph_afiliados'] = {
+        graph_afiliados_data = {
             'data_activo_list': data_activo_list,
             'data_inactivo_list': data_inactivo_list,
             'data_pendiente_list': data_pendiente_list,
             'data_baja_list': data_baja_list,
-            'data_moroso_list':data_moroso_list,
+            'data_moroso_list': data_moroso_list,
             'categories': categories,
             'titulo': 'Afiliados por estado',
         }
-        return context
+        
+        return JsonResponse(graph_afiliados_data, safe = False)
     
