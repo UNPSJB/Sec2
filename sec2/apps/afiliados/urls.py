@@ -16,7 +16,7 @@ urlpatterns = [
     path('afiliados/afiliado/crear/',AfiliadoCreateView.as_view(), name="afiliado_crear"),
     path('afiliados/afiliado/<int:pk>',AfiliadoDetailView.as_view(), name="afiliado_detalle"),
     path('afiliados/afiliado/<int:pk>/editar', AfiliadoUpdateView.as_view(), name="afiliado_actualizar"),
-    path('afiliados/listar',AfliadosListView.as_view(), name="afiliado_listar"),
+    path('afiliados/listar',AfiliadosListView.as_view(), name="afiliado_listar"),
     path('afiliados/afiliado/<int:pk>/<str:accion>/<str:origen>/', afiliado_afiliar_desafiliar, name="afiliado_afiliar_desafiliar"),
     #ALTA GRUPO FAMILIAR (accedido desde afiliado)
     path('afiliado/<int:pk>/grupoFamiliar/crear', FamiliaCreateView.as_view(), name="crear_familiar"),
@@ -42,6 +42,5 @@ urlpatterns = [
     path('pago/ruta_para_actualizar_afiliados/', obtener_afiliados_por_cuit_empleador, name='ruta_para_actualizar_afiliados'),
     
     path('pago/afiliado/actualizar', cuota_sindical_actualizar_estado ,name="actualizar_estado"),
-    path('buscar/', buscar_afiliado, name='buscar-producto'),
  
 ]

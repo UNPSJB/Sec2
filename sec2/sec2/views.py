@@ -6,7 +6,6 @@ from apps.afiliados.models import Afiliado, RelacionFamiliar
 
 from apps.alquileres.models import Alquiler
 from apps.personas.models import Persona, Rol
-from apps.afiliados.forms import AfiliadoFormSearch
 from utils.funciones import mensaje_advertencia
 from .forms import SecAuthenticationForm
 from sec2.utils import get_filtro_roles, get_selected_rol_pk, redireccionarDetalleRol

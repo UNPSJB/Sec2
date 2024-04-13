@@ -1,6 +1,6 @@
 # from sec2.sec2.lookups import AfiliadosLookup
-from apps.personas.lookups import AfiLookup, RolLookup
-from .lookups import AfiliadoLookup
+from apps.personas.lookups import RolLookup
+from .lookups import AfiLookup, CuitEmpleadorLookup, DniAfiliadoLookup, DniFamiliarLookup
 from utils.choices import AFILIADO_ESTADO, ESTADO_CIVIL, LOCALIDADES_CHUBUT, MAX_LENGTHS, NACIONALIDADES, TIPOS_RELACION_FAMILIAR
 from utils.funciones import validate_no_mayor_actual
 from .models import Afiliado, Familiar, PagoCuota
@@ -11,7 +11,7 @@ from utils.constants import *
 from django import forms
 from django.utils import timezone
 import re
-from django.core.validators import MinValueValidator, MaxValueValidator
+from django.core.validators import MinValueValidator
 from django.core.validators import EmailValidator
 from django import forms
 
@@ -23,9 +23,6 @@ from selectable.forms import AutoCompleteSelectField
 from django import forms
 
 from selectable.forms import AutoCompleteWidget
-
-class AfiliadoFormSearch(forms.Form):
-   afiliado = AutoCompleteSelectField(lookup_class=AfiliadoLookup, label='Buscar afiliado')
 
 # ---------- Utilizado para el AFILIADO CRATE VIEW 
 class AfiliadoPersonaForm(forms.ModelForm):
@@ -62,20 +59,24 @@ class AfiliadoPersonaForm(forms.ModelForm):
         return fecha_nacimiento
 
 ########### Utilizado para el AFILIADO fliadosListView ##############################################
+from selectable.forms import AutoCompleteSelectField, AutoComboboxSelectWidget
+
 class AfiliadoFilterForm(FiltrosForm):
-    persona__dni = forms.CharField(
-        required=False,
+    persona__dni = AutoCompleteSelectField(
+        lookup_class=DniAfiliadoLookup,
         label="Dni",
-        widget=forms.NumberInput(attrs={'type': 'number'})
-    )    # persona__nombre = forms.CharField(required=False, label="Nombre y/o Apellido")
-    
-    cuit_empleador = forms.CharField(
         required=False,
-        label="CUIT del Empleador",
-        widget=forms.TextInput(attrs={'type': 'number'}),
+        widget=AutoComboboxSelectWidget(DniAfiliadoLookup, attrs={'class': 'form-control'})  # Proporcionar 'lookup_class' y 'attrs'
+    )
+    
+    cuit_empleador = AutoCompleteSelectField(
+        lookup_class=CuitEmpleadorLookup,
+        label="Cuit empleador",
+        required=False,
+        widget=AutoComboboxSelectWidget(CuitEmpleadorLookup, attrs={'class': 'form-control'})  # Proporcionar 'lookup_class' y 'attrs'
     )
 
-    opciones_estado_ordenadas = sorted(AFILIADO_ESTADO, key=lambda x: x[1])
+    opciones_estado_ordenadas = sorted(AFILIADO_ESTADO, key=lambda x: x[    1])
 
     estado = forms.MultipleChoiceField(
         required=False,
@@ -298,16 +299,20 @@ class GrupoFamiliarPersonaUpdateForm(forms.ModelForm):
 
 ########### FILTER FORM FAMILIAR  ##############################################
 class RelacionFamiliarFilterForm(FiltrosForm):
-    familiar__persona__dni = forms.CharField(
-        label='DNI del Familiar',
+    familiar__persona__dni =  AutoCompleteSelectField(
+        lookup_class=DniFamiliarLookup,
+        label="Dni (familiar)",
         required=False,
-        widget=forms.NumberInput(attrs={'type': 'number'})
+        widget=AutoComboboxSelectWidget(DniFamiliarLookup, attrs={'class': 'form-control'})  # Proporcionar 'lookup_class' y 'attrs'
     )
-    afiliado__persona__dni = forms.CharField(
-        label='DNI del Afiliado',
+    
+    afiliado__persona__dni =  AutoCompleteSelectField(
+        lookup_class=DniAfiliadoLookup,
+        label="Dni (afiliado)",
         required=False,
-        widget=forms.NumberInput(attrs={'type': 'number'})
+        widget=AutoComboboxSelectWidget(DniAfiliadoLookup, attrs={'class': 'form-control'})  # Proporcionar 'lookup_class' y 'attrs'
     )
+    
     tipo_relacion = forms.ChoiceField(
         label='Tipo de Relación',
         choices=TIPOS_RELACION_FAMILIAR,
@@ -316,6 +321,7 @@ class RelacionFamiliarFilterForm(FiltrosForm):
     )
 
 class PagoCuotaForm(forms.ModelForm):
+    
     
     class Meta:
         model = PagoCuota

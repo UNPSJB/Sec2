@@ -1,9 +1,10 @@
 from django import forms
 from django.forms import ValidationError
+from apps.afiliados.lookups import AfiLookup
 from apps.afiliados.models import Afiliado
 from apps.alquileres.lookups import SalonLookup
 from apps.personas.forms import PersonaForm,PersonaUpdateForm
-from apps.personas.lookups import AfiLookup, EncargadoLookup
+from apps.personas.lookups import EncargadoLookup
 from apps.personas.models import Persona
 from utils.choices import ESTADO_CIVIL, LOCALIDADES_CHUBUT, MAX_LENGTHS, NACIONALIDADES
 from .models import Salon, Servicio, Alquiler, Pago_alquiler
@@ -109,6 +110,7 @@ class SalonrForm(forms.ModelForm):
         required=False,
         widget=AutoComboboxSelectWidget(EncargadoLookup, attrs={'class': 'form-control'})  # Proporcionar 'lookup_class' y 'attrs'
     )
+    
     class Meta:
         model = Salon
         fields = ('nombre', 'localidad', 'direccion', 'capacidad', 'precio','tipo_salon','servicios', 'encargado')

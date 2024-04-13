@@ -46,8 +46,6 @@ class PersonaWidget(s2forms.ModelSelect2Widget):
         "apellido__icontains",
     ]
 
-from selectable.forms import AutoCompleteWidget
-
 from selectable.forms import AutoCompleteSelectField, AutoComboboxSelectWidget
 
 class RolFilterForm(forms.Form):

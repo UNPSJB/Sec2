@@ -32,20 +32,6 @@ from utils.constants import *
 from django.contrib.auth.decorators import login_required
 
 
-def buscar_afiliado(request):
-    print("ENTRE")
-    form = AfiliadoFormSearch()
-    if request.method == 'POST':
-        form = AfiliadoFormSearch(request.POST)
-        print(form)
-        if form.is_valid():
-            producto_id = request.POST.get('afiliado_1')
-            print(producto_id)
-            # Realiza cualquier acción que necesites con el ID del producto
-           
-        
-    return render(request, 'afiliados/buscar_afiliado.html', {'form': form})
-
 @login_required(login_url='/login/')
 def index(request):
     template = loader.get_template('home.html')
@@ -222,7 +208,9 @@ class AfiliadoUpdateView(LoginRequiredMixin, PermissionRequiredMixin ,UpdateView
         return super().form_invalid(form)
 
 # ----------------------------- AFILIADO LISTADO ----------------------------------- #
-class AfliadosListView(LoginRequiredMixin, PermissionRequiredMixin,ListFilterView):
+from urllib.parse import urlencode
+
+class AfiliadosListView(LoginRequiredMixin, PermissionRequiredMixin, ListFilterView):
     model = Afiliado
     filter_class = AfiliadoFilterForm
     template_name = 'afiliados/afiliado_list.html'
@@ -234,22 +222,32 @@ class AfliadosListView(LoginRequiredMixin, PermissionRequiredMixin,ListFilterVie
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['titulo'] = "Listado de afiliados"
+        context['filter_parameters'] = urlencode(self.request.GET)
         return context
-        
+
     def get_queryset(self):
         queryset = super().get_queryset()
+        queryset = self.filter_queryset(queryset)
+        return queryset.order_by('estado', 'persona__dni')
 
+    def filter_queryset(self, queryset):
         form = AfiliadoFilterForm(self.request.GET)
-        if form.is_valid():
-            persona_dni = form.cleaned_data.get('persona__dni')
-            # persona_nombre = form.cleaned_data.get('persona__nombre')
-            cuit_empleador = form.cleaned_data.get('cuit_empleador')
-            estado = form.cleaned_data.get('estado')
+        if not form.is_valid():
+            return queryset  # Handle invalid form input gracefully
 
-            queryset = filter_by_persona_dni(queryset, persona_dni)
-            queryset = filter_by_cuit_empleador(queryset, cuit_empleador)
-            queryset = filter_by_estado(queryset, estado)
+        persona_dni = form.cleaned_data.get('persona__dni')
+        cuit_empleador = form.cleaned_data.get('cuit_empleador')
+        estado = form.cleaned_data.get('estado')
+
+        if persona_dni:
+            queryset = queryset.filter(persona__dni=persona_dni)
+        if cuit_empleador:
+            queryset = queryset.filter(cuit_empleador=cuit_empleador)
+        if estado:
+            queryset = queryset.filter(estado__in=estado)
+
         return queryset
+
 
 # ----------------------------- AFILIADO ACEPTAR ----------------------------------- #
 @permission_required('afiliados.permission_gestion_afiliado', raise_exception=True)
