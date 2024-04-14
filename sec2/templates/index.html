@@ -14,9 +14,10 @@
 <script src="{% static 'Libs/highcharts/code/themes/dark-blue.js' %}"></script>
 {% comment %} <script src="{% static 'Libs/highcharts/code/themes/gray.js' %}"></script> {% endcomment %}
 
-<div style="position: absolute; width: 80%; height: 90%;">
+
+<div style="position: absolute; width: 84%; height: 92%;">
   <!-- Contenedor del gráfico -->
-  <div class="container" style="position: absolute; bottom: 0px; right: 0px; width: 30%; height: 98%;">
+  <div class="container" style="position: absolute; bottom: 0px; right: 0px; width: 40%; height: 98%;">
       <figure class="highcharts-figure">
           <div id="container"></div>
       </figure>
@@ -43,14 +44,33 @@ accessibility: {
 
 series: [{
   type: 'organization',
-  name: 'Highsoft',
+  name: 'Sindicato de Empleados de Comercio',
   keys: ['from', 'to'],
   data: [
-      ['Sec2'],
-      ['Sec2', 'MA'],
-      ['MA', 'GF'],
+  //PRINCIPAL
+      ['SE2'], 
+      //PRIMER NIVEL
+      ['SE2', 'MA'],
+      ['SE2', 'DF'],
+      ['SE2', 'CO'],
+      //SEGUNDO NIVEL
+
+      //TERCER NIVEL
+      ['DF', 'GC'],
+      ['CO', 'GC'],
+      ['CO', 'GA'],
+      ['CO', 'GF'],
+      ['CO', 'GU'],
       ['MA', 'GC'],
-      ['MA', 'GA']
+      ['MA', 'GA'],
+      ['MA', 'GF'],
+      ['DF', 'GU'],
+      ['DF', 'GC'],
+      ['DF', 'GA'],
+      ['DF', 'GF'],
+      ['DF', 'GU']
+
+
   ],
   levels: [{
       level: 0,
@@ -66,24 +86,71 @@ series: [{
   }, {
       level: 2,
       //color: '#980104'
-      color: '#359154'
+      color: '#a2a2a2',
+      dataLabels: {
+        color: 'black' //color de la letra
+    },
 
-  }
+  },{
+    level: 3,
+    //color: '#980104'
+    color: '#359154'
+
+}
   ],
   nodes: [{
       id: 'MA',
-      title: 'Martin Arcos',
+      title: 'Administrador',
       name: 'userAdmin',
-      image: 'https://avatars.githubusercontent.com/u/107519498?v=4'
-  }, {
+      image: ''
+  },
+  {
+    id: 'DF',
+    title: 'Diego Fabro',
+    name: 'Diego',
+    image: ''
+},
+  {
+    id: 'SE2',
+    title: '(Sindicato de Empleados de Comercio2)',
+    name: 'SEC2',
+    image: ''
+},
+  {
+    id: 'CO',
+    title: 'Martin Arcos',
+    name: 'cozako',
+    image: 'https://avatars.githubusercontent.com/u/107519498?v=4'
+  },
+  {
       id: 'GF',
-      name: 'Gestion de Afiliados'
+      name: 'Gestion de Afiliados',
+      color: '#359154',
+      dataLabels: {
+        color: 'white' // Letra en blanco
+      }
   }, {
       id: 'GC',
-      name: 'Gestión de Cursos'
+      name: 'Gestión de Cursos',
+      color: '#359154',
+      dataLabels: {
+        color: 'white' // Letra en blanco
+      }
   }, {
       id: 'GA',
-      name: 'Gestión de Alquileres'
+      name: 'Gestión de Alquileres',
+      color: '#359154',
+      dataLabels: {
+        color: 'white' // Letra en blanco
+      }
+  },{
+    id: 'GU',
+    name: 'Gestión de Usuarios',
+    color: '#359154',
+    dataLabels: {
+      color: 'white' // Letra en blanco
+    }
+
   }],
   colorByPoint: false,
   color: '#007ad0',
@@ -106,9 +173,11 @@ exporting: {
 </script>
 
     <!-- Contenedor del mensaje de bienvenida -->
-    <div class="centrado" style="position: absolute; top: 25%; left: 35%; transform: translate(-50%, -50%);">
-      <h1>Bienvenido a Nuestra Aplicación Web</h1>
-      <p>Esperamos que tengas una gran experiencia.</p>
+    <div class="centrado" style="position: absolute; top: 25%; left: 30%; transform: translate(-50%, -50%);">
+      <h1>¡Bienvenido {{ user.username }}!</h1>
+      <p> Ultima conexión: {{user.date_joined}}</p>
+      <p><em>"Establecer objetivos es el primer paso para hacer visible lo invisible" Tony Robbins</em></p>
+      {% comment %} <p>Esperamos que tengas una gran experiencia.</p> {% endcomment %}
   </div>
 </div>
 
