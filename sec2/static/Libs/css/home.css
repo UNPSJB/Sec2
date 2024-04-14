@@ -1,7 +1,7 @@
 /* Estilo para la barra de navegación lateral */
 #sidebar {
     width: 16%;
-    background-color: #333;
+    background-color: #333333;
     /* Ocupa el 100% de la altura del contenedor principal */
     height: 100%;
     /* Estilos adicionales */
@@ -38,9 +38,4 @@
 
 #content{
     background-image: url("../../images/fondoPantalla04.jpg");
-}
-
-
-.prueba{
-    background-color: aquamarine;
 }

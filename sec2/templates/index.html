@@ -3,11 +3,115 @@
   {% block extracss %}
     <link href="{% static 'Libs/css/index.css' %}" rel="stylesheet" />
   {% endblock %}
+  <script src="{% static 'Libs/highcharts/code/highcharts.js' %}"></script>
+  <script src="{% static 'Libs/highcharts/code/modules/sankey.js' %}"></script>
+  <script src="{% static 'Libs/highcharts/code/modules/organization.js' %}"></script>
+  <script src="{% static 'Libs/highcharts/code/modules/exporting.js' %}"></script>
+  <script src="{% static 'Libs/highcharts/code/modules/accessibility.js' %}"></script>
 
-  <div class="centrado">
-    <h1>Bienvenido a Nuestra Aplicación Web</h1>
-    <p>Esperamos que tengas una gran experiencia.</p>
+{% comment %} <script src="{% static 'Libs/highcharts/code/themes/brand-dark.js' %}"></script> {% endcomment %}
+{% comment %} <script src="{% static 'Libs/highcharts/code/themes/dark-unica.js' %}"></script> {% endcomment %}
+<script src="{% static 'Libs/highcharts/code/themes/dark-blue.js' %}"></script>
+{% comment %} <script src="{% static 'Libs/highcharts/code/themes/gray.js' %}"></script> {% endcomment %}
+
+<div style="position: absolute; width: 80%; height: 90%;">
+  <!-- Contenedor del gráfico -->
+  <div class="container" style="position: absolute; bottom: 0px; right: 0px; width: 30%; height: 98%;">
+      <figure class="highcharts-figure">
+          <div id="container"></div>
+      </figure>
   </div>
+
+<script>
+Highcharts.chart('container', {
+chart: {
+  height: 600,
+  inverted: true
+},
+
+title: {
+  text: 'Organización de perfiles'
+},
+
+accessibility: {
+  point: {
+      descriptionFormat: '{add index 1}. {toNode.name}' +
+          '{#if (ne toNode.name toNode.id)}, {toNode.id}{/if}, ' +
+          'reports to {fromNode.id}'
+  }
+},
+
+series: [{
+  type: 'organization',
+  name: 'Highsoft',
+  keys: ['from', 'to'],
+  data: [
+      ['Sec2'],
+      ['Sec2', 'MA'],
+      ['MA', 'GF'],
+      ['MA', 'GC'],
+      ['MA', 'GA']
+  ],
+  levels: [{
+      level: 0,
+      color: '#21449c',
+      height: 25
+  }, {
+      level: 1,
+      color: '#a2a2a2', // fondo gris
+      dataLabels: {
+          color: 'black' //color de la letra
+      },
+      height: 25
+  }, {
+      level: 2,
+      //color: '#980104'
+      color: '#359154'
+
+  }
+  ],
+  nodes: [{
+      id: 'MA',
+      title: 'Martin Arcos',
+      name: 'userAdmin',
+      image: 'https://avatars.githubusercontent.com/u/107519498?v=4'
+  }, {
+      id: 'GF',
+      name: 'Gestion de Afiliados'
+  }, {
+      id: 'GC',
+      name: 'Gestión de Cursos'
+  }, {
+      id: 'GA',
+      name: 'Gestión de Alquileres'
+  }],
+  colorByPoint: false,
+  color: '#007ad0',
+  dataLabels: {
+      color: 'white'
+  },
+  borderColor: 'white',
+  nodeWidth: 'auto'
+}],
+tooltip: {
+  outside: true
+},
+exporting: {
+  allowHTML: true,
+  sourceWidth: 800,
+  sourceHeight: 600
+}
+
+});
+</script>
+
+    <!-- Contenedor del mensaje de bienvenida -->
+    <div class="centrado" style="position: absolute; top: 25%; left: 35%; transform: translate(-50%, -50%);">
+      <h1>Bienvenido a Nuestra Aplicación Web</h1>
+      <p>Esperamos que tengas una gran experiencia.</p>
+  </div>
+</div>
+
 {% endblock %}
 
 {% block extrajs %}

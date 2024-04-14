@@ -8,6 +8,8 @@
 {% endblock %}
 
 {% block dinamica %}
+<div class="cuadrado-background">
+
 <br>
   <h3 class="titulo">{{ titulo }}</h3>
   <div class="container">
@@ -30,8 +32,9 @@
     </div>
   </div>
   {% include 'pagination.html' %} 
+  <br>
 </div>
-
+</div>
 {% block nav_lateral_filtro %}
     {% include 'nav_filtro.html' %}
   {% endblock %}

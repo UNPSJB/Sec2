@@ -2,10 +2,10 @@
 
 {% block grafico %}
 <div>
-    <div class="container-fluid">
+    <div class="container-fluid" style="background-color: grey; border-radius: 10px;">
         <div class="row">
-            <div class="col-lg-12">
-                <div id="container"></div>
+            <div class="col">
+                <div id="graficoPrueba"></div>
             </div>
         </div>
     </div>
@@ -21,7 +21,7 @@
     var categories = {{ graph_alquileres.categories|safe }};
     var y_axis_title = "{{ graph_alquileres.y_axis_title }}";
 
-    Highcharts.chart('container', 
+    Highcharts.chart('graficoPrueba', 
     {
         chart: {
             type: 'column'
@@ -31,10 +31,13 @@
             align: 'left'
         },
         subtitle: {
-            text:'Reporte',
+            text:'INSERTAR EL PERIODO',
             align: 'left'
         },
         xAxis: {
+            title:{
+                text: "Meses"
+            },
             categories: categories,  // Usa las categorías del contexto
             crosshair: true,
             accessibility: {

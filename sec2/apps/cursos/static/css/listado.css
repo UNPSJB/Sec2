@@ -36,3 +36,13 @@ select {
     border: 1px solid #ccc;
     border-radius: 4px;
 }
+
+
+.cuadrado-background{
+    background-color: #ebebebc5;
+    width: 95%;
+    margin-left: auto;
+    margin-right: auto;
+    border-radius: 20px;
+    margin-top: 5%;
+}

@@ -3,9 +3,9 @@
 {% load static %}
 
 {% block extracss %}
-<link href="{% static 'Libs/css/nav_top.css' %}" rel="stylesheet" />
-<link href="{% static 'Libs/css/home.css' %}" rel="stylesheet" />
-  
+  <link href="{% static 'Libs/css/home.css' %}" rel="stylesheet" />
+  <link href="{% static 'Libs/css/nav_top.css' %}" rel="stylesheet" />
+
   {% block extracss_intermedia %}
 
   {% endblock %}
@@ -25,7 +25,7 @@
       </div>
     </div>
     {% endif %}
-    <div id="content" class="container">
+    <div id="content">
       {% if not nueva_ventana %}
         {% block nav_top %}
           {% comment %} {% include 'nav_top.html' %} {% endcomment %}

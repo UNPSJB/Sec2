@@ -35,7 +35,7 @@ class AfiliadosReportesView(TemplateView):
     
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['titulo'] = 'Reportes de afiliados'
+        # context['titulo'] = 'Reportes de afiliados'
         
         # Get the data and categories for the graph
         data_dados_alta_list, data_dados_baja_list, categories = self.get_graph_afiliados()
@@ -87,7 +87,7 @@ class reportesView(TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['titulo'] = 'Reportes de alquileres'
+        # context['titulo'] = 'Reportes de alquileres'
         
         # Get the data and categories for the graph
         data_confirmados_list, data_enCurso_list, data_finalizados_list, data_cancelados_list, categories = self.get_graph_alquileres()
