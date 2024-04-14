@@ -50,38 +50,32 @@ class CreacionUsuarios(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
     success_url = reverse_lazy('home')
     login_url = '/login/'
     permission_required = "auth.permission_gestion_usuario"
-
     
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['titulo'] = "Registro de usuario"
+        return context
     
     def form_valid(self, form):
-        print("entre")
-
         # Aquí puedes acceder a los datos del formulario
         username = form.cleaned_data['username']
         password = form.cleaned_data['password1']
         email = form.cleaned_data['email']
-        
-        
         form.save() 
-                
         user = User.objects.get(username=username)
 
         if form.cleaned_data['permiso_gestion_afiliados'] :
                 permiso = Permission.objects.get(codename='permission_gestion_afiliado')
                 user.user_permissions.add(permiso)
-        
-        
+
         if form.cleaned_data['permiso_gestion_cursos'] :
                 permiso = Permission.objects.get(codename='permission_gestion_curso')
                 user.user_permissions.add(permiso)
-        
-
         
         if form.cleaned_data['permiso_gestion_salon'] :
                 permiso = Permission.objects.get(codename='permission_gestion_alquiler')
                 user.user_permissions.add(permiso)
 
-        
         if form.cleaned_data['permiso_gestion_usuarios'] :
                 permiso = obtenerPermisoUsuarios()
                 user.user_permissions.add(permiso)

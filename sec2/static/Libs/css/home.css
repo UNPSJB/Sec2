@@ -35,3 +35,12 @@
     background-color: #EEEEEE;
     /* Estilos adicionales */
 }
+
+#content{
+    background-image: url("../../images/fondoPantalla04.jpg");
+}
+
+
+.prueba{
+    background-color: aquamarine;
+}

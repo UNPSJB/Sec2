@@ -6,12 +6,18 @@ from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Fieldset, Submit
 from sec2.utils import FiltrosForm
 from utils.constants import *
+from utils.choices import *
 
 class DictadoForm(forms.ModelForm):
     fecha = forms.DateTimeField(
         label='Fecha de inicio',
         widget=forms.widgets.DateTimeInput(attrs={'type': 'datetime-local'}),
         input_formats=['%Y-%m-%dT%H:%M'],
+    )
+    periodo_pago = forms.ChoiceField(
+        choices=PERIODO_PAGO,
+        widget=forms.RadioSelect(attrs={'class': 'form-check-input'}),
+        required=True
     )
 
     class Meta:
@@ -43,8 +49,3 @@ class DictadoForm(forms.ModelForm):
             required=False,  # Puedes ajustar esto según tus necesidades
             label='Profesor',  # Ajusta el label según sea necesario
         )
-
-# class DictadoFilterForm(FiltrosForm):
-#     fecha_inicio  = forms.DateField(required=False)
-#     fecha_fin =forms.DateField(required=False)
-

@@ -3,13 +3,12 @@
 {% load static %}
 
 {% block extracss %}
-  <link href="{% static 'Libs/css/home.css' %}" rel="stylesheet" />
-  <link href="{% static 'Libs/css/nav_top.css' %}" rel="stylesheet" />
+<link href="{% static 'Libs/css/nav_top.css' %}" rel="stylesheet" />
+<link href="{% static 'Libs/css/home.css' %}" rel="stylesheet" />
+  
   {% block extracss_intermedia %}
 
   {% endblock %}
-  <!-- Herramienta para buscar en el "navegador" -->
-  {% comment %} {{ buscador.media.css }}  {% endcomment %}
 {% endblock %}
 
 {% block container %}
@@ -26,7 +25,7 @@
       </div>
     </div>
     {% endif %}
-    <div id="content">
+    <div id="content" class="container">
       {% if not nueva_ventana %}
         {% block nav_top %}
           {% comment %} {% include 'nav_top.html' %} {% endcomment %}

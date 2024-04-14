@@ -1,7 +1,7 @@
 from datetime import timezone
 from django import forms
 
-from apps.cursos.lookups import ActividadLookup
+from apps.cursos.lookups import ActividadLookup, ProfesorDniLookup
 from apps.personas.lookups import RolLookup
 from ..models import Actividad, Curso, Dictado, ListaEspera, PagoAlumno, PagoProfesor
 from utils.constants import *
@@ -114,10 +114,11 @@ class PagoProfesorForm(forms.ModelForm):
 
 
 class PagoProfesorFilterForm(FiltrosForm):
-    profesor__persona__dni = forms.CharField(
+    profesor__persona__dni = AutoCompleteSelectField(
+        lookup_class=ProfesorDniLookup,
+        label="Dni (profesor)",
         required=False,
-        label='DNI del profesor',
-        widget=forms.NumberInput(attrs={'type': 'number'})
+        widget=AutoComboboxSelectWidget(ProfesorDniLookup, attrs={'class': 'form-control'})  # Proporcionar 'lookup_class' y 'attrs'
     )
     profesor__dictados__curso = forms.ModelChoiceField(
         queryset=Curso.objects.all(),
@@ -139,11 +140,13 @@ class PagoProfesorFilterForm(FiltrosForm):
         return f'{obj.legajo}'
     
 class PagoAlumnoFilterForm(FiltrosForm):
-    rol__persona__dni = forms.CharField(
+    rol__persona__dni = AutoCompleteSelectField(
+        lookup_class=RolLookup,
+        label="Dni",
         required=False,
-        label='DNI del Alumno',
-        widget=forms.NumberInput(attrs={'type': 'number'})
+        widget=AutoComboboxSelectWidget(lookup_class=RolLookup, attrs={'class': 'form-control', 'id': 'enc_alumno_aux'})
     )
+
     # Filtrar por curso relacionado con los dictados de los detalles de pago del alumno
     detalles_pago_alumno__dictado__curso = forms.ModelChoiceField(
         queryset=Curso.objects.all(),

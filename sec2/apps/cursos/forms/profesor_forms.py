@@ -1,6 +1,7 @@
 from datetime import timezone
 from django import forms
 from django.forms import ValidationError
+from apps.cursos.lookups import ProfesorDniLookup
 from apps.personas.forms import PersonaForm,PersonaUpdateForm
 from apps.personas.models import Persona
 from utils.choices import *
@@ -155,11 +156,14 @@ FormularioProfesor.base_fields.update(ProfesorForm.base_fields)
 
 
 ## ------------ FILTRO DE PROFESOR --------------
+from selectable.forms import AutoCompleteSelectField, AutoComboboxSelectWidget
+
 class ProfesorFilterForm(FiltrosForm):
-    persona__dni = forms.CharField(
-        label='Dni',
+    persona__dni = AutoCompleteSelectField(
+        lookup_class=ProfesorDniLookup,
+        label="Dni (profesor)",
         required=False,
-        widget=forms.NumberInput(attrs={'type': 'number'})
+        widget=AutoComboboxSelectWidget(ProfesorDniLookup, attrs={'class': 'form-control'})  # Proporcionar 'lookup_class' y 'attrs'
     )
     actividades = forms.ModelChoiceField(
         queryset=Actividad.objects.all().order_by('nombre'),  # Ordenar por el campo 'nombre'

@@ -4,6 +4,7 @@ from django.views.generic import DetailView
 from django.views.generic.edit import CreateView, UpdateView
 from apps.afiliados.models import Afiliado, Familiar
 from apps.alquileres.models import Encargado
+from apps.cursos.lookups import ProfesorCapacitadoDniLookup
 from apps.cursos.views.curso_views import getObjectRolTipo, obtenerDictados, obtenerUltimoDiaMesAnterior
 from apps.personas.forms import PersonaForm
 
@@ -36,6 +37,7 @@ class DictadoCreateView(PermissionRequiredMixin, LoginRequiredMixin, CreateView)
         context['titulo'] = f"Dictado para {context['curso'].nombre}"
         actividad_curso = context['curso'].actividad
         context['profesores_capacitados'] = Profesor.objects.filter(actividades=actividad_curso)
+        context['profesores_lookup'] = ProfesorCapacitadoDniLookup().get_query(self.request, '', actividad_curso)
         return context
 
     def form_valid(self, form):
@@ -125,12 +127,8 @@ class DictadoDetailView(PermissionRequiredMixin, LoginRequiredMixin, DetailView)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        
         dictado = self.object  # El objeto de dictado obtenido de la vista
-        
-        context['titulo'] = "Detalle del dictado"
-        context['tituloListado'] = 'Clases Asociadas'
-        
+
         curso = Curso.objects.get(id=self.kwargs.get('curso_pk'))
         context['curso'] = curso
 
@@ -384,7 +382,7 @@ class VerificarInscripcionView(PermissionRequiredMixin,LoginRequiredMixin, View)
     def get(self, request, *args, **kwargs):
         curso_pk = kwargs.get('curso_pk')
         # Filtrar roles sin fecha de finalización (hasta)
-        roles_sin_fecha_hasta = Rol.objects.filter(hasta__isnull=True)
+        roles_sin_fecha_hasta = Rol.objects.filter(hasta__isnull=True).order_by('tipo','persona__dni')
 
         curso = get_object_or_404(Curso, pk=curso_pk)
 
@@ -411,36 +409,6 @@ class VerificarInscripcionView(PermissionRequiredMixin,LoginRequiredMixin, View)
         # Obtener roles asociados a los inscritos en los dictados
         rolesEnDictado_ids = Rol.objects.filter(persona__pk__in=incritosEnDictado_dni).values_list('id', flat=True)
 
-        # Obtener todos los roles
-
-        # familiares_inscritos_listaEspera = Familiar.objects.filter(lista_espera=dictado)    
-        # profesores_inscritos_listaEspera = Profesor.objects.filter(lista_espera=dictado)
-        # alumnos_inscritos_listaEspera = Alumno.objects.filter(lista_espera=dictado)
-        
-        # Calculo la suma total de inscritos
-        # total_inscritos = (
-        #     afiliado_inscritos.count() +
-        #     familiares_inscritos.count() +
-        #     profesores_inscritos.count() +
-        #     alumnos_inscritos.count()
-        # )
-        # hay_cupo = total_inscritos < dictado.cupo
-
-        # inscritos_ids = []
-        # Agrega los IDs de afiliados, familiares, profesores, alumno
-        # inscritos_ids.extend(list(afiliado_inscritos.values_list('persona__pk', flat=True)))
-        # inscritos_ids.extend(list(familiares_inscritos.values_list('persona__pk', flat=True)))
-        # inscritos_ids.extend(list(profesores_inscritos.values_list('persona__pk', flat=True)))
-        # inscritos_ids.extend(list(alumnos_inscritos.values_list('persona__pk', flat=True)))
-
-        # inscritosEspera_ids = []
-        # inscritosEspera_ids.extend(list(afiliado_inscritos_listaEspera.values_list('persona__pk', flat=True)))
-        # inscritosEspera_ids.extend(list(familiares_inscritos_listaEspera.values_list('persona__pk', flat=True)))
-        # inscritosEspera_ids.extend(list(profesores_inscritos_listaEspera.values_list('persona__pk', flat=True)))
-        # inscritosEspera_ids.extend(list(alumnos_inscritos_listaEspera.values_list('persona__pk', flat=True)))
-        
-        # personas = Persona.objects.all()
-        
         total_en_espera = inscritosEspera_ids.count()
 
         context = {

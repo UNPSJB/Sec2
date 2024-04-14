@@ -322,7 +322,6 @@ class RelacionFamiliarFilterForm(FiltrosForm):
 
 class PagoCuotaForm(forms.ModelForm):
     
-    
     class Meta:
         model = PagoCuota
         fields = '__all__'
@@ -358,13 +357,16 @@ class PagoCuotaForm(forms.ModelForm):
 
 ########### FILTER FORM FAMILIAR  ##############################################
 class PagoCuotarFilterForm(FiltrosForm):
-    afiliado__persona__dni = forms.CharField(
-        label='DNI del Afiliado',
+    afiliado__persona__dni = AutoCompleteSelectField(
+        lookup_class=DniAfiliadoLookup,
+        label="Dni (afiliado)",
         required=False,
-        widget=forms.NumberInput(attrs={'type': 'number'})
+        widget=AutoComboboxSelectWidget(DniAfiliadoLookup, attrs={'class': 'form-control'})  # Proporcionar 'lookup_class' y 'attrs'
     )
-    afiliado__cuit_empleador = forms.CharField(
-        label='Cuit del empleador',
+
+    afiliado__cuit_empleador = AutoCompleteSelectField(
+        lookup_class=CuitEmpleadorLookup,
+        label="Cuit empleador",
         required=False,
-        widget=forms.NumberInput(attrs={'type': 'number'})
+        widget=AutoComboboxSelectWidget(CuitEmpleadorLookup, attrs={'class': 'form-control'})  # Proporcionar 'lookup_class' y 'attrs'
     )

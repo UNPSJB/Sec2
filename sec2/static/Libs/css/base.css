@@ -1,3 +1,6 @@
+
+
+
 /* Anchura de la barra de desplazamiento */
 ::-webkit-scrollbar {
     width: 10px;
@@ -31,3 +34,6 @@
     font-weight: bold;
     color: black;
 }
+
+
+

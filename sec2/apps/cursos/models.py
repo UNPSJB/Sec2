@@ -47,7 +47,6 @@ class Curso(models.Model):
     class Meta:
         permissions = [("permission_gestion_curso", "Control total curso")]
 
-      
     # ForeignKey
     actividad = models.ForeignKey(Actividad, on_delete=models.SET_NULL, blank=True, null=True)
     lista_espera = models.ManyToManyField(ListaEspera, blank=True, related_name='cursos_en_lista_espera')  # Change the related_name here
@@ -123,7 +122,7 @@ class Dictado(models.Model):
     fecha = models.DateTimeField(help_text="Seleccione la fecha de inicio")
     fecha_fin = models.DateTimeField(null=True,blank=True )
     cupo_real = models.PositiveIntegerField(
-        help_text="Máximo inscriptos al dictado",
+        help_text="Máximo inscriptos",
         validators=[
             MinValueValidator(1, message="Valor mínimo permitido es 1."),
             MaxValueValidator(100, message="Valor máximo es 100."),

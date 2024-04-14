@@ -48,7 +48,6 @@ INSTALLED_APPS = [
     'apps.afiliados',
     'apps.alquileres',
     'apps.cursos',
-    'apps.pagos',
     'apps.users',
     'apps.reportes',
     "crispy_forms",

@@ -12,18 +12,18 @@ class CustomLoginForm(AuthenticationForm):
 
 class UserRegisterForm(UserCreationForm):
     
-    # email = forms.EmailField(required=True, help_text="Debe incluir un signo @ en la dirección de correo electrónico.")
-    permiso_gestion_afiliados = forms.BooleanField(required=False)
-    permiso_gestion_cursos = forms.BooleanField(required=False)
-    permiso_gestion_salon = forms.BooleanField(required=False)
-    permiso_gestion_usuarios = forms.BooleanField(required=False)
+    username = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control'}))
+    email = forms.EmailField(widget=forms.EmailInput(attrs={'class': 'form-control'}))
+
+    permiso_gestion_afiliados = forms.BooleanField(required=False, widget=forms.CheckboxInput(attrs={'class': 'form-check-input'}))
+    permiso_gestion_cursos = forms.BooleanField(required=False, widget=forms.CheckboxInput(attrs={'class': 'form-check-input'}))
+    permiso_gestion_salon = forms.BooleanField(required=False, widget=forms.CheckboxInput(attrs={'class': 'form-check-input'}))
+    permiso_gestion_usuarios = forms.BooleanField(required=False, widget=forms.CheckboxInput(attrs={'class': 'form-check-input'}))
 
     class Meta:
         model = User  
         fields = UserCreationForm.Meta.fields + ('email',)
 
- 
-        
     def clean_username(self):
         username = self.cleaned_data.get('username')
         if User.objects.filter(username=username).exists():

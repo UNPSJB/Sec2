@@ -1,10 +1,13 @@
 from django import forms
+
+from apps.cursos.lookups import ActividadNombreLookup
 from ..models import Actividad
 from sec2.utils import FiltrosForm
 from utils.constants import *
 from utils.choices import *
 from django import forms
 from django.contrib import messages
+from selectable.forms import AutoCompleteSelectField, AutoComboboxSelectWidget
 
 #------------------ ACTIVIDAD --------------------
 class ActividadForm(forms.ModelForm):
@@ -22,4 +25,9 @@ class ActividadForm(forms.ModelForm):
 
 ## ------------ FILTRO PARA ACTIVIDAD --------------
 class ActividadFilterForm(FiltrosForm):
-    nombre = forms.CharField(required=False)
+    nombre = AutoCompleteSelectField(
+        lookup_class=ActividadNombreLookup,
+        label="Nombre",
+        required=False,
+        widget=AutoComboboxSelectWidget(ActividadNombreLookup, attrs={'class': 'form-control'})  # Proporcionar 'lookup_class' y 'attrs'
+    )

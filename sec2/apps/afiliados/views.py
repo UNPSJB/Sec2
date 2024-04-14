@@ -9,7 +9,7 @@ from apps.alquileres.models import Alquiler
 from apps.cursos.models import PagoAlumno
 from apps.personas.forms import PersonaForm, PersonaUpdateForm
 from apps.personas.models import Rol
-from utils.funciones import filter_by_cuit_empleador, filter_by_estado, filter_by_persona_dni, mensaje_advertencia, mensaje_error, mensaje_exito, registrar_fuentes  
+from utils.funciones import mensaje_advertencia, mensaje_error, mensaje_exito, registrar_fuentes  
 from .models import Afiliado, Familiar, PagoCuota, RelacionFamiliar
 from .forms import *
 from sec2.utils import ListFilterView
@@ -19,12 +19,8 @@ from django.http import HttpResponseRedirect
 from django.http import FileResponse
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.contrib.auth.decorators import permission_required , login_required 
-from io import BytesIO
 import io
 from reportlab.pdfgen import canvas
-from reportlab.pdfbase.ttfonts import TTFont
-from reportlab.pdfbase import pdfmetrics
-
 
 #CONSTANTE
 from utils.constants import *
@@ -267,7 +263,6 @@ def afiliado_afiliar_desafiliar(request, pk, accion, origen):
     elif origen == 'detalleAfiliado':
         return redirect('afiliados:afiliado_detalle', pk=afiliado.pk)
 #------------------------------------------------------------------------------------------
-
 
 @login_required(login_url='/login/')
 @permission_required('afiliados.permission_gestion_afiliado', raise_exception=True)
@@ -834,7 +829,6 @@ class PagoCuotaCreateView(LoginRequiredMixin, PermissionRequiredMixin, CreateVie
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
-        # Obtener todos los cuit_empleador únicos de los afiliados con sus respectivas razones sociales
         empleadores = Afiliado.objects.filter(
             Q(estado=2) | Q(estado=5),  # activos o morosos
             cuit_empleador__isnull=False

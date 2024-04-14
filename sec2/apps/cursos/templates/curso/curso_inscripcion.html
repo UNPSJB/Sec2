@@ -4,22 +4,22 @@
 {% block formulario %}
   <form id="buscarPersonaForm">
 
-    <label>Ingrese DNI/nombre/apellido:</label>
+    <label>Ingrese el dni/nombre/apellido:</label>
     <div class="form-group">
       <select name="enc_roles" id="enc_roles">
         <option value="0"> --------------- </option>
         {% for rol in roles %}
           <option value="{{rol.id}}">
-            {{rol.persona.dni}} {{rol.persona.apellido}} {{rol.persona.nombre}} ({{rol.obtenerTipo}})
+            {{rol.abrevituraTipoRol}} {{rol.persona.dni}} {{rol.persona.apellido}} {{rol.persona.nombre}} 
           </option>
         {% endfor %}
       </select>
+      <button class="btn btn-outline-success " type="button" onclick="buscarPersona()">
+        <i class="fa-solid fa-magnifying-glass"></i>
+    </button>
     </div>
-
     <div class="d-flex justify-content-between">
-      <button class="btn btn-info btn-sm btn-detalle" type="button" onclick="buscarPersona()">
-          <i class="fa-solid fa-magnifying-glass"></i> Buscar
-      </button>
+
 
       <a href="{% url 'cursos:curso_lista_espera' pk=curso_pk %}" 
       class="btn btn-warning btn-sm btn-detalle" >
@@ -82,6 +82,7 @@
 
   function mostrarInformacion(persona) {
     return `
+      <hr>
       <h2>Información:</h2>
       <p>DNI: ${persona.dni} | ${persona.apellido} ${persona.nombre}</p>`;
   }
@@ -103,8 +104,8 @@ function mostrarResultados(rol) {
     
     // PERSONA ENCONTRADA
     if (rol) {
-      resultadosDiv.innerHTML = mostrarInformacion(rol.persona);
-      resultadosDiv.innerHTML += ` <p>Rol principal: ${rol.tipo_rol} .</p>`;
+      //resultadosDiv.innerHTML = mostrarInformacion(rol.persona);
+      //resultadosDiv.innerHTML += ` <p>Rol principal: ${rol.tipo_rol} .</p>`;
       //resultadosDiv.innerHTML += `<p>Rol secundario:</p>`;
       //resultadosDiv.innerHTML += mostrarTipoPersona(rol.tipo, rol.persona);
       
@@ -113,6 +114,7 @@ function mostrarResultados(rol) {
       
       if (total_en_espera !== 0){
         //ya existen inscritos
+        resultadosDiv.innerHTML += '<hr>';
         if (!existeEnListaEspera(rol)) {
 
           //if (!existeEnDictadoActivo(rol)){

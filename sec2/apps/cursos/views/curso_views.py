@@ -25,7 +25,6 @@ class CursoCreateView(LoginRequiredMixin, PermissionRequiredMixin,CreateView):
     permission_required = 'cursos.permission_gestion_curso'
     login_url = '/home/'
 
-
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         tipo_curso = self.request.GET.get('tipo', None)

@@ -179,9 +179,6 @@ class AlumnosEnDictadoList(LoginRequiredMixin, PermissionRequiredMixin, ListView
     permission_required = 'cursos.permission_gestion_curso'
     login_url = '/home/'
 
-    
-    
-
     def get_queryset(self):
         # Obtener todos los alumnos sin filtrar por dictado
         queryset = Alumno.objects.all()
@@ -299,10 +296,8 @@ class AlumnoDetailView(PermissionRequiredMixin, LoginRequiredMixin, DetailView):
         context['rol'] = rol
         context['tituloListado'] = 'Dicados Inscriptos'
         return context
-    
 
 def alumno_eliminar(request, pk):
-
     alumno = get_object_or_404(Alumno,pk=pk)
     dictados_en_estado_2 = alumno.dictados.filter(estado=2).exists()
     if dictados_en_estado_2:

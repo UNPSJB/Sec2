@@ -36,11 +36,19 @@
                 </div>
             </div>
         </div>
-    </div>
-        <div class="col">
-          <label>Profesor asigado:</label>
-          {{ form.profesor }}
+      </div>
+      <div class="col">
+        <label>Profesor asigado:</label>
+        {{ form.profesor }}
+      </div>
+      <div class="col">
+        <div class="form-group">
+          {{ form.precio_real_profesor.label_tag }}
+          <input type="number" name="precio_real_profesor" step="1" min="1" required class="form-control" value="{{ form.precio_real_profesor.value|default:'' }}" />
+          {% include "error_campo.html" with field=form.precio_real_profesor %}
         </div>
+      </div>
+
     </div>
 
     <div class="row">
@@ -74,6 +82,15 @@
         </div>
       </div>
       {% endif %}
+
+      <div class="col">
+        <div class="form-group">
+          {{ form.cupo_real.label_tag }}
+          <input type="number" name="cupo_real" step="1" min="1"max="50" required class="form-control" value="{{ form.cupo_real.value|default:'' }}" />
+          {% include "error_campo.html" with field=form.cupo_real %}
+        </div>
+      </div>
+      
       
       <script>
         // Obtener la fecha y hora actuales en formato ISO
@@ -95,24 +112,7 @@
       </script>
     </div>
     
-    <div class="row">
-      <div class="col">
-      <div class="form-group">
-        {{ form.cupo_real.label_tag }}
-        <input type="number" name="cupo_real" step="1" min="1"max="50" required class="form-control" value="{{ form.cupo_real.value|default:'' }}" />
-        {% include "error_campo.html" with field=form.cupo_real %}
-      </div>
-    </div>
-
-    <div class="col">
-      <div class="form-group">
-        {{ form.precio_real_profesor.label_tag }}
-        <input type="number" name="precio_real_profesor" step="1" min="1" required class="form-control" value="{{ form.precio_real_profesor.value|default:'' }}" />
-        {% include "error_campo.html" with field=form.precio_real_profesor %}
-      </div>
-    </div>
-  </div>
-
+    
     {% if curso.es_convenio %}
     <div class="row mx-auto">
       <div class="col text-center">
@@ -126,14 +126,21 @@
 
     <div class="row text-center">
       <div class="col">
-        {% if editar %}
-        <button type="submit" class="btn btn-success">Guardar</button>
-        {% else %}
-        <button type="submit" class="btn btn-success" name="guardar_y_recargar">Guardar y agregar otro</button>
-        <button type="submit" class="btn btn-success" name="guardar_y_listar">Guardar y listar</button>
-        {% endif %}
+          {% if editar %}
+          <button type="submit" class="btn btn-success">Guardar</button>
+          {% else %}
+          <div class="d-flex justify-content-start mb-3">
+              <a href="{% url 'cursos:curso_detalle' pk=curso.pk %}" class="btn btn-secondary">
+                  <i class="fa-solid fa-arrow-left"></i>
+                  Volver al curso
+              </a>
+          </div>
+          <button type="submit" class="btn btn-success" name="guardar_y_recargar">Guardar y agregar otro</button>
+          <button type="submit" class="btn btn-success" name="guardar_y_listar">Guardar y listar</button>
+          {% endif %}
       </div>
-    </div>
+  </div>
+  
   </form>
   {% comment %} {% else %} {% endcomment %}
   {% comment %} No hay profesores capacitados para esta actividad. {% endcomment %}

@@ -1,15 +1,9 @@
 from django import forms
-from django.forms import ValidationError
 from apps.afiliados.lookups import AfiLookup
-from apps.afiliados.models import Afiliado
-from apps.alquileres.lookups import SalonLookup
-from apps.personas.forms import PersonaForm,PersonaUpdateForm
-from apps.personas.lookups import EncargadoLookup
+from apps.alquileres.lookups import DniEncargadoLookup, EncargadoLookup, SalonLookup, ServicioNombreLookup
 from apps.personas.models import Persona
 from utils.choices import ESTADO_CIVIL, LOCALIDADES_CHUBUT, MAX_LENGTHS, NACIONALIDADES
 from .models import Salon, Servicio, Alquiler, Pago_alquiler
-from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Layout, Fieldset, Submit, HTML
 from sec2.utils import FiltrosForm
 from utils.constants import *
 from datetime import date
@@ -32,12 +26,14 @@ class EncargadorForm(forms.ModelForm):
             raise forms.ValidationError("Debes ser mayor de 18 años y menor de 100 años.")
         return fecha_nacimiento
 
+from selectable.forms import AutoCompleteSelectField, AutoComboboxSelectWidget
 
 class EncargadoFilterForm(FiltrosForm):
-    persona__dni = forms.CharField(
-        label='Dni',
+    persona__dni = AutoCompleteSelectField(
+        lookup_class=DniEncargadoLookup,
         required=False,
-        widget=forms.NumberInput(attrs={'type': 'number'})
+        label="Dni",
+        widget=AutoComboboxSelectWidget(DniEncargadoLookup, attrs={'class': 'form-control'})  # Proporcionar 'lookup_class' y 'attrs'
     )
 
 class EncargadoUpdateForm(forms.ModelForm):
@@ -99,8 +95,12 @@ class ServiciorForm(forms.ModelForm):
     
 
 class ServicioFilterForm(FiltrosForm):
-    nombre = forms.CharField(required=False)    
-
+    nombre = AutoCompleteSelectField(
+        lookup_class=ServicioNombreLookup,
+        label="Nombre",
+        required=False,
+        widget=AutoComboboxSelectWidget(ServicioNombreLookup, attrs={'class': 'form-control'})  # Proporcionar 'lookup_class' y 'attrs'
+    )
 # ----------------------------- SALON  ----------------------------------- #
 from selectable.forms import AutoCompleteSelectField, AutoComboboxSelectWidget
 
@@ -151,6 +151,7 @@ class AlquilerForm(forms.ModelForm):
         required=False,
         widget=AutoComboboxSelectWidget(SalonLookup, attrs={'class': 'form-control'})  # Proporcionar 'lookup_class' y 'attrs'
     )
+    
     turno = forms.ChoiceField(
         required=False,
         label='Turno',
@@ -208,7 +209,12 @@ class PagoForm(forms.ModelForm):
             raise forms.ValidationError("El alquiler seleccionado no es válido.")
         
 class AlquilerFilterForm(FiltrosForm):
-    salon = forms.ModelChoiceField(queryset=Salon.objects.all(), required=False, label='Salon')
+    salon = AutoCompleteSelectField(
+        lookup_class=SalonLookup,
+        required=False,
+        widget=AutoComboboxSelectWidget(SalonLookup, attrs={'class': 'form-control'})  # Proporcionar 'lookup_class' y 'attrs'
+    )
+
     turno = forms.ChoiceField(
         required=False,
         label='Turno',
