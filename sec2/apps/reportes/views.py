@@ -100,7 +100,7 @@ class ReporteAfiliadoViews(TemplateView):
         
         data_activo_list, data_inactivo_list, data_pendiente_list, data_baja_list, data_moroso_list, categories = self.get_graph_afiliados()
         
-        graph_afiliados_data = {
+        context['graph_afiliados'] = {
             'data_activo_list': data_activo_list,
             'data_inactivo_list': data_inactivo_list,
             'data_pendiente_list': data_pendiente_list,
@@ -110,5 +110,5 @@ class ReporteAfiliadoViews(TemplateView):
             'titulo': 'Afiliados por estado',
         }
         
-        return JsonResponse(graph_afiliados_data, safe = False)
+        return context
     
