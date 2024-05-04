@@ -115,7 +115,7 @@ from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 class DictadoDetailView(PermissionRequiredMixin, LoginRequiredMixin, DetailView):
     model = Dictado
     template_name = 'dictado/dictado_detail.html'
-    paginate_by = MAXIMO_PAGINATOR
+    paginate_by = MAXIMO_PAGINATOR ## VARIABLE PARA CAMBIAR LA CANTIDAD DE ITEMS QUE SE MUESTRAN "MAXIMO_PAGINATOR"
     permission_required = 'cursos.permission_gestion_curso'
     login_url = '/home/'
 
