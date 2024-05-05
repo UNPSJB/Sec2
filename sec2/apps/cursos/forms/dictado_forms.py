@@ -40,12 +40,3 @@ class DictadoForm(forms.ModelForm):
         if not (9 <= fecha.hour < 21):
             raise forms.ValidationError('La hora debe estar entre las 9 am y las 8 pm.')
         return fecha
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        # Asegúrate de que el campo 'profesor' está incluido en el formulario
-        self.fields['profesor'] = forms.ModelChoiceField(
-            queryset=Profesor.objects.all(),  # Ajusta el queryset según sea necesario
-            required=False,  # Puedes ajustar esto según tus necesidades
-            label='Profesor',  # Ajusta el label según sea necesario
-        )

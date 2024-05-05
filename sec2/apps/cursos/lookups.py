@@ -174,8 +174,9 @@ class ProfesorCapacitadoDniLookup(LookupBase):
         queryset = [
             {
                 "id": profesor.id,
+                "dni": profesor.persona.dni,
                 "apellido": profesor.persona.apellido,
-             "nombre": profesor.persona.nombre
+                "nombre": profesor.persona.nombre
              }
             for profesor in profesores
         ]
