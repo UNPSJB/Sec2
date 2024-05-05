@@ -3,40 +3,36 @@
 
 {% block formulario %}
   <form id="buscarPersonaForm">
-
-    <label>Ingrese el dni/nombre/apellido:</label>
-    <div class="form-group">
-      <select name="enc_roles" id="enc_roles">
-        <option value="0"> --------------- </option>
+    <div class="d-flex align-items-center justify-content-center">
+      <select class="form-control mr-2" name="enc_roles" id="enc_roles">
+        <option value="" disabled selected hidden>Ingrese el dni/nombre/apellido</option>
         {% for rol in roles %}
           <option value="{{rol.id}}">
             {{rol.abrevituraTipoRol}} {{rol.persona.dni}} {{rol.persona.apellido}} {{rol.persona.nombre}} 
           </option>
         {% endfor %}
       </select>
-      <button class="btn btn-outline-success " type="button" onclick="buscarPersona()">
+    
+      <button class="btn btn-outline-success" type="button" onclick="buscarPersona()">
         <i class="fa-solid fa-magnifying-glass"></i>
-    </button>
+      </button>
     </div>
-    <div class="d-flex justify-content-between">
-
 
       <a href="{% url 'cursos:curso_lista_espera' pk=curso_pk %}" 
       class="btn btn-warning btn-sm btn-detalle" >
       <i class="fa-solid fa-list"></i>
-      Lista de espera
+      L. espera
       </a>
 
 
       <a href="{% url 'cursos:gestion_lista_espera' pk=curso_pk rol_pk=9999 accion='inscribir_alumno_potencial' %}" 
       class="btn btn-outline-success btn-sm btn-detalle" >
-      <i class="fa-solid fa-plus"></i> Nuevo interesado
+      <i class="fa-solid fa-plus"></i> Nuevo
       </a> 
 
-      <div class="d-flex">
-          <button type="button" class="btn btn-sm btn-secondary ml-2" onclick="cerrarVentana()">Cerrar</button>
-      </div>
-  </div>
+      <div class="d-flex justify-content-end">
+        <button type="button" class="btn btn-sm btn-secondary ml-2" onclick="cerrarVentana()">Cerrar</button>
+    </div>
   </form>
 
   <div id="resultadosPersona"></div>
@@ -45,8 +41,15 @@
   <!-- Incluir archivos estáticos de Select2 desde CDN -->
 <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
 <script src="{% static 'Libs/js/cerrar_ventana.js' %}"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" rel="stylesheet" />
+
 
 <script>
+  
+  var jq = $.noConflict();
+  jq('#enc_roles').select2();
+
   var busquedaRealizada = false
   var inscritosEsperaIds = {{ inscritosEsperaIds_json|safe }}
   var inscritosEnDictadoIds = {{ inscritosEnDictadoIds_json|safe }}

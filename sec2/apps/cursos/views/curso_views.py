@@ -252,29 +252,46 @@ class CursoUpdateView(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
         return super().form_invalid(form)
 
 
+
 @permission_required('cursos.permission_gestion_curso', raise_exception=True)
 @login_required(login_url='/login/')
 def cursoListaEspera(request, pk):
-    # Obtener el objeto Dictado
+    # Obtener el objeto Curso
     curso = Curso.objects.get(id=pk)
-    dictados = Dictado.objects.all().filter(curso=curso, estado__lt=3).order_by('estado')
+    dictados = Dictado.objects.filter(curso=curso, estado__lt=3).order_by('estado')
 
+    dictados_con_cupo = []
+
+    for dictado in dictados:
+        # OBTENER A TODOS LOS ALUMNOS INSCRITOS (Afiliados, Familiares, Profesores)
+        afiliado_inscritos = Afiliado.objects.filter(dictados=dictado)
+        familiares_inscritos = Familiar.objects.filter(dictados=dictado)    
+        profesores_inscritos = Profesor.objects.filter(dictados_inscriptos=dictado)
+        alumnos_inscritos = Alumno.objects.filter(dictados=dictado)
+        # CALCULAR EL TOTAL DE INSCRITOS
+        total_inscritos = (
+            afiliado_inscritos.count() +
+            familiares_inscritos.count() +
+            profesores_inscritos.count() +
+            alumnos_inscritos.count()
+        )
+        # VERIFICAR SI EL DICTADO TIENE CUPO DISPONIBLE
+        if total_inscritos < dictado.cupo_real:
+            dictados_con_cupo.append(dictado)
+    
     titulo = f'Inscritos en espera para {curso.nombre}'
 
-    # Obtener la lista de espera ordenada por tipo y fecha de inscripción
+    # OBTENER LA LISTA DE ESPERA ORDENADA POR TIPO Y FECHA DE INSCRIPCIÓN
     lista_espera = ListaEspera.objects.filter(curso=curso).order_by('rol__tipo', 'fechaInscripcion')
 
     context = {
         'curso': curso,
-        'dictados': dictados,
+        'dictados': dictados_con_cupo,
         'titulo': titulo,
         'lista_espera': lista_espera,
         'curso_pk': pk,
     }
     return render(request, 'curso/curso_lista_espera.html', context)
-
-
-
 
 ##--------------- CURSO ELIMINAR --------------------------------
 
