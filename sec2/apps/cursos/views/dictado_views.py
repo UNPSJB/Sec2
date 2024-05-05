@@ -142,7 +142,7 @@ class DictadoDetailView(PermissionRequiredMixin, LoginRequiredMixin, DetailView)
         # Verificar si hay alguna reserva asociada al dictado
         hay_reserva = any(self.get_reserva(horario) for horario in context['horarios'])
 
-        context['titulo'] = "Detalle del dictado"
+        context['titulo'] = f"Dictado de {curso.nombre}"
         context['tituloListado'] = 'Clases Asociadas'
         context['curso'] = curso
         context['horarios'] = horarios
