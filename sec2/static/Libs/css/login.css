@@ -1,11 +1,9 @@
 body {
     background-image: url("../../images/fondos.jpeg");
-    height: 580px;
-    background-size: auto;
-    backdrop-filter: blur(5px); /* Ajusta el valor de blur según lo que desees */
-
-    /* background-repeat:no-repeat; */
-    /* background-position: center center; */
+    backdrop-filter: blur(5px); 
+    display: flex; /* Para usar flexbox */
+    justify-content: center; /* Centrar horizontalmente */
+    align-items: center; /* Centrar verticalmente */
 }
 
 #icono{
@@ -13,10 +11,6 @@ body {
     text-align: center;
     font-size: 300%;
     /* max-width: 100px; */
-}
-
-#icono-div{
-    text-align: center;
 }
 
 .form-signin {
@@ -49,7 +43,6 @@ body {
 }
 
 .form-signin input[type='password'] {
-    margin-bottom: 30px;
     border-top-left-radius: 0;
     border-top-right-radius: 0;
 }
@@ -73,12 +66,7 @@ body {
 
 .logo {
     left: 25%;
-    position: relative;
     text-align: center;
     width: 50%;
     padding: 1rem;
-}
-
-.contenedor-login {
-    margin-top: 8%;
 }
