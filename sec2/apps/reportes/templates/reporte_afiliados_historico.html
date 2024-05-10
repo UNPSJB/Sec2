@@ -11,6 +11,64 @@
     </div>
 </div>
 
+{% comment %} <script type="application/javascript">
+    var graphData = {{ graph_afiliados|safe }};
+    var categories = graphData.categories;
+    var y_axis_title = "{{ graph_afiliados.y_axis_title }}";
+
+    Highcharts.chart('container', {
+        chart: {
+            type: 'column'
+        },
+        title: {
+            text: 'Reporte de afiliacion y desfiliaciones del año', 
+            align: 'left'
+        },
+        subtitle: {
+            text: 'Reporte',
+            align: 'left'
+        },
+        xAxis: {
+            categories: categories,
+            crosshair: true
+        },
+        yAxis: {
+            min: 0,
+            title: {
+                text: y_axis_title
+            }
+        },
+        tooltip: {
+            formatter: function() {
+                var tooltipText = '<b>' + this.series.name + ' en ' + this.key + '</b><br/>';
+                var monthDetails = (this.series.name === 'afiliaciones' ? graphData.data_dados_alta_details : graphData.data_dados_baja_details)[this.point.index + 1];
+                for (var cuit in monthDetails) {
+                    tooltipText += 'CUIT ' + cuit + ': ' + monthDetails[cuit] + '<br/>';
+                }
+                return tooltipText;
+            }
+        },
+        plotOptions: {
+            column: {
+                pointPadding: 0.2,
+                borderWidth: 0
+            }
+        },
+        series: [
+            {
+                name: 'afiliaciones',
+                data: graphData.data_dados_alta_list,
+                color: 'blue'
+            },
+            {
+                name: 'desfiliaciones',
+                data: graphData.data_dados_baja_list,
+                color: 'red'
+            }
+        ]
+    });
+</script> {% endcomment %}
+
 <script type="application/javascript">
     var categories = {{ graph_afiliados.categories|safe }};
     var y_axis_title = "{{ graph_afiliados.y_axis_title }}";
@@ -21,7 +79,7 @@
             type: 'column'
         },
         title: {
-            text: 'Reporte de afiliacion y desfiliaciones del año', 
+            text: 'Reporte de afiliacion y desfiliaciones PERIODO 2024',
             align: 'left'
         },
         subtitle: {

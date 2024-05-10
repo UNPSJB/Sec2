@@ -1,0 +1,64 @@
+{% extends 'reporte_appCurso.html' %}
+
+{% block grafico %}
+
+
+
+ <figure class="highcharts-figure">
+{% comment %} <H4>SELECCIONE UN PERIODO</H4>
+    <select  id="selectAnio">
+        
+        <option value="2020">2020</option>
+        <option value="2021">2021</option>
+        <option value="2022">2022</option>
+        <!-- Agrega más opciones para otros años si es necesario -->
+      </select> 
+ </div> {% endcomment %}
+
+ <figure class="highcharts-figure">
+    <div id="container"></div>
+    <p class="highcharts-description">
+    </p>
+</figure>
+<div>
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-lg-12">
+                <div id="container"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script type="application/javascript">
+   
+        var datos =  {{ datos|safe }};
+    
+        console.log(datos); // Ahora deberías ver tus datos en la consola sin errores
+    
+        Highcharts.chart('container', {
+            chart: {
+                type: 'pie'
+            },
+            title: {
+                text: 'Inscritos por Curso año '+ {{year}} 
+
+            },
+            tooltip: {
+                valueSuffix: ' estudiantes'
+            },
+            series: [{
+                name: 'Inscritos',
+                colorByPoint: true,
+                data: datos.map(item => ({
+                    name: item.curso__nombre,
+                    y: item.afiliados_count + item.familiares_count + item.profesores_count + item.alumnos_count
+                }))
+            }]
+        });
+
+    </script>
+
+
+{% endblock %}

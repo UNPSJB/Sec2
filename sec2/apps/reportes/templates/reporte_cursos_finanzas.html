@@ -1,0 +1,75 @@
+{% extends 'reporte_appCurso.html' %}
+<style>
+
+
+ </style>   
+{% block grafico %}
+
+
+
+<figure class="highcharts-figure">
+    <div id="container"></div>
+    <p class="highcharts-description">
+        hbsskjsnfkjsdnfgs
+    </p>
+</figure>
+<div>
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-lg-12">
+                <div id="container"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script type="application/javascript">
+    const data = {{ datos|safe }};
+    Highcharts.chart('container', {
+        chart: {
+            type: 'column'
+        },
+        title: {
+            text: 'REPORTE INGRESOS TOTALES POR CURSO PERIODO '+{{year}}
+        },
+        xAxis: {
+            categories: data.map(item => item.name)
+        },
+        yAxis: {
+            title: {
+                text: 'Ingresos (ARS)'
+            },
+            labels: {
+                formatter: function () {
+                    return '$' + this.value.toFixed(2); // Formatear valores decimales en el eje Y
+                }
+            }
+        },
+        plotOptions: {
+            column: {
+                dataLabels: {
+                    enabled: true,
+                    format: '{point.y:.2f}' // Formatear etiquetas de datos con un dígito después del punto decimal
+                }
+            }
+        },
+        series: [{
+            name: 'Ingresos por Curso',
+            data: data.map(item => {
+                return {         
+                    y: parseFloat(item.data[0][1]), // Parsea los valores de ingresos a flotante
+                };
+            })
+        }]
+    });
+
+</script>
+{% endblock %}
+
+
+{% comment %} series: [{
+    name: 'cursos',
+    ingresos: "ingresos",
+    data: data.map(item => parseFloat(item.data[0][1]) ) ,
+}] {% endcomment %}
