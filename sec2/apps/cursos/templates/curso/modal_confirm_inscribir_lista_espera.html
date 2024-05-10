@@ -15,7 +15,9 @@
         <div class="modal-body text-center">
 
           Selecione el dictado al que se quiere inscribir <strong>{{ lista.rol.persona.nombre }} {{ lista.rol.persona.apellido }}</strong>
-          {{dictado}}
+          
+          {% comment %} {{dictado}} {% endcomment %}
+          
           <div class="container row">
             <select name="dictado_pk" class="form-select" aria-label="Default select example">
               {% for dictado in dictados %}

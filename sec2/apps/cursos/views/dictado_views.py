@@ -43,8 +43,10 @@ class DictadoCreateView(PermissionRequiredMixin, LoginRequiredMixin, CreateView)
     def form_valid(self, form):
         # Obtén el curso asociado al dictado
         curso = get_object_or_404(Curso, pk=self.kwargs.get('pk'))
+        
         cupo_maximo = curso.cupo_estimativo
         # Guarda el dictado en la base de datos sin commit
+
         dictado = form.save(commit=False)
 
         if dictado.cupo_real > cupo_maximo:
@@ -63,7 +65,7 @@ class DictadoCreateView(PermissionRequiredMixin, LoginRequiredMixin, CreateView)
         dictado.save()
 
         # Crea la relación Titular
-        profesor_id = self.request.POST.get('profesor')
+        profesor_id = self.request.POST.get('enc_profesor')
         profesor = get_object_or_404(Profesor, id=profesor_id)
         Titular.objects.create(profesor=profesor, dictado=dictado)
 
@@ -115,7 +117,7 @@ from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 class DictadoDetailView(PermissionRequiredMixin, LoginRequiredMixin, DetailView):
     model = Dictado
     template_name = 'dictado/dictado_detail.html'
-    paginate_by = MAXIMO_PAGINATOR
+    paginate_by = MAXIMO_PAGINATOR ## VARIABLE PARA CAMBIAR LA CANTIDAD DE ITEMS QUE SE MUESTRAN "MAXIMO_PAGINATOR"
     permission_required = 'cursos.permission_gestion_curso'
     login_url = '/home/'
 
@@ -142,7 +144,7 @@ class DictadoDetailView(PermissionRequiredMixin, LoginRequiredMixin, DetailView)
         # Verificar si hay alguna reserva asociada al dictado
         hay_reserva = any(self.get_reserva(horario) for horario in context['horarios'])
 
-        context['titulo'] = "Detalle del dictado"
+        context['titulo'] = f"Dictado de {curso.nombre}"
         context['tituloListado'] = 'Clases Asociadas'
         context['curso'] = curso
         context['horarios'] = horarios

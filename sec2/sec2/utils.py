@@ -120,7 +120,7 @@ def redireccionarDetalleRol(rol):
 
     elif tipo == 3:
         alumno = get_object_or_404(Alumno, persona__pk=rol.persona.pk)
-        return redirect('afiliados:alumno_detalle', pk=alumno.pk)
+        return redirect('cursos:alumno_detalle', pk=alumno.pk)
 
     elif tipo == ROL_TIPO_PROFESOR:
         profesor = get_object_or_404(Profesor, persona__pk=rol.persona.pk)
