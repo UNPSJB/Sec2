@@ -1,3 +1,4 @@
+from turtle import textinput
 from apps.personas.lookups import RolLookup
 from apps.personas.models import Persona
 from django.forms import ModelForm, modelformset_factory, ValidationError, BaseFormSet
@@ -27,10 +28,12 @@ class PersonaUpdateForm(ModelForm):
         fields = ['dni', 'cuil', 'nombre', 'apellido', 'fecha_nacimiento', 'celular', 'direccion', 'nacionalidad', 'mail', 'estado_civil']
         widgets = {
             'fecha_nacimiento': forms.DateInput(attrs={'type': 'date'}),
-        }
+          }
         
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        self.fields['dni'].widget.attrs['readonly'] = True
+        self.fields['cuil'].widget.attrs['readonly'] = True
 
 
 from django import forms

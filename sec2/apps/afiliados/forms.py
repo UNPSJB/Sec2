@@ -130,6 +130,8 @@ class AfiliadoUpdateForm(forms.ModelForm):
                     help_text=getattr(self.instance.persona._meta.get_field(field_name), 'help_text', '')
                 )
             self.fields[field_name].widget.attrs['readonly'] = False  # P
+        self.fields['dni'].widget.attrs['readonly'] = True
+        self.fields['cuil'].widget.attrs['readonly'] = True
 
     def clean_fecha_nacimiento(self):
         fecha_nacimiento = self.cleaned_data['fecha_nacimiento']
@@ -296,6 +298,8 @@ class GrupoFamiliarPersonaUpdateForm(forms.ModelForm):
                     help_text=getattr(self.instance.persona._meta.get_field(field_name), 'help_text', '')
                 )
             self.fields[field_name].widget.attrs['readonly'] = False  # P
+        self.fields['dni'].widget.attrs['readonly'] = True
+        self.fields['cuil'].widget.attrs['readonly'] = True
 
 ########### FILTER FORM FAMILIAR  ##############################################
 class RelacionFamiliarFilterForm(FiltrosForm):

@@ -86,6 +86,8 @@ class ProfesorUpdateForm(forms.ModelForm):
                     help_text=getattr(self.instance.persona._meta.get_field(field_name), 'help_text', '')
                 )
             self.fields[field_name].widget.attrs['readonly'] = False
+        self.fields['dni'].widget.attrs['readonly'] = True
+        self.fields['cuil'].widget.attrs['readonly'] = True
 
 
 
