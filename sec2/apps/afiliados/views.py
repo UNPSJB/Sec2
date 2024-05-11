@@ -464,7 +464,8 @@ class FamiliaCreateView(LoginRequiredMixin,PermissionRequiredMixin, CreateView):
     form_class = GrupoFamiliarPersonaForm #utiliza un formulario unificado
     template_name = 'grupoFamiliar/grupo_familiar_alta.html'
     success_url = reverse_lazy('afiliados:afiliado_crear')
-    
+    permission_required = "afiliados.permission_gestion_afiliado"
+
     
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)

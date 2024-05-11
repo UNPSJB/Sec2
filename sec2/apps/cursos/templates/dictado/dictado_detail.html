@@ -69,16 +69,18 @@
   <div class="col-md-3">
     <p>{{dictado.legajo}}</p>
   </div>
+</div>
 
   {% if dictado.fecha_fin %}
-  <div class="col-md-2">
-    <p class="negrita">Fecha de finalizacion:</p>
-  </div>
-  <div class="col-md-2">
-    <p>{{ dictado.fecha_fin|date:"d \d\e F \d\e Y" }}</p>
+  <div class="row">
+    <div class="col-md-2">
+      <p class="negrita">Fecha de finalizacion:</p>
+    </div>
+    <div class="col-md-4">
+      <p>{{ dictado.fecha_fin|date:"d \d\e F \d\e Y" }}</p>
+    </div>
   </div>
   {% endif %}
-</div>
 
 
 <div class="row">
