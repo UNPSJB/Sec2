@@ -2,27 +2,35 @@
 var jq = $.noConflict();
 var dictadosJson;
 var dictadosArray
+var busquedaRealizada = false
 
+function deshabilitarResultadosPersona() {
+    document.getElementById('datos_titular').innerHTML = '';
+
+}
 // Función para obtener los dictados por alumno
 function obtenerDictadosPorAlumno() {
-    jq('#enc_alumno').change(function() {
-        var rol_id = jq(this).val();
-        var url = 'get_dictados_por_alumno/';
-
-        if (rol_id && rol_id !== '0') {
-            jq.ajax({
-                url: '../../' + url + rol_id,
-                type: 'GET',
-                data: {},
-                dataType: 'json',
-                success: function(data) {
-                    mostrarDictados(data.dictados);
-                }
-            });
-        } else {
-            limpiarContenido();
-        }
-    });
+    
+    document.getElementById('datos_titular').innerHTML = '';
+    
+    if (busquedaRealizada) {
+        return
+    }
+    
+    var enc_rol = document.getElementById('enc_alumno').value
+    var url = 'get_dictados_por_alumno/';
+    
+    if (enc_rol && enc_rol !== '0') {
+        jq.ajax({
+            url: '../../' + url + enc_rol,
+            type: 'GET',
+            data: {},
+            dataType: 'json',
+            success: function(data) {
+                mostrarDictados(data.dictados);
+            }
+        });
+    }
 }
 
 // Función para mostrar los dictados en el DOM
@@ -194,7 +202,6 @@ $(document).on('change', '.cantidad', function () {
 
 
 // Ejecutar funciones al cargar el documento
-jq(document).ready(function() {
-    obtenerDictadosPorAlumno();
-
-});
+// jq(document).ready(function() {
+    // obtenerDictadosPorAlumno();
+// });

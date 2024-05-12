@@ -870,11 +870,11 @@ def calcularPrecioxClase(dictado):
     return round(dictado.curso.precio_total / cantidad_clase, 2)
 
 def aplicarDescuento(dictado,precio, es_afiliado):
-    if es_afiliado:
-        descuento = Decimal(dictado.descuento)  # Convertir descuento a Decimal
-        precio_con_descuento = round(precio * (descuento / Decimal(100)), 2)
+    descuento = Decimal(dictado.descuento)  # Convertir descuento a Decimal
+
+    if not descuento == 0 and es_afiliado:
+        precio_con_descuento = precio - (precio * Decimal(descuento) / Decimal(100))
     else:
-        descuento = 0
         precio_con_descuento = precio
 
     return descuento, precio_con_descuento
@@ -930,6 +930,10 @@ def get_dictados_por_alumno(request, rol_pk):
                 precio = obtenerPrecioDictado(dictado)
                 descuento, precio_con_descuento = aplicarDescuento(dictado,precio,es_afiliado)
                 contPagosRealizados, contPagosTotalesDictado,  contPagosFatanes = calcularPagosFaltantes(rol,dictado)
+
+
+
+
                 data['dictados'].append({
                     'pk' : dictado.pk,
                     'nombre': dictado.curso.nombre,
