@@ -3,17 +3,21 @@
 {% block grafico %}
 
 
+<label>Seleccione un curso para vizualizar su informacion completa</label>
+<div class="form-group">
+    <select name="alumno" id="enc_alumno" onchange="deshabilitarResultadosPersona()">
+        <option value="" disabled selected hidden>---------------</option>
+        {% comment %} {% for alumno in alumnos %}
+            <option value="{{ alumno.alumnos.pk }}">{{ alumno.alumnos.persona.dni }} - {{ alumno.alumnos.persona.apellido }} {{ alumno.alumnos.persona.nombre }}</option>
+        {% endfor %} {% endcomment %}
+    </select>
 
- <figure class="highcharts-figure">
-{% comment %} <H4>SELECCIONE UN PERIODO</H4>
-    <select  id="selectAnio">
-        
-        <option value="2020">2020</option>
-        <option value="2021">2021</option>
-        <option value="2022">2022</option>
-        <!-- Agrega más opciones para otros años si es necesario -->
-      </select> 
- </div> {% endcomment %}
+    <button class="btn btn-outline-success" type="button" onclick="obtenerDictadosPorAlumno()">
+        <i class="fa-solid fa-magnifying-glass"></i>
+        </button>
+</div>
+
+
 
  <figure class="highcharts-figure">
     <div id="container"></div>

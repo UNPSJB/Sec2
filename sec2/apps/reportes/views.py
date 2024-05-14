@@ -167,7 +167,7 @@ class ReporteCursosViews(TemplateView):
                 year = int(year)
             except ValueError:
                 return JsonResponse({'error': 'Invalid year format'}, status=400)
-
+         
             dictados_data = self.get_dictados_summary(year)
             context['year'] = year
             context['datos'] = dictados_data
