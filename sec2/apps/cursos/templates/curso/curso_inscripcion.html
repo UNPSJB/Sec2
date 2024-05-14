@@ -4,7 +4,8 @@
 {% block formulario %}
   <form id="buscarPersonaForm">
     <div class="d-flex align-items-center justify-content-center">
-      <select class="form-control mr-2" name="enc_roles" id="enc_roles">
+      <select class="form-control mr-2" name="enc_roles" id="enc_roles" onchange="deshabilitarResultadosPersona()">
+
         <option value="" disabled selected hidden>Ingrese el dni/nombre/apellido</option>
         {% for rol in roles %}
           <option value="{{rol.id}}">
@@ -53,6 +54,10 @@
   var busquedaRealizada = false
   var inscritosEsperaIds = {{ inscritosEsperaIds_json|safe }}
   var inscritosEnDictadoIds = {{ inscritosEnDictadoIds_json|safe }}
+
+  function deshabilitarResultadosPersona() {
+    document.getElementById('resultadosPersona').innerHTML = '';
+  }
 
   function buscarPersona() {
     // Limpiar el contenido del div resultadosPersona

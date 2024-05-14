@@ -87,6 +87,7 @@
     </div>
   <i class="fa-solid fa-caret-down"></i>
 </button>
+
   <ul class="submenu" id="profesor-submenu">
     <li>
       <a href="{% url 'cursos:profesor_crear' %}"><i class="fa-solid fa-plus item-subMenu"></i> Crear profesor</a>
@@ -96,6 +97,30 @@
     </li>
   </ul>
 </div>
+
+
+
+<div class="menu">
+  <!-- Botón desplegable para Profesor -->
+  <button class="submenu-toggle" data-submenu="reportes"> 
+    <div class="button-content">
+      <span>
+        <i class="fa-solid fa-chart-column"></i>
+         Reportes</span>
+    </div>
+  <i class="fa-solid fa-caret-down"></i>
+</button>
+  <ul class="submenu" id="reportes-submenu">
+    <li>
+      <a href="{% url 'reportes:cursos_finanzas' %}"><i class="fa-solid fa-chart-column"></i> Reporte Finanzas</a>
+    </li>
+    <li>
+      <a href="{% url 'reportes:curso_torta' %}"><i class="fa-solid fa-chart-pie"></i>Reporte Dictados</a>
+    </li>
+  </ul>
+
+</div>
+
 <hr />
 
 

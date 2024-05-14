@@ -163,19 +163,25 @@ class CursoListView(PermissionRequiredMixin, LoginRequiredMixin, ListFilterView)
         # Obtener los filtros del formulario
         filter_form = CursoFilterForm(self.request.GET)
         if filter_form.is_valid():
-            area = filter_form.cleaned_data.get('area')
             nombre = filter_form.cleaned_data.get('nombre')
+            areas = filter_form.cleaned_data.get('area')
             duracion = filter_form.cleaned_data.get('duracion')
-            actividad = filter_form.cleaned_data.get('actividades')
+            actividad = filter_form.cleaned_data.get('actividad')
+
             if nombre:
                 queryset = queryset.filter(nombre__icontains=nombre)
-            if area:
-                queryset = queryset.filter(area=area)
+            if areas:  # Si se seleccionaron áreas
+                # Convertir el valor a una lista si no lo es
+                if not isinstance(areas, list):
+                    areas = [areas]
+                # Filtrar por cada área seleccionada
+                queryset = queryset.filter(area__in=areas)
             if duracion is not None:
                 queryset = queryset.filter(duracion=duracion)
             if actividad:
                 queryset = queryset.filter(actividad=actividad)
-        queryset = queryset.order_by('area', 'nombre')
+
+        queryset = queryset.order_by('nombre', 'area')
         return queryset
 
     def get_success_url(self):

@@ -85,6 +85,7 @@ class CursoFilterForm(FiltrosForm):
         required=False,
         widget=forms.CheckboxInput(attrs={'class': 'form-check-input'})
     )
+    
 
     def clean_duracion(self):
         duracion = self.cleaned_data['duracion']

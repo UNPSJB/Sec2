@@ -20,7 +20,7 @@ class ProfesorPersonaForm(forms.ModelForm):
     )
     
     actividades = forms.ModelMultipleChoiceField(
-        queryset=Actividad.objects.all(),
+        queryset=Actividad.objects.all().order_by('nombre'),
         widget=forms.CheckboxSelectMultiple(attrs={'class': 'actividades-columns'}),
         required=False
     )
@@ -86,6 +86,8 @@ class ProfesorUpdateForm(forms.ModelForm):
                     help_text=getattr(self.instance.persona._meta.get_field(field_name), 'help_text', '')
                 )
             self.fields[field_name].widget.attrs['readonly'] = False
+        self.fields['dni'].widget.attrs['readonly'] = True
+        self.fields['cuil'].widget.attrs['readonly'] = True
 
 
 
@@ -165,6 +167,8 @@ class ProfesorFilterForm(FiltrosForm):
         required=False,
         widget=AutoComboboxSelectWidget(ProfesorDniLookup, attrs={'class': 'form-control'})  # Proporcionar 'lookup_class' y 'attrs'
     )
+    persona__apellido = forms.CharField(required=False)
+
     actividades = forms.ModelChoiceField(
         queryset=Actividad.objects.all().order_by('nombre'),  # Ordenar por el campo 'nombre'
         required=False,

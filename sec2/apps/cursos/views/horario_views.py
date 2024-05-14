@@ -71,14 +71,14 @@ class HorarioCreateView(CreateView):
         primer_horario = Horario.objects.filter(dictado=dictado, es_primer_horario=True).first()
 
         # Si el día de la semana es mayor, lanza el error de que no se puede
-        if dia_semana_form < primer_horario.dictado.fecha.weekday():
+        if dia_semana_form == primer_horario.dictado.fecha.weekday():
             mensaje_error(self.request, f'{MSJ_HORARIO_ERROR_ANTES}')
             return self.form_invalid(form)
             
         elif dia_semana_form == primer_horario.dictado.fecha.weekday():
             # Si es el mismo dia pero con un horario antes
             # Verifica si el nuevo horario se encuentra antes del primer horario
-            if form.instance.hora_inicio < primer_horario.hora_inicio:
+            if form.instance.hora_inicio == primer_horario.hora_inicio:
                 mensaje_error(self.request, f'{MSJ_HORARIO_ERROR_HORARIO_ANTES}')
                 return self.form_invalid(form)
 
