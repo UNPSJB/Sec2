@@ -149,7 +149,7 @@ class ReporteCursosViews(TemplateView):
                     .annotate(
             afiliados_count=Count('afiliados'),
             familiares_count=Count('familiares'),
-            profesores_count=Count('profesores'),
+            profesores_count=Count('profesores_dictados_inscriptos'),
             alumnos_count=Count('alumnos'),
  
         ).values('curso__nombre', 'afiliados_count', 'familiares_count', 'profesores_count', 'alumnos_count')
