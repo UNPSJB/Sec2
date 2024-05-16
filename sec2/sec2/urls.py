@@ -36,6 +36,11 @@ urlpatterns = [
     path('',include('apps.users.urls')),
     path('select2/', include('django_select2.urls')),
     path('selectable/', include('selectable.urls')),
+
+    path('manual_usuario/', abrirManualUsuario, name="manual_usuario"),
+    path('documentacion_tecnica/', abrirDocumentacionTecnica, name="documentacion_tecnica"),
+
+
 ]
 
 

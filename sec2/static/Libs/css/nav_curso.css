@@ -232,6 +232,8 @@ hr {
 
 #enlaceReporte:hover,
 #enlaceAlumno:hover,
+#enlaceDocTecnico:hover,
+#enlaceManualUsuario:hover,
 #enlaceActividad:hover,
 #enlaceAula:hover {
     color: #FFA500; /* Cambiar el color en el hover */
@@ -256,4 +258,13 @@ hr {
 #enlaceAlumno{
     background-color: #8644A2;
     border: 2px solid #8644A2;
+}
+
+#enlaceDocTecnico{
+    background-color: #51829B;
+    border: 2px solid #51829B;
+}
+#enlaceManualUsuario{
+    background-color: #51829B;
+    border: 2px solid #51829B;
 }

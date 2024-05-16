@@ -11,7 +11,7 @@
             <label>Seleccione al empleador:</label>
             <div class="form-group">
                 <select name="enc_cuit" id="enc_cuit">
-                    <option value="0"> --------------- </option>
+                    <option value="" disabled selected hidden>---------------</option>
                     {% for empleador in empleadores %}
                         <option value="{{ empleador.cuit_empleador }}">{{ empleador.cuit_empleador }} {{ empleador.razon_social }}</option>
                     {% endfor %}
@@ -23,7 +23,7 @@
             <label>Seleccione al afiliado:</label>
             <div class="form-group">
                 <select name="enc_afiliado" id="enc_afiliado">
-                  <option value="0"> --------------- </option>
+                <option value="" disabled selected hidden>---------------</option>
                   {% for item in afiliados %}
                     <option value="{{item.id}}">{{item.persona.dni}} {{item.persona.nombre}} {{item.persona.apellido}}</option>
                   {% endfor %}

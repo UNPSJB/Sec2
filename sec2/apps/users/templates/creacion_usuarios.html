@@ -10,16 +10,15 @@
 
 {% block container %}
 <div id="wrapper">
-  {% if not nueva_ventana %}
   <div id="sidebar">
     {% include 'nav_principal_.html' %}
     <div id="messages-container">
       {% include 'message.html' %}
     </div>
   </div>
-  {% endif %}
   
   <div id="content">
+    {% include 'nav_top.html'  %}
     <div class="container">
       <h3 class="titulo" >{{titulo}}</h3>
       <form method="post">

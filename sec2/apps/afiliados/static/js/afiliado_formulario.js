@@ -7,14 +7,16 @@ $(document).ready(function () {
         } else {
             $('#prev-button').show()
         }
-
+        
         if (currentTab === 2) {
             $('#next-button').hide()
             $("button[type='submit']").show()
+            
         } else {
             $('#next-button').show()
             $("button[type='submit']").hide()
         }
+        $('#submit-button').show()
     }
 
     updateButtons() // Llama a esta función al cargar la página

@@ -2,6 +2,7 @@ from decimal import Decimal
 from django.http import JsonResponse
 from django.shortcuts import render
 
+from apps.afiliados.views import redireccionar_detalle_rol
 from apps.alquileres.models import Alquiler
 from django.views.generic import TemplateView
 from datetime import datetime
@@ -11,6 +12,8 @@ from django.db.models import Count
 from apps.afiliados.models import Afiliado
 from apps.cursos.models import DetallePagoAlumno, Dictado
 from django.db.models import Count
+
+from sec2.utils import get_filtro_roles, get_selected_rol_pk
 
 class AfiliadosReportesView(TemplateView):
     template_name = 'reporte_afiliados_historico.html'
@@ -52,7 +55,18 @@ class AfiliadosReportesView(TemplateView):
             'categories': categories,
             'y_axis_title': 'Total de alquileres',  # Y-axis title
         }
+        context['filter_form'] = get_filtro_roles(self.request)
+
         return context
+    
+    def get(self, request, *args, **kwargs):
+        filter_rol = get_filtro_roles(request)
+        rol = get_selected_rol_pk(filter_rol)
+
+        if rol is not None:
+            return redireccionar_detalle_rol(rol)
+
+        return super().get(request, *args, **kwargs)
 
 
 class reportesView(TemplateView):

@@ -299,11 +299,12 @@ class AlumnoDetailView(PermissionRequiredMixin, LoginRequiredMixin, DetailView):
 
 def alumno_eliminar(request, pk):
     alumno = get_object_or_404(Alumno,pk=pk)
+    print("alumno",alumno)
     dictados_en_estado_2 = alumno.dictados.filter(estado=2).exists()
     if dictados_en_estado_2:
         mensaje_error(request, "El alumno esta inscrito en dictados que no han finalizado.")
     else:
-        rol = get_object_or_404(Rol, persona__pk=alumno.pk)
+        rol = get_object_or_404(Rol, persona__pk=alumno.persona.pk)
         alumno.darDeBaja()
         mensaje_exito(request, f'Alumno dado de baja con exito')
     return redirect('cursos:alumno_detalle', pk=alumno.pk)

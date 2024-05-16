@@ -1,1 +1,0 @@
-al archivo db hay que agregarle la extension ".sqlite3"

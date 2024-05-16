@@ -1,27 +1,29 @@
-from django.urls import reverse
-from django.shortcuts import render, redirect
+from django.shortcuts import render
 from django.contrib.auth import logout as django_logout, login as django_login, authenticate
-from django.urls import reverse_lazy
-from apps.afiliados.models import Afiliado, RelacionFamiliar
+from apps.afiliados.models import RelacionFamiliar
 
 from apps.alquileres.models import Alquiler
-from apps.personas.models import Persona, Rol
+from apps.personas.models import Rol
+from sec2 import settings
 from utils.funciones import mensaje_advertencia
-from .forms import SecAuthenticationForm
+
 from sec2.utils import get_filtro_roles, get_selected_rol_pk, redireccionarDetalleRol
 from utils.funciones import mensaje_advertencia
-from .forms import SecAuthenticationForm
+
 from apps.personas.forms import RolFilterForm
 from django.contrib.auth.decorators import login_required
 from datetime import datetime, date
 from django.contrib.auth.models import User
     
 
+from django.http import HttpResponse, FileResponse
+from django.conf import settings
+import os
+
 
 def obtener_permisos_user_string(user):
     permisos = user.user_permissions.all()
     nombres_permisos = [permiso.codename for permiso in permisos]
-    print(nombres_permisos)
     return nombres_permisos
         # Imprimir los nombres de los permisos
 
@@ -74,3 +76,27 @@ def home(request):
     
     return render(request, 'home.html', contexto)
 
+from django.http import FileResponse
+import os
+@login_required(login_url='/login/')
+def abrir_pdf(request, nombre_archivo, nombre_mostrado):
+    # Ruta al archivo PDF en tu sistema
+    ruta_pdf = os.path.join(settings.BASE_DIR, '..', 'documentacion', nombre_archivo)
+
+    try:
+        if os.path.exists(ruta_pdf):
+            response = FileResponse(open(ruta_pdf, 'rb'), content_type='application/pdf')
+            response['Content-Disposition'] = f'inline; filename="{nombre_mostrado}"'
+            return response
+        else:
+            return HttpResponse('El archivo PDF no se encontró.', status=404)
+    except Exception as e:
+        return HttpResponse(f'Error al abrir el archivo PDF: {str(e)}', status=500)
+
+@login_required(login_url='/login/')
+def abrirManualUsuario(request):
+    return abrir_pdf(request, 'manual de usuario.pdf', 'manual de usuario.pdf')
+
+@login_required(login_url='/login/')
+def abrirDocumentacionTecnica(request):
+    return abrir_pdf(request, 'documento tecnico.pdf', 'documento tecnico.pdf')
