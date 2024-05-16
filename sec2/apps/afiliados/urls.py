@@ -26,8 +26,8 @@ urlpatterns = [
 
     #GRUPO FAMILIAR
     path('grupofamiliar/crear', alta_familiar, name="crear_familiar_directo"),
-    path('afiliado/<int:pk>/grupoFamiliar/familia/<int:familiar_pk>/<str:ventana>/', FamiliarDetailView.as_view(), name="familiar_detalle"),
-    path('afiliado/<int:pk>/grupoFamiliar/familia/<int:familiar_pk>/editar/<str:ventana>/', FamiliarUpdateView.as_view(), name="familiar_editar"),
+    path('afiliado/<int:pk>/grupoFamiliar/familia/<int:familiar_pk>', FamiliarDetailView.as_view(), name="familiar_detalle"),
+    path('afiliado/<int:pk>/grupoFamiliar/familia/<int:familiar_pk>/editar/', FamiliarUpdateView.as_view(), name="familiar_editar"),
     path('afiliado/<int:pk>/grupoFamiliar/familia/<int:familiar_pk>/eliminar', familiar_eliminar, name="familiar_eliminar"),
 
     # path('afiliado/grupoFamiliar/familia/<int:familiar_pk>/editar', FamiliarUpdateView_.as_view(), name="familiar_editar_"),

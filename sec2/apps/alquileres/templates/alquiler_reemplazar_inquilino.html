@@ -9,7 +9,7 @@
       <div class="col">
         <label>Ingrese el nuevo inquilino:</label>
         <select name="enc_afiliado" id="enc_afiliado">
-          <option value="0"> --------------- </option>
+          <option value="" disabled selected hidden>---------------</option>
           {% for afiliado in listaEspera.all %}
           <option value="{{afiliado.pk}}">
             {{afiliado.persona.dni}} {{afiliado.persona.apellido}} {{afiliado.persona.nombre}}

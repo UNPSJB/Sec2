@@ -29,7 +29,7 @@
                   <td>{{ relacion_familiar.familiar.persona.apellido }}</td>
                   <td>{{ relacion_familiar.familiar.persona.nombre }}</td>
                   <td class="text-end">
-                      <a href="{% url 'afiliados:familiar_detalle' pk=afiliado.pk familiar_pk=relacion_familiar.familiar.pk ventana='misma_ventana'%}" class="btn btn-info btn-detalle btn-sm">
+                      <a href="{% url 'afiliados:familiar_detalle' pk=afiliado.pk familiar_pk=relacion_familiar.familiar.pk %}" class="btn btn-info btn-detalle btn-sm">
                           <i class="fa-regular fa-eye"></i> Detalle
                       </a>
                   </td>

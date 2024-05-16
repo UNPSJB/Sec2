@@ -7,7 +7,7 @@ from django.views.generic.list import ListView
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, HTML
 
-from apps.afiliados.models import Afiliado, Familiar
+from apps.afiliados.models import Afiliado, Familiar, RelacionFamiliar
 from apps.alquileres.models import Encargado
 from apps.cursos.models import Alumno, Profesor
 from apps.personas.forms import RolFilterForm
@@ -116,7 +116,8 @@ def redireccionarDetalleRol(rol):
 
     elif tipo == 2:
         grupoFamiliar = get_object_or_404(Familiar, persona__pk=rol.persona.pk)
-        return redirect('afiliados:familiar_detalle', pk=grupoFamiliar.pk)
+        relacion_familiar = RelacionFamiliar.objects.filter(familiar=grupoFamiliar).first()
+        return redirect('afiliados:familiar_detalle', pk=relacion_familiar.afiliado.pk, familiar_pk=grupoFamiliar.pk)
 
     elif tipo == 3:
         alumno = get_object_or_404(Alumno, persona__pk=rol.persona.pk)

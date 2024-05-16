@@ -4,8 +4,10 @@ from django.contrib.auth.views import LoginView
 from django.urls import reverse_lazy
 from django.views.generic import View, CreateView
 from apps.afiliados.models import Afiliado
+from apps.afiliados.views import redireccionar_detalle_rol
 from apps.alquileres.models import Alquiler
 from apps.cursos.models import Curso
+from sec2.utils import get_filtro_roles, get_selected_rol_pk
 from .forms import CustomLoginForm, UserRegisterForm
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.auth.models import User,Permission
@@ -54,8 +56,18 @@ class CreacionUsuarios(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['titulo'] = "Registro de usuario"
+        context['filter_form'] = get_filtro_roles(self.request)
         return context
-    
+
+    def get(self, request, *args, **kwargs):
+        filter_rol = get_filtro_roles(request)
+        rol = get_selected_rol_pk(filter_rol)
+
+        if rol is not None:
+            return redireccionar_detalle_rol(rol)
+
+        return super().get(request, *args, **kwargs)
+     
     def form_valid(self, form):
         # Aquí puedes acceder a los datos del formulario
         username = form.cleaned_data['username']

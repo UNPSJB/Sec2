@@ -5,7 +5,6 @@
 {% block extracss %}
   <link href="{% static 'Libs/css/home.css' %}" rel="stylesheet" />
   <link href="{% static 'Libs/css/nav_top.css' %}" rel="stylesheet" />
-
   {% block extracss_intermedia %}
 
   {% endblock %}
@@ -13,7 +12,6 @@
 
 {% block container %}
   <div id="wrapper">
-    {% if not nueva_ventana %}
     <div id="sidebar">
       {% block nav_lateral %}
         {% include 'nav_afiliado.html' %}
@@ -24,17 +22,13 @@
         {% include 'message.html' %}
       </div>
     </div>
-    {% endif %}
     <div id="content">
-      {% if not nueva_ventana %}
-        {% block nav_top %}
-          {% comment %} {% include 'nav_top.html' %} {% endcomment %}
-        {% endblock %}
-      {% endif %}
-
+      {% include 'nav_top.html'  %}
+      
       {% block dinamica %}
         {% include 'index.html' %}
       {% endblock %}
+      
     </div>
   </div>
 {% endblock %}

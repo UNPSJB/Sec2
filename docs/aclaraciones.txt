@@ -1,9 +1,0 @@
-las actividades son considereradas como cursos
-
-tambien hay actividades que no son cursos (gimnasia aeróbica, Pilates, yoga, yoga para
-embarazadas, etc.)
-
-
-la asistencia para el profesor
-
-generar interesados para el curso (lista espera)

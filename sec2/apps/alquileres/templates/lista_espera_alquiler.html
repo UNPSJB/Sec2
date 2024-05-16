@@ -8,7 +8,7 @@
     <label>Ingrese DNI/nombre/apellido:</label>
     <div class="form-group">
       <select name="enc_afiliado" id="enc_afiliado">
-        {% comment %} <option value="0"> --------------- </option> {% endcomment %}
+        <option value="" disabled selected hidden>---------------</option>
         {% for afiliado in afiliados %}
           <option value="{{afiliado.pk}}">
             {{afiliado.persona.dni}} {{afiliado.persona.apellido}} {{afiliado.persona.nombre}}

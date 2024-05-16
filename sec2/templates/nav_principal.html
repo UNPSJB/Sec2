@@ -38,8 +38,10 @@
         <i class="fa-solid fa-users-gear"></i>
          Gestión de Usuarios</a>
     </li>
-    {% comment %} {% endif %} {% endcomment %}
 
+    {% include 'documentacion_info.html' %}
+
+    {% comment %} {% endif %} {% endcomment %}
  
   </ul>
   
@@ -66,4 +68,7 @@
 {% block extrajs %}
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 <script src="{% static 'Libs/js/nav_principal.js' %}"></script>
+
+<script src="{% static 'Libs/js/abrir_documetacion.js' %}"></script>
+
 {% endblock %}

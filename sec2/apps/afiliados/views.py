@@ -5,14 +5,14 @@ from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.views.generic.edit import CreateView, DeleteView, UpdateView
 from django.urls import reverse_lazy
-from apps.alquileres.models import Alquiler
-from apps.cursos.models import PagoAlumno
-from apps.personas.forms import PersonaForm, PersonaUpdateForm
+from apps.alquileres.models import Alquiler, Encargado
+from apps.cursos.models import Alumno, PagoAlumno, Profesor
+from apps.personas.forms import PersonaForm, PersonaUpdateForm, RolFilterForm
 from apps.personas.models import Rol
 from utils.funciones import mensaje_advertencia, mensaje_error, mensaje_exito, registrar_fuentes  
 from .models import Afiliado, Familiar, PagoCuota, RelacionFamiliar
 from .forms import *
-from sec2.utils import ListFilterView
+from sec2.utils import ListFilterView, get_filtro_roles, get_selected_rol_pk, redireccionarDetalleRol
 from django.db import transaction  # Agrega esta línea para importar el módulo transaction
 from django.urls import reverse
 from django.http import HttpResponseRedirect
@@ -27,6 +27,31 @@ from utils.constants import *
 
 from django.contrib.auth.decorators import login_required
 
+def redireccionar_detalle_rol(rol):
+    tipo = rol.tipo
+
+    if tipo == 1:
+        afiliado = get_object_or_404(Afiliado, persona__pk=rol.persona.pk)
+        return redirect('afiliados:afiliado_detalle', pk=afiliado.pk)
+
+    elif tipo == 2:
+        grupoFamiliar = get_object_or_404(Familiar, persona__pk=rol.persona.pk)
+        relacion_familiar = RelacionFamiliar.objects.filter(familiar=grupoFamiliar).first()
+        return redirect('afiliados:familiar_detalle', pk=relacion_familiar.afiliado.pk, familiar_pk=grupoFamiliar.pk)
+
+    elif tipo == 3:
+        alumno = get_object_or_404(Alumno, persona__pk=rol.persona.pk)
+        return redirect('cursos:alumno_detalle', pk=alumno.pk)
+
+    elif tipo == ROL_TIPO_PROFESOR:
+        profesor = get_object_or_404(Profesor, persona__pk=rol.persona.pk)
+        return redirect('cursos:profesor_detalle', pk=profesor.pk)
+
+    elif tipo == 5:
+        encargado = get_object_or_404(Encargado, persona__pk=rol.persona.pk)
+        return redirect('alquiler:encargado_detalle', pk=encargado.pk)
+
+    return redirect('home')
 
 @login_required(login_url='/login/')
 def index(request):
@@ -48,10 +73,21 @@ class AfiliadoCreateView(LoginRequiredMixin,PermissionRequiredMixin,CreateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['titulo'] = "Formulario de Afiliación"
         personas = Persona.objects.all()
+        filter_rol = get_filtro_roles(self.request)
+        context['titulo'] = "Formulario de Afiliación"
         context['clientes'] = personas
+        context['filter_form'] = filter_rol
         return context
+
+    def get(self, request, *args, **kwargs):
+        filter_rol = get_filtro_roles(request)
+        rol = get_selected_rol_pk(filter_rol)
+
+        if rol is not None:
+            return redireccionar_detalle_rol(rol)
+
+        return super().get(request, *args, **kwargs)
 
     def form_valid(self, form):
         dni = form.cleaned_data["dni"]
@@ -131,7 +167,8 @@ class AfiliadoDetailView (LoginRequiredMixin , PermissionRequiredMixin ,DeleteVi
         afiliado = self.object  # Access the Afiliado instance
         # Obtén todos los alquileres en lista de espera para el afiliado actual
         alquileres_lista_espera = Alquiler.objects.filter(lista_espera=afiliado, estado=1)
-    
+        context['filter_form'] = get_filtro_roles(self.request)
+
         context['titulo'] = "Datos del afiliado"
         context['subtitulodetalle1'] = "Datos personales"
         context['subtitulodetalle2'] = "Datos de afiliación"
@@ -147,6 +184,15 @@ class AfiliadoDetailView (LoginRequiredMixin , PermissionRequiredMixin ,DeleteVi
         context['alquileres_lista_espera'] = alquileres_lista_espera  # Agrega los alquileres en lista de espera al contexto
         return context
 
+    def get(self, request, *args, **kwargs):
+        filter_rol = get_filtro_roles(request)
+        rol = get_selected_rol_pk(filter_rol)
+
+        if rol is not None:
+            return redireccionar_detalle_rol(rol)
+
+        return super().get(request, *args, **kwargs)
+
 # ----------------------------- AFILIADO UPDATE ----------------------------------- #
 class AfiliadoUpdateView(LoginRequiredMixin, PermissionRequiredMixin ,UpdateView):
     model = Afiliado
@@ -160,8 +206,20 @@ class AfiliadoUpdateView(LoginRequiredMixin, PermissionRequiredMixin ,UpdateView
         context = super().get_context_data(**kwargs)
         context['editar'] = True
         context['titulo'] = "Modicacion de Afiliación"
+      
+        filter_rol = get_filtro_roles(self.request)
+        context['filter_form'] = filter_rol
         return context
     
+    def get(self, request, *args, **kwargs):
+        filter_rol = get_filtro_roles(request)
+        rol = get_selected_rol_pk(filter_rol)
+
+        if rol is not None:
+            return redireccionar_detalle_rol(rol)
+
+        return super().get(request, *args, **kwargs)
+
     def form_valid(self, form):
         dni = form.cleaned_data["dni"]
         existing_person = Persona.objects.filter(dni=dni).first()
@@ -218,8 +276,21 @@ class AfiliadosListView(LoginRequiredMixin, PermissionRequiredMixin, ListFilterV
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['titulo'] = "Listado de afiliados"
+        filter_rol = get_filtro_roles(self.request)
+        context['filter_form'] = filter_rol
+
         context['filter_parameters'] = urlencode(self.request.GET)
         return context
+
+    def get(self, request, *args, **kwargs):
+        filter_rol = get_filtro_roles(request)
+        rol = get_selected_rol_pk(filter_rol)
+
+        if rol is not None:
+            return redireccionar_detalle_rol(rol)
+
+        return super().get(request, *args, **kwargs)
+    
 
     def get_queryset(self):
         queryset = super().get_queryset()
@@ -374,8 +445,14 @@ def es_menor_de_edad(self, fecha_nacimiento):
 @login_required(login_url='/login/')
 def alta_familiar(request):
     titulo = 'Alta de Familiar'
-
+    
+    filter_rol = get_filtro_roles(request)
+    rol = get_selected_rol_pk(filter_rol)
+    
     if request.method == 'POST':
+        if rol is not None:
+            return redireccionarDetalleRol(rol)
+        
         form = AfiliadoSelectForm(request.POST)
         if form.is_valid():
             dni = form.cleaned_data["dni"]
@@ -398,6 +475,8 @@ def alta_familiar(request):
                         context = {
                             'form': form,
                             'titulo': titulo,  # Replace with your desired title
+                            'filter_form': filter_rol,
+
                         }
                         return render(request, 'grupoFamiliar/grupo_familiar_alta_directa.html', context)
 
@@ -439,6 +518,8 @@ def alta_familiar(request):
                         context = {
                         'form': form,
                         'titulo': titulo,
+                        'filter_form': filter_rol,
+
                         }
 
                         if 'guardar_y_recargar' in request.POST:
@@ -450,10 +531,13 @@ def alta_familiar(request):
     else:
         afiliados_pendientes_activos = Afiliado.objects.filter(estado__in=[1, 2])
         form = AfiliadoSelectForm()
-
+        if rol is not None:
+            return redireccionarDetalleRol(rol)
     context = {
         'form': form,
         'titulo': titulo,
+        'filter_form': filter_rol,
+
     }
     return render(request, 'grupoFamiliar/grupo_familiar_alta_directa.html', context)
 
@@ -553,14 +637,24 @@ class FamiliarDetailView(LoginRequiredMixin,PermissionRequiredMixin,DeleteView):
         context = super().get_context_data(**kwargs)
         
         ventana = self.kwargs.get('ventana')
-        context['nueva_ventana'] = ventana == 'nueva_ventana'
         familiar = self.object
         context['titulo'] = "Datos del familiar"
         context['tituloListado'] = "Dictados Inscritos"
         context['afiliado'] = self.afiliado
         context['familiar'] = familiar  # Agregar el objeto familiar al contexto
+
+        context['filter_form'] = get_filtro_roles(self.request)
+
         return context
 
+    def get(self, request, *args, **kwargs):
+        filter_rol = get_filtro_roles(request)
+        rol = get_selected_rol_pk(filter_rol)
+
+        if rol is not None:
+            return redireccionar_detalle_rol(rol)
+
+        return super().get(request, *args, **kwargs)
 
 
 
@@ -603,10 +697,22 @@ class FamiliarUpdateView(LoginRequiredMixin, PermissionRequiredMixin, UpdateView
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         ventana = self.kwargs.get('ventana')
-        context['nueva_ventana'] = ventana == 'nueva_ventana'
         context['titulo'] = "Modicacion de Familiar"
+        context['filter_form'] = get_filtro_roles(self.request)
+
         return context
-    
+
+    def get(self, request, *args, **kwargs):
+        filter_rol = get_filtro_roles(request)
+        rol = get_selected_rol_pk(filter_rol)
+
+        if rol is not None:
+            return redireccionar_detalle_rol(rol)
+
+        return super().get(request, *args, **kwargs)
+
+
+
     def form_valid(self, form):
         dni = form.cleaned_data["dni"]
         
@@ -656,7 +762,8 @@ class FamiliarUpdateView(LoginRequiredMixin, PermissionRequiredMixin, UpdateView
 
                     # Redirige al detalle del familiar en lugar del detalle del afiliado
                     familiar_pk = self.kwargs.get('familiar_pk')
-                    familiar_detail_url = reverse('afiliados:familiar_detalle', kwargs={'pk': afiliado_pk, 'familiar_pk': familiar_pk, 'ventana':'misma_ventana'})
+                    
+                    familiar_detail_url = reverse('afiliados:familiar_detalle', kwargs={'pk': afiliado_pk, 'familiar_pk': familiar_pk })
 
                     # Agrega un pequeño script de JavaScript para cerrar la ventana y recargar la página
                     return HttpResponseRedirect(familiar_detail_url)
@@ -687,6 +794,8 @@ class FamiliarUpdateView_(LoginRequiredMixin, PermissionRequiredMixin, UpdateVie
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['titulo'] = "Modicacion de Familiar"
+        context['filter_form'] = get_filtro_roles(self.request)
+
         familiar = self.object
         # Obtener el afiliado relacionado con el familiar
         afiliado = get_object_or_404(Afiliado, familia=familiar)            
@@ -694,6 +803,15 @@ class FamiliarUpdateView_(LoginRequiredMixin, PermissionRequiredMixin, UpdateVie
         context['afiliado'] = afiliado
         return context
     
+    def get(self, request, *args, **kwargs):
+        filter_rol = get_filtro_roles(request)
+        rol = get_selected_rol_pk(filter_rol)
+
+        if rol is not None:
+            return redireccionar_detalle_rol(rol)
+
+        return super().get(request, *args, **kwargs)
+
     def form_valid(self, form):
         dni = form.cleaned_data["dni"]
         
@@ -772,9 +890,20 @@ class RelacionFamiliarListView(LoginRequiredMixin,PermissionRequiredMixin, ListF
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        filter_rol = get_filtro_roles(self.request)
+        context['filter_form'] = filter_rol
         context['titulo'] = "Grupo Familiar"
         return context
-        
+
+    def get(self, request, *args, **kwargs):
+        filter_rol = get_filtro_roles(request)
+        rol = get_selected_rol_pk(filter_rol)
+
+        if rol is not None:
+            return redireccionar_detalle_rol(rol)
+
+        return super().get(request, *args, **kwargs)
+
     def get_queryset(self):
         queryset = super().get_queryset()
 
@@ -833,12 +962,24 @@ class PagoCuotaCreateView(LoginRequiredMixin, PermissionRequiredMixin, CreateVie
         empleadores = Afiliado.objects.filter(
             Q(estado=2) | Q(estado=5),  # activos o morosos
             cuit_empleador__isnull=False
-        ).values('cuit_empleador').distinct()
+        ).values('cuit_empleador', 'razon_social')
 
         context['titulo'] = "Cuota Sindical"
         context['empleadores'] = empleadores
+        context['filter_form'] = get_filtro_roles(self.request)
+
         return context
-    
+
+    def get(self, request, *args, **kwargs):
+        filter_rol = get_filtro_roles(request)
+        rol = get_selected_rol_pk(filter_rol)
+
+        if rol is not None:
+            return redireccionar_detalle_rol(rol)
+
+        return super().get(request, *args, **kwargs)
+
+
     def form_valid(self, form):
         afiliado_id = self.request.POST.get('enc_afiliado')
         cuit_empleador = self.request.POST.get('enc_cuit')
@@ -916,8 +1057,18 @@ class PagoCuotaListView(LoginRequiredMixin, PermissionRequiredMixin, ListFilterV
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['titulo'] = "Pago de Cuota"
+        context['filter_form'] = get_filtro_roles(self.request)
         return context
-        
+
+    def get(self, request, *args, **kwargs):
+        filter_rol = get_filtro_roles(request)
+        rol = get_selected_rol_pk(filter_rol)
+
+        if rol is not None:
+            return redireccionar_detalle_rol(rol)
+
+        return super().get(request, *args, **kwargs)
+  
     def get_queryset(self):
         queryset = super().get_queryset()
         afiliado_dni = self.request.GET.get('afiliado__persona__dni')
