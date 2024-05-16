@@ -15,6 +15,7 @@ $(document).ready(function () {
             $('#next-button').show()
             $("button[type='submit']").hide()
         }
+        $('#submit-button').show()
     }
 
     updateButtons() // Llama a esta función al cargar la página

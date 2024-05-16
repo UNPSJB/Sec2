@@ -2,6 +2,8 @@ from django.shortcuts import get_object_or_404, redirect
 from django.views.generic.edit import CreateView, UpdateView
 from django.views.generic import DetailView, ListView
 
+from apps.afiliados.views import redireccionar_detalle_rol
+from sec2.utils import get_filtro_roles, get_selected_rol_pk
 from utils.funciones import mensaje_advertencia, mensaje_error, mensaje_exito
 from ..models import Aula, Clase, Dictado, Horario, Reserva
 from ..forms.aula_forms import *
@@ -28,6 +30,8 @@ class GestionAulaView(PermissionRequiredMixin, LoginRequiredMixin, CreateView, L
         context['form'] = self.get_form()
         context['aulas'] = self.get_queryset()  # Use filtered queryset
         context['filtros'] = AulaFilterForm()
+        context['filter_form'] = get_filtro_roles(self.request)
+
         return context
 
     def get_success_url(self):
@@ -43,6 +47,10 @@ class GestionAulaView(PermissionRequiredMixin, LoginRequiredMixin, CreateView, L
         return redirect('cursos:gestion_aula')
     
     def get(self, request, *args, **kwargs):
+        filter_rol = get_filtro_roles(request)
+        rol = get_selected_rol_pk(filter_rol)
+        if rol is not None:
+            return redireccionar_detalle_rol(rol)
         # Asegúrate de que el queryset esté disponible antes de llamar a super().get()
         self.object_list = self.get_queryset()
         return super(CreateView, self).get(request, *args, **kwargs)
@@ -96,8 +104,16 @@ class AulaDetailView(PermissionRequiredMixin, LoginRequiredMixin, DetailView):
 
         context['titulo'] = 'Detalle de Aula'
         context['tituloListado'] = 'Proximas reservas del aula'
-        return context
+        context['filter_form'] = get_filtro_roles(self.request)
 
+        return context
+    
+    def get(self, request, *args, **kwargs):
+        filter_rol = get_filtro_roles(request)
+        rol = get_selected_rol_pk(filter_rol)
+        if rol is not None:
+            return redireccionar_detalle_rol(rol)
+        return super().get(request, *args, **kwargs)
 ## ------------ UPDATE -------------------
 class AulaUpdateView(PermissionRequiredMixin, LoginRequiredMixin, UpdateView):
     model = Aula
@@ -113,8 +129,16 @@ class AulaUpdateView(PermissionRequiredMixin, LoginRequiredMixin, UpdateView):
         context = super().get_context_data(**kwargs)
         context['titulo'] = "Modificar Aula"
         context['filtros'] = AulaFilterForm()
+        context['filter_form'] = get_filtro_roles(self.request)
         return context
-
+    
+    def get(self, request, *args, **kwargs):
+        filter_rol = get_filtro_roles(request)
+        rol = get_selected_rol_pk(filter_rol)
+        if rol is not None:
+            return redireccionar_detalle_rol(rol)
+        return super().get(request, *args, **kwargs)
+    
     def form_valid(self, form):
         aula = form.save()
         messages.success(self.request, f'{ICON_CHECK} Aula modificado con éxito')

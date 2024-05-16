@@ -2,7 +2,8 @@ from datetime import timedelta
 from django.views.generic.edit import CreateView
 from django.shortcuts import render, redirect
 from django.views.generic import DetailView
-from sec2.utils import ListFilterView
+from apps.afiliados.views import redireccionar_detalle_rol
+from sec2.utils import ListFilterView, get_filtro_roles, get_selected_rol_pk
 from django.contrib import messages
 from ..models import Clase, Dictado, Aula, Horario, Profesor, Reserva, Titular
 from ..forms.clase_forms import *
@@ -61,6 +62,7 @@ class ClaseDetailView(LoginRequiredMixin, PermissionRequiredMixin, DetailView):
         context["tituloListado"] = "Asistencia"
         context["tituloListado1"] = "Alumnos"
         context["tituloListado2"] = "Profesor"
+        context['filter_form'] = get_filtro_roles(self.request)
 
         # Obtener la lista de inscritos en el dictado
         afiliados_inscritos = dictado.afiliados.all()
@@ -85,6 +87,15 @@ class ClaseDetailView(LoginRequiredMixin, PermissionRequiredMixin, DetailView):
 
         return context
 
+    def get(self, request, *args, **kwargs):
+        filter_rol = get_filtro_roles(request)
+        rol = get_selected_rol_pk(filter_rol)
+
+        if rol is not None:
+            return redireccionar_detalle_rol(rol)
+
+        return super().get(request, *args, **kwargs)
+    
     def post(self, request, *args, **kwargs):
         clase = self.get_object()
         if not clase.asistencia_tomada:

@@ -1,7 +1,7 @@
 from django.urls import reverse
 from django.shortcuts import get_object_or_404, redirect
 
-from apps.afiliados.views import existe_persona_activa
+from apps.afiliados.views import existe_persona_activa, redireccionar_detalle_rol
 from utils.funciones import mensaje_advertencia, mensaje_error, mensaje_exito
 from ..models import Actividad, PagoProfesor, Profesor, Titular
 from ..forms.profesor_forms import *
@@ -12,7 +12,7 @@ from django.contrib import messages
 from django.views.generic.edit import CreateView, UpdateView
 
 from utils.constants import *
-from sec2.utils import ListFilterView
+from sec2.utils import ListFilterView, get_filtro_roles, get_selected_rol_pk
 from django.db import transaction
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.contrib.auth.decorators import permission_required , login_required 
@@ -31,8 +31,16 @@ class ProfesorCreateView(LoginRequiredMixin,PermissionRequiredMixin, CreateView)
         context = super().get_context_data(**kwargs)
         context['titulo'] ="Formulario de Profesor"
         context['actividades'] = Actividad.objects.all()  # Obtener todas las actividades
+        context['filter_form'] = get_filtro_roles(self.request)
         return context
 
+    def get(self, request, *args, **kwargs):
+        filter_rol = get_filtro_roles(request)
+        rol = get_selected_rol_pk(filter_rol)
+        if rol is not None:
+            return redireccionar_detalle_rol(rol)
+        return super().get(request, *args, **kwargs)
+    
     def form_valid(self, form):
         dni = form.cleaned_data["dni"]
 
@@ -111,8 +119,15 @@ class ProfesorDetailView(LoginRequiredMixin, PermissionRequiredMixin, DetailView
         # Obtener todos los titulares asociados a este profesor
         titulares = Titular.objects.filter(profesor=profesor)
         context['titulares'] = titulares
+        context['filter_form'] = get_filtro_roles(self.request)
         return context
-
+    
+    def get(self, request, *args, **kwargs):
+        filter_rol = get_filtro_roles(request)
+        rol = get_selected_rol_pk(filter_rol)
+        if rol is not None:
+            return redireccionar_detalle_rol(rol)
+        return super().get(request, *args, **kwargs)
 ## ------------ PROFESOR UPDATE -------------------
 class ProfesorUpdateView(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
     model = Profesor
@@ -126,8 +141,16 @@ class ProfesorUpdateView(LoginRequiredMixin, PermissionRequiredMixin, UpdateView
         context = super().get_context_data(**kwargs)
         context['editar'] = True
         context['titulo'] = "Modificar Profesor"
+        context['filter_form'] = get_filtro_roles(self.request)
         return context
 
+    def get(self, request, *args, **kwargs):
+        filter_rol = get_filtro_roles(request)
+        rol = get_selected_rol_pk(filter_rol)
+        if rol is not None:
+            return redireccionar_detalle_rol(rol)
+        return super().get(request, *args, **kwargs)
+    
     def form_valid(self, form):
         mensaje_exito(self.request, f'{MSJ_EXITO_MODIFICACION}')
         return super().form_valid(form)
@@ -154,7 +177,15 @@ class ProfesorListView(PermissionRequiredMixin, LoginRequiredMixin, ListFilterVi
         filter_form = ProfesorFilterForm(self.request.GET)
         context['filtros'] = filter_form
         context['titulo'] = "Listado de profesores"
+        context['filter_form'] = get_filtro_roles(self.request)
         return context
+
+    def get(self, request, *args, **kwargs):
+        filter_rol = get_filtro_roles(request)
+        rol = get_selected_rol_pk(filter_rol)
+        if rol is not None:
+            return redireccionar_detalle_rol(rol)
+        return super().get(request, *args, **kwargs)
 
 ## ------------ ELIMINAR -------------------
 @permission_required('cursos.permission_gestion_curso', raise_exception=True)

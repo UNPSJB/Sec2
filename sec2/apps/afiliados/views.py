@@ -74,10 +74,9 @@ class AfiliadoCreateView(LoginRequiredMixin,PermissionRequiredMixin,CreateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         personas = Persona.objects.all()
-        filter_rol = get_filtro_roles(self.request)
         context['titulo'] = "Formulario de Afiliación"
         context['clientes'] = personas
-        context['filter_form'] = filter_rol
+        context['filter_form'] = get_filtro_roles(self.request)
         return context
 
     def get(self, request, *args, **kwargs):

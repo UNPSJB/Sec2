@@ -1,5 +1,6 @@
 from django.shortcuts import get_object_or_404, redirect
 from apps.afiliados.models import Afiliado, Familiar
+from apps.afiliados.views import redireccionar_detalle_rol
 from apps.alquileres.models import Encargado
 from apps.cursos.forms.actividad_forms import ActividadForm
 from apps.cursos.models import Alumno, Clase, Curso, DetallePagoAlumno, DetallePagoProfesor, Dictado, PagoAlumno, PagoProfesor, Profesor, Titular
@@ -10,7 +11,7 @@ from django.views.generic.edit import CreateView, UpdateView
 from django.views.generic import DetailView
 from django.urls import reverse_lazy
 from django.contrib import messages
-from sec2.utils import ListFilterView
+from sec2.utils import ListFilterView, get_filtro_roles, get_selected_rol_pk
 from django.urls import reverse_lazy
 from django.shortcuts import render
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
@@ -28,6 +29,8 @@ class CursoCreateView(LoginRequiredMixin, PermissionRequiredMixin,CreateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         tipo_curso = self.request.GET.get('tipo', None)
+        context['filter_form'] = get_filtro_roles(self.request)
+
         if tipo_curso == 'sec':
             context['titulo'] = "Alta de Curso del SEC 2"
         elif tipo_curso == 'convenio':
@@ -45,6 +48,10 @@ class CursoCreateView(LoginRequiredMixin, PermissionRequiredMixin,CreateView):
         return kwargs
     
     def get(self, request, *args, **kwargs):
+        filter_rol = get_filtro_roles(request)
+        rol = get_selected_rol_pk(filter_rol)
+        if rol is not None:
+            return redireccionar_detalle_rol(rol)
         tipo_curso = self.request.GET.get('tipo', None)
         if tipo_curso == 'sec':
             self.template_name = 'curso/curso_alta_sec.html'
@@ -124,6 +131,7 @@ class CursoDetailView(LoginRequiredMixin, PermissionRequiredMixin, DetailView):
         dictados = curso.dictado_set.prefetch_related('horarios').all()
         
         context['tiene_dictados'] = dictados.exists()
+        context['filter_form'] = get_filtro_roles(self.request)
 
         # Configurar la paginación
         paginator = Paginator(dictados, self.paginate_by)
@@ -139,7 +147,13 @@ class CursoDetailView(LoginRequiredMixin, PermissionRequiredMixin, DetailView):
         context['dictados'] = dictados
 
         return context
-
+    
+    def get(self, request, *args, **kwargs):
+        filter_rol = get_filtro_roles(request)
+        rol = get_selected_rol_pk(filter_rol)
+        if rol is not None:
+            return redireccionar_detalle_rol(rol)
+        return super().get(request, *args, **kwargs)
 ##--------------- CURSO LIST --------------------------------
 class CursoListView(PermissionRequiredMixin, LoginRequiredMixin, ListFilterView):
     model = Curso
@@ -156,8 +170,16 @@ class CursoListView(PermissionRequiredMixin, LoginRequiredMixin, ListFilterView)
         filter_form = CursoFilterForm(self.request.GET)
         context['filtros'] = filter_form
         context['titulo'] = "Cursos"
+        context['filter_form'] = get_filtro_roles(self.request)
         return context
-
+    
+    def get(self, request, *args, **kwargs):
+        filter_rol = get_filtro_roles(request)
+        rol = get_selected_rol_pk(filter_rol)
+        if rol is not None:
+            return redireccionar_detalle_rol(rol)
+        return super().get(request, *args, **kwargs)
+    
     def get_queryset(self):
         queryset = super().get_queryset()
         # Obtener los filtros del formulario
@@ -203,6 +225,7 @@ class CursoUpdateView(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
         context = super().get_context_data(**kwargs)
         tipo_curso = self.get_object().get_tipo_curso()  # Obtén el tipo de curso
         context['tipo_curso'] = tipo_curso
+        context['filter_form'] = get_filtro_roles(self.request)
         
         if tipo_curso == 'sec':
             context['titulo'] = "Modificar Curso del Sec"
@@ -223,6 +246,11 @@ class CursoUpdateView(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
         return kwargs
 
     def get(self, request, *args, **kwargs):
+        filter_rol = get_filtro_roles(request)
+        rol = get_selected_rol_pk(filter_rol)
+        if rol is not None:
+            return redireccionar_detalle_rol(rol)
+        
         self.object = self.get_object()
         requiere_certificado_medico = self.object.requiere_certificado_medico
         
@@ -409,9 +437,17 @@ class PagoProfesorCreateView(CreateView):
         titulares_con_clases_mes_pasado = obtenerTitularesConClasesEnMesPasado()
         profesores_unicos = obtenerProfesoresUnicos(titulares_con_clases_mes_pasado)
         context['profesores'] = profesores_unicos
-        context['titulo'] = "Comprobante de pago"
+        context['titulo'] = "Comprobante de pago del profesor"
+        context['filter_form'] = get_filtro_roles(self.request)
         return context
 
+    def get(self, request, *args, **kwargs):
+        filter_rol = get_filtro_roles(request)
+        rol = get_selected_rol_pk(filter_rol)
+        if rol is not None:
+            return redireccionar_detalle_rol(rol)
+        return super().get(request, *args, **kwargs)
+    
     def form_valid(self, form):
         enc_profesor = self.request.POST.get('profesor')
         total_a_pagar = self.request.POST.get('total_a_pagar')
@@ -472,8 +508,16 @@ class PagoProfesorListView(ListFilterView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['titulo'] = "Pago de profesor"
+        context['filter_form'] = get_filtro_roles(self.request)
         return context
-        
+
+    def get(self, request, *args, **kwargs):
+        filter_rol = get_filtro_roles(request)
+        rol = get_selected_rol_pk(filter_rol)
+        if rol is not None:
+            return redireccionar_detalle_rol(rol)
+        return super().get(request, *args, **kwargs)
+    
     def get_queryset(self):
         queryset = super().get_queryset()
         form = PagoProfesorFilterForm(self.request.GET)
@@ -573,10 +617,18 @@ class PagoAlumnoCreateView(CreateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         alumnos = obtenerAlumnosEnDictadoActivo()
-        context['titulo'] = "Comprobante de pago"
+        context['titulo'] = "Comprobante de pago del alumno"
         context['alumnos'] = alumnos
+        context['filter_form'] = get_filtro_roles(self.request)
         return context
 
+    def get(self, request, *args, **kwargs):
+        filter_rol = get_filtro_roles(request)
+        rol = get_selected_rol_pk(filter_rol)
+        if rol is not None:
+            return redireccionar_detalle_rol(rol)
+        return super().get(request, *args, **kwargs)
+    
     def form_valid(self, form):
         pk = self.request.POST.get('alumno')
         
@@ -650,8 +702,16 @@ class PagoAlumnoListView(ListFilterView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['titulo'] = "Pago de alumnos"
+        context['filter_form'] = get_filtro_roles(self.request)
         return context
-        
+
+    def get(self, request, *args, **kwargs):
+        filter_rol = get_filtro_roles(request)
+        rol = get_selected_rol_pk(filter_rol)
+        if rol is not None:
+            return redireccionar_detalle_rol(rol)
+        return super().get(request, *args, **kwargs)
+    
     def get_queryset(self):
         queryset = super().get_queryset()
         form = PagoProfesorFilterForm(self.request.GET)

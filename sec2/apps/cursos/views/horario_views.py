@@ -2,7 +2,8 @@ import datetime
 from django.views.generic.edit import CreateView
 from django.shortcuts import render, redirect
 from django.views.generic import DetailView
-from sec2.utils import ListFilterView
+from apps.afiliados.views import redireccionar_detalle_rol
+from sec2.utils import ListFilterView, get_filtro_roles, get_selected_rol_pk
 from django.contrib import messages
 
 from utils.funciones import mensaje_error, mensaje_exito
@@ -236,6 +237,11 @@ def asignar_aula(request, curso_pk, dictado_pk, horario_id):
         reservas__horario__hora_fin__gt=horario.hora_inicio
     )
     if request.method == 'POST':
+        filter_rol = get_filtro_roles(request)
+        rol = get_selected_rol_pk(filter_rol)
+
+        if rol is not None:
+            return redireccionar_detalle_rol(rol)
         aula_seleccionada_id = request.POST.get('aula_seleccionada')
         aula_seleccionada = get_object_or_404(Aula, pk=aula_seleccionada_id)
 
@@ -263,7 +269,7 @@ def asignar_aula(request, curso_pk, dictado_pk, horario_id):
             mensaje_error(request, f'{MSJ_HORARIO_RESERVA_AULA_ASIGNADA}')
             return redirect(reverse('cursos:dictado_detalle', kwargs={'curso_pk': curso_pk, 'dictado_pk': dictado_pk}))
         
-        return render(request, 'dictado/asignar_aula.html', {'aulas_disponibles': aulas_disponibles_con_capacidad, 'titulo' : titulo, 'curso_pk':curso_pk, 'dictado_pk':dictado_pk,'horario_id':horario_id})
+        return render(request, 'dictado/asignar_aula.html', {'aulas_disponibles': aulas_disponibles_con_capacidad, 'filter_form': get_filtro_roles(request), 'titulo' : titulo, 'curso_pk':curso_pk, 'dictado_pk':dictado_pk,'horario_id':horario_id})
 
 #-------------- CALCULA LA FECHA DE INICIO ----------------------------------
 

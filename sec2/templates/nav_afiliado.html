@@ -58,11 +58,15 @@
 <div class="menu">
   <!-- Botón desplegable para Pago -->
   <button class="submenu-toggle" data-submenu="pago">
-        <div class="button-content">
-      <span><i class="fa-solid fa-dollar-sign"></i> Pago de Cuotas</span>
+    <div class="button-content">
+      <span>
+        <i class="fa-solid fa-dollar-sign"></i> 
+        Pago de Cuotas
+      </span>
     </div>
     <i class="fa-solid fa-caret-down"></i>
   </button>
+
   <ul class="submenu" id="pago-submenu">
     <li>
       <a href="{% url 'afiliados:pagar_cuota_sindical' %}"><i class="fa-solid fa-sack-dollar"></i> Cuota sindical</a>
@@ -72,7 +76,7 @@
     </li>
   </ul>
 </div>
-<hr>
+<hr />
 
 {% comment %} BOTON DE SERVICIO {% endcomment %}
 <a class="enlace" id="enlaceReporte" href="{% url 'reportes:afiliados_historico' %}"><i class="fa-solid fa-chart-column"></i> Reportes</a>
