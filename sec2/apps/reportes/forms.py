@@ -39,10 +39,26 @@ class CursosListFilterForm(forms.Form):
         super().__init__(*args, **kwargs)
 
 
-class FinanzasEntreDosPeriodos(forms.Form):
-     periodo_1 = forms.CharField(max_length=4)
-     periodo_2 = forms.CharField(max_length=4)
+class YearcomparacionForm(forms.Form):
+    year1 = forms.CharField(
+        max_length=4,
+        validators=[RegexValidator(regex='^[0-9]{4}$', message='ingrese un año valdido')],
+        widget=forms.TextInput(attrs={'maxlength': 4, 'class': 'form-control', 'placeholder': 'Ingrese 1° año'})
+    )
+    year2 = forms.CharField(
+        max_length=4,
+        validators=[RegexValidator(regex='^[0-9]{4}$', message='Ingrese un año válido.')],
+        widget=forms.TextInput(attrs={'maxlength': 4, 'class': 'form-control', 'placeholder': 'Ingrese 2° año'})
+    )
 
+    def clean(self):
+        cleaned_data = super().clean()
+        year1 = cleaned_data.get('year1')
+        year2 = cleaned_data.get('year2')
+        if year1 and year2:
+            if year1 == year2:
+                raise forms.ValidationError("Los años deben ser distintos.")
+        return cleaned_data
 
 class YearForm(forms.Form):
     year = forms.CharField(

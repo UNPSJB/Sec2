@@ -1,6 +1,7 @@
 from django.utils import timezone
 from django.forms import ValidationError
 from django.contrib import messages
+from .choices import MONTH_CHOICES
 
 from utils.constants import ICON_CHECK, ICON_ERROR, ICON_TRIANGLE
 
@@ -53,3 +54,7 @@ def filter_by_estado(queryset, estado):
         if estado:
             return queryset.filter(estado__in=estado)
         return queryset
+
+def obtenerMes(number):
+    month_name = next(name for num, name in MONTH_CHOICES if num == number)
+    return  month_name 

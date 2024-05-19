@@ -1,6 +1,21 @@
 {% extends 'reporte_appAfiliados.html' %}
 
 {% block grafico %}
+
+<div class="form-group">
+   
+     <form class="d-flex" role="search" method="get" style="width:  80%; hight:20%;">
+    <label class="text-white" style="padding:10px"> ingrese un año : </label>
+      {{form_year.year}}
+    <button id="submit-button" class="btn btn-outline-success" type="submit" >
+        <i class="fa-solid fa-magnifying-glass"></i>
+    </button>
+
+     </form>
+</div>
+
+
+
 <div>
     <div class="container-fluid" style="background-color: grey;">
         <div class="row">
@@ -79,7 +94,7 @@
             type: 'column'
         },
         title: {
-            text: 'Reporte de afiliacion y desfiliaciones PERIODO 2024',
+            text: 'Reporte de afiliacion y desfiliaciones del año ' + {{year}} ,
             align: 'left'
         },
         subtitle: {

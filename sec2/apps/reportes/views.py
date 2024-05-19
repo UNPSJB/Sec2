@@ -4,7 +4,7 @@ from django.http import HttpRequest, JsonResponse
 from django.http.response import HttpResponse as HttpResponse
 from django.shortcuts import render
 import json
-
+from utils import choices , funciones
 from apps.afiliados.views import redireccionar_detalle_rol
 from apps.alquileres.models import Alquiler
 from django.views.generic import TemplateView
@@ -17,17 +17,18 @@ from apps.cursos.models import Curso, DetallePagoAlumno, Dictado
 from django.db.models import Count
 
 from apps.cursos.forms.curso_forms import CursoFilterForm 
-from apps.reportes.forms import CursosListFilterForm , FinanzasEntreDosPeriodos , YearForm
+from apps.reportes.forms import CursosListFilterForm , YearcomparacionForm , YearForm
 from sec2.utils import get_filtro_roles, get_selected_rol_pk
+from django.db.models import Q
 
 class AfiliadosReportesView(TemplateView):
     template_name = 'reporte_afiliados_historico.html'
 
-    def get_graph_afiliados(self):
+    def get_graph_afiliados(self, year):
         data_dados_baja = Counter()
         data_dados_alta = Counter()
         
-        afiliados_por_mes = Afiliado.objects.all()
+        afiliados_por_mes = Afiliado.objects.filter(Q(fechaAfiliacion__year=year) | Q(hasta__year=year))
         for afiliado in afiliados_por_mes:
             if afiliado.hasta:  # Confirmado
                 month = afiliado.hasta.month
@@ -45,21 +46,26 @@ class AfiliadosReportesView(TemplateView):
         categories = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre']
         
         return data_dados_alta_list, data_dados_baja_list , categories
-    
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        # context['titulo'] = 'Reportes de afiliados'
-        
-        # Get the data and categories for the graph
-        data_dados_alta_list, data_dados_baja_list, categories = self.get_graph_afiliados()
-        
-        # Add the data and categories to the context
+    def get_armar_contexto(self, data_dados_alta_list, data_dados_baja_list, categories):
+        context = dict()
         context['graph_afiliados'] = {
             'data_dados_alta_list': data_dados_alta_list,
             'data_dados_baja_list': data_dados_baja_list,
             'categories': categories,
             'y_axis_title': 'Total de alquileres',  # Y-axis title
         }
+        context['filter_form'] = get_filtro_roles(self.request)
+        return context
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        # context['titulo'] = 'Reportes de afiliados'
+        year = datetime.today().year
+        # Get the data and categories for the graph
+        context  = self.get_armar_contexto(*self.get_graph_afiliados(year))
+        
+        context['year'] = year
+        context['form_year'] = YearForm(self.request.GET) 
         context['filter_form'] = get_filtro_roles(self.request)
 
         return context
@@ -70,21 +76,33 @@ class AfiliadosReportesView(TemplateView):
 
         if rol is not None:
             return redireccionar_detalle_rol(rol)
+        
+        form = YearForm(request.GET)
+        if form.is_valid():
+            anio =  form.cleaned_data['year']
+            if anio is not None:
+                context = self.get_armar_contexto(*self.get_graph_afiliados(int(anio)))
+                context['year'] = int(anio)
+                context['form_year'] = form
+            return render(request, 'reporte_afiliados_historico.html', context)
 
         return super().get(request, *args, **kwargs)
-
+       
 
 class reportesView(TemplateView):
     template_name = 'reporte_alquileres_por_mes.html'
     
-    def get_graph_alquileres(self):
+    def get_graph_alquileres(self, anio):
 
         data_confirmados = Counter()
         data_enCurso = Counter()
         data_finalizados = Counter()
-        data_cancelados = Counter()
+        data_cancelados = Counter( )
 
-        alquileres_por_mes = Alquiler.objects.all()
+        fecha_inicio_anio = datetime(anio, 1, 1)
+        fecha_fin_anio = datetime(anio, 12, 31)
+
+        alquileres_por_mes = Alquiler.objects.filter(fecha_alquiler__gte=fecha_inicio_anio, fecha_alquiler__lte=fecha_fin_anio)
         
         # Counting rentals for each month and state
         for alquiler in alquileres_por_mes:
@@ -108,15 +126,11 @@ class reportesView(TemplateView):
         categories = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre']
         
         return data_confirmados_list, data_enCurso_list,  data_finalizados_list, data_cancelados_list, categories
+    
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        # context['titulo'] = 'Reportes de alquileres'
-        
-        # Get the data and categories for the graph
-        data_confirmados_list, data_enCurso_list, data_finalizados_list, data_cancelados_list, categories = self.get_graph_alquileres()
-        
-        # Add the data and categories to the context
+
+    def get_armar_contexto(self, data_confirmados_list, data_enCurso_list,  data_finalizados_list, data_cancelados_list, categories):
+        context = dict()
         context['graph_alquileres'] = {
             'data_confirmados_list': data_confirmados_list,
             'data_enCurso_list': data_enCurso_list,
@@ -126,7 +140,18 @@ class reportesView(TemplateView):
             'y_axis_title': 'Total de alquileres',  # Y-axis title
         }
         context['filter_form'] = get_filtro_roles(self.request)
+        context['form_year'] = YearForm(self.request.GET)
 
+        return context
+      
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        # context['titulo'] = 'Reportes de alquileres'
+        yearActual =datetime.today().year
+      
+        # Get the data and categories for the graph
+        context = self.get_armar_contexto(*self.get_graph_alquileres(yearActual))
+        context['year'] = yearActual
         return context
 
     def get(self, request, *args, **kwargs):
@@ -136,19 +161,27 @@ class reportesView(TemplateView):
         if rol is not None:
             return redireccionar_detalle_rol(rol)
 
+        form = YearForm(request.GET)
+        if form.is_valid():
+            anio =  form.cleaned_data['year']
+            if anio is not None:
+                context = self.get_armar_contexto(*self.get_graph_alquileres(int(anio)))
+                context['year'] = int(anio)
+            return render(request, 'reporte_alquileres_por_mes.html', context)  
+                
         return super().get(request, *args, **kwargs)
 
 class ReporteFinanzasCursosViews(TemplateView):
 
     template_name = "formulario_finanzas.html"
-
+  
     def get_pagos(self, year):
-        sumas_por_curso = defaultdict(Decimal)
+        sumas_por_mes = defaultdict(Decimal)
         pagos = DetallePagoAlumno.objects.filter(dictado__fecha__year=year)
         for pago in pagos:
-            nombre_curso = pago.dictado.curso.nombre
-            sumas_por_curso[nombre_curso] += pago.total
-        return [{'name': curso, 'data': [[curso, total]]} for curso, total in sumas_por_curso.items()]
+            mes = funciones.obtenerMes(int(pago.pago_alumno.fecha.month))
+            sumas_por_mes[mes] += pago.total
+        return [{'name': curso, 'data': [[curso, total]]} for curso, total in sumas_por_mes.items()]
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -168,7 +201,7 @@ class ReporteFinanzasCursosViews(TemplateView):
         print(pagos_data)
         context['year'] = year
         context['datos'] = pagos_data
-        context['form'] = FinanzasEntreDosPeriodos(self.request.GET)
+        context['form'] = YearcomparacionForm(self.request.GET)
                
 
         return context
@@ -176,9 +209,11 @@ class ReporteFinanzasCursosViews(TemplateView):
     def get(self, request, *args, **kwargs):
         filter_rol = get_filtro_roles(request)
         rol = get_selected_rol_pk(filter_rol)
-
+        form = YearcomparacionForm(request.GET)
+        print(form)
         if rol is not None:
             return redireccionar_detalle_rol(rol)
+               
 
         return super().get(request, *args, **kwargs)
 

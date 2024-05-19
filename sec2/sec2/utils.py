@@ -6,7 +6,6 @@ from django.shortcuts import get_object_or_404, redirect
 from django.views.generic.list import ListView
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, HTML
-
 from apps.afiliados.models import Afiliado, Familiar, RelacionFamiliar
 from apps.alquileres.models import Encargado
 from apps.cursos.models import Alumno, Profesor

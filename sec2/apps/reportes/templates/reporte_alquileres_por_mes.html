@@ -1,6 +1,20 @@
 {% extends 'reporte_appAlquiler.html' %}
 
 {% block grafico %}
+
+
+<div class="form-group">
+   
+     <form class="d-flex" role="search" method="get" style="width:  80%; hight:20%;">
+    <label class="text-white" style="padding:10px"> ingrese un año : </label>
+      {{form_year.year}}
+    <button id="submit-button" class="btn btn-outline-success" type="submit" >
+        <i class="fa-solid fa-magnifying-glass"></i>
+    </button>
+
+     </form>
+</div>
+
 <div>
     <div class="container-fluid" style="background-color: grey; border-radius: 10px;">
         <div class="row">
@@ -11,6 +25,19 @@
     </div>
 </div>
 
+<script>
+         document.getElementById('id_year').addEventListener('keypress', function (e) {
+            // Obtener el carácter de la tecla presionada
+            var char = String.fromCharCode(e.which);
+
+            // Verificar si el carácter no es un número (0-9)
+            if (!/[0-9]/.test(char)) {
+                e.preventDefault(); // Evitar que el carácter se ingrese en el campo
+            }
+        });
+    
+</script>
+
 <script type="application/javascript">
     // Obtén los datos y las categorías del contexto
     var data_confirmados_list = {{ graph_alquileres.data_confirmados_list|safe }};
@@ -19,6 +46,7 @@
     var data_cancelados_list = {{ graph_alquileres.data_cancelados_list|safe }};
 
     var categories = {{ graph_alquileres.categories|safe }};
+
     var y_axis_title = "{{ graph_alquileres.y_axis_title }}";
 
     Highcharts.chart('graficoPrueba', 
@@ -27,7 +55,7 @@
             type: 'column'
         },
         title: {
-            text: 'Reporte de alquileres del año', 
+            text: 'Reporte de alquileres del año '+ {{year}}, 
             align: 'left'
         },
         subtitle: {

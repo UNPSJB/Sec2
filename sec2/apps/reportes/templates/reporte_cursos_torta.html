@@ -8,12 +8,11 @@
 <div class="form-group">
    
      <form class="d-flex" role="search" method="get" style="width:  80%; hight:20%;">
-    {% comment %} {{filter_form.curso_nombre}}   {% endcomment %}
     <label class="text-white" style="padding:10px"> ingrese un año : </label>
-      {{filter_form.year}}
+      {{form_year.year}}
     <button id="submit-button" class="btn btn-outline-success" type="submit" >
         <i class="fa-solid fa-magnifying-glass"></i>
-        </button>
+    </button>
 
      </form>
 </div>
@@ -39,7 +38,7 @@
 
 
   <script>
-         document.getElementById('id_anio').addEventListener('keypress', function (e) {
+         document.getElementById('id_year').addEventListener('keypress', function (e) {
             // Obtener el carácter de la tecla presionada
             var char = String.fromCharCode(e.which);
 
