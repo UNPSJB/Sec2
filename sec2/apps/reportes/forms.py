@@ -1,21 +1,52 @@
 from datetime import timezone
+from datetime import datetime
 from django import forms
+from django.core.validators import RegexValidator
 from selectable.forms import AutoCompleteSelectField, AutoComboboxSelectWidget
+
 from apps.cursos.lookups import CursoLookup
 
+
+def obtenerAnio():
+    return str(datetime.today().year)
+
+
 class CursosListFilterForm(forms.Form):
-    anio = forms.CharField(max_length=4, required=False)
+    
+
+    anio = forms.CharField(empty_value=obtenerAnio(), max_length=4)
 
     curso_nombre = AutoCompleteSelectField(
+
         lookup_class=CursoLookup,
+
         required=False,
+
         widget=AutoComboboxSelectWidget(CursoLookup, attrs={'class': 'form-control'})  # Proporcionar 'lookup_class' y 'attrs'
     )
   
 
+
     def get_query(self, request, term):
+
         queryset = super().get_query(request, term)
+
         return queryset.order_by('curso__nombre')[:5] 
     
+
     def __init__(self, *args, **kwargs):
+
         super().__init__(*args, **kwargs)
+
+
+class FinanzasEntreDosPeriodos(forms.Form):
+     periodo_1 = forms.CharField(max_length=4)
+     periodo_2 = forms.CharField(max_length=4)
+
+
+class YearForm(forms.Form):
+    year = forms.CharField(
+        max_length=4,
+        validators=[RegexValidator(regex='^[0-9]{4}$', message='Ingrese un año válido.')],
+        widget=forms.TextInput(attrs={'maxlength': 4})
+       )

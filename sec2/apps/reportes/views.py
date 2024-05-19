@@ -3,6 +3,7 @@ from typing import Any
 from django.http import HttpRequest, JsonResponse
 from django.http.response import HttpResponse as HttpResponse
 from django.shortcuts import render
+import json
 
 from apps.afiliados.views import redireccionar_detalle_rol
 from apps.alquileres.models import Alquiler
@@ -15,8 +16,8 @@ from apps.afiliados.models import Afiliado
 from apps.cursos.models import Curso, DetallePagoAlumno, Dictado
 from django.db.models import Count
 
-from apps.cursos.forms.curso_forms import CursoFilterForm
-from apps.reportes.forms import CursosListFilterForm
+from apps.cursos.forms.curso_forms import CursoFilterForm 
+from apps.reportes.forms import CursosListFilterForm , FinanzasEntreDosPeriodos , YearForm
 from sec2.utils import get_filtro_roles, get_selected_rol_pk
 
 class AfiliadosReportesView(TemplateView):
@@ -127,7 +128,7 @@ class reportesView(TemplateView):
         return context
 
 class ReporteFinanzasCursosViews(TemplateView):
-     template_name = "reporte_cursos_finanzas.html"
+     template_name = "formulario_finanzas.html"
 
 
      def get_pagos(self, year):
@@ -154,27 +155,39 @@ class ReporteFinanzasCursosViews(TemplateView):
             print(pagos_data)
             context['year'] = year
             context['datos'] = pagos_data
+            context['form'] = FinanzasEntreDosPeriodos(self.request.GET)
             return context
 
 class ReporteCursosViews(TemplateView):
     template_name = 'reporte_cursos_torta.html'
+    def get_curso_destacado(self, dictados):
+        max_inscriptos = 0
+        curso_max = None
+        
+        for curso in dictados:
+            total_inscriptos = curso['afiliados_count'] + curso['familiares_count'] + curso['alumnos_count']
+            if total_inscriptos > max_inscriptos:
+                max_inscriptos = total_inscriptos
+                curso_max = curso
+        
+        return curso_max
 
     def get(self, request: HttpRequest, *args: Any, **kwargs: Any) -> HttpResponse:
-        filterCurso = CursosListFilterForm(request.GET)
-        if filterCurso.is_valid():
-            id = filterCurso.cleaned_data['curso_nombre']
-            anio =  filterCurso.cleaned_data['anio']
-            if id is not None:
-                # id = filterCurso.cleaned_data['curso_nombre']
-                print("id ----> ", id )
-                print("id ----> ", id.es_convenio )
-                #Curso.objects.get(nombre = id)
-                print()
+        form = YearForm(request.GET)
+        if form.is_valid():
+            anio =  form.cleaned_data['year']
             if anio is not None:
                dictados = self.get_dictados_summary(anio)
                contexto = self.get_context_data()
                contexto['datos'] = dictados
                contexto['year'] = anio
+               if dictados:
+                    dest = self.get_curso_destacado(dictados)
+                    contexto['dest'] = dest
+                    contexto['historial_dest'] =  self.obtener_historial_curso_dest(dest['curso__nombre'], int(anio))
+               else:
+                    contexto['historial_dest'] = ""
+
               
                return render(request, 'reporte_cursos_torta.html', contexto)
     
@@ -198,6 +211,64 @@ class ReporteCursosViews(TemplateView):
     
 
 
+    def obtenerCurso(self, nombre, year):
+            return      list(Dictado.objects.
+                        filter(fecha__year=year, curso__nombre = nombre)
+                        .values('curso__nombre')
+                        .annotate(
+                        afiliados_count=Count('afiliados'),
+                        familiares_count=Count('familiares'),
+                        profesores_count=Count('profesores_dictados_inscriptos'),
+                        alumnos_count=Count('alumnos'),
+            
+                        ).values('curso__nombre', 'afiliados_count', 'familiares_count', 'profesores_count', 'alumnos_count')
+                        )
+     
+
+    def obtnerJsonHistorial(self, hist):
+        series = []
+        for anio, datas in hist.items():
+              
+              print("año: " + str(anio))
+              print("data: ")
+            
+              if datas:
+                print("entre datas")
+                series_data = []
+                for data in datas:
+                    series_data.extend([
+                        data['afiliados_count'], 
+                        data['familiares_count'], 
+                        data['profesores_count'], 
+                        data['alumnos_count']
+                    ])
+                print("series data")
+                print(series_data)    
+                series.append({
+                        'name': f'Year {anio}',
+                        'data':series_data 
+                    
+                    })
+              else:
+                series.append({
+                            'name': f'Year {anio}',
+                            'data':[0,0,0,0]
+                        
+                            })
+
+    
+            # Convertir la lista de series a JSON
+        return json.dumps(series)
+
+    def obtener_historial_curso_dest(self, nombre, year):
+         anio_hitorial = year
+         historial = {}
+         while(anio_hitorial > year-3):
+            historial[anio_hitorial] = self.obtenerCurso(nombre, anio_hitorial)
+            anio_hitorial -= 1
+         return self.obtnerJsonHistorial(historial) 
+
+    
     def get_context_data(self, **kwargs) :
             context = super().get_context_data(**kwargs)
        
@@ -212,8 +283,17 @@ class ReporteCursosViews(TemplateView):
             dictados_data = self.get_dictados_summary(year)
             context['year'] = year
             context['datos'] = dictados_data
-            # context['titulo'] = 
-            context['filter_form'] = CursosListFilterForm(self.request.GET)  # Agrega el formulario al contexto
+            
+            dest = self.get_curso_destacado(dictados_data)
+            context['dest'] = dest
+            # context['hist_curso_dest']
+            
+            print("obtenido---------")
+
+            context['historial_dest'] =  self.obtener_historial_curso_dest(dest['curso__nombre'], year)
+
+            context['filter_form'] = YearForm(self.request.GET)  # Agrega el formulario al contexto
+
           
 
             return context

@@ -1,0 +1,23 @@
+{% extends 'reporte_appCurso.html' %}
+{% load crispy_forms_tags %}
+{% load static %}
+{% block grafico %}
+
+<div class="cuadrado-background">
+  <br />
+  <h3 class="titulo text-white">Ingrese el año para hacer el informe comparativo</h3>
+  <div class="row container justify-content-center">
+    <div class="border curso-form rounded-4" style="width: 40%; background:white; padding-left: 20px; padding-top: 20px;">
+     <form>
+     {{form.periodo_1}}
+      {{form.periodo_1}}
+     <button id="submit-button" class="btn btn-outline-success" type="submit" >
+        <i class="fa-solid fa-magnifying-glass"></i>
+        </button>
+     </form>
+    </div>
+  </div>
+    </div>
+
+
+{% endblock %}
