@@ -1,5 +1,7 @@
 from decimal import Decimal
-from django.http import JsonResponse
+from typing import Any
+from django.http import HttpRequest, JsonResponse
+from django.http.response import HttpResponse as HttpResponse
 from django.shortcuts import render
 
 from apps.afiliados.views import redireccionar_detalle_rol
@@ -10,9 +12,11 @@ from collections import Counter, defaultdict
 from django.db.models import Count
 
 from apps.afiliados.models import Afiliado
-from apps.cursos.models import DetallePagoAlumno, Dictado
+from apps.cursos.models import Curso, DetallePagoAlumno, Dictado
 from django.db.models import Count
 
+from apps.cursos.forms.curso_forms import CursoFilterForm
+from apps.reportes.forms import CursosListFilterForm
 from sec2.utils import get_filtro_roles, get_selected_rol_pk
 
 class AfiliadosReportesView(TemplateView):
@@ -155,7 +159,30 @@ class ReporteFinanzasCursosViews(TemplateView):
 class ReporteCursosViews(TemplateView):
     template_name = 'reporte_cursos_torta.html'
 
+    def get(self, request: HttpRequest, *args: Any, **kwargs: Any) -> HttpResponse:
+        filterCurso = CursosListFilterForm(request.GET)
+        if filterCurso.is_valid():
+            id = filterCurso.cleaned_data['curso_nombre']
+            anio =  filterCurso.cleaned_data['anio']
+            if id is not None:
+                # id = filterCurso.cleaned_data['curso_nombre']
+                print("id ----> ", id )
+                print("id ----> ", id.es_convenio )
+                #Curso.objects.get(nombre = id)
+                print()
+            if anio is not None:
+               dictados = self.get_dictados_summary(anio)
+               contexto = self.get_context_data()
+               contexto['datos'] = dictados
+               contexto['year'] = anio
+              
+               return render(request, 'reporte_cursos_torta.html', contexto)
     
+   
+        return super().get(request, *args, **kwargs)
+    
+
+
     def get_dictados_summary(self, year):
         return list( Dictado.objects.
                     filter(fecha__year=year)
@@ -185,6 +212,8 @@ class ReporteCursosViews(TemplateView):
             dictados_data = self.get_dictados_summary(year)
             context['year'] = year
             context['datos'] = dictados_data
+            # context['titulo'] = 
+            context['filter_form'] = CursosListFilterForm(self.request.GET)  # Agrega el formulario al contexto
+          
 
-            print(context)
             return context

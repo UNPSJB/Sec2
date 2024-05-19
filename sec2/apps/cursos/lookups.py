@@ -2,9 +2,20 @@ from __future__ import unicode_literals
 
 from selectable.base import ModelLookup, LookupBase
 from apps.alquileres.models import Salon, Servicio
-from apps.cursos.models import Actividad, Alumno, Profesor
+from apps.cursos.models import Actividad, Alumno, Curso, Profesor
 
 from selectable.registry import registry
+
+
+class CursoLookup(ModelLookup):
+    model = Curso
+    search_fields = ('nombre__icontains', )
+
+    def get_query(self, request, term):
+        queryset = super().get_query(request, term)
+        return queryset.order_by('nombre')[:5] 
+
+registry.register(CursoLookup)
 
 class ActividadNombreLookup(LookupBase):
     def get_query(self, request, term):
