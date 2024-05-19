@@ -125,38 +125,64 @@ class reportesView(TemplateView):
             'categories': categories,
             'y_axis_title': 'Total de alquileres',  # Y-axis title
         }
+        context['filter_form'] = get_filtro_roles(self.request)
+
         return context
 
+    def get(self, request, *args, **kwargs):
+        filter_rol = get_filtro_roles(request)
+        rol = get_selected_rol_pk(filter_rol)
+
+        if rol is not None:
+            return redireccionar_detalle_rol(rol)
+
+        return super().get(request, *args, **kwargs)
+
 class ReporteFinanzasCursosViews(TemplateView):
-     template_name = "formulario_finanzas.html"
 
+    template_name = "formulario_finanzas.html"
 
-     def get_pagos(self, year):
-         sumas_por_curso = defaultdict(Decimal)
-         pagos = DetallePagoAlumno.objects.filter(dictado__fecha__year=year)
-         for pago in pagos:
-              nombre_curso = pago.dictado.curso.nombre
-              sumas_por_curso[nombre_curso] += pago.total
+    def get_pagos(self, year):
+        sumas_por_curso = defaultdict(Decimal)
+        pagos = DetallePagoAlumno.objects.filter(dictado__fecha__year=year)
+        for pago in pagos:
+            nombre_curso = pago.dictado.curso.nombre
+            sumas_por_curso[nombre_curso] += pago.total
+        return [{'name': curso, 'data': [[curso, total]]} for curso, total in sumas_por_curso.items()]
 
-         return [{'name': curso, 'data': [[curso, total]]} for curso, total in sumas_por_curso.items()]
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        year = datetime.now().year
+        # Asegúrate de convertir el año a entero, ya que los parámetros GET son strings
+        try:
+            year = int(year)
+        except ValueError:
+            return JsonResponse({'error': 'Invalid year format'}, status=400)
 
-     def get_context_data(self, **kwargs):
-            context = super().get_context_data(**kwargs)
+        pagos_data = self.get_pagos(year)
+        print(pagos_data)
+        context['year'] = year
+        context['datos'] = pagos_data
+        context['filter_form'] = get_filtro_roles(self.request)
+        pagos_data = self.get_pagos(year)
+        print(pagos_data)
+        context['year'] = year
+        context['datos'] = pagos_data
+        context['form'] = FinanzasEntreDosPeriodos(self.request.GET)
+               
+
+        return context
+
+    def get(self, request, *args, **kwargs):
+        filter_rol = get_filtro_roles(request)
+        rol = get_selected_rol_pk(filter_rol)
+
+        if rol is not None:
+            return redireccionar_detalle_rol(rol)
+
+        return super().get(request, *args, **kwargs)
+
         
-            year = datetime.now().year
-
-            # Asegúrate de convertir el año a entero, ya que los parámetros GET son strings
-            try:
-                year = int(year)
-            except ValueError:
-                return JsonResponse({'error': 'Invalid year format'}, status=400)
-
-            pagos_data = self.get_pagos(year)
-            print(pagos_data)
-            context['year'] = year
-            context['datos'] = pagos_data
-            context['form'] = FinanzasEntreDosPeriodos(self.request.GET)
-            return context
 
 class ReporteCursosViews(TemplateView):
     template_name = 'reporte_cursos_torta.html'
@@ -209,6 +235,7 @@ class ReporteCursosViews(TemplateView):
         ).values('curso__nombre', 'afiliados_count', 'familiares_count', 'profesores_count', 'alumnos_count')
         )
     
+
 
 
     def obtenerCurso(self, nombre, year):
@@ -268,6 +295,7 @@ class ReporteCursosViews(TemplateView):
             anio_hitorial -= 1
          return self.obtnerJsonHistorial(historial) 
 
+
     
     def get_context_data(self, **kwargs) :
             context = super().get_context_data(**kwargs)
@@ -291,9 +319,7 @@ class ReporteCursosViews(TemplateView):
             print("obtenido---------")
 
             context['historial_dest'] =  self.obtener_historial_curso_dest(dest['curso__nombre'], year)
-
-            context['filter_form'] = YearForm(self.request.GET)  # Agrega el formulario al contexto
-
-          
+            context['filter_form'] = get_filtro_roles(self.request)   
+            context['form_year'] = YearForm(self.request.GET)  # Agrega el formulario al contexto
 
             return context

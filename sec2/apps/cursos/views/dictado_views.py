@@ -3,12 +3,14 @@ from django.views import View
 from django.views.generic import DetailView
 from django.views.generic.edit import CreateView, UpdateView
 from apps.afiliados.models import Afiliado, Familiar
+from apps.afiliados.views import redireccionar_detalle_rol
 from apps.alquileres.models import Encargado
 from apps.cursos.lookups import ProfesorCapacitadoDniLookup
 from apps.cursos.views.curso_views import getObjectRolTipo, obtenerDictados, obtenerUltimoDiaMesAnterior
 from apps.personas.forms import PersonaForm
 
 from apps.personas.models import Persona, Rol
+from sec2.utils import get_filtro_roles, get_selected_rol_pk
 from utils.funciones import mensaje_advertencia, mensaje_error, mensaje_exito
 from ..models import Actividad, Alumno, Clase, Curso, DetallePagoAlumno, Dictado, ListaEspera, PagoAlumno, Titular, Horario, Reserva
 from utils.constants import *
@@ -38,8 +40,16 @@ class DictadoCreateView(PermissionRequiredMixin, LoginRequiredMixin, CreateView)
         actividad_curso = context['curso'].actividad
         context['profesores_capacitados'] = Profesor.objects.filter(actividades=actividad_curso)
         context['profesores_lookup'] = ProfesorCapacitadoDniLookup().get_query(self.request, '', actividad_curso)
+        context['filter_form'] = get_filtro_roles(self.request)
         return context
 
+    def get(self, request, *args, **kwargs):
+        filter_rol = get_filtro_roles(request)
+        rol = get_selected_rol_pk(filter_rol)
+        if rol is not None:
+            return redireccionar_detalle_rol(rol)
+        return super().get(request, *args, **kwargs)
+    
     def form_valid(self, form):
         # Obtén el curso asociado al dictado
         curso = get_object_or_404(Curso, pk=self.kwargs.get('pk'))
@@ -149,6 +159,7 @@ class DictadoDetailView(PermissionRequiredMixin, LoginRequiredMixin, DetailView)
         context['curso'] = curso
         context['horarios'] = horarios
         context['hay_reserva'] = hay_reserva
+        context['filter_form'] = get_filtro_roles(self.request)
         context['nombre_profesor'] = (
             f"{titular.profesor.persona.nombre}, "
             f"{titular.profesor.persona.apellido}"
@@ -251,7 +262,15 @@ class DictadoDetailView(PermissionRequiredMixin, LoginRequiredMixin, DetailView)
         else:
             return None
         
+    def get(self, request, *args, **kwargs):
+        filter_rol = get_filtro_roles(request)
+        rol = get_selected_rol_pk(filter_rol)
 
+        if rol is not None:
+            return redireccionar_detalle_rol(rol)
+
+        return super().get(request, *args, **kwargs)
+    
     def get_titular(self, dictado):
         try:
             titular = dictado.titular_set.get()  # Acceder al titular asociado al dictado

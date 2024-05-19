@@ -1,7 +1,9 @@
 from django.views.generic.edit import CreateView, UpdateView
 from django.views.generic import ListView
 
+from apps.afiliados.views import redireccionar_detalle_rol
 from apps.cursos.views.aula_views import existenDictadosVigentes
+from sec2.utils import get_filtro_roles, get_selected_rol_pk
 from utils.funciones import mensaje_advertencia, mensaje_error, mensaje_exito
 from ..models import Actividad, Curso, Dictado
 from ..forms.actividad_forms import *
@@ -31,7 +33,10 @@ class GestionActividadView(LoginRequiredMixin, PermissionRequiredMixin, CreateVi
         context['titulo'] = "Gestión de Actividad"
         context['form'] = self.get_form()
         context['filtros'] = ActividadFilterForm()
+        context['filter_form'] = get_filtro_roles(self.request)
         return context
+
+
 
     def get_success_url(self):
         return reverse_lazy('cursos:gestion_actividad')
@@ -60,7 +65,12 @@ class GestionActividadView(LoginRequiredMixin, PermissionRequiredMixin, CreateVi
         return queryset.order_by('nombre')
 
     def get(self, request, *args, **kwargs):
+        filter_rol = get_filtro_roles(request)
+        rol = get_selected_rol_pk(filter_rol)
+        if rol is not None:
+            return redireccionar_detalle_rol(rol)
         self.object_list = self.get_queryset()
+        
         return super().get(request, *args, **kwargs)
 
 ## ------------ ACTIVIDAD DETALLE -------------------
@@ -77,10 +87,19 @@ class ActividadDetailView(LoginRequiredMixin, PermissionRequiredMixin, DetailVie
         cursos = Curso.objects.all().filter(actividad=actividad)
         context['titulo'] = 'Detalle de Actividad'
         context['tituloListado'] = 'Cursos con actividad'
-
         context['cursos'] = cursos
-        return context
+        context['filter_form'] = get_filtro_roles(self.request)
 
+        return context
+    
+    def get(self, request, *args, **kwargs):
+        filter_rol = get_filtro_roles(request)
+        rol = get_selected_rol_pk(filter_rol)
+
+        if rol is not None:
+            return redireccionar_detalle_rol(rol)
+
+        return super().get(request, *args, **kwargs)
 ## ------------ ACTIVIDAD UPDATE -------------------
 class ActividadUpdateView(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
     model = Actividad
@@ -93,7 +112,15 @@ class ActividadUpdateView(LoginRequiredMixin, PermissionRequiredMixin, UpdateVie
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['titulo'] = "Modificar Actividad"
+        context['filtcer_form'] = get_filtro_roles(self.request)
         return context
+    
+    def get(self, request, *args, **kwargs):
+        filter_rol = get_filtro_roles(request)
+        rol = get_selected_rol_pk(filter_rol)
+        if rol is not None:
+            return redireccionar_detalle_rol(rol)
+        return super().get(request, *args, **kwargs)
 
     def form_valid(self, form):
         actividad = form.save()

@@ -1,5 +1,5 @@
 from django.shortcuts import get_object_or_404, render
-from apps.afiliados.views import existe_persona_activa
+from apps.afiliados.views import existe_persona_activa, redireccionar_detalle_rol
 from apps.alquileres.forms import *
 from django.template import loader
 from django.http import HttpResponse
@@ -15,7 +15,7 @@ from apps.personas.models import Rol
 from utils.funciones import mensaje_advertencia, mensaje_error, mensaje_exito  
 from .models import Alquiler, Salon, Servicio, Encargado, Afiliado, Pago_alquiler
 from .forms import *
-from sec2.utils import ListFilterView
+from sec2.utils import ListFilterView, get_filtro_roles, get_selected_rol_pk
 from django.db import transaction  # Agrega esta línea para importar el módulo transaction
 from django.urls import reverse
 from django.http import HttpResponseRedirect
@@ -44,9 +44,18 @@ class EncargadoCreateView(LoginRequiredMixin, PermissionRequiredMixin, CreateVie
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['titulo'] = self.title  # Agrega el título al contexto
-        # Verificar si hay alguna actividad
+        context['filter_form'] = get_filtro_roles(self.request)
         return context
+    
+    def get(self, request, *args, **kwargs):
+        filter_rol = get_filtro_roles(request)
+        rol = get_selected_rol_pk(filter_rol)
 
+        if rol is not None:
+            return redireccionar_detalle_rol(rol)
+
+        return super().get(request, *args, **kwargs)
+    
     def form_valid(self, form):
         dni = form.cleaned_data["dni"]
         if existe_persona_activa(self, dni):
@@ -108,8 +117,10 @@ class EncargadoListView(LoginRequiredMixin, PermissionRequiredMixin, ListFilterV
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['titulo'] = "Encargados"
+        context['filter_form'] = get_filtro_roles(self.request)
         return context
-
+    
+    
     def get_queryset(self):
         queryset = super().get_queryset()
         form = EncargadoFilterForm(self.request.GET)
@@ -194,6 +205,7 @@ class GestionServicioView(PermissionRequiredMixin, LoginRequiredMixin, CreateVie
         context['titulo'] = "Gestión de Servicio"
         context['form'] = self.get_form()
         context['filtros'] = ServicioFilterForm()
+        context['filter_form'] = get_filtro_roles(self.request)
         return context
 
     def get_success_url(self):
@@ -209,6 +221,12 @@ class GestionServicioView(PermissionRequiredMixin, LoginRequiredMixin, CreateVie
         return redirect('cursos:gestion_servicio')
     
     def get(self, request, *args, **kwargs):
+        filter_rol = get_filtro_roles(request)
+        rol = get_selected_rol_pk(filter_rol)
+
+        if rol is not None:
+            return redireccionar_detalle_rol(rol)
+        
         self.object_list = self.get_queryset()
         return super().get(request, *args, **kwargs)
 
@@ -334,8 +352,18 @@ class SalonCreateView(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
         context = super().get_context_data(**kwargs)
         context['titulo'] = self.title
         context['servicios'] = Servicio.objects.all()
+        context['filter_form'] = get_filtro_roles(self.request)
         return context
 
+    def get(self, request, *args, **kwargs):
+        filter_rol = get_filtro_roles(request)
+        rol = get_selected_rol_pk(filter_rol)
+
+        if rol is not None:
+            return redireccionar_detalle_rol(rol)
+
+        return super().get(request, *args, **kwargs)
+    
     def form_valid(self, form):
         if 'guardar_y_recargar' in self.request.POST:
                 mensaje_exito(self.request, f'Alta de salón exitoso')
@@ -383,12 +411,22 @@ class SalonesListView(LoginRequiredMixin, PermissionRequiredMixin, ListFilterVie
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['titulo'] = "Salones"
+        context['filter_form'] = get_filtro_roles(self.request)
         return context
 
     def get_success_url(self):
         if self.request.POST['submit'] == "Guardar y Crear Salon":
             return reverse_lazy('alquiler:salon_crear', args=[self.object.pk])
         return super().get_success_url()        
+
+    def get(self, request, *args, **kwargs):
+        filter_rol = get_filtro_roles(request)
+        rol = get_selected_rol_pk(filter_rol)
+
+        if rol is not None:
+            return redireccionar_detalle_rol(rol)
+
+        return super().get(request, *args, **kwargs)
     
     def get_queryset(self):
         queryset = super().get_queryset()
@@ -628,8 +666,18 @@ class AlquilieresListView(PermissionRequiredMixin, LoginRequiredMixin, ListFilte
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        context['filter_form'] = get_filtro_roles(self.request)
         # context['titulo'] = "Listado de Alquileres"
         return context
+    
+    def get(self, request, *args, **kwargs):
+        filter_rol = get_filtro_roles(request)
+        rol = get_selected_rol_pk(filter_rol)
+
+        if rol is not None:
+            return redireccionar_detalle_rol(rol)
+
+        return super().get(request, *args, **kwargs)
     
     def get_queryset(self):
         queryset = super().get_queryset()

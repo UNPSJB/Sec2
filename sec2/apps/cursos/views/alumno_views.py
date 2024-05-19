@@ -5,7 +5,7 @@ import uuid
 
 from django.http import HttpResponse
 from apps.afiliados.models import Afiliado, Familiar
-from apps.afiliados.views import existe_persona_activa
+from apps.afiliados.views import existe_persona_activa, redireccionar_detalle_rol
 
 from apps.cursos.models import Clase
 from apps.personas.models import Rol
@@ -16,7 +16,7 @@ from ..forms.curso_forms import *
 from ..forms.dictado_forms import *
 from django.urls import reverse_lazy
 from django.views.generic.edit import CreateView
-from sec2.utils import ListFilterView
+from sec2.utils import ListFilterView, get_filtro_roles, get_selected_rol_pk
 from django.shortcuts import redirect
 from utils.constants import *
 from django.contrib import messages
@@ -272,8 +272,17 @@ class AlumnosListView(LoginRequiredMixin,PermissionRequiredMixin, ListFilterView
         filter_form = AlumnoFilterForm(self.request.GET)
         context['filtros'] = filter_form
         context['titulo'] = "Listado de Alumnos "
-        return context
+        context['filter_form'] = get_filtro_roles(self.request)
 
+        return context
+    
+    def get(self, request, *args, **kwargs):
+        filter_rol = get_filtro_roles(request)
+        rol = get_selected_rol_pk(filter_rol)
+        if rol is not None:
+            return redireccionar_detalle_rol(rol)
+        return super().get(request, *args, **kwargs)
+    
     def get_queryset(self):
         queryset = super().get_queryset()
         dni = self.request.GET.get('dni')
@@ -295,7 +304,15 @@ class AlumnoDetailView(PermissionRequiredMixin, LoginRequiredMixin, DetailView):
         context['titulo'] = "Detalle del alumno"
         context['rol'] = rol
         context['tituloListado'] = 'Dicados Inscriptos'
+        context['filter_form'] = get_filtro_roles(self.request)
         return context
+    
+    def get(self, request, *args, **kwargs):
+        filter_rol = get_filtro_roles(request)
+        rol = get_selected_rol_pk(filter_rol)
+        if rol is not None:
+            return redireccionar_detalle_rol(rol)
+        return super().get(request, *args, **kwargs)
 
 def alumno_eliminar(request, pk):
     alumno = get_object_or_404(Alumno,pk=pk)

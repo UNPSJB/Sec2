@@ -41,7 +41,12 @@ class ProfesorPersonaForm(forms.ModelForm):
 
 ########### PROFESOR UPDATE ##############################################
 class ProfesorUpdateForm(forms.ModelForm):
-
+    actividades = forms.ModelMultipleChoiceField(
+        queryset=Actividad.objects.all().order_by('nombre'),
+        widget=forms.CheckboxSelectMultiple(attrs={'class': 'actividades-columns'}),
+        required=False
+    )
+    
     class Meta:
         model = Profesor
         fields = '__all__'

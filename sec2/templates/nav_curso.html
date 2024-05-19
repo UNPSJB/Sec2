@@ -99,18 +99,21 @@
 </div>
 
 
+<hr />
 
 <div class="menu">
   <!-- Botón desplegable para Profesor -->
-  <button class="submenu-toggle" data-submenu="reportes"> 
+  <button class="submenu-toggle" data-submenu="reportes" id="enlaceReporte"> 
     <div class="button-content">
       <span>
-        <i class="fa-solid fa-chart-column"></i>
-         Reportes</span>
+        <i class="fa-solid fa-chart-column"></i> 
+        Reportes
+      </span>
     </div>
-  <i class="fa-solid fa-caret-down"></i>
-</button>
-  <ul class="submenu" id="reportes-submenu">
+    <i class="fa-solid fa-caret-down"></i>
+  </button>
+  
+  <ul class="submenu" id="pago-submenu">
     <li>
       <a href="{% url 'reportes:cursos_finanzas' %}"><i class="fa-solid fa-chart-column"></i> Reporte Finanzas</a>
     </li>

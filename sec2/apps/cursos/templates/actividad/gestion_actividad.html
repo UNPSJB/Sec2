@@ -3,8 +3,6 @@
 {% load static %}
 
 {% block alta %}
-
-
   <form method="post" action="{% url 'cursos:gestion_actividad' %}">
     {% csrf_token %}
     <div class="row">
