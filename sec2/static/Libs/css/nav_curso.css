@@ -268,3 +268,10 @@ hr {
     background-color: #51829B;
     border: 2px solid #51829B;
 }
+
+#enlaceDocTecnico,
+#enlaceManualUsuario{
+    padding: 7px;
+    padding-top: 0px;
+    padding-bottom: 0px;
+}
