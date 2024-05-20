@@ -20,7 +20,7 @@ from apps.cursos.forms.curso_forms import CursoFilterForm
 from apps.reportes.forms import CursosListFilterForm , YearcomparacionForm , YearForm
 from sec2.utils import get_filtro_roles, get_selected_rol_pk
 from django.db.models import Q
-
+from django.db.models.functions import ExtractMonth
 class AfiliadosReportesView(TemplateView):
     template_name = 'reporte_afiliados_historico.html'
 
@@ -174,46 +174,129 @@ class reportesView(TemplateView):
 class ReporteFinanzasCursosViews(TemplateView):
 
     template_name = "formulario_finanzas.html"
-  
+    
+
+    def get_pagos_detallados(self, year):
+        pagos_detall = []
+        pagos = DetallePagoAlumno.objects.filter(dictado__fecha__year=year)
+        for pago in pagos:
+            persona = pago.pago_alumno.rol.persona
+            nombre = persona.nombre
+            apellido = persona.apellido
+            fecha = pago.pago_alumno.fecha
+            total = pago.pago_alumno.total
+            pagos_detall.append([ f'{nombre} {apellido}',
+                                  f'{pago.dictado.curso.nombre}',
+                                  f'{fecha.date()} {fecha.time().strftime("%H:%M:%S")}',  
+                                  f'$ {total}'
+                               
+                                ])
+
+                              
+        if not pagos_detall:
+            pagos_detall.append(["","","",""])
+       
+           
+        return json.dumps(pagos_detall)
+
     def get_pagos(self, year):
         sumas_por_mes = defaultdict(Decimal)
         pagos = DetallePagoAlumno.objects.filter(dictado__fecha__year=year)
         for pago in pagos:
-            mes = funciones.obtenerMes(int(pago.pago_alumno.fecha.month))
+            mes = pago.pago_alumno.fecha.month
             sumas_por_mes[mes] += pago.total
-        return [{'name': curso, 'data': [[curso, total]]} for curso, total in sumas_por_mes.items()]
+        armado = [round(float(sumas_por_mes[month]), 2) for month in range(1, 13)]
+        print("sumas",year)
+        print(armado)
+        return armado
+    
+    def objenerJSON2PERIODOS(self, year1 , year2):
+        series = []
+        pagosYear1 = self.get_pagos(year1)
+        pagosYear2 = self.get_pagos(year2)
+        series.append({
+                        'name': f'Year {year2}',
+                        'data': pagosYear1
+                    
+                    })
+
+        series.append({
+                        'name': f'Year {year2}',
+                        'data': pagosYear2
+                    
+                    })
+        return json.dumps(series)
+
+    def obtenerJSON(self, year):
+        series = []
+        pagosYear = self.get_pagos(year)
+        series.append({
+                        'name': f'Year {year}',
+                        'data': pagosYear
+                    
+                    })
+
+       
+        print("json-----------")
+        print(series)
+        return json.dumps(series)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        year = datetime.now().year
-        # Asegúrate de convertir el año a entero, ya que los parámetros GET son strings
-        try:
-            year = int(year)
-        except ValueError:
-            return JsonResponse({'error': 'Invalid year format'}, status=400)
-
-        pagos_data = self.get_pagos(year)
-        print(pagos_data)
-        context['year'] = year
-        context['datos'] = pagos_data
         context['filter_form'] = get_filtro_roles(self.request)
-        pagos_data = self.get_pagos(year)
-        print(pagos_data)
-        context['year'] = year
-        context['datos'] = pagos_data
         context['form'] = YearcomparacionForm(self.request.GET)
-               
-
+        context['categorias'] = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre']
         return context
 
+    def get_porcentj_cambio(self, valor_actual, valor_anterior):
+        if valor_anterior == 0:
+            if valor_actual == 0:
+                return '0 %'  # No hay cambio si ambos son 0
+            else:
+                return '+100 %'  # Representa un cambio "infinito" ya que partimos de 0
+        else:
+            valor = porcentaje_cambio = ((valor_actual - valor_anterior) / valor_anterior) * 100
+            if valor > 0 :
+                return f'+{valor} %'
+            return f'{valor} %'
+
+        return ((valor_actual - valor_anterior) / valor_anterior) * 100
     def get(self, request, *args, **kwargs):
         filter_rol = get_filtro_roles(request)
         rol = get_selected_rol_pk(filter_rol)
+        print("enre get")
         form = YearcomparacionForm(request.GET)
         print(form)
         if rol is not None:
             return redireccionar_detalle_rol(rol)
-               
+
+        if form.is_valid():
+            anio1 =  form.cleaned_data['year1']
+            anio2 =  form.cleaned_data['year2']
+            if anio1 is not None:
+               context = self.get_context_data()
+               combinado = []
+               data_anio1 = self.obtenerJSON(anio1)
+               data_anio2 = self.obtenerJSON(anio2)
+               detall = self.get_pagos_detallados(anio1)
+               context['datos'] = self.objenerJSON2PERIODOS(anio1,anio2)
+               periodos = f'año: {anio1} -  año: {anio2}'
+               p_cambio = self.get_porcentj_cambio(sum(self.get_pagos(anio1)), sum(self.get_pagos(anio2)))
+               p_cambio2 = self.get_porcentj_cambio(sum(self.get_pagos(anio2)), sum(self.get_pagos(anio1)))
+               context['periodos'] = json.dumps(periodos)
+               context["anio1"] = json.dumps(anio1)
+               context["anio2"] = json.dumps(anio2)
+               context['total_anio1'] = sum(self.get_pagos(anio1))
+               context['total_anio2'] = sum(self.get_pagos(anio2))
+               context['data_anio1'] = data_anio1
+               context['data_anio2'] = data_anio2
+               context['pagos_detall_anio1'] = self.get_pagos_detallados(anio1)
+               context['pagos_detall_anio2'] = self.get_pagos_detallados(anio2)
+               context['porcent_cambio_anio1'] = json.dumps(p_cambio)
+               context['porcent_cambio_anio2'] = json.dumps(p_cambio2)
+            #    context['total_year_1'] = periodos
+               return render(request, 'reporte_cursos_finanzas.html', context )
+    
 
         return super().get(request, *args, **kwargs)
 
@@ -270,9 +353,6 @@ class ReporteCursosViews(TemplateView):
         ).values('curso__nombre', 'afiliados_count', 'familiares_count', 'profesores_count', 'alumnos_count')
         )
     
-
-
-
     def obtenerCurso(self, nombre, year):
             return      list(Dictado.objects.
                         filter(fecha__year=year, curso__nombre = nombre)

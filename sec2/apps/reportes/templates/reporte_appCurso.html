@@ -4,11 +4,17 @@
 
 {% block extracss_intermedia %}
 <script src="{% static 'Libs/highcharts/code/highcharts.js' %}"></script>
+<script src="{% static 'Libs/highcharts/code/dashboards/datagrid.js' %}"></script>
+<script src="{% static 'Libs/highcharts/code/dashboards/dashboards.js' %}"></script>
+<script src="{% static 'Libs/highcharts/code/dashboards/layout.js' %}"></script>
 <script src="{% static 'Libs/highcharts/code/modules/exporting.js' %}"></script>
 <script src="{% static 'Libs/highcharts/code/modules/export-data.js' %}"></script>
 <script src="{% static 'Libs/highcharts/code/modules/accessibility.js' %}"></script>
 <script src="{% static 'Libs/highcharts/code/modules/variwide.js' %}"></script>
 <script src="{% static 'Libs/highcharts/code/themes/dark-unica.js' %}"></script>
+{% block head %}
+{% endblock %}
+
 <script src="https://cdnjs.cloudflare.com/ajax/libs/decimal.js/10.3.1/decimal.min.js"></script>
 {% endblock %}
 
@@ -20,9 +26,4 @@
     {% endblock %}
 
 </div>
-
-
- <link href="{% static 'selectable/css/dj.selectable.css' %}" type="text/css" media="all" rel="stylesheet">
-    <script type="text/javascript" src="{% static 'selectable/js/jquery.dj.selectable.js' %}"></script>
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 {% endblock %}
