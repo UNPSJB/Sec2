@@ -316,7 +316,7 @@ class PagoProfesor(models.Model):
         # Abrir el archivo y enviarlo como una respuesta HTTP para descargarlo automáticamente
         try:
             with open(self.pre_factura.path, 'rb') as f:
-                response = FileResponse(f)
+                response = HttpResponse(f.read(), content_type='application/pdf')
                 response['Content-Disposition'] = 'attachment; filename="Comprobante-pre-factura.pdf"'
                 return response
         except FileNotFoundError:
@@ -326,21 +326,80 @@ class PagoProfesor(models.Model):
         registrar_fuentes()
         
         buffer = io.BytesIO()
-        pdf = canvas.Canvas(buffer)
-        titulo = "Comprobante de pago"
+        pdf = canvas.Canvas(buffer, pagesize=letter)
 
+        # Establecer propiedades del documento
+        pdf.setTitle("Comprobante de pago")
+        pdf.setSubject("Pre-factura de pago")
+
+        titulo = "Comprobante de pago"
         self.establecer_titulo(pdf, titulo)
+        self.agregarDetalleRol(pdf)
+        self.agregarPago(pdf)
+        self.agregarDetallesPago(pdf)
 
         pdf.showPage()
         pdf.save()
         buffer.seek(0)
         return buffer
 
+    def agregarPago(self, pdf):
+        pdf.setFont("Calibri", 11)
+        pdf.drawString(100, 550, f'Fecha: {self.fecha.strftime("%Y/%m/%d")}')
+
+    def agregarDetallesPago(self, pdf):
+        # Get details for the payment
+        detalles_pago = self.detalles_pago.all()
+        # Define table data
+        data = [['Dictado',  'Tot clases','clases asist', '% Asistencia', 'Total']]
+
+        for detalle in detalles_pago:
+            data.append([
+                str(detalle.dictado.curso.nombre),
+                f'{detalle.total_clases}',
+                f'{detalle.clases_asistidas}',
+                f'{detalle.porcentaje_asistencia}%',
+                str(detalle.precioFinal),
+            ])
+        
+        # Add a row for total payment
+        total_row = [''] * len(data[0])  # Create an empty row with the same number of columns
+        total_row[-2] = 'Total'  # Set 'Total' in the second to last column
+        total_row[-1] = f'${self.total}'  # Set total payment amount in the last column
+        data.append(total_row)
+
+        # Define table style
+        style = TableStyle([('BACKGROUND', (0, 0), (-1, 0), colors.grey),
+                        ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
+                        ('ALIGN', (0, 0), (-1, -1), 'RIGHT'),  # Align all columns to the right
+                        ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+                        ('BOTTOMPADDING', (0, 0), (-1, 0), 12),
+                        ('BACKGROUND', (0, 1), (-1, -1), colors.beige),
+                        ('GRID', (0, 0), (-1, -1), 1, colors.black)])
+        # Create table and apply style
+        detalles_table = Table(data)
+        detalles_table.setStyle(style)
+
+        # Draw table on PDF
+        detalles_table.wrapOn(pdf, 400, 450)
+        detalles_table.drawOn(pdf, 50, 450)  
+
     def establecer_titulo(self, pdf, titulo):
         pdf.setFont('Times-Bold', 14)
-        pdf.drawCentredString(300, 770, "Sindicato de Empleado de Comercio 2")
-        pdf.drawCentredString(300, 745, titulo)
+        pdf.drawCentredString(300, 745, "Sindicato de Empleado de Comercio 2")
+        pdf.drawCentredString(300, 720, titulo)
 
+    def agregarDetalleRol(self, pdf):
+        pdf.setFont("Calibri", 11)
+        
+        pdf.drawRightString(295, 695, f'DNI:')
+        pdf.drawRightString(295, 675, f'Nombre:')
+        pdf.drawRightString(295, 655, f'Mail:')
+        pdf.drawRightString(295, 635, f'Celular:')
+        pdf.drawString(300, 695, f'{self.profesor.persona.dni}')
+        pdf.drawString(300, 675, f'{self.profesor} {self.profesor}')
+        pdf.drawString(300, 655, f'{self.profesor.persona.mail}')
+        pdf.drawString(300, 635, f'{self.profesor.persona.celular}')
 
 
 class DetallePagoProfesor(models.Model):
@@ -363,7 +422,7 @@ class PagoAlumno(models.Model):
     
     def generarPreFactura(self):
         buffer = self.generarPdf()
-        filename = "comprobante-pre-factura-pago-alumno.pdf"
+        filename = "Comprobante-pre-factura.pdf"
         self.pre_factura.save(filename, buffer)
     
     def descargarPreFactura(self):
@@ -373,7 +432,7 @@ class PagoAlumno(models.Model):
         # Abrir el archivo y enviarlo como una respuesta HTTP para descargarlo automáticamente
         try:
             with open(self.pre_factura.path, 'rb') as f:
-                response = FileResponse(f)
+                response = HttpResponse(f.read(), content_type='application/pdf')
                 response['Content-Disposition'] = 'attachment; filename="Comprobante-pre-factura.pdf"'
                 return response
         except FileNotFoundError:
@@ -383,13 +442,17 @@ class PagoAlumno(models.Model):
         registrar_fuentes()
         
         buffer = io.BytesIO()
-        pdf = canvas.Canvas(buffer)
-        titulo = "COMPROBANTE DE PAGO DE DICTADO"
+        pdf = canvas.Canvas(buffer, pagesize=letter)
 
+        # Establecer propiedades del documento
+        pdf.setTitle("Comprobante de pago")
+        pdf.setSubject("Pre-factura de pago")
+        
+        titulo = "Comprobante de pago del dictado"
         self.establecer_titulo(pdf, titulo)
         self.agregarDetalleRol(pdf)
         self.agregarPago(pdf)
-        self.agregarDetallesPago(pdf)  # Add this line to include payment details
+        self.agregarDetallesPago(pdf) 
 
         pdf.showPage()
         pdf.save()

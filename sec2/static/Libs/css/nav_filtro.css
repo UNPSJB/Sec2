@@ -4,12 +4,12 @@
 }
 
 #filtro {
-    width: 14%;
+    /* width: 14%; */
     background-color: #333;
     color: #fff;
     /* Ocupa el 100% de la altura del contenedor principal */
-    height: 100%;
+    /* height: 100%; */
     /* Estilos adicionales */
-    display: flex;
+    /* display: flex; */
     flex-direction: column;
 }
