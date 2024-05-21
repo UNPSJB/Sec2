@@ -11,19 +11,23 @@ from django.views.generic import TemplateView
 from datetime import datetime
 from collections import Counter, defaultdict
 from django.db.models import Count
-
 from apps.afiliados.models import Afiliado
 from apps.cursos.models import Curso, DetallePagoAlumno, Dictado
 from django.db.models import Count
-
 from apps.cursos.forms.curso_forms import CursoFilterForm 
 from apps.reportes.forms import CursosListFilterForm , YearcomparacionForm , YearForm
 from sec2.utils import get_filtro_roles, get_selected_rol_pk
 from django.db.models import Q
 from django.db.models.functions import ExtractMonth
-class AfiliadosReportesView(TemplateView):
-    template_name = 'reporte_afiliados_historico.html'
+from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 
+class AfiliadosReportesView(LoginRequiredMixin,PermissionRequiredMixin,TemplateView):
+    login_url = '/login/'
+    permission_required = "afiliados.permission_gestion_afiliado"
+    template_name = 'reporte_afiliados_historico.html'
+    
+
+    
     def get_graph_afiliados(self, year):
         data_dados_baja = Counter()
         data_dados_alta = Counter()
@@ -88,9 +92,40 @@ class AfiliadosReportesView(TemplateView):
 
         return super().get(request, *args, **kwargs)
        
+class ReportePagoCuotasViews(LoginRequiredMixin,PermissionRequiredMixin, TemplateView):
+    template_name = "formulario_pago_cuotas.html"
+    login_url = '/login/'
+    permission_required = 'alquileres.permission_gestion_alquiler'
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
 
-class reportesView(TemplateView):
+        empleadores = Afiliado.objects.filter(
+            Q(estado=2) | Q(estado=5),  # activos o morosos
+            cuit_empleador__isnull=False
+        ).values('cuit_empleador', 'razon_social')
+
+        context['titulo'] = "Cuota Sindical"
+        context['empleadores'] = empleadores
+        context['filter_form'] = get_filtro_roles(self.request)
+
+        return context
+
+    def get(self, request, *args, **kwargs):
+        filter_rol = get_filtro_roles(request)
+        rol = get_selected_rol_pk(filter_rol)
+
+        if rol is not None:
+            return redireccionar_detalle_rol(rol)
+   
+        return super().get(request, *args, **kwargs)
+
+class reportesView(LoginRequiredMixin,PermissionRequiredMixin, TemplateView):
+    login_url = '/login/'
+    permission_required = 'alquileres.permission_gestion_alquiler'
     template_name = 'reporte_alquileres_por_mes.html'
+    
+    
     
     def get_graph_alquileres(self, anio):
 
@@ -155,6 +190,11 @@ class reportesView(TemplateView):
         return context
 
     def get(self, request, *args, **kwargs):
+        user = request.user 
+        
+        # if not user.has_perm(self.permission_required):
+        #     return render(request, 'home.html')
+
         filter_rol = get_filtro_roles(request)
         rol = get_selected_rol_pk(filter_rol)
 
@@ -171,11 +211,13 @@ class reportesView(TemplateView):
                 
         return super().get(request, *args, **kwargs)
 
-class ReporteFinanzasCursosViews(TemplateView):
+class ReporteFinanzasCursosViews(LoginRequiredMixin,PermissionRequiredMixin,TemplateView):
 
     template_name = "formulario_finanzas.html"
+    permission_required = 'cursos.permission_gestion_curso'
+    login_url = '/home/'
     
-
+    
     def get_pagos_detallados(self, year):
         pagos_detall = []
         pagos = DetallePagoAlumno.objects.filter(dictado__fecha__year=year)
@@ -300,10 +342,11 @@ class ReporteFinanzasCursosViews(TemplateView):
 
         return super().get(request, *args, **kwargs)
 
-        
-
-class ReporteCursosViews(TemplateView):
+class ReporteCursosViews(LoginRequiredMixin,PermissionRequiredMixin,TemplateView):
     template_name = 'reporte_cursos_torta.html'
+    permission_required = 'cursos.permission_gestion_curso'
+    login_url = '/home/'
+
     def get_curso_destacado(self, dictados):
         max_inscriptos = 0
         curso_max = None

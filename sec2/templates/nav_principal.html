@@ -11,34 +11,34 @@
   <br>
   <h3 class="titulo-menu">SEC 2</h3>
   <ul class="menu">
-    {% comment %} {% if 'permission_gestion_afiliado' in permisos %} {% endcomment %}
+    {% if 'permission_gestion_afiliado' in permisos %}
     <li>
       <a href="#" id="mostrarMenuAfiliado">
         <i class="fa-solid fa-person-dress"></i>
         Gestión de Afiliados</a>
     </li>
-    {% comment %} {% endif %} {% endcomment %}
-    {% comment %} {% if 'permission_gestion_curso' in permisos %} {% endcomment %}
+    {% endif %}
+    {% if 'permission_gestion_curso' in permisos %}
     <li>
       <a href="#" id="mostrarMenuCurso">
         <i class="fa-solid fa-graduation-cap"></i> 
         Gestión de Cursos</a>
     </li>
-    {% comment %} {% endif %} {% endcomment %}
-    {% comment %} {%if 'permission_gestion_alquiler' in permisos %} {% endcomment %}
+    {% endif %}
+    {%if 'permission_gestion_alquiler' in permisos %}
     <li>
       <a href="#" id="mostrarMenuSalon">
         <i class="fa-solid fa-person-shelter"></i>
          Gestión de Salon</a>
     </li>
-    {% comment %} {% endif %} {% endcomment %}
-    {% comment %} {% if 'permission_gestion_usuario' in permisos %} {% endcomment %}
+    {% endif %}
+    {% if 'permission_gestion_usuario' in permisos %}
     <li>
       <a href="{% url 'users:user_register' %}" id="mostrarMenuSalon">
         <i class="fa-solid fa-users-gear"></i>
          Gestión de Usuarios</a>
     </li>
-
+    {% endif %}
     {% include 'documentacion_info.html' %}
 
     {% comment %} {% endif %} {% endcomment %}
