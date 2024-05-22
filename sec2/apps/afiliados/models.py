@@ -91,7 +91,7 @@ class Afiliado(Rol):
 
     def afiliar(self):
         self.fechaAfiliacion = date.today()
-        self.desde = fechaAfiliacion
+        # self.desde = fechaAfiliacion
         self.estado = 2
         self.persona.es_afiliado = True
         self.activar_familiares()
