@@ -16,6 +16,11 @@ from django.contrib import messages
 from django.contrib.auth import logout
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 
+def obtener_permisos_user_string(user):
+    permisos = user.user_permissions.all()
+    nombres_permisos = [permiso.codename for permiso in permisos]
+    return nombres_permisos
+        # Imprimir los nombres de los permisos
 
 def obtenerPermisoUsuarios():
       content_type = ContentType.objects.get_for_model(User)
@@ -55,6 +60,8 @@ class CreacionUsuarios(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
     
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        permisos = obtener_permisos_user_string(self.request.user)
+        context['permisos'] = permisos
         context['titulo'] = "Registro de usuario"
         context['filter_form'] = get_filtro_roles(self.request)
         return context
@@ -62,7 +69,7 @@ class CreacionUsuarios(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
     def get(self, request, *args, **kwargs):
         filter_rol = get_filtro_roles(request)
         rol = get_selected_rol_pk(filter_rol)
-
+        
         if rol is not None:
             return redireccionar_detalle_rol(rol)
 
