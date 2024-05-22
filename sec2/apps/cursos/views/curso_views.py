@@ -712,14 +712,16 @@ class PagoAlumnoListView(ListFilterView):
             return redireccionar_detalle_rol(rol)
         return super().get(request, *args, **kwargs)
     
-    def get_queryset(self):
-        queryset = super().get_queryset()
-        form = PagoProfesorFilterForm(self.request.GET)
-        if form.is_valid():
-            persona_dni = form.cleaned_data.get('profesor__persona__dni')
-            curso = form.cleaned_data.get('curso')
-            print("CURSO", curso)
-        return queryset
+    # def get_queryset(self):
+    #     print("-------1----")
+    #     queryset = super().get_queryset()
+    #     form = PagoAlumnoFilterForm(self.request.GET)
+    #         rol = form.cleaned_data.get('rol')
+    #         if rol:
+    #             queryset = queryset.filter(rol=rol)
+            
+    #         curso = form.cleaned_data.get('curso')
+    #     return queryset
     
     def render_to_response(self, context, **response_kwargs):
         # Si se solicita un PDF, generamos y devolvemos el PDF
