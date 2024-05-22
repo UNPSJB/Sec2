@@ -144,18 +144,18 @@ class AlquilerForm(forms.ModelForm):
 
     afiliado = AutoCompleteSelectField(
         lookup_class=AfiLookup,
-        required=False,
+        required=True,
         widget=AutoComboboxSelectWidget(AfiLookup, attrs={'class': 'form-control'})  # Proporcionar 'lookup_class' y 'attrs'
     )
     
     salon = AutoCompleteSelectField(
         lookup_class=SalonLookup,
-        required=False,
+        required=True,
         widget=AutoComboboxSelectWidget(SalonLookup, attrs={'class': 'form-control'})  # Proporcionar 'lookup_class' y 'attrs'
     )
     
     turno = forms.ChoiceField(
-        required=False,
+        required=True,
         label='Turno',
         choices=(('Mañana', 'Mañana'), ('Noche', 'Noche')),
         widget=forms.RadioSelect(attrs={'class': 'two-columns'})
@@ -169,6 +169,28 @@ class AlquilerForm(forms.ModelForm):
        }
     def __init__(self, *args, **kwargs):
         super(AlquilerForm, self).__init__(*args, **kwargs)
+    
+    def clean(self):
+        cleaned_data = super().clean()
+        afiliado = cleaned_data.get("afiliado")
+        salon = cleaned_data.get("salon")
+        turno = cleaned_data.get("turno")
+        seguro = cleaned_data.get("seguro")
+        fecha_alquiler = cleaned_data.get("fecha_alquiler")
+
+        # Verifica si algún campo requerido está vacío
+        if not afiliado:
+            self.add_error('afiliado', 'Este campo es obligatorio.')
+        if not salon:
+            self.add_error('salon', 'Este campo es obligatorio.')
+        if not turno:
+            self.add_error('turno', 'Este campo es obligatorio.')
+        if not seguro:
+            self.add_error('seguro', 'Este campo es obligatorio.')
+        if not fecha_alquiler:
+            self.add_error('fecha_alquiler', 'Este campo es obligatorio.')
+        
+        return cleaned_data
 
 class AlquilerFilterForm(FiltrosForm):
     alquiler_salon_nombre = forms.CharField(required=False)
