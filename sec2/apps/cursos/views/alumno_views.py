@@ -283,11 +283,12 @@ class AlumnosListView(LoginRequiredMixin,PermissionRequiredMixin, ListFilterView
             return redireccionar_detalle_rol(rol)
         return super().get(request, *args, **kwargs)
     
-    def get_queryset(self):
-        queryset = super().get_queryset()
-        dni = self.request.GET.get('dni')
-        apellido = self.request.GET.get('apellido')
-        return queryset
+    # def get_queryset(self):
+    #     queryset = super().get_queryset()
+    #     dni = self.request.GET.get('dni')
+    #     print("dni", dni)
+    #     apellido = self.request.GET.get('apellido')
+    #     return queryset
 
 ##--------------- ALUMNO DETALLE --------------------------------
 from django.views.generic import DetailView
