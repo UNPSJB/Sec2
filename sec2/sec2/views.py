@@ -69,10 +69,11 @@ def home(request):
     
     if rol is not None:
         return redireccionarDetalleRol(rol)
-    contexto ={
-        'filter_form': filter_rol,
-        "permisos":permisos,
-    }
+    contexto = dict() 
+    
+    contexto['filter_form'] = filter_rol
+    contexto['permisos'] =permisos
+    
     
     return render(request, 'home.html', contexto)
 
