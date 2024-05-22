@@ -37,7 +37,7 @@ class AfiliadoPersonaForm(forms.ModelForm):
     )
     cuit_empleador = forms.CharField(max_length=11, validators=[numeric_validator], help_text='Cuit sin puntos y guiones. Ej: 01234567899')
     domicilio_empresa = forms.CharField(max_length=100, validators=[text_and_numeric_validator], help_text='Calle y numero')
-    # fechaAfiliacion = forms.DateField(widget=forms.DateInput(attrs={'type': 'date'}))
+    fechaAfiliacion = forms.DateField(widget=forms.DateInput(attrs={'type': 'date'}))
     fechaIngresoTrabajo = forms.DateField(
         widget=forms.DateInput(attrs={'type': 'date'}),
         validators=[validate_no_mayor_actual]
@@ -241,6 +241,13 @@ class AfiliadoSelectForm(forms.Form):
     def label_from_instance_with_strextra(self, obj):
         return obj.__strextra__()
     
+    def clean_fecha_nacimiento(self):
+        fecha_nacimiento = self.cleaned_data.get('fecha_nacimiento')
+        edad = date.today().year - fecha_nacimiento.year
+        if edad < 18 or edad >= 100:
+            raise forms.ValidationError("Debes ser mayor de 18 años y menor de 100 años.")
+        return fecha_nacimiento
+    
 class GrupoFamiliarPersonaForm(forms.ModelForm):
 
     tipo = forms.ChoiceField(choices=TIPOS_RELACION_FAMILIAR)
@@ -252,6 +259,13 @@ class GrupoFamiliarPersonaForm(forms.ModelForm):
             'fecha_nacimiento': forms.DateInput(attrs={'type': 'date'}),
         }
 
+    def clean_fecha_nacimiento(self):
+        fecha_nacimiento = self.cleaned_data.get('fecha_nacimiento')
+        edad = date.today().year - fecha_nacimiento.year
+        if edad < 18 or edad >= 100:
+            raise forms.ValidationError("Debes ser mayor de 18 años y menor de 100 años.")
+        return fecha_nacimiento
+    
 ########### FAMILIAR ##############################################
 class GrupoFamiliarPersonaUpdateForm(forms.ModelForm):
 
