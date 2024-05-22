@@ -1,5 +1,5 @@
 from django import forms
-from apps.cursos.lookups import DniAlumnoLookup
+from apps.cursos.lookups import ApellidoAlumnoLookup, DniAlumnoLookup
 from apps.cursos.models import Alumno
 from apps.personas.models import Persona
 from datetime import date
@@ -18,15 +18,15 @@ class AlumnoPersonaForm(forms.ModelForm):
 from selectable.forms import AutoCompleteSelectField, AutoComboboxSelectWidget
 
 class AlumnoFilterForm(FiltrosForm):
-    dni = AutoCompleteSelectField(
+    persona__dni = AutoCompleteSelectField(
         lookup_class=DniAlumnoLookup,
         label="Dni",
         required=False,
         widget=AutoComboboxSelectWidget(DniAlumnoLookup, attrs={'class': 'form-control'})  # Proporcionar 'lookup_class' y 'attrs'
     )
-    apellido = AutoCompleteSelectField(
-        lookup_class=DniAlumnoLookup,
+    persona__apellido = AutoCompleteSelectField(
+        lookup_class=ApellidoAlumnoLookup,
         label="Apellido",
         required=False,
-        widget=AutoComboboxSelectWidget(DniAlumnoLookup, attrs={'class': 'form-control'})  # Proporcionar 'lookup_class' y 'attrs'
+        widget=AutoComboboxSelectWidget(ApellidoAlumnoLookup, attrs={'class': 'form-control'})  # Proporcionar 'lookup_class' y 'attrs'
     )
