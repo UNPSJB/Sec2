@@ -958,13 +958,24 @@ class PagoCuotaCreateView(LoginRequiredMixin, PermissionRequiredMixin, CreateVie
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
-        empleadores = Afiliado.objects.filter(
+        empleadores_con_duplicados = Afiliado.objects.filter(
             Q(estado=2) | Q(estado=5),  # activos o morosos
             cuit_empleador__isnull=False
         ).values('cuit_empleador', 'razon_social')
+        #print("--------EMPLEADORES empleadores_con_duplicados----\n", empleadores_con_duplicados)
+       #una vez obtenido todos los empleadores me quedo con una sola tupla del empleador para no tener duplicados del mismo
+        empleadores_unicos = []
+        cuit_empleadores_vistos = set()
+        for empleador in empleadores_con_duplicados:
+            cuit_empleador = empleador['cuit_empleador']
+            if cuit_empleador not in cuit_empleadores_vistos:
+                empleadores_unicos.append(empleador)
+                cuit_empleadores_vistos.add(cuit_empleador)
+
+        #print("--------EMPLEADORES----\n", empleadores_unicos)
 
         context['titulo'] = "Cuota Sindical"
-        context['empleadores'] = empleadores
+        context['empleadores'] = empleadores_unicos
         context['filter_form'] = get_filtro_roles(self.request)
 
         return context
