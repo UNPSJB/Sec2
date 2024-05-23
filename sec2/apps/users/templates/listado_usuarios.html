@@ -11,7 +11,7 @@
 {% block container %}
 <div id="wrapper">
   <div id="sidebar">
-    {% include 'nav_principal.html' %}
+    {% include 'nav_gestion_usuarios.html' %}
     <div id="messages-container">
       {% include 'message.html' %}
     </div>
@@ -26,7 +26,6 @@
         <tr>
           <th >#</th>
           <th>Username</th>
-          <th>Email</th>
           <th>Ultima conexion</th>
           <th class="text-center">Estado</th>
           <th colspan="2"></th>
@@ -37,7 +36,6 @@
         <tr>
             <td class="negrita">{{ forloop.counter }}</td>
             <td>{{ user.username }}</td>
-            <td>{{ user.email }}</td>
             <td>{{ user.date_joined }}</td>
             
             <td class="text-center">

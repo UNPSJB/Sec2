@@ -93,16 +93,31 @@ class AfiLookup(ModelLookup):
         return f'{nombre_sin_tildes} {apellido_sin_tildes} ({item.persona.dni})'
 registry.register(AfiLookup)
 
+from django.db.models import Subquery, OuterRef, Min, Q
+
 class CuitEmpleadorLookup(LookupBase):
     def get_query(self, request, term):
         queryset = self.get_queryset(term)
-        # if term:
-            # Puedes agregar lógica de filtrado si lo deseas
-            # pass
         return queryset
 
     def get_queryset(self, term):
-        afiliados = Afiliado.objects.all().distinct("cuit_empleador")
+        print("ESTOY EN GET QUERY")
+
+        # Anotar para obtener el ID mínimo para cada cuit_empleador distinto
+        distinct_afiliados = Afiliado.objects.values('cuit_empleador').annotate(min_id=Min('id'))
+
+        # Filtrar el queryset principal basado en el subquery y el término de búsqueda
+        if term:
+            afiliados = Afiliado.objects.filter(
+                Q(cuit_empleador__icontains=term) | Q(razon_social__icontains=term),
+                id__in=Subquery(distinct_afiliados.values('min_id'))
+            )
+        else:
+            afiliados = Afiliado.objects.filter(id__in=Subquery(distinct_afiliados.values('min_id')))
+        
+        for afiliado in afiliados:
+            print("afiliados", afiliado.cuit_empleador)
+
         queryset = [
             {"id": afiliado.cuit_empleador,
              "nombre": afiliado.razon_social}
@@ -114,7 +129,7 @@ class CuitEmpleadorLookup(LookupBase):
         if isinstance(item, dict):
             return item.get("id", "")
         else:
-            return ""  # Si item no es un diccionario, devuelve un valor predeterminado o maneja el caso según sea necesario
+            return ""  # Si el item no es un diccionario, devuelve un valor predeterminado o maneja el caso según sea necesario
     
     def get_item_id(self, item):
         return item.get("id", "")
@@ -123,11 +138,10 @@ class CuitEmpleadorLookup(LookupBase):
         return item.get("id", "")
     
     def format_item_display(self, item):
-        if isinstance(item, dict):  # Verifica si item es un diccionario
+        if isinstance(item, dict):  # Verifica si el item es un diccionario
             return item.get("id", "")  # Utiliza .get() para obtener el valor de "id"
         else:
-            return ""  # Si item no es un diccionario, devuelve un valor predeterminado o maneja el caso según sea necesario
-
+            return ""  # Si el item no es un diccionario, devuelve un valor predeterminado o maneja el caso según sea necesario
 registry.register(CuitEmpleadorLookup)  
 
 

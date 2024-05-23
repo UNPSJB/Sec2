@@ -35,7 +35,7 @@ MSJ_AFILIADO_NO_FAMILIAR = 'El afiliado no tiene a este familiar.'
 MSJ_FAMILIAR_CARGA_CORRECTA = 'Carga de familiar exitosa!'
 MSJ_FAMILIAR_ELIMINADO = 'Familiar dado de baja.'
 MSJ_FAMILIAR_ESPOSA_EXISTE = 'Ya existe esposo/a para el afiliado asociado.'
-MSJ_HIJO_MAYOR_EDAD = 'El Hijo/a debe ser menor de edad.'
+MSJ_HIJO_MAYOR_EDAD = 'La edad maxima del hijo es hasta los 40 años.'
 
 #MENSAJE ESPECIFICO PARA AULAS
 MSJ_ACTIVIDAD_ALTA_EXITOSA = 'Alta de actividad exitosa!.'

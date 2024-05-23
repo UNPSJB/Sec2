@@ -25,21 +25,21 @@
         Gestión de Cursos</a>
     </li>
     {% endif %}
-     {%if 'permission_gestion_alquiler' in permisos %}
+     {% comment %} {%if 'permission_gestion_alquiler' in permisos %} {% endcomment %}
     <li>
       <a href="#" id="mostrarMenuSalon">
         <i class="fa-solid fa-person-shelter"></i>
          Gestión de Salon</a>
     </li>
-    {% endif %}
-    {% if 'permission_gestion_usuario' in permisos %}
+    {% comment %} {% endif %} {% endcomment %}
+    {% comment %} {% if 'permission_gestion_usuario' in permisos %} {% endcomment %}
     <li>
       {% comment %} <a href="{% url 'users:user_register' %}" id="mostrarMenuSalon"> {% endcomment %}
         <a href="#" id="mostrarMenuUsers">
         <i class="fa-solid fa-users-gear"></i>
          Gestión de Usuarios</a>
     </li>
-    {% endif %}
+    {% comment %} {% endif %} {% endcomment %}
     {% include 'documentacion_info.html' %}
 
     {% comment %} {% endif %} {% endcomment %}
@@ -66,9 +66,8 @@
   {% include 'nav_alquiler.html' %}
 </div>
 
-
 <div id="menu_usuarios_principal" style="display: none;">
-  <!-- Menú Cursos -->
+  <!-- Menú Usuarios -->
   {% include 'nav_gestion_usuarios.html' %}
 </div>
 
