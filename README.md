@@ -1,12 +1,12 @@
-# Sindicato Empleados de Comercio (SEC) <img align="left" style ="text-align: left- margin-right= 10px;" alt="GIF" src="README/icon/SEC.jpg"  width="40" height="40"/><img style ="text-align: left- margin-right= 10px;" alt="GIF" src="README/icon/SEC.jpg"  width="40" height="40"/>
+# Sindicato Empleados de Comercio
 
-<img height="120" alt="SEC" width="100%" src="README/marquee.svg" />
+<img height="100" alt="SEC" width="100%" src="README/marquee.svg" />
 
-<img align="left" src="README/captura.png" />
+<div>
 
+<img align="center" src="README/captura.png" />
 <br>
-
-
+<br>
 <img align="left" src="README/icon/python.png" />
 <img align="left" src="README/icon/django.png" width="32" height="32"/>
 <img align="left" src="README/icon/SQLite.png" width="32" height="32"/>
@@ -15,6 +15,7 @@
 <img align="left" src="README/icon/CSS3.png" width="32" height="32"/>
 
 <br>
+</div>
 
 ## Autores
 
