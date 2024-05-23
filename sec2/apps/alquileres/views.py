@@ -603,7 +603,7 @@ def reemplazar_inquilino(request, pk):
     pago_form = PagoAlquilerForm(instance=pago_alquiler) if pago_alquiler else None
 
     context = {
-        'titulo': "Reemplazo de inquilino",
+        'titulo': "Reemplazo de afiliado",
         'listaEspera': lista_espera,
         'pago_form': pago_form,
     }
