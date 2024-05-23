@@ -262,8 +262,9 @@ class GrupoFamiliarPersonaForm(forms.ModelForm):
     def clean_fecha_nacimiento(self):
         fecha_nacimiento = self.cleaned_data.get('fecha_nacimiento')
         edad = date.today().year - fecha_nacimiento.year
-        if edad < 18 or edad >= 100:
-            raise forms.ValidationError("Debes ser mayor de 18 años y menor de 100 años.")
+        print("edad",edad)
+        if edad < 0 or edad >= 100:
+            raise forms.ValidationError("Edad maxima: 100 años")
         return fecha_nacimiento
     
 ########### FAMILIAR ##############################################
