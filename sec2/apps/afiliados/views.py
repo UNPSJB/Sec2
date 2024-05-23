@@ -391,7 +391,7 @@ def agregar_cabecera(pdf, afiliado):
     pdf.drawString(300, 695, f'{afiliado.persona.dni}')
     pdf.drawString(300, 675, f'{afiliado.persona.nombre} {afiliado.persona.apellido}')
     pdf.drawString(300, 655, f'{afiliado.persona.fecha_nacimiento.strftime("%Y-%m-%d")}')
-    pdf.drawString(300, 635, f'{afiliado.persona.estado_civil}')
+    pdf.drawString(300, 635, f'{afiliado.persona.get_estado_civil_display()}')
     pdf.drawString(300, 615, f'{afiliado.razon_social}')
     pdf.drawString(300, 595, f'{afiliado.categoria_laboral}')
     pdf.drawString(300, 575, f'${afiliado.sueldo}')

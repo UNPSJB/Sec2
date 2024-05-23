@@ -7,7 +7,7 @@
     {% csrf_token %}
     <div class="row">
       <div class="col">
-        <label>Ingrese el nuevo inquilino:</label>
+        <label>Ingrese el nuevo afiliado:</label>
         <select name="enc_afiliado" id="enc_afiliado">
           <option value="" disabled selected hidden>---------------</option>
           {% for afiliado in listaEspera.all %}
