@@ -2,6 +2,11 @@
 
 <img height="120" alt="SEC" width="100%" src="README/marquee.svg" />
 
+<img align="left" src="README/captura.png" />
+
+<br>
+
+
 <img align="left" src="README/icon/python.png" />
 <img align="left" src="README/icon/django.png" width="32" height="32"/>
 <img align="left" src="README/icon/SQLite.png" width="32" height="32"/>
@@ -18,20 +23,9 @@
 - Lucero Carlos
 - Murillo Alexis
 
-## Proyecto
-
-- [Tablero](https://github.com/orgs/UNPSJB/projects/9)
-
 ## Elementos
-<<<<<<< HEAD
-
-python 3.10.7
-
-Django versión 4.1.1
-=======
 - Python 3.10.7
 - Django versión 4.1.1
->>>>>>> develop
 
 ##### Páginas de ayuda:
 
@@ -42,14 +36,7 @@ Django versión 4.1.1
 git clone --branch develop https://github.com/UNPSJB/Sec2.git
 
 python3 -m venv <venv>
-<<<<<<< HEAD
-  
-source ./<venv>/Scripts/activate
-  
-cd ./sec2/source
-  
-pip install -r requirements.txt
-=======
+
 source <venv>/Scripts/activate
   
 cd sec2/
@@ -63,7 +50,6 @@ python manage.py migrate
 python manage.py createsuperuser
 
 python manage.py runserver
->>>>>>> develop
 ```
 ### Activar venv
   
