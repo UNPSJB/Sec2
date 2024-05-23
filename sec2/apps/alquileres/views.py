@@ -657,7 +657,7 @@ def alquiler_eliminar(request, pk):
 
 class AlquilieresListView(PermissionRequiredMixin, LoginRequiredMixin, ListFilterView):
     model = Alquiler
-    paginate_by = MAXIMO_PAGINATOR
+    #paginate_by = MAXIMO_PAGINATOR
     filter_class = AlquilerFilterForm
     success_url = reverse_lazy('alquiler:alquiler_listar')
     template_name = 'alquiler_list.html'

@@ -968,11 +968,12 @@ def get_dictados_por_alumno(request, rol_pk):
     
 
 def obtenerDictadosEnCurso(request, pk):
-
-    dictados = Dictado.objects.filter(curso_id=pk, estado=2)  # Filtra los dictados por curso y estado
+    dictados = Dictado.objects.filter(curso_id=pk, estado__in=[2, 3])  # Filtra los dictados por curso y estado (2 y 3)
     print("dictados", dictados)
+    
     options = '<option value="">---------</option>'
     for dictado in dictados:
         options += f'<option value="{dictado.id}">{dictado.legajo}</option>'
-        print("options",options)
+        print("options", options)
+    
     return JsonResponse({'options': options})

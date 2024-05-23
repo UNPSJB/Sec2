@@ -141,7 +141,7 @@ class PagoProfesorFilterForm(FiltrosForm):
         return f'{obj.legajo}'
     
 class PagoAlumnoFilterForm(FiltrosForm):
-    rol__persona__dni = AutoCompleteSelectField(
+    rol = AutoCompleteSelectField(
         lookup_class=RolLookup,
         label="Dni",
         required=False,
@@ -150,13 +150,13 @@ class PagoAlumnoFilterForm(FiltrosForm):
 
     # Filtrar por curso relacionado con los dictados de los detalles de pago del alumno
     detalles_pago_alumno__dictado__curso = forms.ModelChoiceField(
-        queryset=Curso.objects.all(),
+        queryset=Curso.objects.all().order_by('nombre'),
         required=False,
         label='Curso',
         widget=forms.Select(attrs={'class': 'form-control'})
     )
     detalles_pago_alumno__dictado = forms.ModelChoiceField(
-        queryset=Dictado.objects.filter(estado=2),
+        queryset=Dictado.objects.filter(estado__in=[2, 3]).order_by('legajo'),
         required=False,
         label='Dictado',
         widget=forms.Select(attrs={'class': 'form-control'})
