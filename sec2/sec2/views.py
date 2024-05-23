@@ -20,6 +20,10 @@ from django.http import HttpResponse, FileResponse
 from django.conf import settings
 import os
 
+def custom_403_view(request, exception):
+    return render(request, '403.html', {}, status=403)
+
+
 
 def obtener_permisos_user_string(user):
     permisos = user.user_permissions.all()

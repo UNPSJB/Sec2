@@ -426,11 +426,13 @@ def obtenerProfesoresUnicos(titulares):
         profesores_unicos.add(titular.profesor)
     return profesores_unicos
 
-class PagoProfesorCreateView(CreateView):
+class PagoProfesorCreateView(LoginRequiredMixin,PermissionRequiredMixin,CreateView):
     model = PagoProfesor
     form_class = PagoProfesorForm
     template_name = 'pago/pago_profesor.html'
     success_url = reverse_lazy('cursos:pago_profesor')
+    permission_required = 'cursos.permission_gestion_curso'
+    login_url = '/home/'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -498,12 +500,14 @@ class PagoProfesorCreateView(CreateView):
         print("")
         return super().form_invalid(form)
     
-class PagoProfesorListView(ListFilterView):
+class PagoProfesorListView(LoginRequiredMixin, PermissionRequiredMixin, ListFilterView):
     model = PagoProfesor
     filter_class = PagoProfesorFilterForm
     template_name = 'pago/pago_profesor_listado.html'
     paginate_by = MAXIMO_PAGINATOR
     success_url = reverse_lazy('afiliados:pago_cuota_listado')
+    permission_required = 'cursos.permission_gestion_curso'
+    login_url = '/home/'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -527,10 +531,12 @@ class PagoProfesorListView(ListFilterView):
         return queryset
 
 from django.http import HttpResponse
-class PagoProfesorDetailView(DetailView):
+class PagoProfesorDetailView(LoginRequiredMixin, PermissionRequiredMixin, DetailView):
     model = PagoProfesor
     template_name = 'pago/pago_profesor_detalle.html'
     paginate_by = MAXIMO_PAGINATOR
+    permission_required = 'cursos.permission_gestion_curso'
+    login_url = '/home/'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -608,11 +614,13 @@ def tienenCantidadApropiada(dictados_info):
     return True
 
 
-class PagoAlumnoCreateView(CreateView):
+class PagoAlumnoCreateView(PermissionRequiredMixin, LoginRequiredMixin, CreateView):
     model = PagoAlumno
     form_class = PagoRolForm
     template_name = 'pago/pago_alumno.html'
     success_url = reverse_lazy('cursos:pago_profesor')
+    permission_required = 'cursos.permission_gestion_curso'
+    login_url = '/home/'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -692,12 +700,14 @@ class PagoAlumnoCreateView(CreateView):
         return super().form_invalid(form)
     
 
-class PagoAlumnoListView(ListFilterView):
+class PagoAlumnoListView(LoginRequiredMixin,PermissionRequiredMixin,ListFilterView):
     model = PagoAlumno
     filter_class = PagoAlumnoFilterForm
     template_name = 'pago/pago_alumno_listado.html'
     paginate_by = MAXIMO_PAGINATOR
     success_url = reverse_lazy('afiliados:pago_cuota_listado')
+    permission_required = 'cursos.permission_gestion_curso'
+    login_url = '/home/'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -735,10 +745,12 @@ class PagoAlumnoListView(ListFilterView):
             # De lo contrario, renderizamos la plantilla normalmente
             return super().render_to_response(context, **response_kwargs)
 
-class PagoAlumnoDetailView(DetailView):
+class PagoAlumnoDetailView(LoginRequiredMixin, PermissionRequiredMixin, DetailView):
     model = PagoAlumno
     template_name = 'pago/pago_profesor_detalle.html'
     paginate_by = MAXIMO_PAGINATOR
+    permission_required = 'cursos.permission_gestion_curso'
+    login_url = '/home/'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
