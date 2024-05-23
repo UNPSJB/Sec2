@@ -2,8 +2,8 @@
     <thead>
       <tr>
         <th>#</th>
-        <th>Localidad</th>
         <th>Nombre</th>
+        <th>Localidad</th>
         <th>Direccion</th>
         <th class="text-center">Capacidad</th>
         <th>Precio</th>
@@ -16,8 +16,8 @@
       {% for salon in salones %}
         <tr class="bg-transition">
           <td>{{ forloop.counter }}</td>
-          <td>{{ salon.localidad }}</td>
           <td>{{ salon.nombre }}</td>
+          <td>{{ salon.localidad }}</td>
           <td>{{ salon.direccion }}</td>
           <td class="text-center">{{ salon.capacidad }}</td>
           <td>{{ salon.precio }}</td>

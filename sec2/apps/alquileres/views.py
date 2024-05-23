@@ -165,9 +165,17 @@ class EncargadoDetailView(LoginRequiredMixin, PermissionRequiredMixin, DetailVie
 
         context['titulo'] = "Detalle del Encargado"
         context['tituloListado1'] = "Salones a cargo"
+        context['filter_form'] = get_filtro_roles(self.request)
         return context
+    def get(self, request, *args, **kwargs):
+        filter_rol = get_filtro_roles(request)
+        rol = get_selected_rol_pk(filter_rol)
 
+        if rol is not None:
+            return redireccionar_detalle_rol(rol)
 
+        return super().get(request, *args, **kwargs)
+    
 class EncargadoUpdateView(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
     model = Encargado
     form_class = EncargadoUpdateForm
@@ -180,8 +188,18 @@ class EncargadoUpdateView(LoginRequiredMixin, PermissionRequiredMixin, UpdateVie
         context = super().get_context_data(**kwargs)
         context['editar'] = True
         context['titulo'] = "Modificar Encargado"
+        context['filter_form'] = get_filtro_roles(self.request)
         return context
+    
+    def get(self, request, *args, **kwargs):
+        filter_rol = get_filtro_roles(request)
+        rol = get_selected_rol_pk(filter_rol)
 
+        if rol is not None:
+            return redireccionar_detalle_rol(rol)
+
+        return super().get(request, *args, **kwargs)
+    
     def form_valid(self, form):
         mensaje_exito(self.request, f'{MSJ_EXITO_MODIFICACION}')
         return super().form_valid(form)
@@ -444,7 +462,7 @@ class SalonesListView(LoginRequiredMixin, PermissionRequiredMixin, ListFilterVie
         if localidad:
             queryset = queryset.filter(localidad=localidad)
 
-        return queryset
+        return queryset.order_by('nombre')
 
 # ----------------------------- UPDATE DE SALON  ----------------------------------- #
 
@@ -596,7 +614,7 @@ def reemplazar_inquilino(request, pk):
             actualizar_alquiler_y_pago(alquiler, nuevo_afiliado, request.POST)
 
             detalle_alquiler_url = reverse('alquiler:alquiler_detalle', args=[alquiler.pk])
-            mensaje_exito(request, "Arrendatario actualizado y sacado de la lista de espera.")
+            mensaje_exito(request, "Afiliado actualizado y sacado de la lista de espera.")
             return redirect(detalle_alquiler_url)
 
     pago_alquiler = obtener_pago_alquiler(alquiler)
@@ -606,6 +624,7 @@ def reemplazar_inquilino(request, pk):
         'titulo': "Reemplazo de afiliado",
         'listaEspera': lista_espera,
         'pago_form': pago_form,
+        'filter_form': get_filtro_roles(request)
     }
     return render(request, 'alquiler_reemplazar_inquilino.html', context)
 
@@ -717,7 +736,17 @@ class AlquilerDetailView (LoginRequiredMixin, PermissionRequiredMixin, DetailVie
         context['pago'] = pago
         context['titulo'] = "Detalle de alquiler"
         context['tituloListado1'] = "Lista de espera"
+        context['filter_form'] = get_filtro_roles(self.request)
         return context
+    
+    def get(self, request, *args, **kwargs):
+        filter_rol = get_filtro_roles(request)
+        rol = get_selected_rol_pk(filter_rol)
+
+        if rol is not None:
+            return redireccionar_detalle_rol(rol)
+
+        return super().get(request, *args, **kwargs)
     
 
 # ----------------------------- CREATE DE PAGO  ----------------------------------- #

@@ -110,7 +110,7 @@
 
 <div class="col">
   {% if not alquiler.fechaBaja and alquiler.lista_espera.exists %}
-      <a href="{% url 'alquiler:reemplazar_inquilino' alquiler.pk %}" class="btn btn-primary btn-sm btn-detalle"><i class="fa-solid fa-repeat"></i> Cambiar de Arrendatario</a>            
+      <a href="{% url 'alquiler:reemplazar_inquilino' alquiler.pk %}" class="btn btn-primary btn-sm btn-detalle"><i class="fa-solid fa-repeat"></i> Cambiar de afiliado</a>            
   {% endif %}
 </div>
 
