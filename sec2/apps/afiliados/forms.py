@@ -341,6 +341,13 @@ class RelacionFamiliarFilterForm(FiltrosForm):
 
 class PagoCuotaForm(forms.ModelForm):
     
+    afiliado = AutoCompleteSelectField(
+        lookup_class=AfiLookup,
+        required=True,
+        widget=AutoComboboxSelectWidget(AfiLookup, attrs={'class': 'form-control'})  # Proporcionar 'lookup_class' y 'attrs'
+    )
+
+
     class Meta:
         model = PagoCuota
         fields = '__all__'
@@ -373,6 +380,12 @@ class PagoCuotaForm(forms.ModelForm):
         # Por ejemplo, verificar el tamaño del archivo, el tipo, etc.
         return pdf_transferencia
     
+    def clean(self):
+        cleaned_data = super().clean()
+        afiliado = cleaned_data.get("afiliado")
+        if not afiliado:
+            self.add_error('afiliado', 'Este campo es obligatorio.')
+        return cleaned_data
 
 ########### FILTER FORM FAMILIAR  ##############################################
 class PagoCuotarFilterForm(FiltrosForm):

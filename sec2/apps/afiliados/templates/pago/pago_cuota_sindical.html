@@ -16,6 +16,7 @@
                         <option value="{{ empleador.cuit_empleador }}">{{ empleador.cuit_empleador }} {{ empleador.razon_social }}</option>
                     {% endfor %}
                 </select>
+                {% include "error_campo.html" with field=form.afiliado %}
             </div>
         </div>
 
@@ -28,6 +29,7 @@
                     <option value="{{item.id}}">{{item.persona.dni}} {{item.persona.nombre}} {{item.persona.apellido}}</option>
                   {% endfor %}
                 </select>
+                {% include "error_campo.html" with field=form.afiliado %}
               </div>
         </div>
     </div>
