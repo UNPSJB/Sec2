@@ -37,9 +37,9 @@ def cambiar_estado_alquileres():
         alquiler.estado = 3  # Cambiar estado a "Finalizado"
         alquiler.save()
 
-    for alquiler_hoy in alquileres_hoy:
-        alquiler_hoy.estado = 2  # Cambiar estado a "En curso"
-        alquiler_hoy.save()
+    # for alquiler_hoy in alquileres_hoy:
+    #     alquiler_hoy.estado = 2  # Cambiar estado a "En curso"
+    #     alquiler_hoy.save()
     
 
 def revisarGrupoFamiliar(request):

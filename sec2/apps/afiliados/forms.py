@@ -37,7 +37,7 @@ class AfiliadoPersonaForm(forms.ModelForm):
     )
     cuit_empleador = forms.CharField(max_length=11, validators=[numeric_validator], help_text='Cuit sin puntos y guiones. Ej: 01234567899')
     domicilio_empresa = forms.CharField(max_length=100, validators=[text_and_numeric_validator], help_text='Calle y numero')
-    fechaAfiliacion = forms.DateField(widget=forms.DateInput(attrs={'type': 'date'}))
+    # fechaAfiliacion = forms.DateField(widget=forms.DateInput(attrs={'type': 'date'}))
     fechaIngresoTrabajo = forms.DateField(
         widget=forms.DateInput(attrs={'type': 'date'}),
         validators=[validate_no_mayor_actual]
