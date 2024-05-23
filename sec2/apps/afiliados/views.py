@@ -994,8 +994,7 @@ class PagoCuotaCreateView(LoginRequiredMixin, PermissionRequiredMixin, CreateVie
         afiliado_id = self.request.POST.get('enc_afiliado')
         cuit_empleador = self.request.POST.get('enc_cuit')
         pdf = self.request.POST.get('pdf_transferencia')
-        
-        if afiliado_id == '0' or cuit_empleador == '0':
+        if afiliado_id == '0' or afiliado_id == None or cuit_empleador == '0':
             mensaje_advertencia(self.request, f'Seleccione la empresa y al afiliado')
             return super().form_invalid(form)
 
