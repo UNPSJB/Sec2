@@ -62,14 +62,23 @@ def actualizar_permisos(request, pk):
             except User.DoesNotExist:
                     messages.error(request,"no se pude completar operacion")
                     return redirect('users:user_listado')
+            
+            print(user)
+            print(form.get('permiso_afiliado'))
+            
+            print(form.get('permiso_curso'))
 
-    
-            if form.get('permiso_afiliado') :
+            print(form.get('permiso_alquiler'))
+
+            print(form.get('permiso_administrador'))
+            if form.get('permiso_afiliado') == 'on':
                     permiso = Permission.objects.get(codename='permission_gestion_afiliado')
                     user.user_permissions.add(permiso)
             else:
+                 print("entre quitar permiso")
                  permiso = Permission.objects.get(codename='permission_gestion_afiliado')
                  user.user_permissions.remove(permiso)
+                 user.save()  
 
             if form.get('permiso_curso') :
                     permiso = Permission.objects.get(codename='permission_gestion_curso')
@@ -92,7 +101,7 @@ def actualizar_permisos(request, pk):
             else:
                     permiso = obtenerPermisoUsuarios()
                     user.user_permissions.remove(permiso)
-
+            user.is_superuser = False
             user.save()        
             messages.success(request, 'Permisos de Usuario Actualizados exitosamente')
     return redirect('users:user_listado')
