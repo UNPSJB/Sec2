@@ -2,7 +2,7 @@ from django.http import HttpRequest, HttpResponse
 from django.shortcuts import redirect, render
 from django.contrib.auth.views import LoginView 
 from django.urls import reverse_lazy
-from django.views.generic import View, CreateView
+from django.views.generic import View, CreateView , ListView
 from apps.afiliados.models import Afiliado
 from apps.afiliados.views import redireccionar_detalle_rol
 from apps.alquileres.models import Alquiler
@@ -51,6 +51,88 @@ def cerrar_session(request):
     logout(request)
     return redirect('users:login')
 
+def actualizar_permisos(request, pk):
+    if request.method == 'POST':
+            form = request.POST  
+          
+           #recuperoUsuario
+            try:
+                user = User.objects.get(pk = pk)   
+    
+            except User.DoesNotExist:
+                    messages.error(request,"no se pude completar operacion")
+                    return redirect('users:user_listado')
+
+    
+            if form.get('permiso_afiliado') :
+                    permiso = Permission.objects.get(codename='permission_gestion_afiliado')
+                    user.user_permissions.add(permiso)
+            else:
+                 permiso = Permission.objects.get(codename='permission_gestion_afiliado')
+                 user.user_permissions.remove(permiso)
+
+            if form.get('permiso_curso') :
+                    permiso = Permission.objects.get(codename='permission_gestion_curso')
+                    user.user_permissions.add(permiso)
+            else: 
+                    permiso = Permission.objects.get(codename='permission_gestion_curso')
+                    user.user_permissions.remove(permiso)        
+            
+            if form.get('permiso_alquiler') :
+                    permiso = Permission.objects.get(codename='permission_gestion_alquiler')
+                    user.user_permissions.add(permiso)
+            else:
+                    permiso = Permission.objects.get(codename='permission_gestion_alquiler')
+                    user.user_permissions.remove(permiso)
+                    
+
+            if form.get('permiso_administrador') :
+                    permiso = obtenerPermisoUsuarios()
+                    user.user_permissions.add(permiso)
+            else:
+                    permiso = obtenerPermisoUsuarios()
+                    user.user_permissions.remove(permiso)
+
+            user.save()        
+            messages.success(request, 'Permisos de Usuario Actualizados exitosamente')
+    return redirect('users:user_listado')
+
+class UserListView(LoginRequiredMixin, PermissionRequiredMixin, ListView):
+    login_url = '/login/'
+    model = User
+    template_name ='listado_usuarios.html'
+    permission_required = "auth.permission_gestion_usuario"
+    paginate_by = 5
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        # filter_form = UserFilterForm(self.request.GET)
+
+        # if filter_form.is_valid():
+        #     username = filter_form.cleaned_data.get('username')
+        #     is_active_values = filter_form.cleaned_data.get('is_active')  # Obtenemos los valores seleccionados
+
+        #     if username:
+        #         queryset = queryset.filter(username__icontains=username)
+
+        #     if is_active_values:
+        #         # Convertimos los valores seleccionados a booleanos
+        #         is_active_values = [bool(int(value)) for value in is_active_values]
+        #         queryset = queryset.filter(is_active__in=is_active_values)
+
+        return queryset
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        permisos = obtener_permisos_user_string(self.request.user)
+        context['titulo'] = 'Listado de Usuarios'
+        context['permisos'] = permisos
+        context['filter_form'] = get_filtro_roles(self.request)
+        # context['filter_form'] = UserFilterForm(self.request.GET)
+        return context
+
+
+
 class CreacionUsuarios(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
     template_name = 'creacion_usuarios.html'
     form_class = UserRegisterForm
@@ -61,6 +143,7 @@ class CreacionUsuarios(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         permisos = obtener_permisos_user_string(self.request.user)
+        
         context['permisos'] = permisos
         context['titulo'] = "Registro de usuario"
         context['filter_form'] = get_filtro_roles(self.request)
