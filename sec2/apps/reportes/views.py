@@ -127,6 +127,7 @@ class reportesView(LoginRequiredMixin,PermissionRequiredMixin, TemplateView):
     
     
     
+    
     def get_graph_alquileres(self, anio):
 
         data_confirmados = Counter()
@@ -257,7 +258,7 @@ class ReporteFinanzasCursosViews(LoginRequiredMixin,PermissionRequiredMixin,Temp
         pagosYear1 = self.get_pagos(year1)
         pagosYear2 = self.get_pagos(year2)
         series.append({
-                        'name': f'Year {year2}',
+                        'name': f'Year {year1}',
                         'data': pagosYear1
                     
                     })
@@ -299,8 +300,8 @@ class ReporteFinanzasCursosViews(LoginRequiredMixin,PermissionRequiredMixin,Temp
         else:
             valor = porcentaje_cambio = ((valor_actual - valor_anterior) / valor_anterior) * 100
             if valor > 0 :
-                return f'+{valor} %'
-            return f'{valor} %'
+                return f'+{int(valor)} %'
+            return f'{int(valor)} %'
 
         return ((valor_actual - valor_anterior) / valor_anterior) * 100
     def get(self, request, *args, **kwargs):
