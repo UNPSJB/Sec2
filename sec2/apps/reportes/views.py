@@ -301,7 +301,7 @@ class ReporteFinanzasCursosViews(LoginRequiredMixin,PermissionRequiredMixin,Temp
             valor = porcentaje_cambio = ((valor_actual - valor_anterior) / valor_anterior) * 100
             if valor > 0 :
                 return f'+{int(valor)} %'
-            return f'{valor} %'
+            return f'{int(valor)} %'
 
         return ((valor_actual - valor_anterior) / valor_anterior) * 100
     def get(self, request, *args, **kwargs):
