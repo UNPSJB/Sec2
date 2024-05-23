@@ -32,17 +32,26 @@ class AfiliadosReportesView(LoginRequiredMixin,PermissionRequiredMixin,TemplateV
         data_dados_baja = Counter()
         data_dados_alta = Counter()
         
-        afiliados_por_mes = Afiliado.objects.filter(Q(fechaAfiliacion__year=year) | Q(hasta__year=year))
+        afiliados_por_mes = Afiliado.objects.filter(fechaAfiliacion__year=year)
+        print("afilidos")
+        print(afiliados_por_mes)
+        afiliados_por_mes2 = Afiliado.objects.filter( Q(hasta__year=year))
         for afiliado in afiliados_por_mes:
-            if afiliado.hasta:  # Confirmado
-                month = afiliado.hasta.month
-                cuit_empleador = afiliado.cuit_empleador
-                
-                data_dados_baja[month] += 1
 
             if afiliado.afiliado.fechaAfiliacion != None:
                     month = afiliado.fechaAfiliacion.month
+                    print("afilidos")
+                    print(month)
                     data_dados_alta[month] += 1
+
+        for afiliado in afiliados_por_mes2:
+                   
+            if afiliado.afiliado.hasta != None:
+
+                    month = afiliado.hasta.month
+                    print("hasta")
+                    print(month)
+                    data_dados_baja[month] += 1
 
         data_dados_alta_list = [data_dados_alta[month] for month in range(1, 13)]
         data_dados_baja_list = [data_dados_baja[month] for month in range(1, 13)]
