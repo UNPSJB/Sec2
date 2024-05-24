@@ -100,8 +100,8 @@ def abrir_pdf(request, nombre_archivo, nombre_mostrado):
 
 @login_required(login_url='/login/')
 def abrirManualUsuario(request):
-    return abrir_pdf(request, 'manual de usuario.pdf', 'manual de usuario.pdf')
+    return abrir_pdf(request, 'manual_de_usuario.pdf', 'manual_de_usuario.pdf')
 
 @login_required(login_url='/login/')
 def abrirDocumentacionTecnica(request):
-    return abrir_pdf(request, 'documento tecnico.pdf', 'documento tecnico.pdf')
+    return abrir_pdf(request, 'documento_tecnico.pdf', 'documento_tecnico.pdf')
