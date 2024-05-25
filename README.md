@@ -43,9 +43,9 @@ El desarrollo de este sistema otorga a los usuarios finales optimización de tie
 ## Autores
 
 - [Arcos Vargas Martín](https://github.com/cozakoo)
-- Fabro Diego Ezequiel
-- Lucero Carlos
-- Murillo Alexis
+- [Fabro Diego Ezequiel](https://github.com/DiegoFabro)
+- [Lucero Carlos](https://github.com/carloslucer)
+- [Murillo Alexis](https://github.com/murillo6)
 
 ## Documentación
 - [Documento Técnico](documentacion/documento_tecnico.pdf)
@@ -104,3 +104,7 @@ Todos los usuarios tienen la misma contraseña: `12345678@`
 
 # Despedida
 Gracias por utilizar nuestro sistema de administración. Si tienes alguna pregunta o necesitas asistencia adicional, no dudes en contactarnos. ¡Buena suerte con tu gestión!
+
+## Nuestro agradecimiento a nuestros profes, quienes nos acompañaron durante todo el proceso de desarrollo
+- [Diego van Haaster](https://github.com/diegomvh)
+- [Bruno Pazos](https://github.com/Pazitos10)
