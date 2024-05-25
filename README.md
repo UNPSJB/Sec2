@@ -32,7 +32,6 @@ width="700"/>
 - [Usuarios creados de la base cargada](#usuarios-creados-de-la-base-cargada)
 - [Despedida](#despedida)
 
-
 # Introducción 
 <p align="justify">
 El objetivo es desarrollar un sistema que permita la administración de afiliados, cursos y salones de eventos. Para ello, se registran los datos personales de los afiliados, así como también los datos de sus empleadores y los pagos de cuotas afiliatorias; las inscripciones de los alumnos a los distintos cursos y sus respectivos pagos y asistencias; profesores a cargo de los distintos cursos, sus asistencias y pagos; alquileres de salones de eventos a los afiliados, pagos de alquiler y encargados de salones.
